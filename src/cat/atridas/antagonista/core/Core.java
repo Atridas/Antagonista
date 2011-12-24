@@ -6,6 +6,7 @@ import cat.atridas.antagonista.graphics.FontManager;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.ShaderManager;
 import cat.atridas.antagonista.graphics.TextureManager;
+import cat.atridas.antagonista.graphics.gl.FontManagerGL;
 import cat.atridas.antagonista.input.InputManager;
 
 public final class Core {
@@ -14,7 +15,7 @@ public final class Core {
 	private InputManager   im = new InputManager();
 	private TextureManager tm = new TextureManager();
 	private ShaderManager  sm = new ShaderManager();
-	private FontManager    fm = new FontManager();
+	private FontManager    fm = new FontManagerGL();//TODO
 
 	public RenderManager getRenderManager()
 	{

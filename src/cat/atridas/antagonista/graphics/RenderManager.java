@@ -8,16 +8,12 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.PixelFormat;
 
 import static org.lwjgl.opengl.GL11.*;
-//import static org.lwjgl.opengl.GL12.*;
-//import static org.lwjgl.opengl.GL13.*;
-//import static org.lwjgl.opengl.GL14.*;
-//import static org.lwjgl.opengl.GL15.*;
-//import static org.lwjgl.opengl.GL20.*;
-//import static org.lwjgl.opengl.GL21.*;
 
 public final class RenderManager {
 	
@@ -38,13 +34,20 @@ public final class RenderManager {
 		width  = _width;
 		height = _height;
 		
+		//TODO
+		PixelFormat pf = new PixelFormat().withDepthBits(24).withBitsPerPixel(32).withAlphaBits(8);
+		ContextAttribs ca = new ContextAttribs(2, 1).withForwardCompatible(true);
+		
+		// ? ca.withDebug(true);
+		
+		
 		try {
 			Display.setTitle(title);
 			if(displayParent == null)
 				Display.setDisplayMode(new DisplayMode(width, height));
 			else
 				Display.setParent(displayParent);
-			Display.create();
+			Display.create(pf, ca);
 		} catch (LWJGLException e) {
 			//e.printStackTrace();
 			//System.exit(1);

@@ -7,12 +7,12 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.lwjgl.opengl.GL11;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -20,7 +20,8 @@ import org.w3c.dom.NodeList;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 
-public class Font {
+
+public abstract class Font {
   private static Logger logger = Logger.getLogger(Font.class.getCanonicalName());
   
   public final int width, height, lineHeight, highestChar;
@@ -29,10 +30,11 @@ public class Font {
   private final Map<Character, Char> chars = new HashMap<Character, Char>();
   private final Map<Kerning, Integer> kernings = new HashMap<Kerning, Integer>();
   
-  public Font(String path, RenderManager rm) throws IOException {
+  protected Font(String path, RenderManager rm) throws IOException {
     //File f = null;
 	  InputStream is;
-    logger.info("Parsing " + path);
+	  if(logger.isLoggable(Level.INFO))
+	    logger.info("Parsing " + path);
     
     //f = Utils.findFile(path);
     is = Utils.findInputStream(path);
@@ -258,28 +260,12 @@ public class Font {
     return maxX;
   }
   
-  public static void setAttributes(
+  public abstract void setAttributes(
       ShaderObject shader,
       int position,
       int texCoord,
       int channel,
-      int page)
-  {
-    int vsize = getVertexSize();
-    shader.setAttribBufferedPointer(
-        position, 2, GL11.GL_INT, false, vsize, 0);
-
-    shader.setAttribBufferedPointer(
-        page, 1, GL11.GL_INT, false, vsize, Integer.SIZE / 8 * 2);
-
-    shader.setAttribBufferedPointer(
-        texCoord, 2, GL11.GL_FLOAT, false, vsize, Integer.SIZE / 8 * 3);
-
-    shader.setAttribBufferedPointer(
-        channel, 4, GL11.GL_BYTE, false, vsize, Integer.SIZE / 8 * 3
-                                              + Float.SIZE   / 8 * 2);
-    
-  }
+      int page);
   
   private static class Char {
     float x, y, fwidth, fheight; 
@@ -314,12 +300,5 @@ public class Font {
     }
   }
   
-  private Font() {width = height = lineHeight = highestChar = 0;}
-  
-  static final class NullFont extends Font {
-
-    public NullFont() {super();}
-    public int fillBuffers(CharSequence characters, ByteBuffer vertexBuffer, IntBuffer indexBuffer, Texture[] textures) {return 0;}
-    
-  }
+  protected Font() {width = height = lineHeight = highestChar = 0;}
 }
