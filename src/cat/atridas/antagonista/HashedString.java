@@ -3,34 +3,34 @@ package cat.atridas.antagonista;
 import java.util.HashMap;
 
 public final class HashedString implements Comparable<HashedString> {
-	
-	private static final HashMap<Long, String> strings = new HashMap<>();
-	
-	public final long value;
-	
-	public HashedString(final String str) {
-		value = computeCRC(str);
-		
-		String prev = strings.get(value);
-		if(prev != null && !prev.equals(str)) {
-		  throw new RuntimeException("There are 2 strings with the same hash value: \"" + prev + "\" and \"" + str);
-		} else {
-		  strings.put(value, str);
-		}
-	}
-	
-	@Override
-	public String toString() {
-	  return strings.get(value);
-	}
+  
+  private static final HashMap<Long, String> strings = new HashMap<>();
+  
+  public final long value;
+  
+  public HashedString(final String str) {
+    value = computeCRC(str);
+
+    String prev = strings.get(value);
+    if(prev != null && !prev.equals(str)) {
+      throw new RuntimeException("There are 2 strings with the same hash value: \"" + prev + "\" and \"" + str);
+    } else {
+      strings.put(value, str);
+  	}
+  }
+  
+  @Override
+  public String toString() {
+    return strings.get(value);
+  }
 
   @Override
-	public boolean equals(Object o) {
-	  if(o == null) return false;
-	  if(o.getClass() != HashedString.class) return false;
-	  
-	  return ((HashedString) o).value == value;
-	}
+  public boolean equals(Object o) {
+    if(o == null) return false;
+    if(o.getClass() != HashedString.class) return false;
+    
+    return ((HashedString) o).value == value;
+  }
   
   @Override
   public int compareTo(HashedString o) {
@@ -38,34 +38,34 @@ public final class HashedString implements Comparable<HashedString> {
   }
 
   @Override
-	public int hashCode() {
-	  return (int) ((value & 0xFFFFFFFF0000l) >> 16);
-	}
-	
-	public static long computeCRC(final String val) {
-	  long crc = 0;
-	  long x = 0;
-	  int  y = 0;
-
-	  crc = crc ^ (-1);
-	  byte[] bytes = val.getBytes();
-	  for(int i = 0; i < bytes.length; ++i)
-	  {
-	    byte b = bytes[i];
-	    y = (int) (crc ^ b) & 0xFF;
-	    assert(y < 256);
-	    x = crc64Table[y];
-	    boolean msb = (crc >> 63) != 0;
-	    crc = crc >> 8;
-	                      //0xffffffffffffffffl
-	    if(msb) crc = crc | 0xFF00000000000000l;
-	    crc = crc  ^ x;
-	  }
-
-	  return crc ^ (-1);
-	}
-	
-	private static final long crc64Table[] = {
+  public int hashCode() {
+    return (int) ((value & 0xFFFFFFFF0000l) >> 16);
+  }
+  
+  public static long computeCRC(final String val) {
+    long crc = 0;
+    long x = 0;
+    int  y = 0;
+  
+    crc = crc ^ (-1);
+    byte[] bytes = val.getBytes();
+    for(int i = 0; i < bytes.length; ++i)
+    {
+      byte b = bytes[i];
+      y = (int) (crc ^ b) & 0xFF;
+      assert(y < 256);
+      x = crc64Table[y];
+      boolean msb = (crc >> 63) != 0;
+      crc = crc >> 8;
+                        //0xffffffffffffffffl
+      if(msb) crc = crc | 0xFF00000000000000l;
+      crc = crc  ^ x;
+    }
+  
+    return crc ^ (-1);
+  }
+  
+  private static final long crc64Table[] = {
     0x0000000000000000l, 0x42F0E1EBA9EA3693l,
     0x85E1C3D753D46D26l, 0xC711223CFA3E5BB5l,
     0x493366450E42ECDFl, 0x0BC387AEA7A8DA4Cl,
