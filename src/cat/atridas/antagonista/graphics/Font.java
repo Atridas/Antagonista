@@ -20,7 +20,16 @@ import org.w3c.dom.NodeList;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 
-
+/**
+ * Classe que representa una font creada amb el <b>Bitmap Font Generator</b>
+ * d'AngelCode.
+ * 
+ * 'http://www.angelcode.com/products/bmfont/'
+ * 
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch
+ *
+ */
 public abstract class Font {
   private static Logger logger = Logger.getLogger(Font.class.getCanonicalName());
   
