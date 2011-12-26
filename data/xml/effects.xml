@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<effects>
+
+  <!--
+  <effect name="">
+    <techniques>
+      <technique>...</technique>
+    </techniques>
+  </effect>
+  
+  ----------------------------------------------------------------------------------------------------
+  
+  <technique type="">
+    types:
+    -> "forward"
+    -> "shadow"
+    -> "particle"
+    
+       si no n'hi ha una, es farà servir la anterior
+    -> "deferred basic"
+    -> "deferred low"
+    -> "deferred mid"
+    -> "deferred high"
+        
+    <vertex_shader>
+      <resource>vertex_shader</resource> -> ./data/shaders/vertex_shader.vs
+      <min_version>2</min_version>       -> 2 (OpenGL 2.1), 3 (OpenGL 3.3), 4 (OpenGL 4.2)
+      <define>ANIMATED</define> -> afegeix "#define ANIMATED" al principi del shader
+      <define>TANGENTS</define>
+      <define>PARALLAX</define>
+    </vertex_shader>
+    <fragment_shader>
+      <resource>fragment_shader</resource> -> ./data/shaders/fragment_shader.vs
+      <min_version>2</min_version>
+    </fragment_shader>
+    
+    <render_states>
+      <depth_test>true</depth_test>
+      <depth_function>less</depth_function> -> never, always, less, greater, equal, notequal, lequal, gequal
+      <alpha_blending>false</alpha_blending>
+    </render_states>
+    
+    <attributes>
+      <position/> -> vec3 a_v3Position 
+      <normal/>   -> vec3 a_v3Normal   
+      <uv/>       -> vec2 a_v2UV       
+    </attributes>
+    
+    <uniforms>
+      <albedo_texture/>          -> sampler2D u_s2Albedo 
+      <basic_instance_uniforms/> -> UniformsInstances { m44ModelViewProjection, m44ModelView  } u_InstanceInfo[instances] 
+      <basic_light/>             -> UniformsLight { u_v3AmbientLight, u_v3DirectionalLightPosition, u_v3DirectionalLightColor } 
+      <basic_material/>          -> UniformsMaterials { u_fSpecularFactor. u_fGlossiness } 
+    </uniforms>
+    
+    <results>
+      <color/> <!-- vec4 f_v4Color - ->
+      <depth/> <!-- vec4 f_v4Depth - ->
+    </results>
+  </technique>
+  
+  
+  ---------------------------------------------------------------------------------------
+  
+  
+  -->
+
+  <effect name="Basic Effect">
+    <techniques>
+      <technique type="forward">
+        
+        <vertex_shader>
+          <resource>base</resource>
+          <min_version>2</min_version>
+        </vertex_shader>
+        <fragment_shader>
+          <resource>forwardBase</resource>
+          <min_version>2</min_version>
+        </fragment_shader>
+        
+        <render_states>
+          <depth_test>true</depth_test>
+          <depth_function>less</depth_function>
+          <alpha_blending>false</alpha_blending>
+        </render_states>
+        
+        <attributes>
+          <position/>
+          <normal/>
+          <uv/>
+        </attributes>
+        
+        <uniforms>
+          <albedo_texture/>
+          <basic_instance_uniforms/>
+          <basic_light/>
+          <basic_material/>
+        </uniforms>
+        
+        <results>
+          <color/>
+        </results>
+      </technique>
+      <technique name="shadow">
+        
+        <vertex_shader>
+          <resource>base</resource>
+          <min_version>2</min_version>
+        </vertex_shader>
+        <fragment_shader>
+          <resource>drawShadowmap</resource>
+          <min_version>2</min_version>
+        </fragment_shader>
+        
+        <render_states>
+          <depth_test>true</depth_test>
+          <depth_function>less</depth_function>
+          <alpha_blending>false</alpha_blending>
+        </render_states>
+        
+        <attributes>
+          <position/>
+        </attributes>
+        
+        <uniforms>
+          <basic_instance_uniforms/>
+        </uniforms>
+        
+        <results>
+          <depth/>
+        </results>
+      </technique>
+    </techniques>
+  </effect>
+</effects>
