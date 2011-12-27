@@ -64,21 +64,52 @@ public final class Shader extends Resource {
   void loadDefault() {
     switch(type) {
     case VERTEX: //TODO
-      source =  "attribute vec3 _Position;\n" +
-                "uniform mat4 u_WorldViewProj;\n" +
+      source =  "attribute vec3 a_v3Position;\n" +
+    
+                "uniform struct {\n" +
+                "  mat4 m4ModelViewProjection;\n" +
+                "  mat4 m4ModelView;\n" +
+                "} u_InstanceInfo[1];\n" +
+                
                 "void main()\n" +
                 "{\n" +
-                "  gl_Position = u_WorldViewProj * vec4(_Position,1.0);\n" +
+                "  gl_Position = u_InstanceInfo[0].m4ModelViewProjection * vec4(a_v3Position,1.0);\n" +
                 "}\n";
       break;
-    case FRAGMENT: //TODO
+    case FRAGMENT:
       source =  "void main(void)\n" +
                 "{\n" +
                 "  gl_FragColor = vec4(1,1,1,1);\n" +
                 "}\n";
       break;
+    case GEOMETRY: //TODO
+      source =  "#version 150\n" +
+          
+          "layout(triangles) in;\n" +
+          "layout(triangle_strip, max_vertices = 3) out;\n" +
+           
+          "void main() {\n" +
+          "  for(int i = 0; i < gl_in.length(); i++) {\n" +
+          "    gl_Position = gl_in[i].gl_Position;\n" +
+          "    EmitVertex();\n" +
+          "  }\n" +
+          "  EndPrimitive();\n" +
+          "};\n";
+      break;
+    case TESS_EVALUATION: //TODO
+      source =  "void main(void)\n" +
+                "{\n" +
+                "  gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;\n" +
+                "}\n";
+      break;
+    case TESS_CONTROL: //TODO
+      source =  "void main(void)\n" +
+                "{\n" +
+                "  gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;\n" +
+                "}\n";
+      break;
     default:
-      throw new IllegalStateException("not implemented yet");
+      throw new IllegalStateException();
     }
     
   }

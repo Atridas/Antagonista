@@ -3,6 +3,7 @@
 // mig   (OpenGL 3.3, GLSL 3.30)
 // alt   (OpenGL 4.2, GLSL 4.20)
 
+#line 7
 
 //Parametrització
 //TANGENTS
@@ -39,8 +40,8 @@ out vec2 v_v2UV;
 // Uniforms -----------------------------------------------------
 #if __VERSION__ < 330
   uniform struct {
-    mat4x4 m44ModelViewProjection;
-    mat4x4 m44ModelView;
+    mat4 m4ModelViewProjection;
+    mat4 m4ModelView;
     #if defined(ANIMATED)
       mat3x4 m32Bones[MAX_BONES];
     #endif
@@ -49,10 +50,10 @@ out vec2 v_v2UV;
   
   
 #else
-  layout(std140) uniform UniformsInstances {
+  layout(std140) uniform UniformInstances {
     struct {
-      mat4x4 m44ModelViewProjection;
-      mat4x4 m44ModelView;
+      mat4 m4ModelViewProjection;
+      mat4 m4ModelView;
       #if defined(ANIMATED)
         mat3x4 m34Bones[MAX_BONES];
       #endif

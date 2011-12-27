@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import cat.atridas.antagonista.HashedString;
@@ -22,16 +23,21 @@ public class EffectManager extends ResourceManager<Effect> {
   private static Logger LOGGER = Logger.getLogger(EffectManager.class.getCanonicalName());
   
   
-  private final String basePath;
-  private final ArrayList<String> extensions;
+  private String basePath;
+  private ArrayList<String> extensions;
   
   private ShaderManager vertexShaderManager, 
                         fragmentShaderManager, 
                         geometryShaderManager,
                         tessControlShaderManager,
                         tessEvalShaderManager;
-
-  public EffectManager(String configFile, RenderManager rm) {
+  
+  boolean isInit;
+  
+  public void init(String configFile, RenderManager rm) {
+    assert !isInit;
+    isInit = true;
+    
     if(LOGGER.isLoggable(Level.CONFIG))
       LOGGER.config("Creating EffectManager from file " + configFile);
     
@@ -68,12 +74,16 @@ public class EffectManager extends ResourceManager<Effect> {
       
       NodeList nl = shadersXML.getChildNodes();
       for(int i = 0; i < nl.getLength(); ++i) {
-        Element shaderConfigXML = ((Element)nl.item(i));
+        Node n = nl.item(i);
+        if(!(n instanceof Element)) {
+          continue;
+        }
+        Element shaderConfigXML = (Element)n;
         
-        String path = effectsXML.getAttribute("path");
+        String path = shaderConfigXML.getAttribute("path");
         ArrayList<String> extensions = new ArrayList<>();
         
-        String[] extensionsArray1 = effectsXML.getAttribute("extensions").split(",");
+        String[] extensionsArray1 = shaderConfigXML.getAttribute("extensions").split(",");
         for(String extension : extensionsArray1) {
           extensions.add(extension);
         }
@@ -111,17 +121,29 @@ public class EffectManager extends ResourceManager<Effect> {
              geometryShaderManager    != null && 
              fragmentShaderManager    != null;
       
+      
+      nl = effectsXML.getElementsByTagName("effect");
+      for(int i = 0; i < nl.getLength(); ++i) {
+        Element effectXML = (Element)nl.item(i);
+        String name = effectXML.getAttribute("name");
+        
+        getResource(new HashedString(name));
+      }
+      
     } catch (FileNotFoundException e) {
       LOGGER.severe("Could not find input file");
+      isInit = false;
       throw new IllegalArgumentException(e);
     } catch (Exception e) {
       LOGGER.severe("Error reading xml file");
+      isInit = false;
       throw new IllegalArgumentException(e);
     }
   }
   
   
   public String getShaderSource(HashedString shader, ShaderType st) {
+    assert isInit;
     switch(st) {
     case VERTEX:
       return vertexShaderManager.getResource(shader).getSource();
@@ -138,28 +160,55 @@ public class EffectManager extends ResourceManager<Effect> {
     }
   }
   
+  
+  public String getDefaultShaderSource(ShaderType st) {
+    assert isInit;
+    switch(st) {
+    case VERTEX:
+      return vertexShaderManager.getDefaultResource().getSource();
+    case TESS_CONTROL:
+      return tessControlShaderManager.getDefaultResource().getSource();
+    case TESS_EVALUATION:
+      return tessEvalShaderManager.getDefaultResource().getSource();
+    case GEOMETRY:
+      return geometryShaderManager.getDefaultResource().getSource();
+    case FRAGMENT:
+      return fragmentShaderManager.getDefaultResource().getSource();
+    default:
+      throw new IllegalArgumentException();
+    }
+  }
+  
   @Override
   protected String getBasePath() {
+    assert isInit;
     return basePath;
   }
 
   @Override
   protected ArrayList<String> getExtensionsPriorized() {
+    assert isInit;
     return extensions;
   }
 
   @Override
   protected Effect createNewResource() {
-    // TODO Auto-generated method stub
-    return null;
+    assert isInit;
+    return new Effect();
   }
 
   @Override
   protected Effect getDefaultResource() {
+    assert isInit;
     // TODO Auto-generated method stub
     return null;
   }
 
+  public Technique getDefaultTechnique() {
+    // TODO
+    return null;
+  }
+  
   private static abstract class ShaderManager extends ResourceManager<Shader> {
 
     private final String basePath;

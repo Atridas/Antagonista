@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <effects path="data/effects/" extensions="xml">
   <shaders>
-    <vertex_shaders path="data/shaders/" extension="vs"/>
-    <tesselation_control_shaders path="data/shaders/" extension="tc"/>
-    <tesselation_evaluation_shaders path="data/shaders/" extension="te"/>
-    <geometry_shaders path="data/shaders/" extension="gs"/>
-    <fragment_shaders path="data/shaders/" extension="fs"/>
+    <vertex_shaders path="data/shaders/" extensions="vs"/>
+    <tesselation_control_shaders path="data/shaders/" extensions="tc"/>
+    <tesselation_evaluation_shaders path="data/shaders/" extensions="te"/>
+    <geometry_shaders path="data/shaders/" extensions="gs"/>
+    <fragment_shaders path="data/shaders/" extensions="fs"/>
   </shaders>
   
   <effect name="BasicEffect"/>
@@ -48,7 +48,7 @@
         <source>SRC_ALPHA</source>
         <destination>ONE_MINUS_SRC_ALPHA</destination>
         
-        --
+        - -
         <source_color>SRC_ALPHA</source_color>
         <destination_color>ONE_MINUS_SRC_ALPHA</destination_color>
         <source_alpha>ONE</source_alpha>
@@ -79,21 +79,21 @@
     
     <uniforms>
       <albedo_texture/>          -> sampler2D u_s2Albedo 
-      <basic_instance_uniforms/> -> UniformsInstances { m44ModelViewProjection, m44ModelView  } u_InstanceInfo[instances] 
-      <basic_light/>             -> UniformsLight { u_v3AmbientLight, u_v3DirectionalLightPosition, u_v3DirectionalLightColor } 
-      <basic_material/>          -> UniformsMaterials { u_fSpecularFactor. u_fGlossiness } 
+      <basic_instance_uniforms/> -> UniformInstances { m44ModelViewProjection, m44ModelView  } u_InstanceInfo[instances] 
+      <basic_light/>             -> UniformLight { u_v3AmbientLight, u_v3DirectionalLightPosition, u_v3DirectionalLightColor } 
+      <basic_material/>          -> UniformMaterials { u_fSpecularFactor. u_fGlossiness } 
     </uniforms>
     
     <results>
-      <color/> <!-- vec4 f_v4Color - ->
-      <depth/> <!-- vec4 f_v4Depth - ->
+      <color/> <!- - vec4 f_v4Color - ->
+      <depth/> <!- - vec4 f_v4Depth - ->
     </results>
   </technique>
   
   
-  ---------------------------------------------------------------------------------------
+  *************************************************************************************************
   
-  <technique type="" quality="" external="true" effect="" ref_type="" ref_quality=""/>
+  <technique type="" quality="" external="true" ref_effect="" ref_type="" ref_quality=""/>
   
   -->
 </effects>

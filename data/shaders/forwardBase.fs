@@ -40,14 +40,14 @@ uniform sampler2D u_s2Albedo;
   uniform float u_fGlossiness;
 
 #else
-  layout(std140) uniform UniformsLight
+  layout(std140) uniform UniformLight
   {
     vec3 u_v3AmbientLight;
     vec3 u_v3DirectionalLightPosition;
     vec3 u_v3DirectionalLightColor;
   };
 
-  layout(std140) uniform UniformsMaterials
+  layout(std140) uniform UniformMaterials
   {
     float u_fSpecularFactor;
     float u_fGlossiness;

@@ -17,9 +17,11 @@ import static org.lwjgl.opengl.GL40.*;
 public final class RenderManagerGL extends RenderManager {
   private static Logger LOGGER = Logger.getLogger(RenderManagerGL.class.getCanonicalName());
 
-  private final Profile profile;
+  private Profile profile;
   
-  public RenderManagerGL() {
+  
+  @Override
+  public void initGL() {
     ContextCapabilities cc = GLContext.getCapabilities();
     if(cc.OpenGL42) {
       profile = Profile.GL4;
@@ -31,11 +33,7 @@ public final class RenderManagerGL extends RenderManager {
       throw new IllegalStateException("Can not load an opengl 2.1 or greater context.");
     }
     
-  }
-  
-  
-  @Override
-  public void initGL() {
+    
     glClearColor(1,0,1,0);
     
     glEnable(GL_BLEND);

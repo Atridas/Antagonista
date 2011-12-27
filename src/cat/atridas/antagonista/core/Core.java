@@ -18,7 +18,7 @@ public final class Core {
 	private TextureManager tm = new TextureManager();
 	private ShaderManager  sm = new ShaderManager();
 	private FontManager    fm = new FontManagerGL();//TODO
-	private EffectManager  em; //TODO
+	private EffectManager  em = new EffectManager(); //TODO
 
 	public RenderManager getRenderManager()
 	{
@@ -55,6 +55,8 @@ public final class Core {
 		im.init();
 		
 		rm.initGL();
+		
+		em.init("data/xml/effects.xml", rm);
 	}
 	
 	public void close() {

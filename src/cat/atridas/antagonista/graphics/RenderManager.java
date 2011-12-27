@@ -2,6 +2,7 @@ package cat.atridas.antagonista.graphics;
 
 import java.awt.Canvas;
 import java.nio.FloatBuffer;
+import java.util.logging.Logger;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
@@ -14,6 +15,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.PixelFormat;
 
 public abstract class RenderManager {
+  private static Logger LOGGER = Logger.getLogger(RenderManager.class.getCanonicalName());
 	
 	private int width, height;
 
@@ -34,7 +36,7 @@ public abstract class RenderManager {
 		
 		//TODO
 		PixelFormat pf = new PixelFormat().withDepthBits(24).withBitsPerPixel(32).withAlphaBits(8);
-		ContextAttribs ca = new ContextAttribs(2, 1).withForwardCompatible(true);
+		ContextAttribs ca = new ContextAttribs(4, 2).withForwardCompatible(true);
 		
 		// ? ca.withDebug(true);
 		
@@ -249,17 +251,24 @@ public abstract class RenderManager {
       }
     }
     
-    public boolean supports(Profile profile) {
+    public boolean supports(Profile other) {
       switch (this) {
       case GLES2:
-        return profile == GLES2;
+        return other == GLES2;
       case GL4:
-        return profile != GLES2;
+        return other != GLES2;
       case GL3:
-        return profile == GL2 || profile == GL3;
+        return other == GL2 || other == GL3;
       case GL2:
-        return profile == GL2;
+        return other == GL2;
       default:
+        throw new IllegalStateException();
+      }
+    }
+    
+    public void suportOrException(Profile other, String functionality) {
+      if(!supports(other)) {
+        LOGGER.severe("Functionality " + functionality + " needs a context of " + toString() + " or greater.");
         throw new IllegalStateException();
       }
     }

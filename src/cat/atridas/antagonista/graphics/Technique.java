@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import cat.atridas.antagonista.AntagonistException;
@@ -22,9 +23,54 @@ import cat.atridas.antagonista.graphics.Shader.ShaderType;
 public abstract class Technique {
   private static Logger LOGGER = Logger.getLogger(Technique.class.getCanonicalName());
   
+  //Attributes --------------------------------------------------------------------------
+  public static final int POSITION_ATTRIBUTE     = 0;
+  public static final int NORMAL_ATTRIBUTE       = 1;
+  public static final int TANGENT_ATTRIBUTE      = 2;
+  public static final int BITANGENT_ATTRIBUTE    = 3;
+  public static final int UV_ATTRIBUTE           = 4;
+  public static final int BLEND_INDEX_ATTRIBUTE  = 5;
+  public static final int BLEND_WEIGHT_ATTRIBUTE = 6;
+
+  public static final String POSITION_ATTRIBUTE_NAME     = "a_v3Position";
+  public static final String NORMAL_ATTRIBUTE_NAME       = "a_v3Normal";
+  public static final String TANGENT_ATTRIBUTE_NAME      = "a_v3Tangent";
+  public static final String BITANGENT_ATTRIBUTE_NAME    = "a_v3Bitangent";
+  public static final String UV_ATTRIBUTE_NAME           = "a_v2UV";
+  public static final String BLEND_INDEX_ATTRIBUTE_NAME  = "a_i4BlendIndexs";
+  public static final String BLEND_WEIGHT_ATTRIBUTE_NAME = "a_v4BlendWeights";
+
+  //Uniforms ----------------------------------------------------------------------------
+  public static final String ALBEDO_TEXTURE_UNIFORM = "u_s2Albedo";
+  public static final String BASIC_INSTANCE_UNIFORMS_BLOCK = "UniformInstances";
+  public static final String BASIC_INSTANCE_UNIFORMS_STRUCT = "u_InstanceInfo";
+
+  public static final String BASIC_LIGHT_UNIFORMS_BLOCK = "UniformLight";
+  public static final String AMBIENT_LIGHT_UNIFORM_BLOCK = "u_v3AmbientLight";
+  public static final String DIRECTIONAL_LIGHT_POS_UNIFORM_BLOCK = "u_v3DirectionalLightPosition";
+  public static final String DIRECTIONAL_LIGHT_COLOR_UNIFORMS_BLOCK = "u_v3DirectionalLightColor";
+
+  public static final String BASIC_MATERIAL_UNIFORMS_BLOCK = "UniformMaterials";
+  public static final String SPECULAR_FACTOR_UNIFORMS_BLOCK = "u_fSpecularFactor";
+  public static final String SPECULAR_GLOSS_UNIFORMS_BLOCK = "u_fGlossiness";
+  
   private int shaderProgram;
   private int vs, tc, te, gs, fs;
   
+  
+  //attributes
+  protected boolean position, normal, tangents, uv, bones;
+  
+  //uniforms
+  protected boolean albedoTexture;
+  protected boolean basicInstanceUniforms;
+  protected boolean basicLight;
+  protected boolean basicMaterial;
+  
+  //results
+  protected boolean color, depth;
+  
+  //Render states
   private boolean changeDepthTest = false;
   private boolean depthTestStatus;
   private DepthFunction depthFunction = null;
@@ -38,7 +84,7 @@ public abstract class Technique {
   private TreeMap<Integer, BlendOperation> alphaBlendingOperationPerRenderTarget = new TreeMap<>();
   private TreeMap<Integer, BlendOperationSeparate> alphaBlendingOperationSeparatePerRenderTarget = new TreeMap<>();
   
-  Technique(Element techniqueXML) throws AntagonistException {
+  protected Technique(Element techniqueXML) throws AntagonistException {
     assert techniqueXML.getTagName().equals("technique");
     
     vs = tc = te = gs = fs = 0;
@@ -48,7 +94,10 @@ public abstract class Technique {
 
     NodeList nl = techniqueXML.getChildNodes();
     for(int i = 0; i < nl.getLength(); ++i) {
-      Element element = ((Element)nl.item(i));
+      Node n = nl.item(i);
+      if(!(n instanceof Element))
+        continue;
+      Element element = ((Element)n);
       
       switch(element.getTagName()) {
       case "min_version":
@@ -61,10 +110,10 @@ public abstract class Technique {
         }
         
       case "vertex_shader":
-        vs = loadShader(element, ShaderType.VERTEX, em);
+        vs = loadShader(element, ShaderType.VERTEX, em, rm);
         break;
       case "fragment_shader":
-        vs = loadShader(element, ShaderType.FRAGMENT, em);
+        vs = loadShader(element, ShaderType.FRAGMENT, em, rm);
         break;
         //TODO altres shaders
       case "render_states":
@@ -85,14 +134,14 @@ public abstract class Technique {
     }
   }
   
-  private int loadShader(Element shaderXML, ShaderType st, EffectManager em) {
-    int shaderID = generateShaderObject(st);
+  private int loadShader(Element shaderXML, ShaderType st, EffectManager em, RenderManager rm) {
+    int shaderID = generateShaderObject(st, rm);
     String resourceName  = Utils.getStringContentFromXMLSubElement(shaderXML, "resource");
     
     String shaderSource = em.getShaderSource(new HashedString(resourceName), st);
     
     StringBuilder sb = new StringBuilder();
-    sb.append(getVersionDeclaration());
+    sb.append(getVersionDeclaration(rm));
     sb.append('\n');
 
     NodeList nl = shaderXML.getElementsByTagName("define");
@@ -257,29 +306,108 @@ public abstract class Technique {
           }
         }
         break;
+      default:
+        LOGGER.warning("Unrecognized tag name" + element.getTagName());
       }
     }
   }
   
   private void loadAttributes(Element attributesXML) {
-    //TODO
+    if(LOGGER.isLoggable(Level.CONFIG))
+      LOGGER.config("Loading attributes");
+
+    NodeList nl = attributesXML.getChildNodes();
+    for(int i = 0; i < nl.getLength(); ++i) {
+      Element element = ((Element)nl.item(i));
+      
+      switch(element.getTagName()) {
+      case "position":
+        assert !position;
+        position = true;
+        break;
+      case "normal":
+        assert !normal;
+        normal = true;
+        break;
+      case "tangents":
+        assert !tangents;
+        tangents = true;
+        break;
+      case "uv":
+        assert !uv;
+        uv = true;
+        break;
+      case "bones":
+        assert !bones;
+        bones = true;
+        break;
+      default:
+        LOGGER.warning("Unrecognized tag name" + element.getTagName());
+      }
+    }
   }
   
   private void loadUniforms(Element uniformsXML) {
-    //TODO
+    if(LOGGER.isLoggable(Level.CONFIG))
+      LOGGER.config("Loading uniforms");
+
+    NodeList nl = uniformsXML.getChildNodes();
+    for(int i = 0; i < nl.getLength(); ++i) {
+      Element element = ((Element)nl.item(i));
+      
+      switch(element.getTagName()) {
+      case "albedo_texture":
+        assert !albedoTexture;
+        albedoTexture = true;
+        break;
+      case "basic_instance_uniforms":
+        assert !basicInstanceUniforms;
+        basicInstanceUniforms = true;
+        break;
+      case "basic_light":
+        assert !basicLight;
+        basicLight = true;
+        break;
+      case "basic_material":
+        assert !basicMaterial;
+        basicMaterial = true;
+        break;
+      default:
+        LOGGER.warning("Unrecognized tag name" + element.getTagName());
+      }
+    }
   }
   
   private void loadResults(Element resultsXML) {
-    //TODO
+    if(LOGGER.isLoggable(Level.CONFIG))
+      LOGGER.config("Loading uniforms");
+
+    NodeList nl = resultsXML.getChildNodes();
+    for(int i = 0; i < nl.getLength(); ++i) {
+      Element element = ((Element)nl.item(i));
+      
+      switch(element.getTagName()) {
+      case "color":
+        assert !color;
+        color = true;
+        break;
+      case "depth":
+        assert !depth;
+        depth = true;
+        break;
+      default:
+        LOGGER.warning("Unrecognized tag name" + element.getTagName());
+      }
+    }
   }
 
-  protected abstract int generateShaderObject(ShaderType st);
+  protected abstract int generateShaderObject(ShaderType st, RenderManager rm);
   protected abstract void deleteShader(int shaderID);
 
-  protected abstract String getVersionDeclaration();
+  protected abstract String getVersionDeclaration(RenderManager rm);
   protected abstract boolean compileShader(int shaderID, String source);
   
-  protected abstract int completeShaderProgram(int vs, int tc, int te, int gs, int fs) throws AntagonistException;
+  protected abstract int completeShaderProgram(int vs, int tc, int te, int gs, int fs, RenderManager rm) throws AntagonistException;
   protected abstract void deleteShaderProgram(int shaderProgramID);
   
   protected abstract int getDefaultShader(ShaderType st);
