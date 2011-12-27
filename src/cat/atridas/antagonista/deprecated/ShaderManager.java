@@ -1,4 +1,4 @@
-package cat.atridas.antagonista.graphics;
+package cat.atridas.antagonista.deprecated;
 
 import static org.lwjgl.opengl.GL20.*;
 

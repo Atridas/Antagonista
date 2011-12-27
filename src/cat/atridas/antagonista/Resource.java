@@ -2,9 +2,20 @@ package cat.atridas.antagonista;
 
 import java.io.InputStream;
 
-public interface Resource {
-  boolean load(InputStream is); //TODO throws
+public abstract class Resource {
+  public abstract boolean load(InputStream is); //TODO throws
   
-  int getRAMBytesEstimation();
-  int getVRAMBytesEstimation();
+  public abstract int getRAMBytesEstimation();
+  public abstract int getVRAMBytesEstimation();
+  
+  protected boolean cleaned = false;
+      
+  public abstract void cleanUp();
+  
+  @Override
+  public void finalize() {
+    if(!cleaned) {
+      cleanUp();
+    }
+  }
 }

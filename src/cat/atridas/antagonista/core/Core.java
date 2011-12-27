@@ -2,9 +2,10 @@ package cat.atridas.antagonista.core;
 
 import java.awt.Canvas;
 
+import cat.atridas.antagonista.deprecated.ShaderManager;
+import cat.atridas.antagonista.graphics.EffectManager;
 import cat.atridas.antagonista.graphics.FontManager;
 import cat.atridas.antagonista.graphics.RenderManager;
-import cat.atridas.antagonista.graphics.ShaderManager;
 import cat.atridas.antagonista.graphics.TextureManager;
 import cat.atridas.antagonista.graphics.gl.FontManagerGL;
 import cat.atridas.antagonista.graphics.gl.RenderManagerGL;
@@ -17,6 +18,7 @@ public final class Core {
 	private TextureManager tm = new TextureManager();
 	private ShaderManager  sm = new ShaderManager();
 	private FontManager    fm = new FontManagerGL();//TODO
+	private EffectManager  em; //TODO
 
 	public RenderManager getRenderManager()
 	{
@@ -37,11 +39,16 @@ public final class Core {
 	{
 		return sm;
 	}
-	
-	public FontManager getFontManager()
-	{
-		return fm;
-	}
+  
+  public FontManager getFontManager()
+  {
+    return fm;
+  }
+  
+  public EffectManager getEffectManager()
+  {
+    return em;
+  }
 	
 	public void init(int w, int h, String title, Canvas displayParent) {
 		rm.initDisplay(w, h, title, displayParent);

@@ -53,6 +53,8 @@ public abstract class RenderManager {
 		}
 	}
 	
+	public abstract Profile getProfile();
+	
 	public abstract void initGL();
 	
 	public final void closeDisplay()
@@ -65,6 +67,18 @@ public abstract class RenderManager {
 	public final void present() {
 		Display.update();
 	}
+	
+	public abstract void activateShader(int shader);
+
+  public abstract void setDepthTest(boolean enable);
+  public abstract void setDepthTest(DepthFunction function);
+
+  public abstract void setAlphaBlend(boolean enable);
+  public abstract void setAlphaBlend(BlendOperation operation);
+  public abstract void setAlphaBlend(BlendOperationSeparate operation);
+  public abstract void setAlphaBlend(boolean enable, int renderTarget);
+  public abstract void setAlphaBlend(BlendOperation operation, int renderTarget);
+  public abstract void setAlphaBlend(BlendOperationSeparate operation, int renderTarget);
 	
 	
 	public final void setPerspective(float fovy, float zNear, float zFar) {
@@ -212,5 +226,145 @@ public abstract class RenderManager {
       out.put(f);
     }
     out.rewind();
+  }
+  
+  public static enum Profile {
+    GL2,
+    GL3,
+    GL4,
+    GLES2;
+    
+    public static Profile getFromString(String str) {
+      switch(str) {
+      case "GL2":
+        return GL2;
+      case "GL3":
+        return GL3;
+      case "GL4":
+        return GL4;
+      case "GLES2":
+        return GLES2;
+      default:
+        throw new IllegalArgumentException();
+      }
+    }
+    
+    public boolean supports(Profile profile) {
+      switch (this) {
+      case GLES2:
+        return profile == GLES2;
+      case GL4:
+        return profile != GLES2;
+      case GL3:
+        return profile == GL2 || profile == GL3;
+      case GL2:
+        return profile == GL2;
+      default:
+        throw new IllegalStateException();
+      }
+    }
+    
+    @Override
+    public String toString() {
+      switch (this) {
+      case GLES2:
+        return "OpenGL ES 2.0";
+      case GL4:
+        return "OpenGL 4.2";
+      case GL3:
+        return "OpenGL 3.3";
+      case GL2:
+        return "OpenGL 2.1";
+      default:
+        throw new IllegalStateException();
+      }
+    }
+  }
+  
+
+  public static enum DepthFunction {
+    LESS, GREATER, EQUAL, NOTEQUAL, LEQUAL, GEQUAL, ALWAYS, NEVER;
+    
+    public static DepthFunction getFromString(String str) {
+      switch(str) {
+      case "LESS":
+        return LESS;
+      case "GREATER":
+        return GREATER;
+      case "EQUAL":
+        return EQUAL;
+      case "NOTEQUAL":
+        return NOTEQUAL;
+      case "LEQUAL":
+        return LEQUAL;
+      case "GEQUAL":
+        return GEQUAL;
+      case "ALWAYS":
+        return ALWAYS;
+      case "NEVER":
+        return NEVER;
+      default:
+        throw new IllegalArgumentException();
+      }
+    }
+  }
+  
+  public static enum BlendOperator {
+    ZERO, ONE, 
+    SRC_COLOR, SRC_ALPHA, DST_ALPHA, DST_COLOR, 
+    SRC_ALPHA_SATURATE, CONSTANT_COLOR, CONSTANT_ALPHA,
+    ONE_MINUS_SRC_COLOR, ONE_MINUS_SRC_ALPHA,
+    ONE_MINUS_DST_COLOR, ONE_MINUS_DST_ALPHA, 
+    ONE_MINUS_CONSTANT_COLOR, ONE_MINUS_CONSTANT_ALPHA,
+    SRC1_ALPHA, ONE_MINUS_SRC1_ALPHA;
+    
+    public static BlendOperator getFromString(String str) {
+      switch(str) {
+      case "ZERO":
+        return ZERO;
+      case "ONE":
+        return ONE;
+      case "SRC_COLOR":
+        return SRC_COLOR;
+      case "SRC_ALPHA":
+        return SRC_ALPHA;
+      case "DST_ALPHA":
+        return DST_ALPHA;
+      case "DST_COLOR":
+        return DST_COLOR;
+      case "SRC_ALPHA_SATURATE":
+        return SRC_ALPHA_SATURATE;
+      case "CONSTANT_COLOR":
+        return CONSTANT_COLOR;
+      case "CONSTANT_ALPHA":
+        return CONSTANT_ALPHA;
+      case "ONE_MINUS_SRC_COLOR":
+        return ONE_MINUS_SRC_COLOR;
+      case "ONE_MINUS_SRC_ALPHA":
+        return ONE_MINUS_SRC_ALPHA;
+      case "ONE_MINUS_DST_COLOR":
+        return ONE_MINUS_DST_COLOR;
+      case "ONE_MINUS_DST_ALPHA":
+        return ONE_MINUS_DST_ALPHA;
+      case "ONE_MINUS_CONSTANT_COLOR":
+        return ONE_MINUS_CONSTANT_COLOR;
+      case "ONE_MINUS_CONSTANT_ALPHA":
+        return ONE_MINUS_CONSTANT_ALPHA;
+      case "SRC1_ALPHA":
+        return SRC1_ALPHA;
+      case "ONE_MINUS_SRC1_ALPHA":
+        return ONE_MINUS_SRC1_ALPHA;
+      default:
+        throw new IllegalArgumentException();
+      }
+    }
+  }
+  
+  public static final class BlendOperation {
+    public BlendOperator src, dst;
+  }
+  
+  public static final class BlendOperationSeparate {
+    public BlendOperation color, alpha;
   }
 }

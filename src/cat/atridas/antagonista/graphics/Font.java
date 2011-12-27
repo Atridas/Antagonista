@@ -19,6 +19,7 @@ import org.w3c.dom.NodeList;
 
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
+import cat.atridas.antagonista.deprecated.ShaderObject;
 
 /**
  * Classe que representa una font creada amb el <b>Bitmap Font Generator</b>

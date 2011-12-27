@@ -9,11 +9,11 @@ import java.util.HashMap;
 
 public abstract class ResourceManager<T extends Resource> {
   
-  private final HashMap<String, Reference> resources = new HashMap<>();
+  private final HashMap<HashedString, Reference> resources = new HashMap<>();
   private final ReferenceQueue<? super T> refQueue = new ReferenceQueue<>();
   
   
-  public final T getResource(String resourceName) {
+  public final T getResource(HashedString resourceName) {
     //cleanUnusedReferences();
     
     SoftReference<T> resourceRef = resources.get(resourceName);
@@ -32,7 +32,7 @@ public abstract class ResourceManager<T extends Resource> {
         
         for(int i = 0; i < extensions.size(); ++i) {
           String path = getBasePath() + resourceName + "." + extensions.get(i);
-          try { //TODO fer això d'una manera més decent
+          try { //TODO fer aixï¿½ d'una manera mï¿½s decent
             is = Utils.findInputStream(path);
             break;
           } catch(FileNotFoundException e) {
@@ -88,9 +88,9 @@ public abstract class ResourceManager<T extends Resource> {
   }
   
   private final class Reference extends SoftReference<T> {
-    String resourceName;
+    HashedString resourceName;
 
-    public Reference(T referent, String _resourceName) {
+    public Reference(T referent, HashedString _resourceName) {
       super(referent, refQueue);
       resourceName = _resourceName;
       resources.put(resourceName, this);

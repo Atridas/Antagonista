@@ -6,9 +6,9 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 
+import cat.atridas.antagonista.deprecated.ShaderObject;
 import cat.atridas.antagonista.graphics.Font;
 import cat.atridas.antagonista.graphics.RenderManager;
-import cat.atridas.antagonista.graphics.ShaderObject;
 import cat.atridas.antagonista.graphics.Texture;
 
 class FontGL extends Font {

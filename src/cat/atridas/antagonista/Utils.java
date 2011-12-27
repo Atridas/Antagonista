@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
 
 import org.newdawn.slick.util.ResourceLoader;
+import org.w3c.dom.Element;
 
 public abstract class Utils {
   private static Logger logger = Logger.getLogger(Utils.class.getCanonicalName());
@@ -79,5 +80,13 @@ public abstract class Utils {
       logger.warning(e.toString());
       return null;
     }
+  }
+  
+  
+  
+  
+  
+  public static String getStringContentFromXMLSubElement(Element element, String name) {
+    return ((Element)element.getElementsByTagName("resource").item(0)).getTextContent();
   }
 }

@@ -1,49 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<effects>
-
+<effects path="data/effects/" extensions="xml">
+  <shaders>
+    <vertex_shaders path="data/shaders/" extension="vs"/>
+    <tesselation_control_shaders path="data/shaders/" extension="tc"/>
+    <tesselation_evaluation_shaders path="data/shaders/" extension="te"/>
+    <geometry_shaders path="data/shaders/" extension="gs"/>
+    <fragment_shaders path="data/shaders/" extension="fs"/>
+  </shaders>
+  
+  <effect name="BasicEffect"/>
+  
+  
+  
+  
   <!--
-  <effect name="">
-    <techniques>
-      <technique>...</technique>
-    </techniques>
-  </effect>
-  
-  ----------------------------------------------------------------------------------------------------
-  
-  <technique type="">
+  <technique type="" quality="">
     types:
     -> "forward"
     -> "shadow"
     -> "particle"
+    -> "deferred"
     
-       si no n'hi ha una, es farà servir la anterior
-    -> "deferred basic"
-    -> "deferred low"
-    -> "deferred mid"
-    -> "deferred high"
+    qualities. Si es demana una inexistent, es cau cap avall. Per defecte és "none"
+    -> "none"
+    -> "low"
+    -> "mid"
+    -> "hight"
+    -> "ultra"
         
+    <min_version>GL2</min_version>       -> GL2, GL3, GL4, GLSL2
+    
     <vertex_shader>
       <resource>vertex_shader</resource> -> ./data/shaders/vertex_shader.vs
-      <min_version>2</min_version>       -> 2 (OpenGL 2.1), 3 (OpenGL 3.3), 4 (OpenGL 4.2)
       <define>ANIMATED</define> -> afegeix "#define ANIMATED" al principi del shader
       <define>TANGENTS</define>
       <define>PARALLAX</define>
     </vertex_shader>
     <fragment_shader>
       <resource>fragment_shader</resource> -> ./data/shaders/fragment_shader.vs
-      <min_version>2</min_version>
     </fragment_shader>
     
     <render_states>
       <depth_test>true</depth_test>
-      <depth_function>less</depth_function> -> never, always, less, greater, equal, notequal, lequal, gequal
-      <alpha_blending>false</alpha_blending>
+      <depth_function>LESS</depth_function> -> LESS, GREATER, EQUAL, NOTEQUAL, LEQUAL, GEQUAL, ALWAYS, NEVER
+      <alpha_blending render_target="">false</alpha_blending> -> render_target o bé res, o bé 0, 1, 2, ...
+      <blend_func render_target="">
+        <source>SRC_ALPHA</source>
+        <destination>ONE_MINUS_SRC_ALPHA</destination>
+        
+        --
+        <source_color>SRC_ALPHA</source_color>
+        <destination_color>ONE_MINUS_SRC_ALPHA</destination_color>
+        <source_alpha>ONE</source_alpha>
+        <destination_alpha>ZERO</destination_alpha>
+        
+        
+      </blend_func>  -> ZERO, ONE, 
+                        SRC_COLOR, SRC_ALPHA, DST_ALPHA, DST_COLOR, 
+                        SRC_ALPHA_SATURATE, CONSTANT_COLOR, CONSTANT_ALPHA,
+                        ONE_MINUS_SRC_COLOR, ONE_MINUS_SRC_ALPHA,
+                        ONE_MINUS_DST_COLOR, ONE_MINUS_DST_ALPHA, 
+                        //ONE_MINUS_CONSTANT_COLOR, ONE_MINUS_CONSTANT_ALPHA,
+                        SRC1_ALPHA, ONE_MINUS_SRC1_ALPHA;
+                        
+        color_final.rgb = color_fragment.rgb * source_color + color_anterior.rgb * destination_color;
+        color_final.a   = color_fragment.a   * source_alpha + color_anterior.a   * destination_alpha;                
+        
     </render_states>
     
     <attributes>
-      <position/> -> vec3 a_v3Position 
-      <normal/>   -> vec3 a_v3Normal   
-      <uv/>       -> vec2 a_v2UV       
+      <position/> -> vec3 a_v3Position               (0)
+      <normal/>   -> vec3 a_v3Normal                 (1)
+      <tangents/> -> vec3 a_v3Tangent, a_v3Bitangent (2/3)
+      <uv/>       -> vec2 a_v2UV                     (4)
+      <bones/>    -> ivec4 a_i4BlendIndexs           (5)
+                      vec4 a_v4BlendWeights           (6)
     </attributes>
     
     <uniforms>
@@ -62,74 +93,7 @@
   
   ---------------------------------------------------------------------------------------
   
+  <technique type="" quality="" external="true" effect="" ref_type="" ref_quality=""/>
   
   -->
-
-  <effect name="Basic Effect">
-    <techniques>
-      <technique type="forward">
-        
-        <vertex_shader>
-          <resource>base</resource>
-          <min_version>2</min_version>
-        </vertex_shader>
-        <fragment_shader>
-          <resource>forwardBase</resource>
-          <min_version>2</min_version>
-        </fragment_shader>
-        
-        <render_states>
-          <depth_test>true</depth_test>
-          <depth_function>less</depth_function>
-          <alpha_blending>false</alpha_blending>
-        </render_states>
-        
-        <attributes>
-          <position/>
-          <normal/>
-          <uv/>
-        </attributes>
-        
-        <uniforms>
-          <albedo_texture/>
-          <basic_instance_uniforms/>
-          <basic_light/>
-          <basic_material/>
-        </uniforms>
-        
-        <results>
-          <color/>
-        </results>
-      </technique>
-      <technique name="shadow">
-        
-        <vertex_shader>
-          <resource>base</resource>
-          <min_version>2</min_version>
-        </vertex_shader>
-        <fragment_shader>
-          <resource>drawShadowmap</resource>
-          <min_version>2</min_version>
-        </fragment_shader>
-        
-        <render_states>
-          <depth_test>true</depth_test>
-          <depth_function>less</depth_function>
-          <alpha_blending>false</alpha_blending>
-        </render_states>
-        
-        <attributes>
-          <position/>
-        </attributes>
-        
-        <uniforms>
-          <basic_instance_uniforms/>
-        </uniforms>
-        
-        <results>
-          <depth/>
-        </results>
-      </technique>
-    </techniques>
-  </effect>
 </effects>

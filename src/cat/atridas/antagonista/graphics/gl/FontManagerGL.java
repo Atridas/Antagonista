@@ -12,10 +12,10 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 
 import cat.atridas.antagonista.core.Core;
+import cat.atridas.antagonista.deprecated.ShaderObject;
 import cat.atridas.antagonista.graphics.Font;
 import cat.atridas.antagonista.graphics.FontManager;
 import cat.atridas.antagonista.graphics.RenderManager;
-import cat.atridas.antagonista.graphics.ShaderObject;
 import cat.atridas.antagonista.graphics.Texture;
 import cat.atridas.antagonista.graphics.gl.FontGL.NullFont;
 

@@ -1,4 +1,4 @@
-package cat.atridas.antagonista.graphics;
+package cat.atridas.antagonista.deprecated;
 
 import static org.lwjgl.opengl.GL20.*;
 import java.nio.FloatBuffer;
@@ -12,6 +12,8 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Tuple3f;
 
 import org.lwjgl.BufferUtils;
+
+import cat.atridas.antagonista.graphics.RenderManager;
 
 public final class ShaderObject {
   //private static Logger logger = Logger.getLogger(ShaderObject.class.getCanonicalName());
