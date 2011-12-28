@@ -1,3 +1,5 @@
+// ******* drawShadowmap.fs
+
 // nota: farem 3 perfils:
 // bàsic (OpenGL 2.1, GLSL 1.20)
 // mig   (OpenGL 3.3, GLSL 3.30)

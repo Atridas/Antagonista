@@ -3,7 +3,7 @@ package cat.atridas.antagonista;
 import java.io.InputStream;
 
 public abstract class Resource {
-  public abstract boolean load(InputStream is); //TODO throws
+  public abstract boolean load(InputStream is, String extension); //TODO throws
   
   public abstract int getRAMBytesEstimation();
   public abstract int getVRAMBytesEstimation();

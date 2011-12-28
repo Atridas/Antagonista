@@ -82,6 +82,7 @@ public abstract class RenderManager {
   public abstract void setAlphaBlend(BlendOperation operation, int renderTarget);
   public abstract void setAlphaBlend(BlendOperationSeparate operation, int renderTarget);
 	
+  public abstract boolean hasGLErrors();
 	
 	public final void setPerspective(float fovy, float zNear, float zFar) {
     setPerspective(fovy, (float)width / height, zNear, zFar);
@@ -295,7 +296,7 @@ public abstract class RenderManager {
     LESS, GREATER, EQUAL, NOTEQUAL, LEQUAL, GEQUAL, ALWAYS, NEVER;
     
     public static DepthFunction getFromString(String str) {
-      switch(str) {
+      switch(str.toUpperCase()) {
       case "LESS":
         return LESS;
       case "GREATER":
@@ -313,7 +314,7 @@ public abstract class RenderManager {
       case "NEVER":
         return NEVER;
       default:
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException(str);
       }
     }
   }

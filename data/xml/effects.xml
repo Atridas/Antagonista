@@ -30,16 +30,6 @@
         
     <min_version>GL2</min_version>       -> GL2, GL3, GL4, GLSL2
     
-    <vertex_shader>
-      <resource>vertex_shader</resource> -> ./data/shaders/vertex_shader.vs
-      <define>ANIMATED</define> -> afegeix "#define ANIMATED" al principi del shader
-      <define>TANGENTS</define>
-      <define>PARALLAX</define>
-    </vertex_shader>
-    <fragment_shader>
-      <resource>fragment_shader</resource> -> ./data/shaders/fragment_shader.vs
-    </fragment_shader>
-    
     <render_states>
       <depth_test>true</depth_test>
       <depth_function>LESS</depth_function> -> LESS, GREATER, EQUAL, NOTEQUAL, LEQUAL, GEQUAL, ALWAYS, NEVER
@@ -88,6 +78,17 @@
       <color/> <!- - vec4 f_v4Color - ->
       <depth/> <!- - vec4 f_v4Depth - ->
     </results>
+    
+        
+    <vertex_shader>
+      <resource>vertex_shader</resource> -> ./data/shaders/vertex_shader.vs
+      <define>ANIMATED</define> -> afegeix "#define ANIMATED" al principi del shader
+      <define>TANGENTS</define>
+      <define>PARALLAX</define>
+    </vertex_shader>
+    <fragment_shader>
+      <resource>fragment_shader</resource> -> ./data/shaders/fragment_shader.vs
+    </fragment_shader>
   </technique>
   
   

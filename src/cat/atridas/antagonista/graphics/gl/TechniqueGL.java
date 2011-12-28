@@ -30,10 +30,14 @@ public class TechniqueGL extends Technique {
   
   public TechniqueGL(Element techniqueXML) throws AntagonistException {
     super(techniqueXML);
+  }
+
+  @Override
+  protected void setupCapabilities() {
     GL3 = Core.getCore().getRenderManager().getProfile().supports(Profile.GL3);
     GL_ARB_uniform_buffer_object = GLContext.getCapabilities().GL_ARB_uniform_buffer_object;
   }
-
+  
   @Override
   protected int generateShaderObject(ShaderType st, RenderManager rm) {
     switch(st) {
@@ -85,7 +89,22 @@ public class TechniqueGL extends Technique {
     if(result == 0) {
       int len = glGetShader(shaderID, GL_INFO_LOG_LENGTH);
       String info = glGetShaderInfoLog(shaderID, len);
-      LOGGER.severe("Error compiling shader: " + info + "\nSource:\n" + source);
+      
+      StringBuilder sourceWithLines = new StringBuilder();
+      int line = 0;
+      for(String l : source.split("\n")) {
+        sourceWithLines.append(line);
+        sourceWithLines.append("  ");
+        sourceWithLines.append(l);
+        sourceWithLines.append('\n');
+        line++;
+        
+        if(l.contains("#line")) {
+          line = Integer.parseInt(l.split(" ")[1]);
+        }
+      }
+      
+      LOGGER.severe("Error compiling shader: " + info + "\nSource:\n" + sourceWithLines);
       return false;
     }
     
@@ -162,6 +181,8 @@ public class TechniqueGL extends Technique {
         LOGGER.severe("Albedo texture requested but not active!");
         throw new AntagonistException();
       }
+      
+      glUniform1i(albedoTextureUniform, ALBEDO_TEXTURE_UNIT);
     }
     
     if(basicInstanceUniforms) {
@@ -267,7 +288,16 @@ public class TechniqueGL extends Technique {
   @Override
   protected int getDefaultShader(ShaderType st) {
     // TODO Auto-generated method stub
+    assert false;
     return 0;
+  }
+
+  @Override
+  protected long getMaxUniformBufferSize() {
+    if(GL3)
+      return glGetInteger64(GL_MAX_UNIFORM_BLOCK_SIZE);
+    else
+      return 0;
   }
 
 }

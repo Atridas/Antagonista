@@ -2,15 +2,6 @@
 <effect name="BasicEffect">
   <technique type="forward">
     
-    <vertex_shader>
-      <resource>base</resource>
-      <min_version>2</min_version>
-    </vertex_shader>
-    <fragment_shader>
-      <resource>forwardBase</resource>
-      <min_version>2</min_version>
-    </fragment_shader>
-    
     <render_states>
       <depth_test>true</depth_test>
       <depth_function>LESS</depth_function>
@@ -33,17 +24,19 @@
     <results>
       <color/>
     </results>
-  </technique>
-  <technique name="shadow">
     
     <vertex_shader>
       <resource>base</resource>
       <min_version>2</min_version>
     </vertex_shader>
     <fragment_shader>
-      <resource>drawShadowmap</resource>
+      <resource>forwardBase</resource>
       <min_version>2</min_version>
     </fragment_shader>
+    
+    
+  </technique>
+  <technique type="shadow">
     
     <render_states>
       <depth_test>true</depth_test>
@@ -62,5 +55,15 @@
     <results>
       <depth/>
     </results>
+    
+    <vertex_shader>
+      <resource>base</resource>
+      <min_version>2</min_version>
+    </vertex_shader>
+    <fragment_shader>
+      <resource>drawShadowmap</resource>
+      <min_version>2</min_version>
+    </fragment_shader>
+    
   </technique>
 </effect>

@@ -1,9 +1,11 @@
+// ******* base.vs
+
 // nota: farem 3 perfils:
 // bàsic (OpenGL 2.1, GLSL 1.20)
 // mig   (OpenGL 3.3, GLSL 3.30)
 // alt   (OpenGL 4.2, GLSL 4.20)
 
-#line 7
+#line 9
 
 //Parametrització
 //TANGENTS
@@ -67,12 +69,12 @@ void main()
 {
   //TODO animated
 
-  gl_Position  =  u_InstanceInfo[gl_InstanceID].m44ModelViewProjection * vec4(a_position,1.0);
-  v_v3Position = (u_InstanceInfo[gl_InstanceID].m44ModelView           * vec4(a_position,1.0)).xyz;
-  v_v3Normal   = (u_InstanceInfo[gl_InstanceID].m44ModelView           * vec4(a_normal,0.0)).xyz;
+  gl_Position  =  u_InstanceInfo[gl_InstanceID].m4ModelViewProjection * vec4(a_v3Position,1.0);
+  v_v3Position = (u_InstanceInfo[gl_InstanceID].m4ModelView           * vec4(a_v3Position,1.0)).xyz;
+  v_v3Normal   = (u_InstanceInfo[gl_InstanceID].m4ModelView           * vec4(a_v3Normal,0.0)).xyz;
   #if defined(TANGENTS)
-    v_v3Tangent = (u_InstanceInfo[gl_InstanceID].m44ModelView              * vec4(a_tangent,0.0)).xyz;
-    v_v3Bitangent = (u_InstanceInfo[gl_InstanceID].m44ModelView            * vec4(a_bitangent,0.0)).xyz;
+    v_v3Tangent = (u_InstanceInfo[gl_InstanceID].m4ModelView              * vec4(a_v3Tangent,0.0)).xyz;
+    v_v3Bitangent = (u_InstanceInfo[gl_InstanceID].m4ModelView            * vec4(a_v3Bitangent,0.0)).xyz;
   #endif
   v_v2UV = a_v2UV;
 };

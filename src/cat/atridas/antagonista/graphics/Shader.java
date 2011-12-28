@@ -45,7 +45,7 @@ public final class Shader extends Resource {
   }
 
   @Override
-  public boolean load(InputStream is) {
+  public boolean load(InputStream is, String extension) {
     assert !cleaned;
 
     source = Utils.readInputStream(is);

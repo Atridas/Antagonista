@@ -22,10 +22,12 @@ public class Effect extends Resource {
   private static Logger LOGGER = Logger.getLogger(EffectManager.class.getCanonicalName());
 
   
-  private HashMap<TechniqueType, HashMap<Quality, Technique>> techniques;
+  private HashMap<TechniqueType, HashMap<Quality, Technique>> techniques = new HashMap<>();
   
   @Override
-  public boolean load(InputStream is) {
+  public boolean load(InputStream is, String extension) {
+    assert "xml".compareTo(extension) == 0;
+    
     LOGGER.config("Loading effect");
     
     boolean gl = Core.getCore().getRenderManager().getProfile().supports(Profile.GL2);
@@ -177,7 +179,7 @@ public class Effect extends Resource {
       case "PARTICLE":
         return PARTICLE;
       default:
-        throw new IllegalStateException();
+        throw new IllegalStateException(str);
       }
     }
     

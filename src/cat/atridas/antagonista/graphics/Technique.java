@@ -23,6 +23,9 @@ import cat.atridas.antagonista.graphics.Shader.ShaderType;
 public abstract class Technique {
   private static Logger LOGGER = Logger.getLogger(Technique.class.getCanonicalName());
   
+
+  public static final int MAX_BONES = 30;
+  
   //Attributes --------------------------------------------------------------------------
   public static final int POSITION_ATTRIBUTE     = 0;
   public static final int NORMAL_ATTRIBUTE       = 1;
@@ -42,7 +45,9 @@ public abstract class Technique {
 
   //Uniforms ----------------------------------------------------------------------------
   public static final String ALBEDO_TEXTURE_UNIFORM = "u_s2Albedo";
+  public static final int    ALBEDO_TEXTURE_UNIT =    0;
   public static final String BASIC_INSTANCE_UNIFORMS_BLOCK = "UniformInstances";
+  public static final int    BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE = (Float.SIZE / 8) * (4*4) * 2; 
   public static final String BASIC_INSTANCE_UNIFORMS_STRUCT = "u_InstanceInfo";
 
   public static final String BASIC_LIGHT_UNIFORMS_BLOCK = "UniformLight";
@@ -54,9 +59,11 @@ public abstract class Technique {
   public static final String SPECULAR_FACTOR_UNIFORMS_BLOCK = "u_fSpecularFactor";
   public static final String SPECULAR_GLOSS_UNIFORMS_BLOCK = "u_fGlossiness";
   
+  
   private int shaderProgram;
   private int vs, tc, te, gs, fs;
   
+  private int maxInstances = 1;
   
   //attributes
   protected boolean position, normal, tangents, uv, bones;
@@ -87,10 +94,14 @@ public abstract class Technique {
   protected Technique(Element techniqueXML) throws AntagonistException {
     assert techniqueXML.getTagName().equals("technique");
     
+    setupCapabilities();
+    
     vs = tc = te = gs = fs = 0;
 
     EffectManager em = Core.getCore().getEffectManager();
     RenderManager rm = Core.getCore().getRenderManager();
+    
+    boolean uniformsDefined = false;
 
     NodeList nl = techniqueXML.getChildNodes();
     for(int i = 0; i < nl.getLength(); ++i) {
@@ -110,6 +121,10 @@ public abstract class Technique {
         }
         
       case "vertex_shader":
+        if(!uniformsDefined) {
+          LOGGER.warning("Uniforms must be defined before vertex_shader");
+          throw new AntagonistException();
+        }
         vs = loadShader(element, ShaderType.VERTEX, em, rm);
         break;
       case "fragment_shader":
@@ -124,6 +139,7 @@ public abstract class Technique {
         break;
       case "uniforms":
         loadUniforms(element);
+        uniformsDefined = true;
         break;
       case "results":
         loadResults(element);
@@ -144,6 +160,14 @@ public abstract class Technique {
     sb.append(getVersionDeclaration(rm));
     sb.append('\n');
 
+    sb.append("#define MAX_BONES ");
+    sb.append(MAX_BONES);
+    sb.append('\n');
+
+    sb.append("#define MAX_INSTANCES ");
+    sb.append(maxInstances);
+    sb.append('\n');
+    
     NodeList nl = shaderXML.getElementsByTagName("define");
     for(int i = 0; i < nl.getLength(); ++i) {
       Element defineXML = (Element)nl.item(i);
@@ -169,7 +193,10 @@ public abstract class Technique {
 
     NodeList nl = renderStatesXML.getChildNodes();
     for(int i = 0; i < nl.getLength(); ++i) {
-      Element element = ((Element)nl.item(i));
+      Node n = nl.item(i);
+      if(!(n instanceof Element))
+        continue;
+      Element element = (Element)n;
       
       FIRST_SWITCH:
       switch(element.getTagName()) {
@@ -202,6 +229,8 @@ public abstract class Technique {
           depthFunction = DepthFunction.getFromString(element.getTextContent());
         } catch(Exception e) {
           LOGGER.warning("exception encountered: " + e.toString());
+          String log = Utils.logExceptionStringAndStack(e);
+          LOGGER.warning(log);
           depthFunction = null;
         }
         break;
@@ -318,7 +347,10 @@ public abstract class Technique {
 
     NodeList nl = attributesXML.getChildNodes();
     for(int i = 0; i < nl.getLength(); ++i) {
-      Element element = ((Element)nl.item(i));
+      Node n = nl.item(i);
+      if(!(n instanceof Element))
+        continue;
+      Element element = (Element)n;
       
       switch(element.getTagName()) {
       case "position":
@@ -351,9 +383,14 @@ public abstract class Technique {
     if(LOGGER.isLoggable(Level.CONFIG))
       LOGGER.config("Loading uniforms");
 
+    long maxUniformBufferSize = getMaxUniformBufferSize();
+    
     NodeList nl = uniformsXML.getChildNodes();
     for(int i = 0; i < nl.getLength(); ++i) {
-      Element element = ((Element)nl.item(i));
+      Node n = nl.item(i);
+      if(!(n instanceof Element))
+        continue;
+      Element element = (Element)n;
       
       switch(element.getTagName()) {
       case "albedo_texture":
@@ -363,6 +400,13 @@ public abstract class Technique {
       case "basic_instance_uniforms":
         assert !basicInstanceUniforms;
         basicInstanceUniforms = true;
+        
+        if(maxUniformBufferSize > 0) {
+          int newMaxInstances = (int) (maxUniformBufferSize / BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE);
+          if(maxInstances == 1 || newMaxInstances < maxInstances) {
+            maxInstances = newMaxInstances;
+          }
+        }
         break;
       case "basic_light":
         assert !basicLight;
@@ -384,7 +428,10 @@ public abstract class Technique {
 
     NodeList nl = resultsXML.getChildNodes();
     for(int i = 0; i < nl.getLength(); ++i) {
-      Element element = ((Element)nl.item(i));
+      Node n = nl.item(i);
+      if(!(n instanceof Element))
+        continue;
+      Element element = (Element)n;
       
       switch(element.getTagName()) {
       case "color":
@@ -401,6 +448,7 @@ public abstract class Technique {
     }
   }
 
+  protected abstract void setupCapabilities();
   protected abstract int generateShaderObject(ShaderType st, RenderManager rm);
   protected abstract void deleteShader(int shaderID);
 
@@ -412,6 +460,7 @@ public abstract class Technique {
   
   protected abstract int getDefaultShader(ShaderType st);
   
+  protected abstract long getMaxUniformBufferSize();
   
   
   public void activate(RenderManager rm) {

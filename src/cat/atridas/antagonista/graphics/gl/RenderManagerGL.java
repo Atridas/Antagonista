@@ -221,4 +221,46 @@ public final class RenderManagerGL extends RenderManager {
       throw new IllegalArgumentException();  
     }
   }
+
+  @Override
+  public boolean hasGLErrors() {
+    int error = glGetError();
+    boolean errorEncountered = false;
+    while(error != GL_NO_ERROR) {
+      String errorStr = "OpenGL error: ";
+      switch(error) {
+      case GL_INVALID_ENUM:
+        errorStr += "GL_INVALID_ENUM";
+        break;
+      case GL_INVALID_FRAMEBUFFER_OPERATION:
+        errorStr += "GL_INVALID_FRAMEBUFFER_OPERATION";
+        break;
+      case GL_INVALID_OPERATION:
+        errorStr += "GL_INVALID_OPERATION";
+        break;
+      case GL_INVALID_VALUE:
+        errorStr += "GL_INVALID_VALUE";
+        break;
+      case GL_OUT_OF_MEMORY:
+        errorStr += "GL_OUT_OF_MEMORY";
+        break;
+      default:
+        throw new IllegalStateException("Unrecognized error code: " + error);
+      }
+      
+      try {
+        throw new Exception();
+      } catch(Exception e) {
+        StringBuilder stackTrace = new StringBuilder(errorStr);
+        for(StackTraceElement ste : e.getStackTrace()) {
+          stackTrace.append("\n  ");
+          stackTrace.append(ste.toString());
+        }
+        
+        LOGGER.severe(stackTrace.toString());
+      }
+      errorEncountered = true;
+    }
+    return errorEncountered;
+  }
 }

@@ -6,10 +6,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.StreamHandler;
 
 import org.newdawn.slick.util.ResourceLoader;
 import org.w3c.dom.Element;
+
+import cat.atridas.antagonista.core.Core;
 
 public abstract class Utils {
   private static Logger logger = Logger.getLogger(Utils.class.getCanonicalName());
@@ -83,10 +88,39 @@ public abstract class Utils {
   }
   
   
-  
+  public static boolean hasGLErrors() {
+    return Core.getCore().getRenderManager().hasGLErrors();
+  }
   
   
   public static String getStringContentFromXMLSubElement(Element element, String name) {
     return ((Element)element.getElementsByTagName("resource").item(0)).getTextContent();
+  }
+  
+  public static String logExceptionStringAndStack(Exception e) {
+    
+    StringBuilder stackTrace = new StringBuilder("Exception encountered: ");
+    stackTrace.append(e.toString());
+    for(StackTraceElement ste : e.getStackTrace()) {
+      stackTrace.append("\n  ");
+      stackTrace.append(ste.toString());
+    }
+    
+    return stackTrace.toString();
+  }
+  
+  
+  private static StreamHandler sh = null;
+  public static void setConsoleLogLevel(Level level) {
+
+    String packname = Utils.class.getPackage().getName();
+    Logger log = Logger.getLogger(packname);
+    log.setLevel(level);
+    
+    if(sh == null) {
+      sh = new StreamHandler(System.out, new SimpleFormatter());
+      log.addHandler(sh);
+    }
+    sh.setLevel(level);
   }
 }

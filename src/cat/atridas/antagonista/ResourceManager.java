@@ -30,8 +30,10 @@ public abstract class ResourceManager<T extends Resource> {
         ArrayList<String> extensions = getExtensionsPriorized();
         InputStream is = null;
         
+        String extension = null;
         for(int i = 0; i < extensions.size(); ++i) {
-          String path = getBasePath() + resourceName + "." + extensions.get(i);
+          extension = extensions.get(i);
+          String path = getBasePath() + resourceName + "." + extension;
           try { //TODO fer aix� d'una manera m�s decent
             is = Utils.findInputStream(path);
             break;
@@ -40,7 +42,7 @@ public abstract class ResourceManager<T extends Resource> {
           }
         }
         
-        if(is == null || !resource.load(is))
+        if(is == null || !resource.load(is, extension))
           resource = getDefaultResource();
         
         resourceRef = new Reference(resource, resourceName);
