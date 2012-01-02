@@ -42,6 +42,7 @@ uniform sampler2D u_s2Albedo;
   
   uniform float u_fSpecularFactor;
   uniform float u_fGlossiness;
+  uniform float u_fHeight;
 
 #else
   layout(std140) uniform UniformLight
@@ -55,6 +56,7 @@ uniform sampler2D u_s2Albedo;
   {
     float u_fSpecularFactor;
     float u_fGlossiness;
+    float u_fHeight;
   };
 #endif
 
