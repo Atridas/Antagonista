@@ -422,6 +422,8 @@ class AntagonistMaterial:
                     self.height_texture_img  = tex.texture.image
                     self.height_intensity    = tex.displacement_factor
                     
+        self.effect = "BasicEffect" #TODO
+                    
     def __str__(self):
         aux = "material specular params: " + str(self.specular_intensity) + ", " + str(self.specular_power)
         aux = aux + " alpha: %s" % self.alpha
@@ -432,6 +434,7 @@ class AntagonistMaterial:
             aux = aux + " normal: '" + self.normal_texture_name + "'"
         if self.height_texture:
             aux = aux + " height: '" + self.height_texture_name + "'"
+        aux = aux + " effect: " + self.effect
         return aux
 
 
@@ -477,6 +480,7 @@ def saveMaterialText(mat, filepath):
     f.write("antagonist text")
     f.write("\nspecular factor, specular power, height, alpha")
     f.write("\n" + str(mat.specular_intensity) + " " + str(mat.specular_power) + " " + str(mat.height_intensity) + " %s" % mat.alpha)
+    f.write("\n" + mat.effect)
             
     if mat.albedo_texture:
         f.write("\nalbedo\n" + mat.albedo_texture_name)

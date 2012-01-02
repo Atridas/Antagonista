@@ -2,6 +2,7 @@ package cat.atridas.antagonista.graphics;
 
 import java.io.InputStream;
 
+import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Resource;
 import cat.atridas.antagonista.Utils;
 
@@ -9,8 +10,9 @@ public final class Shader extends Resource {
 
   private String source = "";
   private final ShaderType type;
-  
-  public Shader(ShaderType _type) {
+
+  public Shader(HashedString _resourceName, ShaderType _type) {
+    super(_resourceName);
     type = _type;
   }
   

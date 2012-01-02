@@ -6,6 +6,8 @@ public final class HashedString implements Comparable<HashedString> {
   
   private static final HashMap<Long, String> strings = new HashMap<>();
   
+  public static final HashedString DEFAULT = new HashedString("default");
+  
   public final long value;
   
   public HashedString(final String str) {

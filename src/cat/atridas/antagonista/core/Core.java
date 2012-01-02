@@ -1,6 +1,7 @@
 package cat.atridas.antagonista.core;
 
 import java.awt.Canvas;
+import java.util.ArrayList;
 
 import cat.atridas.antagonista.deprecated.ShaderManager;
 import cat.atridas.antagonista.graphics.EffectManager;
@@ -57,6 +58,10 @@ public final class Core {
 		rm.initGL();
 		
 		em.init("data/xml/effects.xml", rm);
+		ArrayList<String> al = new ArrayList<>();
+		al.add("dds");
+		al.add("png");
+		tm.init(al, "data/textures/");
 	}
 	
 	public void close() {

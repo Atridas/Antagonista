@@ -192,9 +192,9 @@ public class EffectManager extends ResourceManager<Effect> {
   }
 
   @Override
-  protected Effect createNewResource() {
+  protected Effect createNewResource(HashedString resourceName) {
     assert isInit;
-    return new Effect();
+    return new Effect(resourceName);
   }
 
   @Override
@@ -220,7 +220,7 @@ public class EffectManager extends ResourceManager<Effect> {
       basePath = _basePath;
       extensionsPriorized = _extensionsPriorized;
       type = _type;
-      defaultShader = new Shader(type);
+      defaultShader = new Shader(HashedString.DEFAULT, type);
       defaultShader.loadDefault();
     }
     
@@ -235,8 +235,8 @@ public class EffectManager extends ResourceManager<Effect> {
     }
 
     @Override
-    protected Shader createNewResource() {
-      return new Shader(type);
+    protected Shader createNewResource(HashedString resourceName) {
+      return new Shader(resourceName, type);
     }
 
     @Override

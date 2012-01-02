@@ -11,8 +11,6 @@ import java.util.logging.Logger;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Tuple3f;
 
-import cat.atridas.antagonista.core.Core;
-
 
 public abstract class FontManager {
   private static Logger logger = Logger.getLogger(FontManager.class.getCanonicalName());
@@ -32,7 +30,7 @@ public abstract class FontManager {
     
     
     try {
-      font = createFont(file, Core.getCore().getRenderManager());
+      font = createFont(file);
     } catch (IOException e) {
       font = defaultFont;
       logger.warning(e.toString());
@@ -45,7 +43,7 @@ public abstract class FontManager {
   }
   
   protected abstract Font getDefaultFont();
-  protected abstract Font createFont(String path, RenderManager rm) throws IOException;
+  protected abstract Font createFont(String path) throws IOException;
   
   public final void printString(String font, String text, Tuple3f color, Matrix4f WVPmatrix) {
     printString(getFont(font), text, color, WVPmatrix, false);

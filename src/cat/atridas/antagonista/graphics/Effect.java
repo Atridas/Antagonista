@@ -23,6 +23,10 @@ public class Effect extends Resource {
 
   
   private HashMap<TechniqueType, HashMap<Quality, Technique>> techniques = new HashMap<>();
+
+  public Effect(HashedString _resourceName) {
+    super(_resourceName);
+  }
   
   @Override
   public boolean load(InputStream is, String extension) {

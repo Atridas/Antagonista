@@ -25,7 +25,7 @@ public abstract class ResourceManager<T extends Resource> {
     
     if(resource == null) {
       synchronized(this) {
-        resource = createNewResource();
+        resource = createNewResource(resourceName);
         
         ArrayList<String> extensions = getExtensionsPriorized();
         InputStream is = null;
@@ -62,7 +62,7 @@ public abstract class ResourceManager<T extends Resource> {
   
   protected abstract String getBasePath();
   protected abstract ArrayList<String> getExtensionsPriorized();
-  protected abstract T createNewResource();
+  protected abstract T createNewResource(HashedString name);
   protected abstract T getDefaultResource();
   
   public final int getRAMBytesEstimation() {

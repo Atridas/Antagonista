@@ -1,6 +1,7 @@
 antagonist text
 specular factor, specular power, height, alpha
 0.5 50 0.20000000298023224 False
+BasicEffect
 albedo
 Textura 2
 normal

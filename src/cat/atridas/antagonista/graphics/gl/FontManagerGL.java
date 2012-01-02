@@ -15,7 +15,6 @@ import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.deprecated.ShaderObject;
 import cat.atridas.antagonista.graphics.Font;
 import cat.atridas.antagonista.graphics.FontManager;
-import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.Texture;
 import cat.atridas.antagonista.graphics.gl.FontGL.NullFont;
 
@@ -36,8 +35,8 @@ public class FontManagerGL extends FontManager {
   }
 
   @Override
-  protected final Font createFont(String path, RenderManager rm) throws IOException {
-    return new FontGL(path, rm);
+  protected final Font createFont(String path) throws IOException {
+    return new FontGL(path);
   }
   
   public final void printString(Font font, String text, Tuple3f color, Matrix4f WVPmatrix, boolean centered) {
@@ -100,7 +99,7 @@ public class FontManagerGL extends FontManager {
     }
     
     for(int i = 0; i < tex.length; ++i) {
-      tex[i].activate(Core.getCore().getRenderManager(), i);
+      tex[i].activate(i);
     }
     
     shader.activate();

@@ -15,6 +15,7 @@ import org.newdawn.slick.util.ResourceLoader;
 import org.w3c.dom.Element;
 
 import cat.atridas.antagonista.core.Core;
+import cat.atridas.antagonista.graphics.RenderManager.Profile;
 
 public abstract class Utils {
   private static Logger logger = Logger.getLogger(Utils.class.getCanonicalName());
@@ -90,6 +91,14 @@ public abstract class Utils {
   
   public static boolean hasGLErrors() {
     return Core.getCore().getRenderManager().hasGLErrors();
+  }
+  
+  public static boolean supports(Profile profile) {
+    return Core.getCore().getRenderManager().getProfile().supports(profile);
+  }
+  
+  public static void supportOrException(Profile profile, String functionality) {
+    Core.getCore().getRenderManager().getProfile().supportOrException(profile, functionality);
   }
   
   

@@ -46,13 +46,13 @@ public class TechniqueGL extends Technique {
     case FRAGMENT:
       return glCreateShader(GL_FRAGMENT_SHADER);
     case GEOMETRY:
-      rm.getProfile().suportOrException(Profile.GL3, "geometry shaders");
+      rm.getProfile().supportOrException(Profile.GL3, "geometry shaders");
       return glCreateShader(GL_GEOMETRY_SHADER);
     case TESS_CONTROL:
-      rm.getProfile().suportOrException(Profile.GL4, "tesselation shaders");
+      rm.getProfile().supportOrException(Profile.GL4, "tesselation shaders");
       return glCreateShader(GL_TESS_CONTROL_SHADER);
     case TESS_EVALUATION:
-      rm.getProfile().suportOrException(Profile.GL4, "tesselation shaders");
+      rm.getProfile().supportOrException(Profile.GL4, "tesselation shaders");
       return glCreateShader(GL_TESS_EVALUATION_SHADER);
     default:
       throw new IllegalArgumentException();

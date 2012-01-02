@@ -17,6 +17,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.deprecated.ShaderObject;
@@ -40,7 +41,7 @@ public abstract class Font {
   private final Map<Character, Char> chars = new HashMap<Character, Char>();
   private final Map<Kerning, Integer> kernings = new HashMap<Kerning, Integer>();
   
-  protected Font(String path, RenderManager rm) throws IOException {
+  protected Font(String path) throws IOException {
     //File f = null;
 	  InputStream is;
 	  if(logger.isLoggable(Level.INFO))
@@ -48,8 +49,6 @@ public abstract class Font {
     
     //f = Utils.findFile(path);
     is = Utils.findInputStream(path);
-    
-    String folder = path.substring(0, path.lastIndexOf('/')+1);
     
     
     DocumentBuilder db;
@@ -95,7 +94,7 @@ public abstract class Font {
         int id = Integer.parseInt( page.getAttribute("id") );
         String file = page.getAttribute("file");
         
-        Texture tex = Core.getCore().getTextureManager().getTexture2D(folder + file, true);
+        Texture tex = Core.getCore().getTextureManager().getResource(new HashedString(file));
         pages.put(id, tex);
       }
       

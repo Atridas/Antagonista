@@ -1,48 +1,47 @@
 package cat.atridas.antagonista.graphics;
 
-import java.lang.ref.SoftReference;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 
-public class TextureManager {
-  
-  private Map<String, SoftReference<Texture>> textures = new HashMap<String, SoftReference<Texture>>();
-  Texture defaultTexture = null;
-  
-  
-  public Texture getTexture2D(String resourceName) {
-    return getTexture2D(resourceName, resourceName.substring(resourceName.lastIndexOf('.')+1).toUpperCase(), false);
-  }
+import cat.atridas.antagonista.HashedString;
+import cat.atridas.antagonista.ResourceManager;
+import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.graphics.RenderManager.Profile;
+import cat.atridas.antagonista.graphics.gl.TextureGL;
 
-  public Texture getTexture2D(String resourceName, boolean greyscale) {
-    return getTexture2D(resourceName, resourceName.substring(resourceName.lastIndexOf('.')+1).toUpperCase(), greyscale);
-  }
+public class TextureManager extends ResourceManager<Texture> {
 
-  public Texture getTexture2D(String resourceName, String format) {
-    return getTexture2D(resourceName, format, false);
-  }
+  private final ArrayList<String> extensionsPriorized = new ArrayList<>();
+  private String basePath;
+  private Texture defaultResource;
   
-  public Texture getTexture2D(String resourceName, String format, boolean greyscale) {
-    SoftReference<Texture> softTex = textures.get(resourceName);
-    Texture tex;
-    if(softTex != null) {
-      tex = softTex.get();
-      if(tex != null)
-        return tex;
-    }
+  public void init(ArrayList<String> _extensionsPriorized, String _basePath) {
+    extensionsPriorized.addAll(_extensionsPriorized);
+    basePath = _basePath;
     
-    try {
-      tex = new Texture2D(resourceName, format, greyscale);
-    } catch (Exception e) {
-      System.out.println("Error loading texture " + e.toString());
-      if(defaultTexture == null) {
-        defaultTexture = new Texture2D();
-      }
-      tex = defaultTexture;
-    }
-    textures.put(resourceName, new SoftReference<Texture>(tex));
-    
-    return tex;
+    Utils.supportOrException(Profile.GL2, "Needs OpenGL, GL ES not yet suported");
+    defaultResource = new TextureGL(HashedString.DEFAULT);
+    ((TextureGL)defaultResource).loadDefault();
+  }
+  
+  @Override
+  protected String getBasePath() {
+    return basePath;
+  }
+
+  @Override
+  protected ArrayList<String> getExtensionsPriorized() {
+    return extensionsPriorized;
+  }
+
+  @Override
+  protected Texture createNewResource(HashedString name) {
+    Utils.supportOrException(Profile.GL2, "Needs OpenGL, GL ES not yet suported");
+    return new TextureGL(name);
+  }
+
+  @Override
+  protected Texture getDefaultResource() {
+    return defaultResource;
   }
   
   
