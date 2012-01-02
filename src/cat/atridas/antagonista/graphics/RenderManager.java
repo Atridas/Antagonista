@@ -67,6 +67,10 @@ public abstract class RenderManager {
 	public abstract void initFrame();
 	
 	public final void present() {
+	  assert !hasGLErrors();
+	  hasGLErrors(); //si no hi ha asserts, els imprimim igualment.
+	  
+	  
 		Display.update();
 	}
 	

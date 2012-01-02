@@ -1,6 +1,5 @@
 package cat.atridas.antagonista;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
@@ -37,7 +36,7 @@ public abstract class ResourceManager<T extends Resource> {
           try { //TODO fer aix� d'una manera m�s decent
             is = Utils.findInputStream(path);
             break;
-          } catch(FileNotFoundException e) {
+          } catch(Exception e) {
             // ---
           }
         }
@@ -63,7 +62,7 @@ public abstract class ResourceManager<T extends Resource> {
   protected abstract String getBasePath();
   protected abstract ArrayList<String> getExtensionsPriorized();
   protected abstract T createNewResource(HashedString name);
-  protected abstract T getDefaultResource();
+  public abstract T getDefaultResource();
   
   public final int getRAMBytesEstimation() {
     cleanUnusedReferences();

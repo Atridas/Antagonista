@@ -8,7 +8,7 @@
     <fragment_shaders path="data/shaders/" extensions="fs"/>
   </shaders>
   
-  <effect name="BasicEffect"/>
+  <effect name="BasicEffect"></effect>
   
   
   

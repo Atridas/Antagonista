@@ -42,6 +42,8 @@ public final class RenderManagerGL extends RenderManager {
     
     glEnable(GL_DEPTH_TEST);
     glClearDepth(1);
+    
+    assert !hasGLErrors();
   }
 
   @Override
@@ -260,6 +262,7 @@ public final class RenderManagerGL extends RenderManager {
         LOGGER.severe(stackTrace.toString());
       }
       errorEncountered = true;
+      error = glGetError();
     }
     return errorEncountered;
   }

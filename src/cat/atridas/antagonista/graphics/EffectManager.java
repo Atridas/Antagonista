@@ -139,6 +139,8 @@ public class EffectManager extends ResourceManager<Effect> {
       isInit = false;
       throw new IllegalArgumentException(e);
     }
+    
+    assert !Utils.hasGLErrors();
   }
   
   
@@ -198,7 +200,7 @@ public class EffectManager extends ResourceManager<Effect> {
   }
 
   @Override
-  protected Effect getDefaultResource() {
+  public Effect getDefaultResource() {
     assert isInit;
     // TODO Auto-generated method stub
     return null;
@@ -220,7 +222,7 @@ public class EffectManager extends ResourceManager<Effect> {
       basePath = _basePath;
       extensionsPriorized = _extensionsPriorized;
       type = _type;
-      defaultShader = new Shader(HashedString.DEFAULT, type);
+      defaultShader = new Shader(Utils.DEFAULT, type);
       defaultShader.loadDefault();
     }
     
@@ -240,7 +242,7 @@ public class EffectManager extends ResourceManager<Effect> {
     }
 
     @Override
-    protected Shader getDefaultResource() {
+    public Shader getDefaultResource() {
       return defaultShader;
     }
     

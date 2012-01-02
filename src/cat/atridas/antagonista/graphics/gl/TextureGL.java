@@ -32,6 +32,8 @@ public final class TextureGL extends Texture {
 
   public TextureGL(HashedString resourceName) {
     super(resourceName);
+    
+    minFilter = magFilter = GL_NEAREST;
   }
   
   public boolean load(InputStream is, String extension) {
@@ -92,6 +94,8 @@ public final class TextureGL extends Texture {
     setMinFilter(FilterQuality.MID);
     noTexture();
     
+    assert !Utils.hasGLErrors();
+    
     return true;
   }
   
@@ -113,10 +117,16 @@ public final class TextureGL extends Texture {
     width = 256;
     height = 256;
     hasAlpha = false;
+    bpp = 24;
+    
+    assert !Utils.hasGLErrors();
 
     int glFormat = GL_RGB;
     id = glGenTextures();
+    assert !Utils.hasGLErrors();
     activate(0);
+    
+    assert !Utils.hasGLErrors();
     
     if(GLContext.getCapabilities().OpenGL30) {
       
@@ -129,7 +139,11 @@ public final class TextureGL extends Texture {
           GL_UNSIGNED_BYTE,            
           bb);
       
+      assert !Utils.hasGLErrors();
+      
       glGenerateMipmap(GL_TEXTURE_2D);
+      
+      assert !Utils.hasGLErrors();
     } else {
       gluBuild2DMipmaps(GL_TEXTURE_2D, 
           glFormat, 
@@ -137,10 +151,14 @@ public final class TextureGL extends Texture {
           glFormat, 
           GL_UNSIGNED_BYTE,            
           bb);
+      
+      assert !Utils.hasGLErrors();
     }
 
     setMagFilter(FilterQuality.MID);
     setMinFilter(FilterQuality.MID);
+    
+    assert !Utils.hasGLErrors();
     
     noTexture();
   }

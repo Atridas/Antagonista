@@ -18,7 +18,12 @@ import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
 
 public abstract class Utils {
-  private static Logger logger = Logger.getLogger(Utils.class.getCanonicalName());
+  private static Logger LOGGER = Logger.getLogger(Utils.class.getCanonicalName());
+  
+  
+  public static final HashedString DEFAULT = new HashedString("default");
+  
+  
   
   /*
   public static File findFile(String name) {
@@ -77,13 +82,13 @@ public abstract class Utils {
       reader.close();
       return sb.toString();
     } catch (FileNotFoundException e) {
-      logger.warning(e.toString());
+      LOGGER.warning(e.toString());
       return null;
     } catch (UnsupportedEncodingException e) {
-      logger.warning(e.toString());
+      LOGGER.warning(e.toString());
       return null;
     } catch (IOException e) {
-      logger.warning(e.toString());
+      LOGGER.warning(e.toString());
       return null;
     }
   }

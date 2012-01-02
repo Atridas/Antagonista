@@ -19,8 +19,10 @@ public class TextureManager extends ResourceManager<Texture> {
     basePath = _basePath;
     
     Utils.supportOrException(Profile.GL2, "Needs OpenGL, GL ES not yet suported");
-    defaultResource = new TextureGL(HashedString.DEFAULT);
+    defaultResource = new TextureGL(Utils.DEFAULT);
     ((TextureGL)defaultResource).loadDefault();
+    
+    assert !Utils.hasGLErrors();
   }
   
   @Override
@@ -40,7 +42,7 @@ public class TextureManager extends ResourceManager<Texture> {
   }
 
   @Override
-  protected Texture getDefaultResource() {
+  public Texture getDefaultResource() {
     return defaultResource;
   }
   
