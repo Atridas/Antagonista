@@ -5,8 +5,10 @@ import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 public abstract class ResourceManager<T extends Resource> {
+  private static Logger LOGGER = Logger.getLogger(ResourceManager.class.getCanonicalName());
   
   private final HashMap<HashedString, Reference> resources = new HashMap<>();
   private final ReferenceQueue<? super T> refQueue = new ReferenceQueue<>();
@@ -41,8 +43,10 @@ public abstract class ResourceManager<T extends Resource> {
           }
         }
         
-        if(is == null || !resource.load(is, extension))
+        if(is == null || !resource.load(is, extension)) {
+          LOGGER.warning("Resource " + resourceName + " not found, loading Default resource");
           resource = getDefaultResource();
+        }
         
         resourceRef = new Reference(resource, resourceName);
       }

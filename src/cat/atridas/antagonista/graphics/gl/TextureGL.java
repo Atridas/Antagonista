@@ -247,5 +247,6 @@ public final class TextureGL extends Texture {
   public void cleanUp() {
     assert !cleaned;
     glDeleteTextures(getTarget());
+    cleaned = true;
   }
 }

@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -91,6 +94,47 @@ public abstract class Utils {
       LOGGER.warning(e.toString());
       return null;
     }
+  }
+  
+  /**
+   * Mira quina capçalera hi ha iretorna el tipus. Deixa el stream DESPRÉS de la capçalera.
+   * 
+   * @param is
+   * @param headers
+   * @param onMissing
+   * @return
+   * @throws IOException
+   */
+  public static <T> T readHeader(InputStream is, Map<byte[],T> headers, T onMissing) throws IOException {
+    HashSet<byte[]> possibleHeaders = new HashSet<>(headers.keySet());
+    int i = 0;
+    byte[] confirmedHeader = null;
+    while(possibleHeaders.size() > 0) {
+      int nextByte = is.read();
+      
+      Iterator<byte[]> it = possibleHeaders.iterator();
+      while( it.hasNext() ) {
+        byte[] header = it.next();
+        if(i == header.length) {
+          confirmedHeader = header;
+          possibleHeaders.remove(header);
+          it = possibleHeaders.iterator();
+          continue;
+        } else if(header[i] != (byte) nextByte) {
+          possibleHeaders.remove(header);
+          it = possibleHeaders.iterator();
+          continue;
+        }
+      }
+      i++;
+    }
+    
+    if(confirmedHeader == null) {
+      return onMissing;
+    } else {
+      return headers.get(confirmedHeader);
+    }
+    
   }
   
   

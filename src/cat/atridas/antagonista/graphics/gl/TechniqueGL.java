@@ -1,12 +1,14 @@
 package cat.atridas.antagonista.graphics.gl;
 
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL31.*;
 import static org.lwjgl.opengl.GL32.*;
 import static org.lwjgl.opengl.GL40.*;
 
 import java.util.logging.Logger;
 
+import org.lwjgl.opengl.ARBUniformBufferObject;
+import org.lwjgl.opengl.GL31;
 import org.lwjgl.opengl.GLContext;
 import org.w3c.dom.Element;
 
@@ -23,8 +25,8 @@ public class TechniqueGL extends Technique {
   private int albedoTextureUniform;
   private int basicInstanceBlock, basicInstanceStruct;
   
-  private int basicLightBlock, ambientUniform, directionalDirUniform, directionalColorUniform;
-  private int basicMaterialBlock, specularFactorUniform, specularGlossiness;
+  private int ambientUniform, directionalDirUniform, directionalColorUniform;
+  private int specularFactorUniform, specularGlossinessUniform, heightUniform;
   
   private boolean GL_ARB_uniform_buffer_object, GL3;
   
@@ -200,13 +202,13 @@ public class TechniqueGL extends Technique {
   
   private void loadBasicInstanceUniforms(int program) throws AntagonistException {
     if(GL3) {
-      basicInstanceBlock = glGetUniformBlockIndex(program, BASIC_INSTANCE_UNIFORMS_BLOCK);
+      basicInstanceBlock = GL31.glGetUniformBlockIndex(program, BASIC_INSTANCE_UNIFORMS_BLOCK);
       if(basicInstanceBlock < 0) {
         LOGGER.severe("Basic instance uniforms requested but not active!");
         throw new AntagonistException();
       }
     } else if(GL_ARB_uniform_buffer_object) {
-      basicInstanceBlock = glGetUniformBlockIndex(program, BASIC_INSTANCE_UNIFORMS_BLOCK);
+      basicInstanceBlock = ARBUniformBufferObject.glGetUniformBlockIndex(program, BASIC_INSTANCE_UNIFORMS_BLOCK);
       if(basicInstanceBlock < 0) {
         LOGGER.severe("Basic instance uniforms requested but not active!");
         throw new AntagonistException();
@@ -223,17 +225,22 @@ public class TechniqueGL extends Technique {
 
   private void loadBasicLightUniforms(int program) throws AntagonistException {
     if(GL3) {
-      basicLightBlock = glGetUniformBlockIndex(program, BASIC_LIGHT_UNIFORMS_BLOCK);
+      int basicLightBlock = GL31.glGetUniformBlockIndex(program, BASIC_LIGHT_UNIFORMS_BLOCK);
       if(basicLightBlock < 0) {
         LOGGER.severe("Basic light uniforms requested but not active!");
         throw new AntagonistException();
       }
+      
+      GL31.glUniformBlockBinding(program, basicLightBlock, BASIC_LIGHT_UNIFORMS_BINDING);
+      
     } else if(GL_ARB_uniform_buffer_object) {
-      basicLightBlock = glGetUniformBlockIndex(program, BASIC_LIGHT_UNIFORMS_BLOCK);
+      int basicLightBlock = ARBUniformBufferObject.glGetUniformBlockIndex(program, BASIC_LIGHT_UNIFORMS_BLOCK);
       if(basicLightBlock < 0) {
         LOGGER.severe("Basic light uniforms requested but not active!");
         throw new AntagonistException();
       }
+      
+      ARBUniformBufferObject.glUniformBlockBinding(program, basicLightBlock, BASIC_LIGHT_UNIFORMS_BINDING);
     } else {
       ambientUniform = glGetUniformLocation(program, AMBIENT_LIGHT_UNIFORM_BLOCK);
       directionalDirUniform = glGetUniformLocation(program, DIRECTIONAL_LIGHT_POS_UNIFORM_BLOCK);
@@ -255,29 +262,48 @@ public class TechniqueGL extends Technique {
 
   private void loadBasicMaterialUniforms(int program) throws AntagonistException {
     if(GL3) {
-      basicMaterialBlock = glGetUniformBlockIndex(program, BASIC_MATERIAL_UNIFORMS_BLOCK);
+      int basicMaterialBlock = GL31.glGetUniformBlockIndex(program, BASIC_MATERIAL_UNIFORMS_BLOCK);
       if(basicMaterialBlock < 0) {
         LOGGER.severe("Basic material uniforms requested but not active!");
         throw new AntagonistException();
       }
+
+      GL31.glUniformBlockBinding(program, basicMaterialBlock, BASIC_MATERIAL_UNIFORMS_BINDING);
+      
     } else if(GL_ARB_uniform_buffer_object) {
-      basicMaterialBlock = glGetUniformBlockIndex(program, BASIC_MATERIAL_UNIFORMS_BLOCK);
+      int basicMaterialBlock = ARBUniformBufferObject.glGetUniformBlockIndex(program, BASIC_MATERIAL_UNIFORMS_BLOCK);
       if(basicMaterialBlock < 0) {
         LOGGER.severe("Basic material uniforms requested but not active!");
         throw new AntagonistException();
       }
+
+      ARBUniformBufferObject.glUniformBlockBinding(program, basicMaterialBlock, BASIC_MATERIAL_UNIFORMS_BINDING);
     } else {
-      specularFactorUniform = glGetUniformLocation(program, SPECULAR_FACTOR_UNIFORMS_BLOCK);
-      specularGlossiness = glGetUniformLocation(program, SPECULAR_GLOSS_UNIFORMS_BLOCK);
+      specularFactorUniform     = glGetUniformLocation(program, SPECULAR_FACTOR_UNIFORM);
+      specularGlossinessUniform = glGetUniformLocation(program, SPECULAR_GLOSS_UNIFORM);
+      heightUniform             = glGetUniformLocation(program, HEIGHT_UNIFORM);
       if(specularFactorUniform < 0) {
         LOGGER.severe("Basic material uniforms requested but specular factor not active!");
         throw new AntagonistException();
       }
-      if(specularGlossiness < 0) {
+      if(specularGlossinessUniform < 0) {
         LOGGER.severe("Basic material uniforms requested but specular glossiness uniform not active!");
         throw new AntagonistException();
       }
     }
+  }
+  
+  @Override
+  public int getSpecularFactorUniform() {
+    return specularFactorUniform;
+  }
+  @Override
+  public int getSpecularGlossinessUniform() {
+    return specularGlossinessUniform;
+  }
+  @Override
+  public int getHeightUniform() {
+    return heightUniform;
   }
   
   @Override
@@ -295,7 +321,9 @@ public class TechniqueGL extends Technique {
   @Override
   protected long getMaxUniformBufferSize() {
     if(GL3)
-      return glGetInteger64(GL_MAX_UNIFORM_BLOCK_SIZE);
+      return glGetInteger64(GL31.GL_MAX_UNIFORM_BLOCK_SIZE);
+    else if(GL_ARB_uniform_buffer_object)
+      return glGetInteger(ARBUniformBufferObject.GL_MAX_UNIFORM_BLOCK_SIZE);
     else
       return 0;
   }

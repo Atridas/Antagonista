@@ -46,18 +46,25 @@ public abstract class Technique {
   //Uniforms ----------------------------------------------------------------------------
   public static final String ALBEDO_TEXTURE_UNIFORM = "u_s2Albedo";
   public static final int    ALBEDO_TEXTURE_UNIT =    0;
+  public static final String NORMALMAP_TEXTURE_UNIFORM = "u_s2Normalmap";
+  public static final int    NORMALMAP_TEXTURE_UNIT =    1;
+  public static final String HEIGHTMAP_TEXTURE_UNIFORM = "u_s2Haightmap";
+  public static final int    HEIGHTMAP_TEXTURE_UNIT =    2;
   public static final String BASIC_INSTANCE_UNIFORMS_BLOCK = "UniformInstances";
   public static final int    BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE = (Float.SIZE / 8) * (4*4) * 2; 
   public static final String BASIC_INSTANCE_UNIFORMS_STRUCT = "u_InstanceInfo";
 
+  public static final int    BASIC_LIGHT_UNIFORMS_BINDING = 0;
   public static final String BASIC_LIGHT_UNIFORMS_BLOCK = "UniformLight";
   public static final String AMBIENT_LIGHT_UNIFORM_BLOCK = "u_v3AmbientLight";
   public static final String DIRECTIONAL_LIGHT_POS_UNIFORM_BLOCK = "u_v3DirectionalLightPosition";
   public static final String DIRECTIONAL_LIGHT_COLOR_UNIFORMS_BLOCK = "u_v3DirectionalLightColor";
 
+  public static final int    BASIC_MATERIAL_UNIFORMS_BINDING = 0;
   public static final String BASIC_MATERIAL_UNIFORMS_BLOCK = "UniformMaterials";
-  public static final String SPECULAR_FACTOR_UNIFORMS_BLOCK = "u_fSpecularFactor";
-  public static final String SPECULAR_GLOSS_UNIFORMS_BLOCK = "u_fGlossiness";
+  public static final String SPECULAR_FACTOR_UNIFORM = "u_fSpecularFactor";
+  public static final String SPECULAR_GLOSS_UNIFORM = "u_fGlossiness";
+  public static final String HEIGHT_UNIFORM = "u_fHeight";
   
   
   private int shaderProgram;
@@ -461,7 +468,10 @@ public abstract class Technique {
   protected abstract int getDefaultShader(ShaderType st);
   
   protected abstract long getMaxUniformBufferSize();
-  
+
+  public abstract int getSpecularFactorUniform();
+  public abstract int getSpecularGlossinessUniform();
+  public abstract int getHeightUniform();
   
   public void activate(RenderManager rm) {
     assert !cleaned;
