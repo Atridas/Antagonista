@@ -12,6 +12,8 @@ public abstract class Texture extends Resource {
     super(resourceName);
   }
 
+
+  protected abstract void loadDefault();
   
   public abstract void activate(int unit);
   

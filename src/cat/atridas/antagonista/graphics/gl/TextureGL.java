@@ -99,6 +99,7 @@ public final class TextureGL extends Texture {
     return true;
   }
   
+  @Override
   public void loadDefault() {
     
     ByteBuffer bb = BufferUtils.createByteBuffer(256 * 256 * 3);

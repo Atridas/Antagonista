@@ -26,8 +26,9 @@ public abstract class Utils {
   
   public static final HashedString DEFAULT = new HashedString("default");
   
-  
-  
+
+  public static final int FLOAT_SIZE = Float.SIZE / 8;
+  public static final int SHORT_SIZE = Short.SIZE / 8;
   /*
   public static File findFile(String name) {
     try {
