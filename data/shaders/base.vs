@@ -77,6 +77,6 @@ void main()
     v_v3Bitangent = (u_InstanceInfo[gl_InstanceID].m4ModelView            * vec4(a_v3Bitangent,0.0)).xyz;
   #endif
   v_v2UV = a_v2UV;
-};
+}
   
   
