@@ -1,69 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <effect name="BasicEffect">
   <technique type="forward">
+    <pass>
+      <render_states>
+        <depth_test>true</depth_test>
+        <depth_function>LESS</depth_function>
+        <alpha_blending>false</alpha_blending>
+      </render_states>
+      
+      <attributes>
+        <position/>
+        <normal/>
+        <uv/>
+      </attributes>
+      
+      <uniforms>
+        <albedo_texture/>
+        <basic_instance_uniforms/>
+        <basic_light/>
+        <basic_material/>
+      </uniforms>
+      
+      <results>
+        <color/>
+      </results>
+      
+      <vertex_shader>
+        <resource>base</resource>
+        <min_version>2</min_version>
+      </vertex_shader>
+      <fragment_shader>
+        <resource>forwardBase</resource>
+        <min_version>2</min_version>
+      </fragment_shader>
     
-    <render_states>
-      <depth_test>true</depth_test>
-      <depth_function>LESS</depth_function>
-      <alpha_blending>false</alpha_blending>
-    </render_states>
-    
-    <attributes>
-      <position/>
-      <normal/>
-      <uv/>
-    </attributes>
-    
-    <uniforms>
-      <albedo_texture/>
-      <basic_instance_uniforms/>
-      <basic_light/>
-      <basic_material/>
-    </uniforms>
-    
-    <results>
-      <color/>
-    </results>
-    
-    <vertex_shader>
-      <resource>base</resource>
-      <min_version>2</min_version>
-    </vertex_shader>
-    <fragment_shader>
-      <resource>forwardBase</resource>
-      <min_version>2</min_version>
-    </fragment_shader>
-    
-    
+    </pass>
   </technique>
   <technique type="shadow">
-    
-    <render_states>
-      <depth_test>true</depth_test>
-      <depth_function>less</depth_function>
-      <alpha_blending>false</alpha_blending>
-    </render_states>
-    
-    <attributes>
-      <position/>
-    </attributes>
-    
-    <uniforms>
-      <basic_instance_uniforms/>
-    </uniforms>
-    
-    <results>
-      <depth/>
-    </results>
-    
-    <vertex_shader>
-      <resource>base</resource>
-      <min_version>2</min_version>
-    </vertex_shader>
-    <fragment_shader>
-      <resource>drawShadowmap</resource>
-      <min_version>2</min_version>
-    </fragment_shader>
-    
+    <pass>
+      <render_states>
+        <depth_test>true</depth_test>
+        <depth_function>less</depth_function>
+        <alpha_blending>false</alpha_blending>
+      </render_states>
+      
+      <attributes>
+        <position/>
+      </attributes>
+      
+      <uniforms>
+        <basic_instance_uniforms/>
+      </uniforms>
+      
+      <results>
+        <depth/>
+      </results>
+      
+      <vertex_shader>
+        <resource>base</resource>
+        <min_version>2</min_version>
+      </vertex_shader>
+      <fragment_shader>
+        <resource>drawShadowmap</resource>
+        <min_version>2</min_version>
+      </fragment_shader>
+    </pass>
   </technique>
 </effect>

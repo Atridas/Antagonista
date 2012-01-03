@@ -7,7 +7,6 @@ import org.lwjgl.opengl.GLContext;
 
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Quality;
-import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.Material;
 import cat.atridas.antagonista.graphics.Effect.TechniqueType;
@@ -63,7 +62,12 @@ public class MaterialGL extends Material {
       if(heightmap != null)
         heightmap.activate(TechniquePass.HEIGHTMAP_TEXTURE_UNIT);
       
-      effect.getTechnique(tt, q).activate(rm);
+      for(TechniquePass pass : effect.getTechnique(tt, q).passes) {
+        pass.activate(rm);
+        //TODO render
+      }
+      
+      
       
     } else if(GL_ARB_uniform_buffer_object) {
       throw new IllegalStateException("GL_ARB_uniform_buffer_object not yet implemented");

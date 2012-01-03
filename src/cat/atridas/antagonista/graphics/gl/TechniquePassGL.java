@@ -19,8 +19,8 @@ import cat.atridas.antagonista.graphics.RenderManager.Profile;
 import cat.atridas.antagonista.graphics.TechniquePass;
 import cat.atridas.antagonista.graphics.Shader.ShaderType;
 
-public class TechniqueGL extends TechniquePass {
-  private static Logger LOGGER = Logger.getLogger(TechniqueGL.class.getCanonicalName());
+public class TechniquePassGL extends TechniquePass {
+  private static Logger LOGGER = Logger.getLogger(TechniquePassGL.class.getCanonicalName());
 
   private int albedoTextureUniform;
   private int basicInstanceBlock, basicInstanceStruct;
@@ -35,8 +35,8 @@ public class TechniqueGL extends TechniquePass {
     GL_ARB_uniform_buffer_object = GLContext.getCapabilities().GL_ARB_uniform_buffer_object;
   }
   
-  public TechniqueGL(Element techniqueXML) throws AntagonistException {
-    super(techniqueXML);
+  public TechniquePassGL(Element techniquePassXML) throws AntagonistException {
+    super(techniquePassXML);
   }
   
   @Override

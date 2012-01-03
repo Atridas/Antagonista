@@ -98,8 +98,8 @@ public abstract class TechniquePass {
   private TreeMap<Integer, BlendOperation> alphaBlendingOperationPerRenderTarget = new TreeMap<>();
   private TreeMap<Integer, BlendOperationSeparate> alphaBlendingOperationSeparatePerRenderTarget = new TreeMap<>();
   
-  protected TechniquePass(Element techniqueXML) throws AntagonistException {
-    assert techniqueXML.getTagName().equals("technique");
+  protected TechniquePass(Element techniquePassXML) throws AntagonistException {
+    assert techniquePassXML.getTagName().equals("pass");
     
     //setupCapabilities();
     
@@ -110,7 +110,7 @@ public abstract class TechniquePass {
     
     boolean uniformsDefined = false;
 
-    NodeList nl = techniqueXML.getChildNodes();
+    NodeList nl = techniquePassXML.getChildNodes();
     for(int i = 0; i < nl.getLength(); ++i) {
       Node n = nl.item(i);
       if(!(n instanceof Element))

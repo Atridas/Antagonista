@@ -16,13 +16,12 @@ import cat.atridas.antagonista.Quality;
 import cat.atridas.antagonista.Resource;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
-import cat.atridas.antagonista.graphics.gl.TechniqueGL;
 
 public class Effect extends Resource {
   private static Logger LOGGER = Logger.getLogger(EffectManager.class.getCanonicalName());
 
   
-  private HashMap<TechniqueType, HashMap<Quality, TechniquePass>> techniques = new HashMap<>();
+  private HashMap<TechniqueType, HashMap<Quality, Technique>> techniques = new HashMap<>();
 
   public Effect(HashedString _resourceName) {
     super(_resourceName);
@@ -63,7 +62,7 @@ public class Effect extends Resource {
         
         LOGGER.config("Reading technique " + techniqueType + " with quality " + q);
         
-        TechniquePass technique;
+        Technique technique;
         if(techniqueXML.getAttribute("external").toLowerCase().compareTo("true") == 0) {
           //External
           String effectName = techniqueXML.getAttribute("ref_effect");
@@ -83,7 +82,7 @@ public class Effect extends Resource {
             refEffect = em.getResource(new HashedString(effectName));
           }
           
-          HashMap<Quality, TechniquePass> qToTech = refEffect.techniques.get(refTechniqueType);
+          HashMap<Quality, Technique> qToTech = refEffect.techniques.get(refTechniqueType);
           if(qToTech == null) {
             throw new IllegalArgumentException("Technique " + refTechniqueType + " of effect " + effectName + " does not exist (yet).");
           }
@@ -94,13 +93,10 @@ public class Effect extends Resource {
           }
           
         } else {
-          if(gl)
-            technique = new TechniqueGL(techniqueXML);
-          else
-            throw new IllegalStateException("OpenGL ES not yet implemented!");
+          technique = new Technique(techniqueXML, gl);
         }
         
-        HashMap<Quality, TechniquePass> qToTech = techniques.get(techniqueType);
+        HashMap<Quality, Technique> qToTech = techniques.get(techniqueType);
         if(qToTech == null) {
           qToTech = new HashMap<>();
           techniques.put(techniqueType, qToTech);
@@ -128,10 +124,10 @@ public class Effect extends Resource {
   }
 
   
-  public TechniquePass getTechnique(TechniqueType tt, Quality q) {
-    HashMap<Quality, TechniquePass> qToTech = techniques.get(tt);
+  public Technique getTechnique(TechniqueType tt, Quality q) {
+    HashMap<Quality, Technique> qToTech = techniques.get(tt);
     if(qToTech != null) {
-      TechniquePass technique = qToTech.get(q);
+      Technique technique = qToTech.get(q);
       while(technique == null && q != Quality.NONE) {
         q = q.previousQuality();
         technique = qToTech.get(q);
