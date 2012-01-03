@@ -20,8 +20,8 @@ import cat.atridas.antagonista.graphics.RenderManager.DepthFunction;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
 import cat.atridas.antagonista.graphics.Shader.ShaderType;
 
-public abstract class Technique {
-  private static Logger LOGGER = Logger.getLogger(Technique.class.getCanonicalName());
+public abstract class TechniquePass {
+  private static Logger LOGGER = Logger.getLogger(TechniquePass.class.getCanonicalName());
   
 
   public static final int MAX_BONES = 30;
@@ -98,10 +98,10 @@ public abstract class Technique {
   private TreeMap<Integer, BlendOperation> alphaBlendingOperationPerRenderTarget = new TreeMap<>();
   private TreeMap<Integer, BlendOperationSeparate> alphaBlendingOperationSeparatePerRenderTarget = new TreeMap<>();
   
-  protected Technique(Element techniqueXML) throws AntagonistException {
+  protected TechniquePass(Element techniqueXML) throws AntagonistException {
     assert techniqueXML.getTagName().equals("technique");
     
-    setupCapabilities();
+    //setupCapabilities();
     
     vs = tc = te = gs = fs = 0;
 
@@ -455,7 +455,7 @@ public abstract class Technique {
     }
   }
 
-  protected abstract void setupCapabilities();
+  //protected abstract void setupCapabilities();
   protected abstract int generateShaderObject(ShaderType st, RenderManager rm);
   protected abstract void deleteShader(int shaderID);
 

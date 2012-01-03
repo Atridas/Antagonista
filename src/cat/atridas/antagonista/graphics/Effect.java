@@ -22,7 +22,7 @@ public class Effect extends Resource {
   private static Logger LOGGER = Logger.getLogger(EffectManager.class.getCanonicalName());
 
   
-  private HashMap<TechniqueType, HashMap<Quality, Technique>> techniques = new HashMap<>();
+  private HashMap<TechniqueType, HashMap<Quality, TechniquePass>> techniques = new HashMap<>();
 
   public Effect(HashedString _resourceName) {
     super(_resourceName);
@@ -63,7 +63,7 @@ public class Effect extends Resource {
         
         LOGGER.config("Reading technique " + techniqueType + " with quality " + q);
         
-        Technique technique;
+        TechniquePass technique;
         if(techniqueXML.getAttribute("external").toLowerCase().compareTo("true") == 0) {
           //External
           String effectName = techniqueXML.getAttribute("ref_effect");
@@ -83,7 +83,7 @@ public class Effect extends Resource {
             refEffect = em.getResource(new HashedString(effectName));
           }
           
-          HashMap<Quality, Technique> qToTech = refEffect.techniques.get(refTechniqueType);
+          HashMap<Quality, TechniquePass> qToTech = refEffect.techniques.get(refTechniqueType);
           if(qToTech == null) {
             throw new IllegalArgumentException("Technique " + refTechniqueType + " of effect " + effectName + " does not exist (yet).");
           }
@@ -100,7 +100,7 @@ public class Effect extends Resource {
             throw new IllegalStateException("OpenGL ES not yet implemented!");
         }
         
-        HashMap<Quality, Technique> qToTech = techniques.get(techniqueType);
+        HashMap<Quality, TechniquePass> qToTech = techniques.get(techniqueType);
         if(qToTech == null) {
           qToTech = new HashMap<>();
           techniques.put(techniqueType, qToTech);
@@ -128,10 +128,10 @@ public class Effect extends Resource {
   }
 
   
-  public Technique getTechnique(TechniqueType tt, Quality q) {
-    HashMap<Quality, Technique> qToTech = techniques.get(tt);
+  public TechniquePass getTechnique(TechniqueType tt, Quality q) {
+    HashMap<Quality, TechniquePass> qToTech = techniques.get(tt);
     if(qToTech != null) {
-      Technique technique = qToTech.get(q);
+      TechniquePass technique = qToTech.get(q);
       while(technique == null && q != Quality.NONE) {
         q = q.previousQuality();
         technique = qToTech.get(q);

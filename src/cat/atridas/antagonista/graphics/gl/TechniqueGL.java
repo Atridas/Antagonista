@@ -16,10 +16,10 @@ import cat.atridas.antagonista.AntagonistException;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
-import cat.atridas.antagonista.graphics.Technique;
+import cat.atridas.antagonista.graphics.TechniquePass;
 import cat.atridas.antagonista.graphics.Shader.ShaderType;
 
-public class TechniqueGL extends Technique {
+public class TechniqueGL extends TechniquePass {
   private static Logger LOGGER = Logger.getLogger(TechniqueGL.class.getCanonicalName());
 
   private int albedoTextureUniform;
@@ -28,16 +28,15 @@ public class TechniqueGL extends Technique {
   private int ambientUniform, directionalDirUniform, directionalColorUniform;
   private int specularFactorUniform, specularGlossinessUniform, heightUniform;
   
-  private boolean GL_ARB_uniform_buffer_object, GL3;
+  private static final boolean GL_ARB_uniform_buffer_object, GL3;
+
+  static {
+    GL3 = Core.getCore().getRenderManager().getProfile().supports(Profile.GL3);
+    GL_ARB_uniform_buffer_object = GLContext.getCapabilities().GL_ARB_uniform_buffer_object;
+  }
   
   public TechniqueGL(Element techniqueXML) throws AntagonistException {
     super(techniqueXML);
-  }
-
-  @Override
-  protected void setupCapabilities() {
-    GL3 = Core.getCore().getRenderManager().getProfile().supports(Profile.GL3);
-    GL_ARB_uniform_buffer_object = GLContext.getCapabilities().GL_ARB_uniform_buffer_object;
   }
   
   @Override

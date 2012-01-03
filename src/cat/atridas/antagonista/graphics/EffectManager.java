@@ -206,7 +206,7 @@ public class EffectManager extends ResourceManager<Effect> {
     return null;
   }
 
-  public Technique getDefaultTechnique() {
+  public TechniquePass getDefaultTechnique() {
     // TODO
     return null;
   }
