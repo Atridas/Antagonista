@@ -36,7 +36,7 @@ public abstract class Mesh extends Resource {
     if(LOGGER.isLoggable(Level.CONFIG))
       LOGGER.config("Loading mesh " + resourceName);
     
-    assert "mat".compareToIgnoreCase(extension) == 0;
+    assert "mesh".compareToIgnoreCase(extension) == 0;
 
     try {
       MeshFileTypes mft = Utils.readHeader(is, FILE_TYPES, MeshFileTypes.ERROR);
@@ -62,13 +62,13 @@ public abstract class Mesh extends Resource {
   
   
   private boolean loadText(InputStream is) {
-    final int firstVertexLine = 4;
+    final int firstVertexLine = 3;
     String str = Utils.readInputStream(is);
     String[] lines = str.split("\n");
     
     assert lines.length >= 7;
     
-    numVerts = Integer.parseInt(lines[3]);
+    numVerts = Integer.parseInt(lines[2]);
     ByteBuffer vertexBuffer = BufferUtils.createByteBuffer(numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH * Float.SIZE / 8);
     
     assert lines.length >= firstVertexLine + numVerts;
@@ -103,7 +103,7 @@ public abstract class Mesh extends Resource {
       materials.add(material);
       submeshes.add(submesh );
       
-      aux = aux + 2;
+      aux += 2;
       for(int face = 0; face < numFaces; face++) {
         String[] indexes = lines[aux].split(" ");
         assert indexes.length == 3;
@@ -112,6 +112,7 @@ public abstract class Mesh extends Resource {
           submesh.putInt(index);
         }
       }
+      aux += numFaces;
     }
     
     return loadBuffers(vertexBuffer, submeshes, false); //TODO animats

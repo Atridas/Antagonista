@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GLContext;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.*;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.ARBVertexArrayObject;
 
 import cat.atridas.antagonista.HashedString;
@@ -44,8 +44,10 @@ public class MeshGL extends Mesh {
   @Override
   protected boolean loadBuffers(ByteBuffer _vertexBuffer, ArrayList<ByteBuffer> _submeshes, boolean _animated) {
     animated = _animated;
-    
-    if(GL_ARB_vertex_array_object) {
+
+    if(GL3) {
+      GL30.glBindVertexArray(0);
+    } else if(GL_ARB_vertex_array_object) {
       ARBVertexArrayObject.glBindVertexArray(0);
     }
     
@@ -76,8 +78,8 @@ public class MeshGL extends Mesh {
       vertexArrayObjects = new int[_submeshes.size()];
       for(int i = 0; i < indexBuffers.length; ++i) {
         if(GL3) {
-          vertexArrayObjects[i] = glGenVertexArrays();
-          glBindVertexArray(vertexArrayObjects[i]);
+          vertexArrayObjects[i] = GL30.glGenVertexArrays();
+          GL30.glBindVertexArray(vertexArrayObjects[i]);
         } else {
           vertexArrayObjects[i] = ARBVertexArrayObject.glGenVertexArrays();
           ARBVertexArrayObject.glBindVertexArray(vertexArrayObjects[i]);
@@ -114,8 +116,8 @@ public class MeshGL extends Mesh {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffers[i]);
       }
       if(GL3) {
-        glBindVertexArray(0);
-      } else {
+        GL30.glBindVertexArray(0);
+      } else if(GL_ARB_vertex_array_object) {
         ARBVertexArrayObject.glBindVertexArray(0);
       }
     }
@@ -131,7 +133,7 @@ public class MeshGL extends Mesh {
     for(int i = 0; i < indexBuffers.length; ++i) {
       glDeleteBuffers(indexBuffers[i]);
       if(GL3) {
-        glDeleteVertexArrays(vertexArrayObjects[i]);
+        GL30.glDeleteVertexArrays(vertexArrayObjects[i]);
       } else if(GL_ARB_vertex_array_object){
         ARBVertexArrayObject.glDeleteVertexArrays(vertexArrayObjects[i]);
       }

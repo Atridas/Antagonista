@@ -7,6 +7,7 @@ import cat.atridas.antagonista.deprecated.ShaderManager;
 import cat.atridas.antagonista.graphics.EffectManager;
 import cat.atridas.antagonista.graphics.FontManager;
 import cat.atridas.antagonista.graphics.MaterialManager;
+import cat.atridas.antagonista.graphics.MeshManager;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.TextureManager;
 import cat.atridas.antagonista.graphics.gl.FontManagerGL;
@@ -15,13 +16,14 @@ import cat.atridas.antagonista.input.InputManager;
 
 public final class Core {
 	
-	private RenderManager   rm = new RenderManagerGL();//TODO
-	private InputManager    im = new InputManager();
-	private TextureManager  tm = new TextureManager();
-	private ShaderManager   sm = new ShaderManager();
-	private FontManager     fm = new FontManagerGL();//TODO
-  private EffectManager   em = new EffectManager(); //TODO
-  private MaterialManager mm = new MaterialManager();
+	private RenderManager   rm  = new RenderManagerGL();//TODO
+	private InputManager    im  = new InputManager();
+	private TextureManager  tm  = new TextureManager();
+	private ShaderManager   sm  = new ShaderManager();
+	private FontManager     fm  = new FontManagerGL();//TODO
+  private EffectManager   em  = new EffectManager(); //TODO
+  private MaterialManager mm  = new MaterialManager();
+  private MeshManager     mem = new MeshManager();
 
 	public RenderManager getRenderManager()
 	{
@@ -57,6 +59,11 @@ public final class Core {
   {
     return mm;
   }
+  
+  public MeshManager getMeshManager()
+  {
+    return mem;
+  }
 	
 	public void init(int w, int h, String title, Canvas displayParent) {
 		rm.initDisplay(w, h, title, displayParent);
@@ -74,14 +81,35 @@ public final class Core {
     al.add("mat");
     mm.init(al, "data/materials/");
     
+    al.clear();
+    al.add("mesh");
+    mem.init(al, "data/meshes/");
 	}
 	
 	public void close() {
-		im.close();
 		
 		//sm.cleanUp();
 		//TODO tm.cleanUp();
-		rm.closeDisplay();
+		
+
+    mem = null;
+    mm  = null;
+    em  = null;
+    fm  = null;
+    sm  = null;
+    tm  = null;
+    
+    System.gc();
+    System.runFinalization();
+    
+    //TODO
+    //im.close();
+    //rm.closeDisplay();
+    im  = null;
+    rm  = null;
+
+    System.gc();
+    System.runFinalization();
 	}
 	
 	static Core instance;
