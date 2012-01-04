@@ -16,11 +16,11 @@
 #endif
 
 // Vertex transformed info ------------------------------------
-in vec4 v_v3VPosition; //View space position
+in vec3 v_v3Position; //View space position
 
 //----------------------------------------------------------
 void main()
 {
-  f_v4Depth = vec4(v_v3VPosition.zzz, 1.0);
+  f_v4Depth = vec4(v_v3Position.zzz, 1.0);
 }
 

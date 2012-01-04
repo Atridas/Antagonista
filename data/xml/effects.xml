@@ -70,7 +70,7 @@
       <uniforms>
         <albedo_texture/>          -> sampler2D u_s2Albedo 
         <basic_instance_uniforms/> -> UniformInstances { m44ModelViewProjection, m44ModelView  } u_InstanceInfo[instances] 
-        <basic_light/>             -> UniformLight { u_v3AmbientLight, u_v3DirectionalLightPosition, u_v3DirectionalLightColor } 
+        <basic_light/>             -> UniformLight { u_v3AmbientLight, u_v3DirectionalLightDirection, u_v3DirectionalLightColor } 
         <basic_material/>          -> UniformMaterials { u_fSpecularFactor, u_fGlossiness, u_fHeight } 
       </uniforms>
       

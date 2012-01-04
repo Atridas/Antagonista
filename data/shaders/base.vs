@@ -41,15 +41,11 @@ out vec2 v_v2UV;
 
 // Uniforms -----------------------------------------------------
 #if __VERSION__ < 330
-  uniform struct {
-    mat4 m4ModelViewProjection;
-    mat4 m4ModelView;
-    #if defined(ANIMATED)
-      mat3x4 m32Bones[MAX_BONES];
-    #endif
-  } u_InstanceInfo[1];
-  #define gl_InstanceID 0
-  
+  uniform mat4 u_m4ModelViewProjection;
+  uniform mat4 u_m4ModelView;
+  #if defined(ANIMATED)
+    uniform mat3x4 u_m32Bones[MAX_BONES];
+  #endif
   
 #else
   layout(std140) uniform UniformInstances {
@@ -61,6 +57,10 @@ out vec2 v_v2UV;
       #endif
     } u_InstanceInfo[MAX_INSTANCES];
   };
+  
+  #define u_m4ModelViewProjection u_InstanceInfo[gl_InstanceID].m4ModelViewProjection
+  #define u_m4ModelView           u_InstanceInfo[gl_InstanceID].m4ModelView
+  #define u_m34Bones              u_InstanceInfo[gl_InstanceID].m34Bones
 #endif
   
   
@@ -69,12 +69,12 @@ void main()
 {
   //TODO animated
 
-  gl_Position  =  u_InstanceInfo[gl_InstanceID].m4ModelViewProjection * vec4(a_v3Position,1.0);
-  v_v3Position = (u_InstanceInfo[gl_InstanceID].m4ModelView           * vec4(a_v3Position,1.0)).xyz;
-  v_v3Normal   = (u_InstanceInfo[gl_InstanceID].m4ModelView           * vec4(a_v3Normal,0.0)).xyz;
+  gl_Position  =  u_m4ModelViewProjection * vec4(a_v3Position,1.0);
+  v_v3Position = (u_m4ModelView           * vec4(a_v3Position,1.0)).xyz;
+  v_v3Normal   = (u_m4ModelView           * vec4(a_v3Normal,0.0)  ).xyz;
   #if defined(TANGENTS)
-    v_v3Tangent = (u_InstanceInfo[gl_InstanceID].m4ModelView              * vec4(a_v3Tangent,0.0)).xyz;
-    v_v3Bitangent = (u_InstanceInfo[gl_InstanceID].m4ModelView            * vec4(a_v3Bitangent,0.0)).xyz;
+    v_v3Tangent   = (u_m4ModelView        * vec4(a_v3Tangent,0.0)  ).xyz;
+    v_v3Bitangent = (u_m4ModelView        * vec4(a_v3Bitangent,0.0)).xyz;
   #endif
   v_v2UV = a_v2UV;
 }
