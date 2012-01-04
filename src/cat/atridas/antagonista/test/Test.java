@@ -1,9 +1,14 @@
 package cat.atridas.antagonista.test;
 
+import java.nio.FloatBuffer;
 import java.util.logging.Level;
 
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL20;
 
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Quality;
@@ -104,6 +109,18 @@ public class Test {
 
     assert !Utils.hasGLErrors();
     
+    FloatBuffer fb = BufferUtils.createFloatBuffer(4*4);
+    Matrix4f mvp = new Matrix4f();
+    Matrix4f mv  = new Matrix4f();
+    mvp.setIdentity();
+    mv .setIdentity();
+    
+    sceneData.setPerspective(45, 1, 100);
+    sceneData.setCamera(new Point3f(30, 30, 30), new Point3f(0, 0, 0), new Vector3f(0, 0, 1));
+    
+    sceneData.getViewMatrix(mv);
+    sceneData.getViewProjectionMatrix(mvp);
+    
     int numSubmeshes = mesh.getNumSubmeshes();
     for(int submesh = 0; submesh < numSubmeshes; ++submesh) {
       Material material = mesh.getMaterial(submesh);
@@ -114,6 +131,11 @@ public class Test {
         pass.activate(rm);
         material.setUpUniforms(pass, rm);
         sceneData.setUniforms(pass);
+
+        Utils.matrixToBuffer(mv, fb);
+        GL20.glUniformMatrix4(pass.getModelViewUniform(), false, fb);
+        Utils.matrixToBuffer(mvp, fb);
+        GL20.glUniformMatrix4(pass.getModelViewProjectionUniform(), false, fb);
         
         mesh.render(submesh, rm);
       }

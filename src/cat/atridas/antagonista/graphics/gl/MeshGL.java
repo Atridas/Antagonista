@@ -34,7 +34,8 @@ public class MeshGL extends Mesh {
   static {
     GL3 = Core.getCore().getRenderManager().getProfile().supports(Profile.GL3);
     GL_ARB_vertex_array_object = GLContext.getCapabilities().GL_ARB_vertex_array_object;
-    GL_ARB_draw_instanced      = GLContext.getCapabilities().GL_ARB_draw_instanced;
+    GL_ARB_draw_instanced      = GLContext.getCapabilities().GL_ARB_draw_instanced &&
+                                 GLContext.getCapabilities().GL_ARB_uniform_buffer_object;
   } 
   
 
