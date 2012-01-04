@@ -6,6 +6,7 @@ import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.MeshManager;
+import cat.atridas.antagonista.graphics.TextureManager;
 
 public class Test {
   
@@ -25,7 +26,7 @@ public class Test {
     
     //RenderManager rm = Core.getCore().getRenderManager();
     
-    /*
+    
     HashedString hs = new HashedString("Textura 2");
     HashedString hs2 = new HashedString("Normalmap proves");
     HashedString hs3 = new HashedString("Heightmap proves");
@@ -38,7 +39,7 @@ public class Test {
     tm.getResource(hs4);
     tm.getResource(hs5);
     tm.getResource(hs);
-    */
+    
     
     /*
     HashedString hs6 = new HashedString("Material 2");

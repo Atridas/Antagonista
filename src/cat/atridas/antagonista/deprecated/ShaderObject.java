@@ -13,7 +13,7 @@ import javax.vecmath.Tuple3f;
 
 import org.lwjgl.BufferUtils;
 
-import cat.atridas.antagonista.graphics.RenderManager;
+import cat.atridas.antagonista.Utils;
 
 public final class ShaderObject {
   //private static Logger logger = Logger.getLogger(ShaderObject.class.getCanonicalName());
@@ -128,7 +128,7 @@ public final class ShaderObject {
   public void setUniform(int uniformID, Matrix4f matrix) {
     assert !cleaned;
     FloatBuffer fb = getFloatBuffer(16);
-    RenderManager.matrixToBuffer(matrix, fb);
+    Utils.matrixToBuffer(matrix, fb);
     glUniformMatrix4(uniformID, false, fb);
   }
   

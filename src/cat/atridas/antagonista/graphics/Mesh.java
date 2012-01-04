@@ -3,7 +3,6 @@ package cat.atridas.antagonista.graphics;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,8 +23,8 @@ public abstract class Mesh extends Resource {
   public static final int NUM_ELEMENTS_PER_VERTEX_ANIMATED_MESH = 14 + (2 + 4); //4 indexos (shorts) + 4 pesos 
 
   
-  private int numVerts, numSubMeshes;
-  private ArrayList<Material> materials;
+  protected int numVerts, numSubMeshes, numFaces[];
+  private Material materials[];
   
   protected Mesh(HashedString _resourceName) {
     super(_resourceName);
@@ -68,8 +67,13 @@ public abstract class Mesh extends Resource {
     
     assert lines.length >= 7;
     
-    numVerts = Integer.parseInt(lines[2]);
-    ByteBuffer vertexBuffer = BufferUtils.createByteBuffer(numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH * Float.SIZE / 8);
+    String[] vertsParams = lines[2].split(" ");
+    
+    numVerts = Integer.parseInt(vertsParams[0]);
+    boolean animated = Boolean.parseBoolean(vertsParams[1]);
+    assert !animated;//TODO animats
+    
+    ByteBuffer vertexBuffer = BufferUtils.createByteBuffer(numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH * Utils.FLOAT_SIZE);
     
     assert lines.length >= firstVertexLine + numVerts;
     
@@ -88,42 +92,49 @@ public abstract class Mesh extends Resource {
     
     numSubMeshes = Integer.parseInt(lines[firstMaterialsLine]);
     
-                          materials = new ArrayList<>(numSubMeshes);
-    ArrayList<ByteBuffer> submeshes = new ArrayList<>(numSubMeshes);
-    
+                          materials = new Material[numSubMeshes];
+                          numFaces  = new int[numSubMeshes];
+                          
     int aux = firstMaterialsLine + 1;
     
     MaterialManager mm = Core.getCore().getMaterialManager();
+    int totalNumFaces = 0;
     for(int i = 0; i < numSubMeshes; ++i) {
       Material material = mm.getResource( new HashedString( lines[aux] ) );
-      int numFaces = Integer.parseInt(lines[aux + 1]);
-      
-      ByteBuffer submesh = BufferUtils.createByteBuffer(numFaces * 3 * Integer.SIZE / 8);
-      
-      materials.add(material);
-      submeshes.add(submesh );
-      
+      numFaces[i] = Integer.parseInt(lines[aux + 1]);
+      totalNumFaces += numFaces[i];
+
+      materials[i] = material;
       aux += 2;
-      for(int face = 0; face < numFaces; face++) {
-        String[] indexes = lines[aux].split(" ");
-        assert indexes.length == 3;
-        for(int j = 0; j < 3; ++j) {
-          int index = Integer.parseInt(indexes[j]);
-          submesh.putInt(index);
-        }
-      }
-      aux += numFaces;
     }
     
-    return loadBuffers(vertexBuffer, submeshes, false); //TODO animats
+    ByteBuffer faces = BufferUtils.createByteBuffer(totalNumFaces * 3 * Utils.SHORT_SIZE);
+
+    for(int i = 0; i < numSubMeshes; ++i) {
+
+      for(int face = 0; face < numFaces[i]; face++) {
+        String[] indexes = lines[aux + face].split(" ");
+        assert indexes.length == 3;
+        for(int j = 0; j < 3; ++j) {
+          short index = Short.parseShort(indexes[j]);
+          faces.putShort(index);
+        }
+      }
+      aux += numFaces[i];
+    }
+    
+    return loadBuffers(vertexBuffer, faces, animated); 
   }
 
   private boolean loadBinary(InputStream is) {
     throw new IllegalStateException("Not yet implemented");
   }
   
-  protected abstract boolean loadBuffers(ByteBuffer vertexBuffer, ArrayList<ByteBuffer> submeshes, boolean animated);
+  protected abstract boolean loadBuffers(ByteBuffer vertexBuffer, ByteBuffer faces, boolean animated);
   protected abstract void loadDefault();
+
+  protected abstract void preRender(); 
+  protected abstract void render(int _submesh, RenderManager rm); 
   
   @Override
   public int getRAMBytesEstimation() {

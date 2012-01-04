@@ -3,18 +3,18 @@ package cat.atridas.antagonista.graphics.gl;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBUniformBufferObject;
 import org.lwjgl.opengl.GLContext;
 
 import cat.atridas.antagonista.HashedString;
-import cat.atridas.antagonista.Quality;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.Material;
-import cat.atridas.antagonista.graphics.Effect.TechniqueType;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
 import cat.atridas.antagonista.graphics.TechniquePass;
 
 import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL31.*;
 
@@ -35,10 +35,9 @@ public class MaterialGL extends Material {
   }
 
   @Override
-  public void activate(TechniqueType tt, Quality q, RenderManager rm) {
-    if(GL3) {
+  public void setUpUniforms(RenderManager rm) {
+    if(GL3 || GL_ARB_uniform_buffer_object) {
 
-      //TODO passar el buffer a la technique
       if(glBuffer < 0) {
         glBuffer  = glGenBuffers();
       }
@@ -52,30 +51,36 @@ public class MaterialGL extends Material {
       glBindBuffer(GL_UNIFORM_BUFFER, glBuffer);
       glBufferData(GL_UNIFORM_BUFFER, bb, GL_DYNAMIC_DRAW);
       
-      glBindBufferRange(GL_UNIFORM_BUFFER, TechniquePass.BASIC_MATERIAL_UNIFORMS_BINDING,
-          glBuffer, 0, 3 * Float.SIZE);
-
-      if(albedo != null)
-        albedo.activate(TechniquePass.ALBEDO_TEXTURE_UNIT);
-      if(normalmap != null)
-        normalmap.activate(TechniquePass.NORMALMAP_TEXTURE_UNIT);
-      if(heightmap != null)
-        heightmap.activate(TechniquePass.HEIGHTMAP_TEXTURE_UNIT);
-      
-      for(TechniquePass pass : effect.getTechnique(tt, q).passes) {
-        pass.activate(rm);
-        //TODO render
+      if(GL3) {
+        glBindBufferRange(GL_UNIFORM_BUFFER, TechniquePass.BASIC_MATERIAL_UNIFORMS_BINDING,
+            glBuffer, 0, 3 * Float.SIZE);
+      } else {
+        ARBUniformBufferObject.glBindBufferRange(GL_UNIFORM_BUFFER, 
+                        TechniquePass.BASIC_MATERIAL_UNIFORMS_BINDING,
+                        glBuffer, 0, 3 * Float.SIZE);
       }
       
-      
-      
-    } else if(GL_ARB_uniform_buffer_object) {
-      throw new IllegalStateException("GL_ARB_uniform_buffer_object not yet implemented");
-    } else {
-      throw new IllegalStateException("OpenGL < 3 not yet implemented");
     }
+    
+    if(albedo != null)
+      albedo.activate(TechniquePass.ALBEDO_TEXTURE_UNIT);
+    if(normalmap != null)
+      normalmap.activate(TechniquePass.NORMALMAP_TEXTURE_UNIT);
+    if(heightmap != null)
+      heightmap.activate(TechniquePass.HEIGHTMAP_TEXTURE_UNIT);
   }
 
+  @Override
+  public void setUpUniforms(TechniquePass pass, RenderManager rm) {
+    if(!(GL3 || GL_ARB_uniform_buffer_object)) {
+
+      glUniform1f(pass.getSpecularFactorUniform(), specularFactor);
+      glUniform1f(pass.getSpecularGlossinessUniform(), specularPower);
+      glUniform1f(pass.getHeightUniform(), height);
+      
+    }
+  }
+  
   @Override
   public void cleanUp() {
     assert !cleaned;

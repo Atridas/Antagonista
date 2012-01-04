@@ -9,11 +9,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import cat.atridas.antagonista.HashedString;
-import cat.atridas.antagonista.Quality;
 import cat.atridas.antagonista.Resource;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
-import cat.atridas.antagonista.graphics.Effect.TechniqueType;
 
 public abstract class Material extends Resource {
   private static Logger LOGGER = Logger.getLogger(Material.class.getCanonicalName());
@@ -132,7 +130,12 @@ public abstract class Material extends Resource {
     return alphaBlend;
   }
   
-  public abstract void activate(TechniqueType tt, Quality q, RenderManager rm);
+  public final Effect getEffect() {
+    return effect;
+  }
+
+  public abstract void setUpUniforms(TechniquePass pass, RenderManager rm);
+  public abstract void setUpUniforms(RenderManager rm);
   
   static {
     Map<byte[], MaterialFileTypes> fileTypes = new HashMap<byte[], Material.MaterialFileTypes>();

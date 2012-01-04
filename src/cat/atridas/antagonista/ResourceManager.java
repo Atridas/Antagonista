@@ -44,7 +44,7 @@ public abstract class ResourceManager<T extends Resource> {
         }
         
         if(is == null || !resource.load(is, extension)) {
-          LOGGER.warning("Resource " + resourceName + " not found, loading Default resource");
+          LOGGER.warning("Resource " + resourceName + " not found, loading Default resource [" + resource.getClass().getName() + "]");
           resource = getDefaultResource();
         }
         
