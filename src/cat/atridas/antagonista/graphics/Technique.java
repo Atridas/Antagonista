@@ -9,6 +9,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import cat.atridas.antagonista.AntagonistException;
+import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.graphics.gl.TechniquePassGL;
 
 public final class Technique {
@@ -26,6 +27,7 @@ public final class Technique {
       Element pass = ((Element)nl.item(i));
       
       _passes.add(new TechniquePassGL(pass));
+      assert !Utils.hasGLErrors();
     }
     
     passes = Collections.unmodifiableList(_passes);

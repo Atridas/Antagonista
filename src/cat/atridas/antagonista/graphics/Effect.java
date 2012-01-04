@@ -95,6 +95,7 @@ public class Effect extends Resource {
           
         } else {
           technique = new Technique(techniqueXML, gl);
+          assert !Utils.hasGLErrors();
         }
         
         HashMap<Quality, Technique> qToTech = techniques.get(techniqueType);
@@ -109,10 +110,11 @@ public class Effect extends Resource {
         
         qToTech.put(q, technique);
       }
-      
-      
+
+      assert !Utils.hasGLErrors();
     } catch(Exception e) {
       LOGGER.warning(Utils.logExceptionStringAndStack(e));
+      Utils.hasGLErrors();
       return false;
     }
     return true;

@@ -187,7 +187,7 @@ public class MeshGL extends Mesh {
     for(int i = 0; i < _submesh; ++i) {
       stride += numFaces[i] * 3 * Utils.SHORT_SIZE;
     }
-    glDrawElements(GL_TRIANGLES, numFaces[_submesh], GL_SHORT, stride);
+    glDrawElements(GL_TRIANGLES, numFaces[_submesh], GL_UNSIGNED_SHORT, stride);
 
     assert !Utils.hasGLErrors();
   }

@@ -13,6 +13,7 @@ import org.lwjgl.opengl.GLContext;
 import org.w3c.dom.Element;
 
 import cat.atridas.antagonista.AntagonistException;
+import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
@@ -107,9 +108,11 @@ public class TechniquePassGL extends TechniquePass {
       }
       
       LOGGER.severe("Error compiling shader: " + info + "\nSource:\n" + sourceWithLines);
+      Utils.hasGLErrors();
       return false;
     }
-    
+
+    assert !Utils.hasGLErrors();
     return true;
   }
 
@@ -175,6 +178,9 @@ public class TechniquePassGL extends TechniquePass {
       
       throw new AntagonistException();
     }
+    assert !Utils.hasGLErrors();
+    
+    rm.activateShader(program);
     
     //uniforms
     if(albedoTexture) {
@@ -186,6 +192,7 @@ public class TechniquePassGL extends TechniquePass {
       
       glUniform1i(albedoTextureUniform, ALBEDO_TEXTURE_UNIT);
     }
+    assert !Utils.hasGLErrors();
     
     if(basicInstanceUniforms) {
       loadBasicInstanceUniforms(program);
@@ -196,6 +203,10 @@ public class TechniquePassGL extends TechniquePass {
     if(basicMaterial) {
       loadBasicMaterialUniforms(program);
     }
+    
+    assert !Utils.hasGLErrors();
+    
+    rm.activateShader(0);
     
     return program;
   }
@@ -229,6 +240,7 @@ public class TechniquePassGL extends TechniquePass {
         throw new AntagonistException();
       }
     }
+    assert !Utils.hasGLErrors();
   }
 
 
@@ -267,6 +279,7 @@ public class TechniquePassGL extends TechniquePass {
         throw new AntagonistException();
       }
     }
+    assert !Utils.hasGLErrors();
   }
 
   private void loadBasicMaterialUniforms(int program) throws AntagonistException {
@@ -300,6 +313,7 @@ public class TechniquePassGL extends TechniquePass {
         throw new AntagonistException();
       }
     }
+    assert !Utils.hasGLErrors();
   }
   
   @Override
