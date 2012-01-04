@@ -8,7 +8,11 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL31;
+import org.lwjgl.opengl.GLContext;
 
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Quality;
@@ -18,6 +22,7 @@ import cat.atridas.antagonista.graphics.Material;
 import cat.atridas.antagonista.graphics.Mesh;
 import cat.atridas.antagonista.graphics.MeshManager;
 import cat.atridas.antagonista.graphics.RenderManager;
+import cat.atridas.antagonista.graphics.RenderManager.Profile;
 import cat.atridas.antagonista.graphics.SceneData;
 import cat.atridas.antagonista.graphics.Technique;
 import cat.atridas.antagonista.graphics.TechniquePass;
@@ -109,7 +114,7 @@ public class Test {
 
     assert !Utils.hasGLErrors();
     
-    FloatBuffer fb = BufferUtils.createFloatBuffer(4*4);
+    FloatBuffer fb = BufferUtils.createFloatBuffer(8*4);
     Matrix4f mvp = new Matrix4f();
     Matrix4f mv  = new Matrix4f();
     mvp.setIdentity();
@@ -120,6 +125,26 @@ public class Test {
     
     sceneData.getViewMatrix(mv);
     sceneData.getViewProjectionMatrix(mvp);
+    
+    int matrixBuffer = -1;
+    if(Utils.supports(Profile.GL3) || GLContext.getCapabilities().GL_ARB_uniform_buffer_object) {
+      fb.rewind();
+      Utils.matrixToBuffer(mvp, fb);
+      Utils.matrixToBuffer(mv, fb);
+      fb.rewind();
+      
+      matrixBuffer = GL15.glGenBuffers();
+      GL15.glBindBuffer(GL31.GL_UNIFORM_BUFFER, matrixBuffer);
+      GL15.glBufferData(GL31.GL_UNIFORM_BUFFER, fb, GL15.GL_STATIC_DRAW);
+      
+      GL30.glBindBufferRange(
+          GL31.GL_UNIFORM_BUFFER, 
+          TechniquePass.BASIC_INSTANCE_UNIFORMS_BINDING, 
+          matrixBuffer, 
+          0, 
+          4 * 8 * Utils.FLOAT_SIZE);
+      
+    }
     
     int numSubmeshes = mesh.getNumSubmeshes();
     for(int submesh = 0; submesh < numSubmeshes; ++submesh) {
@@ -132,15 +157,25 @@ public class Test {
         material.setUpUniforms(pass, rm);
         sceneData.setUniforms(pass);
 
-        Utils.matrixToBuffer(mv, fb);
-        GL20.glUniformMatrix4(pass.getModelViewUniform(), false, fb);
-        Utils.matrixToBuffer(mvp, fb);
-        GL20.glUniformMatrix4(pass.getModelViewProjectionUniform(), false, fb);
+        if(matrixBuffer < 0) {
+          fb.rewind();
+          Utils.matrixToBuffer(mv, fb);
+          fb.rewind();
+          GL20.glUniformMatrix4(pass.getModelViewUniform(), false, fb);
+          fb.rewind();
+          Utils.matrixToBuffer(mvp, fb);
+          fb.rewind();
+          GL20.glUniformMatrix4(pass.getModelViewProjectionUniform(), false, fb);
+        }
         
         mesh.render(submesh, rm);
       }
     }
     
     rm.present();
+    
+    if(matrixBuffer >= 0) {
+      GL15.glDeleteBuffers(matrixBuffer);
+    }
   }
 }

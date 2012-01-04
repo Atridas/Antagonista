@@ -190,12 +190,10 @@ public abstract class Utils {
   }
   
   public static void matrixToBuffer(Matrix4f in, FloatBuffer out) {
-    out.rewind();
     float f[] = new float[4];
     for(int i = 0; i < 4; ++i) {
       in.getColumn(i, f);
       out.put(f);
     }
-    out.rewind();
   }
 }
