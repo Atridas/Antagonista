@@ -56,8 +56,6 @@ public abstract class Mesh extends Resource {
       return false;
     }
   }
-
-
   
   
   private boolean loadText(InputStream is) {
@@ -133,17 +131,30 @@ public abstract class Mesh extends Resource {
   protected abstract boolean loadBuffers(ByteBuffer vertexBuffer, ByteBuffer faces, boolean animated);
   protected abstract void loadDefault();
 
-  protected abstract void preRender(); 
-  protected abstract void render(int _submesh, RenderManager rm); 
+  
+  public final int getNumSubmeshes() {
+    assert !cleaned;
+    return numSubMeshes;
+  }
+  
+  public final Material getMaterial(int _submesh) {
+    assert !cleaned;
+    assert _submesh < numSubMeshes;
+    return materials[_submesh];
+  }
+  
+  public abstract void preRender(); 
+  public abstract void render(int _submesh, RenderManager rm); 
+  public abstract void render(int _submesh, int instances, RenderManager rm); 
   
   @Override
-  public int getRAMBytesEstimation() {
+  public final int getRAMBytesEstimation() {
     // TODO Auto-generated method stub
     return 0;
   }
 
   @Override
-  public int getVRAMBytesEstimation() {
+  public final int getVRAMBytesEstimation() {
     // TODO Auto-generated method stub
     return 0;
   }

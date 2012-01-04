@@ -2,16 +2,52 @@ package cat.atridas.antagonista.graphics;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-public class SceneData {
+import cat.atridas.antagonista.Utils;
 
+public abstract class SceneData {
+
+  protected final RenderManager rm;
   private final Matrix4f viewMatrix = new Matrix4f();
   private final Matrix4f projectionMatrix = new Matrix4f();
   private final Vector3f cameraPosition = new Vector3f();
-  
 
-  public final void setPerspective(float fovy, float zNear, float zFar, RenderManager rm) {
+  protected final Tuple3f  ambientLightColor         = new Point3f();
+  protected final Tuple3f  directionalLightColor     = new Point3f();
+  protected final Vector3f directionalLightDirection = new Vector3f();
+
+
+  public abstract void setUniforms();
+  public abstract void setUniforms(TechniquePass pass);
+  
+  protected SceneData(RenderManager _rm) {
+    rm = _rm;
+  }
+  
+  public final void setAmbientLight(Tuple3f _color) {
+    ambientLightColor.set(_color);
+  }
+  
+  public final void setDirectionalLight(Vector3f _direction, Tuple3f _color) {
+    directionalLightColor.set(_color);
+    directionalLightDirection.set(_direction);
+    if(Math.abs(directionalLightDirection.lengthSquared() - 1.f) > Utils.EPSILON ) {
+      directionalLightDirection.normalize();
+    }
+  }
+
+  public final void getAmbientLight(Tuple3f color_) {
+    color_.set(ambientLightColor);
+  }
+  
+  public final void getDirectionalLight(Vector3f direction_, Tuple3f color_) {
+    direction_.set(directionalLightColor);
+    color_.set(directionalLightDirection);
+  }
+  
+  public final void setPerspective(float fovy, float zNear, float zFar) {
     setPerspective(fovy, (float)rm.getWidth() / (float)rm.getHeight(), zNear, zFar);
   }
    
@@ -75,12 +111,12 @@ public class SceneData {
     setOrtho(left, right,  top,  bottom, near,  far, projectionMatrix);
   }
   
-  public final void setOrtho(float near, float far, RenderManager rm)
+  public final void setOrtho(float near, float far)
   {
-    setOrtho(near,  far, rm, projectionMatrix);
+    setOrtho(near,  far, projectionMatrix);
   }
   
-  public final void setOrtho(float near, float far, RenderManager rm, Matrix4f matrix)
+  public final void setOrtho(float near, float far, Matrix4f matrix)
   {
     setOrtho(0, rm.getWidth(),  0, rm.getHeight(), near,  far, matrix);
   }
@@ -135,16 +171,16 @@ public class SceneData {
     viewMatrix.invert();
   }
   
-  public final void getViewProjectionMatrix(Matrix4f viewProjection) {
-    viewProjection.mul( projectionMatrix );
-    viewProjection.mul( viewMatrix   );
+  public final void getViewProjectionMatrix(Matrix4f viewProjection_) {
+    viewProjection_.mul( projectionMatrix );
+    viewProjection_.mul( viewMatrix   );
   }
   
-  public final void getViewMatrix(Matrix4f view) {
-    view.mul( viewMatrix );
+  public final void getViewMatrix(Matrix4f view_) {
+    view_.mul( viewMatrix );
   }
   
-  public final void getProjectionMatrix(Matrix4f projection) {
-    projection.mul( projectionMatrix );
+  public final void getProjectionMatrix(Matrix4f projection_) {
+    projection_.mul( projectionMatrix );
   }
 }

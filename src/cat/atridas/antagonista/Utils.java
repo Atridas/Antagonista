@@ -29,6 +29,8 @@ public abstract class Utils {
   
   public static final HashedString DEFAULT = new HashedString("default");
   
+  
+  public static final float EPSILON = 0.0001f;
 
   public static final int FLOAT_SIZE   = Float  .SIZE / 8;
   public static final int INTEGER_SIZE = Integer.SIZE / 8;

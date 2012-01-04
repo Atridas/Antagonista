@@ -19,6 +19,7 @@ public final class RenderManagerGL extends RenderManager {
 
   private Profile profile;
   
+  private SceneDataGL sceneData;
   
   @Override
   public void initGL() {
@@ -42,6 +43,8 @@ public final class RenderManagerGL extends RenderManager {
     
     glEnable(GL_DEPTH_TEST);
     glClearDepth(1);
+    
+    sceneData = new SceneDataGL(this);
     
     assert !hasGLErrors();
   }
@@ -222,6 +225,11 @@ public final class RenderManagerGL extends RenderManager {
     default:
       throw new IllegalArgumentException();  
     }
+  }
+
+  @Override
+  public SceneDataGL getSceneData() {
+    return sceneData;
   }
 
   @Override

@@ -50,17 +50,23 @@ public abstract class TechniquePass {
   public static final int    NORMALMAP_TEXTURE_UNIT =    1;
   public static final String HEIGHTMAP_TEXTURE_UNIFORM = "u_s2Haightmap";
   public static final int    HEIGHTMAP_TEXTURE_UNIT =    2;
+  
+
+  public static final int    BASIC_INSTANCE_UNIFORMS_BINDING = 0;
   public static final String BASIC_INSTANCE_UNIFORMS_BLOCK = "UniformInstances";
-  public static final int    BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE = (Float.SIZE / 8) * (4*4) * 2; 
-  public static final String BASIC_INSTANCE_UNIFORMS_STRUCT = "u_InstanceInfo";
+  public static final int    BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE = Utils.FLOAT_SIZE * (4*4) * 2; 
+  public static final String BASIC_INSTANCE_UNIFORMS_STRUCT       = "u_InstanceInfo";
+  public static final String MODEL_VIEW_PROJECTION_UNIFORMS = "u_m4ModelViewProjection";
+  public static final String MODEL_VIEW_UNIFORMS            = "u_m4ModelView";
+  //public static final String BONES_UNIFORMS                 = "u_m34Bones";
 
-  public static final int    BASIC_LIGHT_UNIFORMS_BINDING = 0;
+  public static final int    BASIC_LIGHT_UNIFORMS_BINDING = 1;
   public static final String BASIC_LIGHT_UNIFORMS_BLOCK = "UniformLight";
-  public static final String AMBIENT_LIGHT_UNIFORM_BLOCK = "u_v3AmbientLight";
-  public static final String DIRECTIONAL_LIGHT_POS_UNIFORM_BLOCK = "u_v3DirectionalLightPosition";
-  public static final String DIRECTIONAL_LIGHT_COLOR_UNIFORMS_BLOCK = "u_v3DirectionalLightColor";
+  public static final String AMBIENT_LIGHT_UNIFORM = "u_v3AmbientLight";
+  public static final String DIRECTIONAL_LIGHT_DIR_UNIFORM = "u_v3DirectionalLightDirection";
+  public static final String DIRECTIONAL_LIGHT_COLOR_UNIFORMS = "u_v3DirectionalLightColor";
 
-  public static final int    BASIC_MATERIAL_UNIFORMS_BINDING = 0;
+  public static final int    BASIC_MATERIAL_UNIFORMS_BINDING = 2;
   public static final String BASIC_MATERIAL_UNIFORMS_BLOCK = "UniformMaterials";
   public static final String SPECULAR_FACTOR_UNIFORM = "u_fSpecularFactor";
   public static final String SPECULAR_GLOSS_UNIFORM = "u_fGlossiness";
@@ -135,7 +141,7 @@ public abstract class TechniquePass {
         vs = loadShader(element, ShaderType.VERTEX, em, rm);
         break;
       case "fragment_shader":
-        vs = loadShader(element, ShaderType.FRAGMENT, em, rm);
+        fs = loadShader(element, ShaderType.FRAGMENT, em, rm);
         break;
         //TODO altres shaders
       case "render_states":
@@ -155,6 +161,8 @@ public abstract class TechniquePass {
         LOGGER.warning("Unrecognized tag name" + element.getTagName());
       }
     }
+    
+    shaderProgram = completeShaderProgram(vs, tc, te, gs, fs, rm);
   }
   
   private int loadShader(Element shaderXML, ShaderType st, EffectManager em, RenderManager rm) {
@@ -473,6 +481,13 @@ public abstract class TechniquePass {
   public abstract int getSpecularGlossinessUniform();
   public abstract int getHeightUniform();
   
+  public abstract int getAmbientLightColorUniform();
+  public abstract int getDirectionalLightDirectionUniform();
+  public abstract int getDirectionalLightColorUniform();
+  
+  public abstract int getModelViewProjectionUniform();
+  public abstract int getModelViewUniform();
+  
   public void activate(RenderManager rm) {
     assert !cleaned;
     rm.activateShader(shaderProgram);
@@ -504,6 +519,7 @@ public abstract class TechniquePass {
     }
     
     //TODO atributs i coses d'aquestes, o no cal?
+    assert !Utils.hasGLErrors();
   }
   
   

@@ -77,6 +77,8 @@ public abstract class RenderManager {
   public abstract void setAlphaBlend(BlendOperation operation, int renderTarget);
   public abstract void setAlphaBlend(BlendOperationSeparate operation, int renderTarget);
 	
+  public abstract SceneData getSceneData();
+  
   public abstract boolean hasGLErrors();
 	
   

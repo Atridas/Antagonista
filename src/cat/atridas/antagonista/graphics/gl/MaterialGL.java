@@ -7,6 +7,7 @@ import org.lwjgl.opengl.ARBUniformBufferObject;
 import org.lwjgl.opengl.GLContext;
 
 import cat.atridas.antagonista.HashedString;
+import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.Material;
 import cat.atridas.antagonista.graphics.RenderManager;
@@ -15,13 +16,13 @@ import cat.atridas.antagonista.graphics.TechniquePass;
 
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.opengl.GL31.*;
+import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL31;
 
 public class MaterialGL extends Material {
 
   private ByteBuffer bb = BufferUtils.createByteBuffer(3 * Float.SIZE); 
-  private int glBuffer = -1;
+  private int bufferId = -1;
   
   private static final boolean GL_ARB_uniform_buffer_object, GL3;
 
@@ -38,8 +39,8 @@ public class MaterialGL extends Material {
   public void setUpUniforms(RenderManager rm) {
     if(GL3 || GL_ARB_uniform_buffer_object) {
 
-      if(glBuffer < 0) {
-        glBuffer  = glGenBuffers();
+      if(bufferId < 0) {
+        bufferId  = glGenBuffers();
       }
       
       bb.rewind();
@@ -48,16 +49,16 @@ public class MaterialGL extends Material {
       bb.putFloat(height);
       bb.rewind();
       
-      glBindBuffer(GL_UNIFORM_BUFFER, glBuffer);
-      glBufferData(GL_UNIFORM_BUFFER, bb, GL_DYNAMIC_DRAW);
+      glBindBuffer(GL31.GL_UNIFORM_BUFFER, bufferId);
+      glBufferData(GL31.GL_UNIFORM_BUFFER, bb, GL_DYNAMIC_DRAW);
       
       if(GL3) {
-        glBindBufferRange(GL_UNIFORM_BUFFER, TechniquePass.BASIC_MATERIAL_UNIFORMS_BINDING,
-            glBuffer, 0, 3 * Float.SIZE);
+        GL30.glBindBufferRange(GL31.GL_UNIFORM_BUFFER, TechniquePass.BASIC_MATERIAL_UNIFORMS_BINDING,
+            bufferId, 0, 3 * Float.SIZE);
       } else {
-        ARBUniformBufferObject.glBindBufferRange(GL_UNIFORM_BUFFER, 
+        ARBUniformBufferObject.glBindBufferRange(GL31.GL_UNIFORM_BUFFER, 
                         TechniquePass.BASIC_MATERIAL_UNIFORMS_BINDING,
-                        glBuffer, 0, 3 * Float.SIZE);
+                        bufferId, 0, 3 * Float.SIZE);
       }
       
     }
@@ -68,6 +69,8 @@ public class MaterialGL extends Material {
       normalmap.activate(TechniquePass.NORMALMAP_TEXTURE_UNIT);
     if(heightmap != null)
       heightmap.activate(TechniquePass.HEIGHTMAP_TEXTURE_UNIT);
+
+    assert !Utils.hasGLErrors();
   }
 
   @Override
@@ -79,6 +82,7 @@ public class MaterialGL extends Material {
       glUniform1f(pass.getHeightUniform(), height);
       
     }
+    assert !Utils.hasGLErrors();
   }
   
   @Override

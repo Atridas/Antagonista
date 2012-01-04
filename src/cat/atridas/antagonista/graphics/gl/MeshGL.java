@@ -9,6 +9,8 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.ARBVertexArrayObject;
+import org.lwjgl.opengl.ARBDrawInstanced;
+import org.lwjgl.opengl.GL31;
 
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Utils;
@@ -27,11 +29,12 @@ public class MeshGL extends Mesh {
 
   private static final int STATIC_MESH_STRIDE   = NUM_ELEMENTS_PER_VERTEX_STATIC_MESH   * Utils.FLOAT_SIZE;
   private static final int ANIMATED_MESH_STRIDE = NUM_ELEMENTS_PER_VERTEX_ANIMATED_MESH * Utils.FLOAT_SIZE;
-  private static final boolean GL_ARB_vertex_array_object, GL3;
+  private static final boolean GL_ARB_draw_instanced, GL_ARB_vertex_array_object, GL3;
 
   static {
     GL3 = Core.getCore().getRenderManager().getProfile().supports(Profile.GL3);
     GL_ARB_vertex_array_object = GLContext.getCapabilities().GL_ARB_vertex_array_object;
+    GL_ARB_draw_instanced      = GLContext.getCapabilities().GL_ARB_draw_instanced;
   } 
   
 
@@ -128,7 +131,7 @@ public class MeshGL extends Mesh {
   }
 
   @Override
-  protected void preRender() {
+  public void preRender() {
 
     if(GL3 || GL_ARB_vertex_array_object) {
       if(GL3) {
@@ -179,13 +182,33 @@ public class MeshGL extends Mesh {
   }
   
   @Override
-  protected void render(int _submesh, RenderManager rm) {
+  public void render(int _submesh, RenderManager rm) {
     int stride = 0;
     for(int i = 0; i < _submesh; ++i) {
       stride += numFaces[i] * 3 * Utils.SHORT_SIZE;
     }
     glDrawElements(GL_TRIANGLES, numFaces[_submesh], GL_SHORT, stride);
+
+    assert !Utils.hasGLErrors();
+  }
+  
+  @Override
+  public void render(int _submesh, int _instances, RenderManager rm) {
+    int stride = 0;
+    for(int i = 0; i < _submesh; ++i) {
+      stride += numFaces[i] * 3 * Utils.SHORT_SIZE;
+    }
     
+    if(GL3) {
+      GL31.glDrawElementsInstanced(GL_TRIANGLES, numFaces[_submesh], GL_SHORT, stride, _instances);
+    } else if(GL_ARB_draw_instanced) {
+      ARBDrawInstanced.glDrawElementsInstancedARB(
+                                  GL_TRIANGLES, numFaces[_submesh], GL_SHORT, stride, _instances);
+    } else {
+      throw new IllegalStateException("Calling draw instanced when hardware does not support instancing");
+    }
+
+    assert !Utils.hasGLErrors();
   }
 
   @Override

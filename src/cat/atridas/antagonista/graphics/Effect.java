@@ -14,6 +14,7 @@ import org.w3c.dom.NodeList;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Quality;
 import cat.atridas.antagonista.Resource;
+import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
 
@@ -111,13 +112,7 @@ public class Effect extends Resource {
       
       
     } catch(Exception e) {
-      LOGGER.warning("Encountered an exception: " + e.toString());
-      StringBuilder stackTrace = new StringBuilder();
-      for(StackTraceElement ste : e.getStackTrace()) {
-        stackTrace.append(ste.toString());
-        stackTrace.append("\n  ");
-      }
-      LOGGER.warning("Encountered an exception: " + stackTrace.toString());
+      LOGGER.warning(Utils.logExceptionStringAndStack(e));
       return false;
     }
     return true;

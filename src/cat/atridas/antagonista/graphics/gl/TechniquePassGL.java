@@ -23,7 +23,8 @@ public class TechniquePassGL extends TechniquePass {
   private static Logger LOGGER = Logger.getLogger(TechniquePassGL.class.getCanonicalName());
 
   private int albedoTextureUniform;
-  private int basicInstanceBlock, basicInstanceStruct;
+  
+  private int modelViewProjectionUniform, modelViewUniform;//, bonesUniform;
   
   private int ambientUniform, directionalDirUniform, directionalColorUniform;
   private int specularFactorUniform, specularGlossinessUniform, heightUniform;
@@ -201,21 +202,30 @@ public class TechniquePassGL extends TechniquePass {
   
   private void loadBasicInstanceUniforms(int program) throws AntagonistException {
     if(GL3) {
-      basicInstanceBlock = GL31.glGetUniformBlockIndex(program, BASIC_INSTANCE_UNIFORMS_BLOCK);
+      int basicInstanceBlock = GL31.glGetUniformBlockIndex(program, BASIC_INSTANCE_UNIFORMS_BLOCK);
       if(basicInstanceBlock < 0) {
         LOGGER.severe("Basic instance uniforms requested but not active!");
         throw new AntagonistException();
       }
+      
+      GL31.glUniformBlockBinding(program, basicInstanceBlock, BASIC_INSTANCE_UNIFORMS_BINDING);
     } else if(GL_ARB_uniform_buffer_object) {
-      basicInstanceBlock = ARBUniformBufferObject.glGetUniformBlockIndex(program, BASIC_INSTANCE_UNIFORMS_BLOCK);
+      int basicInstanceBlock = ARBUniformBufferObject.glGetUniformBlockIndex(program, BASIC_INSTANCE_UNIFORMS_BLOCK);
       if(basicInstanceBlock < 0) {
         LOGGER.severe("Basic instance uniforms requested but not active!");
         throw new AntagonistException();
       }
+
+      ARBUniformBufferObject.glUniformBlockBinding(program, basicInstanceBlock, BASIC_INSTANCE_UNIFORMS_BINDING);
     } else {
-      basicInstanceStruct = glGetUniformLocation(program, BASIC_INSTANCE_UNIFORMS_STRUCT);
-      if(basicInstanceStruct < 0) {
-        LOGGER.severe("Basic instance uniforms requested but not active!");
+      modelViewProjectionUniform = glGetUniformLocation(program, MODEL_VIEW_PROJECTION_UNIFORMS);
+      modelViewUniform = glGetUniformLocation(program, MODEL_VIEW_UNIFORMS);
+      if(modelViewProjectionUniform < 0) {
+        LOGGER.severe("Basic instance uniforms requested but ModelViewProjection matrix not active!");
+        throw new AntagonistException();
+      }
+      if(modelViewUniform < 0) {
+        LOGGER.severe("Basic instance uniforms requested but ModelView matrix not active!");
         throw new AntagonistException();
       }
     }
@@ -241,9 +251,9 @@ public class TechniquePassGL extends TechniquePass {
       
       ARBUniformBufferObject.glUniformBlockBinding(program, basicLightBlock, BASIC_LIGHT_UNIFORMS_BINDING);
     } else {
-      ambientUniform = glGetUniformLocation(program, AMBIENT_LIGHT_UNIFORM_BLOCK);
-      directionalDirUniform = glGetUniformLocation(program, DIRECTIONAL_LIGHT_POS_UNIFORM_BLOCK);
-      directionalColorUniform = glGetUniformLocation(program, DIRECTIONAL_LIGHT_COLOR_UNIFORMS_BLOCK);
+      ambientUniform = glGetUniformLocation(program, AMBIENT_LIGHT_UNIFORM);
+      directionalDirUniform = glGetUniformLocation(program, DIRECTIONAL_LIGHT_DIR_UNIFORM);
+      directionalColorUniform = glGetUniformLocation(program, DIRECTIONAL_LIGHT_COLOR_UNIFORMS);
       if(ambientUniform < 0) {
         LOGGER.severe("Basic light uniforms requested but ambient uniform not active!");
         throw new AntagonistException();
@@ -303,6 +313,29 @@ public class TechniquePassGL extends TechniquePass {
   @Override
   public int getHeightUniform() {
     return heightUniform;
+  }
+
+  @Override
+  public int getAmbientLightColorUniform() {
+    return ambientUniform;
+  }
+  @Override
+  public int getDirectionalLightDirectionUniform() {
+    return directionalDirUniform;
+  }
+  @Override
+  public int getDirectionalLightColorUniform() {
+    return directionalColorUniform;
+  }
+  
+
+  @Override
+  public int getModelViewProjectionUniform() {
+    return modelViewProjectionUniform;
+  }
+  @Override
+  public int getModelViewUniform() {
+    return modelViewUniform;
   }
   
   @Override

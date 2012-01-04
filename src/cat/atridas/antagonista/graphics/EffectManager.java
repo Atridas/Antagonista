@@ -120,7 +120,8 @@ public class EffectManager extends ResourceManager<Effect> {
              tessEvalShaderManager    != null && 
              geometryShaderManager    != null && 
              fragmentShaderManager    != null;
-      
+
+      assert !Utils.hasGLErrors();
       
       nl = effectsXML.getElementsByTagName("effect");
       for(int i = 0; i < nl.getLength(); ++i) {
@@ -128,6 +129,7 @@ public class EffectManager extends ResourceManager<Effect> {
         String name = effectXML.getAttribute("name");
         
         getResource(new HashedString(name));
+        assert !Utils.hasGLErrors();
       }
       
     } catch (FileNotFoundException e) {
