@@ -16,7 +16,7 @@ in vec3 v_v3Position; //View space position
 in vec3 v_v3Normal;      //View
 in vec2 v_v2UV;
 
-out vec4 f_v4Color;
+layout(location = 0)out vec4 f_v4Color;
 
 // Uniforms ----------------------------------------
 

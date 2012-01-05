@@ -5,8 +5,15 @@ import java.util.ArrayList;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.ResourceManager;
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.core.Core;
+import cat.atridas.antagonista.graphics.RenderManager.Functionality;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
+import cat.atridas.antagonista.graphics.gl.MaterialGL2;
+import cat.atridas.antagonista.graphics.gl.MaterialGL2_UBO;
+import cat.atridas.antagonista.graphics.gl.MaterialGL3;
 import cat.atridas.antagonista.graphics.gl.MeshGL;
+import cat.atridas.antagonista.graphics.gl.MeshGL2;
+import cat.atridas.antagonista.graphics.gl.MeshGL3;
 
 public class MeshManager extends ResourceManager<Mesh> {
 
@@ -36,8 +43,16 @@ public class MeshManager extends ResourceManager<Mesh> {
 
   @Override
   protected Mesh createNewResource(HashedString name) {
-    Utils.supportOrException(Profile.GL2, "Needs OpenGL, GL ES not yet suported");
-    return new MeshGL(name);
+    if(Utils.supports(Profile.GL3)) {
+      return new MeshGL3(Utils.DEFAULT);
+    } else if(Utils.supports(Profile.GL2)) {
+      return new MeshGL2(Utils.DEFAULT);
+    } else {
+      throw new IllegalStateException(
+          "Current Profile [" + 
+              Core.getCore().getRenderManager().getProfile() + 
+                               "] not implemented.");
+    }
   }
 
   @Override

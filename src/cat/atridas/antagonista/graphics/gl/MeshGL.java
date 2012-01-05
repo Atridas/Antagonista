@@ -4,14 +4,8 @@ import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GLContext;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.ARBVertexArrayObject;
-import org.lwjgl.opengl.ARBDrawInstanced;
-import org.lwjgl.opengl.GL31;
 
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Utils;
@@ -19,32 +13,24 @@ import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.Material;
 import cat.atridas.antagonista.graphics.Mesh;
 import cat.atridas.antagonista.graphics.RenderManager;
-import cat.atridas.antagonista.graphics.RenderManager.Profile;
-import cat.atridas.antagonista.graphics.TechniquePass;
 
-public class MeshGL extends Mesh {
+public abstract class MeshGL extends Mesh {
   private static Logger LOGGER = Logger.getLogger(MeshGL.class.getCanonicalName());
   
-  private int   vertexBuffer, indexBuffer,  vertexArrayObject;
+  protected int   vertexBuffer, indexBuffer;
   
-  private boolean animated;
+  protected boolean animated;
 
-  private static final int STATIC_MESH_STRIDE   = NUM_ELEMENTS_PER_VERTEX_STATIC_MESH   * Utils.FLOAT_SIZE;
-  private static final int ANIMATED_MESH_STRIDE = NUM_ELEMENTS_PER_VERTEX_ANIMATED_MESH * Utils.FLOAT_SIZE;
-  private static final boolean GL_ARB_draw_instanced, GL_ARB_vertex_array_object, GL3;
+  protected static final int STATIC_MESH_STRIDE   = NUM_ELEMENTS_PER_VERTEX_STATIC_MESH   * Utils.FLOAT_SIZE;
+  protected static final int ANIMATED_MESH_STRIDE = NUM_ELEMENTS_PER_VERTEX_ANIMATED_MESH * Utils.FLOAT_SIZE;
 
-  static {
-    GL3 = Core.getCore().getRenderManager().getProfile().supports(Profile.GL3);
-    GL_ARB_vertex_array_object = GLContext.getCapabilities().GL_ARB_vertex_array_object;
-    GL_ARB_draw_instanced      = GLContext.getCapabilities().GL_ARB_draw_instanced &&
-                                 GLContext.getCapabilities().GL_ARB_uniform_buffer_object;
-  } 
   
 
   public MeshGL(HashedString _resourceName) {
     super(_resourceName);
   }
 
+  
   @Override
   protected boolean loadBuffers(ByteBuffer _vertexBuffer, ByteBuffer _faces, boolean _animated) {
     animated = _animated;
@@ -52,13 +38,9 @@ public class MeshGL extends Mesh {
     _vertexBuffer.rewind();
     _faces.rewind();
     
-    if(GL3) {
-      GL30.glBindVertexArray(0);
-    } else if(GL_ARB_vertex_array_object) {
-      ARBVertexArrayObject.glBindVertexArray(0);
-    }
-    
     vertexBuffer = glGenBuffers();
+    
+    Core.getCore().getRenderManager().noVertexArray();
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, _vertexBuffer, GL_STATIC_DRAW);
@@ -71,68 +53,13 @@ public class MeshGL extends Mesh {
     
     assert !Utils.hasGLErrors();
     
-    if(GL3 || GL_ARB_vertex_array_object) {
-      int stride;
-      if(animated) {
-        stride = ANIMATED_MESH_STRIDE;
-      } else {
-        stride = STATIC_MESH_STRIDE;
-      }
-
-
-      if(GL3) {
-        vertexArrayObject = GL30.glGenVertexArrays();
-        GL30.glBindVertexArray(vertexArrayObject);
-      } else {
-        vertexArrayObject = ARBVertexArrayObject.glGenVertexArrays();
-        ARBVertexArrayObject.glBindVertexArray(vertexArrayObject);
-      }
-      glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-
-      
-      glEnableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
-      glVertexAttribPointer(TechniquePass.POSITION_ATTRIBUTE, 3, GL_FLOAT, false, stride, 0);
-      
-      glEnableVertexAttribArray(TechniquePass.NORMAL_ATTRIBUTE);
-      glVertexAttribPointer(TechniquePass.NORMAL_ATTRIBUTE, 3, GL_FLOAT, false, stride, 3 * Utils.FLOAT_SIZE);
-      
-      glEnableVertexAttribArray(TechniquePass.TANGENT_ATTRIBUTE);
-      glVertexAttribPointer(TechniquePass.TANGENT_ATTRIBUTE, 3, GL_FLOAT, false, stride, 6 * Utils.FLOAT_SIZE);
-      
-      glEnableVertexAttribArray(TechniquePass.BITANGENT_ATTRIBUTE);
-      glVertexAttribPointer(TechniquePass.BITANGENT_ATTRIBUTE, 3, GL_FLOAT, false, stride, 9 * Utils.FLOAT_SIZE);
-      
-      glEnableVertexAttribArray(TechniquePass.UV_ATTRIBUTE);
-      glVertexAttribPointer(TechniquePass.UV_ATTRIBUTE, 2, GL_FLOAT, false, stride, 12 * Utils.FLOAT_SIZE);
-      
-      if(animated) {
-        glEnableVertexAttribArray(TechniquePass.BLEND_INDEX_ATTRIBUTE);
-        glVertexAttribPointer(TechniquePass.BLEND_INDEX_ATTRIBUTE, 4, GL_SHORT, false, stride, 15 * Utils.FLOAT_SIZE);
-        
-        glEnableVertexAttribArray(TechniquePass.BLEND_WEIGHT_ATTRIBUTE);
-        glVertexAttribPointer(TechniquePass.BLEND_WEIGHT_ATTRIBUTE, 4, GL_FLOAT, false, stride, 15 * Utils.FLOAT_SIZE + 4 * Utils.SHORT_SIZE);
-      }
-      
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-
-      if(GL3) {
-        GL30.glBindVertexArray(0);
-      } else if(GL_ARB_vertex_array_object) {
-        ARBVertexArrayObject.glBindVertexArray(0);
-      }
-      
-
-      glDisableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
-      glDisableVertexAttribArray(TechniquePass.NORMAL_ATTRIBUTE);
-      glDisableVertexAttribArray(TechniquePass.TANGENT_ATTRIBUTE);
-      glDisableVertexAttribArray(TechniquePass.BITANGENT_ATTRIBUTE);
-      glDisableVertexAttribArray(TechniquePass.UV_ATTRIBUTE);
-      glDisableVertexAttribArray(TechniquePass.BLEND_INDEX_ATTRIBUTE);
-      glDisableVertexAttribArray(TechniquePass.BLEND_WEIGHT_ATTRIBUTE);
-    }
+    createArrayBuffer();
     
     return !Utils.hasGLErrors();
   }
+
+  protected abstract void createArrayBuffer();
+  protected abstract void deleteArrayBuffer();
 
   @Override
   protected void loadDefault() {
@@ -234,88 +161,12 @@ public class MeshGL extends Mesh {
     materials    = new Material[1];
     materials[0] = Core.getCore().getMaterialManager().getDefaultResource();
     
-    if(GL3) {
-      GL30.glBindVertexArray(0);
-    } else if(GL_ARB_vertex_array_object) {
-      ARBVertexArrayObject.glBindVertexArray(0);
-    }
+    boolean result = loadBuffers(_vertexBuffer, _faces, animated);
     
-    vertexBuffer = glGenBuffers();
-
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, _vertexBuffer, GL_STATIC_DRAW);
-    
-    assert !Utils.hasGLErrors();
-    
-    indexBuffer = glGenBuffers();
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, _faces, GL_STATIC_DRAW);
-    
-    assert !Utils.hasGLErrors();
-    
-    if(GL3 || GL_ARB_vertex_array_object) {
-      int stride = 14 * Utils.FLOAT_SIZE;
-      
-
-
-      if(GL3) {
-        vertexArrayObject = GL30.glGenVertexArrays();
-        GL30.glBindVertexArray(vertexArrayObject);
-      } else {
-        vertexArrayObject = ARBVertexArrayObject.glGenVertexArrays();
-        ARBVertexArrayObject.glBindVertexArray(vertexArrayObject);
-      }
-      glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-
-      
-      glEnableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
-      glVertexAttribPointer(TechniquePass.POSITION_ATTRIBUTE, 3, GL_FLOAT, false, stride, 0);
-      
-      glEnableVertexAttribArray(TechniquePass.NORMAL_ATTRIBUTE);
-      glVertexAttribPointer(TechniquePass.NORMAL_ATTRIBUTE, 3, GL_FLOAT, false, stride, 3 * Utils.FLOAT_SIZE);
-      
-      glEnableVertexAttribArray(TechniquePass.TANGENT_ATTRIBUTE);
-      glVertexAttribPointer(TechniquePass.TANGENT_ATTRIBUTE, 3, GL_FLOAT, false, stride, 6 * Utils.FLOAT_SIZE);
-      
-      glEnableVertexAttribArray(TechniquePass.BITANGENT_ATTRIBUTE);
-      glVertexAttribPointer(TechniquePass.BITANGENT_ATTRIBUTE, 3, GL_FLOAT, false, stride, 9 * Utils.FLOAT_SIZE);
-      
-      glEnableVertexAttribArray(TechniquePass.UV_ATTRIBUTE);
-      glVertexAttribPointer(TechniquePass.UV_ATTRIBUTE, 2, GL_FLOAT, false, stride, 12 * Utils.FLOAT_SIZE);
-      assert !Utils.hasGLErrors();
-      
-      //TODO
-      /*
-      if(animated) {
-        glEnableVertexAttribArray(TechniquePass.BLEND_INDEX_ATTRIBUTE);
-        glVertexAttribPointer(TechniquePass.BLEND_INDEX_ATTRIBUTE, 4, GL_SHORT, false, stride, 15 * Utils.FLOAT_SIZE);
-        
-        glEnableVertexAttribArray(TechniquePass.BLEND_WEIGHT_ATTRIBUTE);
-        glVertexAttribPointer(TechniquePass.BLEND_WEIGHT_ATTRIBUTE, 4, GL_FLOAT, false, stride, 15 * Utils.FLOAT_SIZE + 4 * Utils.SHORT_SIZE);
-      } else {
-        glDisableVertexAttribArray(TechniquePass.BLEND_INDEX_ATTRIBUTE);
-        glDisableVertexAttribArray(TechniquePass.BLEND_WEIGHT_ATTRIBUTE);
-      }
-      */
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-
-      if(GL3) {
-        GL30.glBindVertexArray(0);
-      } else if(GL_ARB_vertex_array_object) {
-        ARBVertexArrayObject.glBindVertexArray(0);
-      }
-      
-
-      glDisableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
-      glDisableVertexAttribArray(TechniquePass.NORMAL_ATTRIBUTE);
-      glDisableVertexAttribArray(TechniquePass.TANGENT_ATTRIBUTE);
-      glDisableVertexAttribArray(TechniquePass.BITANGENT_ATTRIBUTE);
-      glDisableVertexAttribArray(TechniquePass.UV_ATTRIBUTE);
-    }
-    
-    assert !Utils.hasGLErrors();
+    assert result;
   }
 
+  /*
   @Override
   public void preRender() {
     assert !cleaned;
@@ -367,10 +218,12 @@ public class MeshGL extends Mesh {
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
     }
   }
+  */
   
   @Override
   public void render(int _submesh, RenderManager rm) {
     assert !cleaned;
+    assert _submesh < numSubMeshes;
     int stride = 0;
     for(int i = 0; i < _submesh; ++i) {
       stride += numFaces[i] * 3 * Utils.SHORT_SIZE;
@@ -380,6 +233,7 @@ public class MeshGL extends Mesh {
     assert !Utils.hasGLErrors();
   }
   
+  /*
   @Override
   public void render(int _submesh, int _instances, RenderManager rm) {
     assert !cleaned;
@@ -399,6 +253,7 @@ public class MeshGL extends Mesh {
 
     assert !Utils.hasGLErrors();
   }
+  */
 
   @Override
   public void cleanUp() {
@@ -406,12 +261,15 @@ public class MeshGL extends Mesh {
     
     glDeleteBuffers(vertexBuffer);
     glDeleteBuffers(indexBuffer);
+    
+    deleteArrayBuffer();
+    /*
     if(GL3) {
       GL30.glDeleteVertexArrays(vertexArrayObject);
     } else if(GL_ARB_vertex_array_object){
       ARBVertexArrayObject.glDeleteVertexArrays(vertexArrayObject);
     }
-    
+    */
     cleaned = true;
   }
 }

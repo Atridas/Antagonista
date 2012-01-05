@@ -2,6 +2,7 @@ package cat.atridas.antagonista.graphics.gl;
 
 import java.util.logging.Logger;
 
+import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.GLContext;
 
@@ -225,6 +226,15 @@ public final class RenderManagerGL extends RenderManager {
       return GL_SRC1_ALPHA;
     default:
       throw new IllegalArgumentException();  
+    }
+  }
+
+  @Override
+  public void noVertexArray() {
+    if(profile.supports(Profile.GL3)) {
+      glBindVertexArray(0);
+    } else if(profile.supports(Functionality.VERTEX_ARRAY_OBJECT)) {
+      ARBVertexArrayObject.glBindVertexArray(0);
     }
   }
 

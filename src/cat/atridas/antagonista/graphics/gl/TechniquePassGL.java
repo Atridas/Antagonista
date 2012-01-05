@@ -1,16 +1,9 @@
 package cat.atridas.antagonista.graphics.gl;
 
-import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.opengl.GL32.*;
-import static org.lwjgl.opengl.GL40.*;
 
 import java.util.logging.Logger;
 
-import org.lwjgl.opengl.ARBUniformBufferObject;
-import org.lwjgl.opengl.GL31;
-import org.lwjgl.opengl.GLContext;
 import org.w3c.dom.Element;
 
 import cat.atridas.antagonista.AntagonistException;
@@ -21,15 +14,11 @@ import cat.atridas.antagonista.graphics.RenderManager.Profile;
 import cat.atridas.antagonista.graphics.TechniquePass;
 import cat.atridas.antagonista.graphics.Shader.ShaderType;
 
-public class TechniquePassGL extends TechniquePass {
+public abstract class TechniquePassGL extends TechniquePass {
   private static Logger LOGGER = Logger.getLogger(TechniquePassGL.class.getCanonicalName());
 
   private int albedoTextureUniform;
   
-  private int modelViewProjectionUniform, modelViewUniform;//, bonesUniform;
-  
-  private int ambientUniform, directionalDirUniform, directionalColorUniform;
-  private int specularFactorUniform, specularGlossinessUniform, heightUniform;
   
   private static int defaultVertexShader   = -1,
                      defaultFragmentShader = -1,
@@ -37,20 +26,13 @@ public class TechniquePassGL extends TechniquePass {
                      defaultTessControl   = -1,
                      defaultTessEval       = -1;
   
-  private static final boolean GL_ARB_uniform_buffer_object, GL3;
-
-  static {
-    GL3 = Core.getCore().getRenderManager().getProfile().supports(Profile.GL3);
-    GL_ARB_uniform_buffer_object = GLContext.getCapabilities().GL_ARB_uniform_buffer_object;
-  }
-  
   public TechniquePassGL(Element techniquePassXML) throws AntagonistException {
     super(techniquePassXML);
   }
   
-  public TechniquePassGL() {
-  }
+  public TechniquePassGL() {}
   
+  /*
   @Override
   protected int generateShaderObject(ShaderType st, RenderManager rm) {
     switch(st) {
@@ -71,6 +53,7 @@ public class TechniquePassGL extends TechniquePass {
       throw new IllegalArgumentException();
     }
   }
+  */
 
   @Override
   protected void deleteShader(int shaderID) {
@@ -156,28 +139,7 @@ public class TechniquePassGL extends TechniquePass {
     }
     
     
-    //aqui la teca!!!!!
-    if(position) {
-      glBindAttribLocation(program, POSITION_ATTRIBUTE, POSITION_ATTRIBUTE_NAME);
-    }
-    if(normal) {
-      glBindAttribLocation(program, NORMAL_ATTRIBUTE, NORMAL_ATTRIBUTE_NAME);
-    }
-    if(tangents) {
-      glBindAttribLocation(program, TANGENT_ATTRIBUTE, TANGENT_ATTRIBUTE_NAME);
-      glBindAttribLocation(program, BITANGENT_ATTRIBUTE, BITANGENT_ATTRIBUTE_NAME);
-    }
-    if(uv) {
-      glBindAttribLocation(program, UV_ATTRIBUTE, UV_ATTRIBUTE_NAME);
-    }
-    if(bones) {
-      glBindAttribLocation(program, BLEND_INDEX_ATTRIBUTE, BLEND_INDEX_ATTRIBUTE_NAME);
-      glBindAttribLocation(program, BLEND_WEIGHT_ATTRIBUTE, BLEND_WEIGHT_ATTRIBUTE_NAME);
-    }
-    
-    if(color && GL3) {
-      glBindFragDataLocation(program, COLOR_FRAGMENT_DATA_LOCATION, COLOR_FRAGMENT_DATA_NAME);
-    }
+    bindAttributes(program);
     
     glLinkProgram(program);
 
@@ -228,8 +190,8 @@ public class TechniquePassGL extends TechniquePass {
     assert !bones    || glGetAttribLocation(program, BLEND_INDEX_ATTRIBUTE_NAME) == BLEND_INDEX_ATTRIBUTE;
     assert !bones    || glGetAttribLocation(program, BLEND_WEIGHT_ATTRIBUTE_NAME) == BLEND_WEIGHT_ATTRIBUTE;
     
-    int fragDataLoc = glGetFragDataLocation(program, COLOR_FRAGMENT_DATA_NAME);
-    assert !(color && GL3) || fragDataLoc == COLOR_FRAGMENT_DATA_LOCATION;
+    //int fragDataLoc = glGetFragDataLocation(program, COLOR_FRAGMENT_DATA_NAME);
+    //assert !(color && GL3) || fragDataLoc == COLOR_FRAGMENT_DATA_LOCATION;
     
     
     rm.activateShader(0);
@@ -237,146 +199,11 @@ public class TechniquePassGL extends TechniquePass {
     return program;
   }
   
-  private void loadBasicInstanceUniforms(int program) throws AntagonistException {
-    if(GL3) {
-      int basicInstanceBlock = GL31.glGetUniformBlockIndex(program, BASIC_INSTANCE_UNIFORMS_BLOCK);
-      if(basicInstanceBlock < 0) {
-        LOGGER.severe("Basic instance uniforms requested but not active!");
-        throw new AntagonistException();
-      }
-      
-      GL31.glUniformBlockBinding(program, basicInstanceBlock, BASIC_INSTANCE_UNIFORMS_BINDING);
-    } else if(GL_ARB_uniform_buffer_object) {
-      int basicInstanceBlock = ARBUniformBufferObject.glGetUniformBlockIndex(program, BASIC_INSTANCE_UNIFORMS_BLOCK);
-      if(basicInstanceBlock < 0) {
-        LOGGER.severe("Basic instance uniforms requested but not active!");
-        throw new AntagonistException();
-      }
 
-      ARBUniformBufferObject.glUniformBlockBinding(program, basicInstanceBlock, BASIC_INSTANCE_UNIFORMS_BINDING);
-    } else {
-      modelViewProjectionUniform = glGetUniformLocation(program, MODEL_VIEW_PROJECTION_UNIFORMS);
-      modelViewUniform = glGetUniformLocation(program, MODEL_VIEW_UNIFORMS);
-      if(modelViewProjectionUniform < 0) {
-        LOGGER.severe("Basic instance uniforms requested but ModelViewProjection matrix not active!");
-        throw new AntagonistException();
-      }
-      if(modelViewUniform < 0) {
-        LOGGER.severe("Basic instance uniforms requested but ModelView matrix not active!");
-        throw new AntagonistException();
-      }
-    }
-    assert !Utils.hasGLErrors();
-  }
-
-
-  private void loadBasicLightUniforms(int program) throws AntagonistException {
-    if(GL3) {
-      int basicLightBlock = GL31.glGetUniformBlockIndex(program, BASIC_LIGHT_UNIFORMS_BLOCK);
-      if(basicLightBlock < 0) {
-        LOGGER.severe("Basic light uniforms requested but not active!");
-        throw new AntagonistException();
-      }
-      
-      GL31.glUniformBlockBinding(program, basicLightBlock, BASIC_LIGHT_UNIFORMS_BINDING);
-      
-    } else if(GL_ARB_uniform_buffer_object) {
-      int basicLightBlock = ARBUniformBufferObject.glGetUniformBlockIndex(program, BASIC_LIGHT_UNIFORMS_BLOCK);
-      if(basicLightBlock < 0) {
-        LOGGER.severe("Basic light uniforms requested but not active!");
-        throw new AntagonistException();
-      }
-      
-      ARBUniformBufferObject.glUniformBlockBinding(program, basicLightBlock, BASIC_LIGHT_UNIFORMS_BINDING);
-    } else {
-      ambientUniform = glGetUniformLocation(program, AMBIENT_LIGHT_UNIFORM);
-      directionalDirUniform = glGetUniformLocation(program, DIRECTIONAL_LIGHT_DIR_UNIFORM);
-      directionalColorUniform = glGetUniformLocation(program, DIRECTIONAL_LIGHT_COLOR_UNIFORMS);
-      if(ambientUniform < 0) {
-        LOGGER.severe("Basic light uniforms requested but ambient uniform not active!");
-        throw new AntagonistException();
-      }
-      if(directionalDirUniform < 0) {
-        LOGGER.severe("Basic light uniforms requested but directional dir uniform not active!");
-        throw new AntagonistException();
-      }
-      if(directionalColorUniform < 0) {
-        LOGGER.severe("Basic light uniforms requested but directional color uniform not active!");
-        throw new AntagonistException();
-      }
-    }
-    assert !Utils.hasGLErrors();
-  }
-
-  private void loadBasicMaterialUniforms(int program) throws AntagonistException {
-    if(GL3) {
-      int basicMaterialBlock = GL31.glGetUniformBlockIndex(program, BASIC_MATERIAL_UNIFORMS_BLOCK);
-      if(basicMaterialBlock < 0) {
-        LOGGER.severe("Basic material uniforms requested but not active!");
-        throw new AntagonistException();
-      }
-
-      GL31.glUniformBlockBinding(program, basicMaterialBlock, BASIC_MATERIAL_UNIFORMS_BINDING);
-      
-    } else if(GL_ARB_uniform_buffer_object) {
-      int basicMaterialBlock = ARBUniformBufferObject.glGetUniformBlockIndex(program, BASIC_MATERIAL_UNIFORMS_BLOCK);
-      if(basicMaterialBlock < 0) {
-        LOGGER.severe("Basic material uniforms requested but not active!");
-        throw new AntagonistException();
-      }
-
-      ARBUniformBufferObject.glUniformBlockBinding(program, basicMaterialBlock, BASIC_MATERIAL_UNIFORMS_BINDING);
-    } else {
-      specularFactorUniform     = glGetUniformLocation(program, SPECULAR_FACTOR_UNIFORM);
-      specularGlossinessUniform = glGetUniformLocation(program, SPECULAR_GLOSS_UNIFORM);
-      heightUniform             = glGetUniformLocation(program, HEIGHT_UNIFORM);
-      if(specularFactorUniform < 0) {
-        LOGGER.severe("Basic material uniforms requested but specular factor not active!");
-        throw new AntagonistException();
-      }
-      if(specularGlossinessUniform < 0) {
-        LOGGER.severe("Basic material uniforms requested but specular glossiness uniform not active!");
-        throw new AntagonistException();
-      }
-    }
-    assert !Utils.hasGLErrors();
-  }
-  
-  @Override
-  public int getSpecularFactorUniform() {
-    return specularFactorUniform;
-  }
-  @Override
-  public int getSpecularGlossinessUniform() {
-    return specularGlossinessUniform;
-  }
-  @Override
-  public int getHeightUniform() {
-    return heightUniform;
-  }
-
-  @Override
-  public int getAmbientLightColorUniform() {
-    return ambientUniform;
-  }
-  @Override
-  public int getDirectionalLightDirectionUniform() {
-    return directionalDirUniform;
-  }
-  @Override
-  public int getDirectionalLightColorUniform() {
-    return directionalColorUniform;
-  }
-  
-
-  @Override
-  public int getModelViewProjectionUniform() {
-    return modelViewProjectionUniform;
-  }
-  @Override
-  public int getModelViewUniform() {
-    return modelViewUniform;
-  }
+  protected abstract void bindAttributes(int program);
+  protected abstract void loadBasicInstanceUniforms(int program) throws AntagonistException;
+  protected abstract void loadBasicLightUniforms(int program) throws AntagonistException;
+  protected abstract void loadBasicMaterialUniforms(int program) throws AntagonistException;
   
   @Override
   protected void deleteShaderProgram(int shaderProgramID) {
@@ -421,6 +248,7 @@ public class TechniquePassGL extends TechniquePass {
     }
   }
 
+  /*
   @Override
   protected long getMaxUniformBufferSize() {
     if(GL3)
@@ -430,5 +258,6 @@ public class TechniquePassGL extends TechniquePass {
     else
       return 0;
   }
+  */
 
 }

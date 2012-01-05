@@ -5,8 +5,12 @@ import java.util.ArrayList;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.ResourceManager;
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.core.Core;
+import cat.atridas.antagonista.graphics.RenderManager.Functionality;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
-import cat.atridas.antagonista.graphics.gl.MaterialGL;
+import cat.atridas.antagonista.graphics.gl.MaterialGL2;
+import cat.atridas.antagonista.graphics.gl.MaterialGL2_UBO;
+import cat.atridas.antagonista.graphics.gl.MaterialGL3;
 
 public class MaterialManager extends ResourceManager<Material> {
 
@@ -18,8 +22,10 @@ public class MaterialManager extends ResourceManager<Material> {
     extensionsPriorized.addAll(_extensionsPriorized);
     basePath = _basePath;
     
-    Utils.supportOrException(Profile.GL2, "Needs OpenGL, GL ES not yet suported");
-    defaultResource = new MaterialGL(Utils.DEFAULT);
+    
+
+    defaultResource = createNewResource(Utils.DEFAULT);
+    
     defaultResource.loadDefault();
     
     assert !Utils.hasGLErrors();
@@ -37,8 +43,18 @@ public class MaterialManager extends ResourceManager<Material> {
 
   @Override
   protected Material createNewResource(HashedString name) {
-    Utils.supportOrException(Profile.GL2, "Needs OpenGL, GL ES not yet suported");
-    return new MaterialGL(name);
+    if(Utils.supports(Profile.GL3)) {
+      return new MaterialGL3(Utils.DEFAULT);
+    } else if(Utils.supports(Profile.GL2) && Utils.supports(Functionality.UNIFORM_BUFFER_OBJECT)) {
+      return new MaterialGL2_UBO(Utils.DEFAULT);
+    } else if(Utils.supports(Profile.GL2)) {
+      return new MaterialGL2(Utils.DEFAULT);
+    } else {
+      throw new IllegalStateException(
+          "Current Profile [" + 
+              Core.getCore().getRenderManager().getProfile() + 
+                               "] not implemented.");
+    }
   }
 
   @Override

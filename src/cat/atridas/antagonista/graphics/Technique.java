@@ -10,8 +10,12 @@ import org.w3c.dom.NodeList;
 
 import cat.atridas.antagonista.AntagonistException;
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
-import cat.atridas.antagonista.graphics.gl.TechniquePassGL;
+import cat.atridas.antagonista.graphics.RenderManager.Functionality;
+import cat.atridas.antagonista.graphics.gl.TechniquePassGL2;
+import cat.atridas.antagonista.graphics.gl.TechniquePassGL2_UBO;
+import cat.atridas.antagonista.graphics.gl.TechniquePassGL3;
 
 public final class Technique {
   //private static Logger LOGGER = Logger.getLogger(TechniquePass.class.getCanonicalName());
@@ -26,9 +30,20 @@ public final class Technique {
     NodeList nl = techniqueXML.getElementsByTagName("pass");
     for(int i = 0; i < nl.getLength(); ++i) {
       Element pass = ((Element)nl.item(i));
-      
-      Utils.supportOrException(Profile.GL2, "OpenGL ES not yet supported.");
-      _passes.add(new TechniquePassGL(pass));
+
+      if(Utils.supports(Profile.GL3)) {
+        _passes.add(new TechniquePassGL3(pass));
+      } else if(Utils.supports(Profile.GL2) && Utils.supports(Functionality.UNIFORM_BUFFER_OBJECT)) {
+        _passes.add(new TechniquePassGL2_UBO(pass));
+      } else if(Utils.supports(Profile.GL2)) {
+        _passes.add(new TechniquePassGL2(pass));
+      } else {
+        throw new IllegalStateException(
+            "Current Profile [" + 
+                Core.getCore().getRenderManager().getProfile() + 
+                                 "] not implemented.");
+      //Utils.supportOrException(Profile.GL2, "OpenGL ES not yet supported.");
+      }
       assert !Utils.hasGLErrors();
     }
     
@@ -37,7 +52,19 @@ public final class Technique {
   
   protected Technique() {
     ArrayList<TechniquePass> _passes = new ArrayList<>();
-    _passes.add(new TechniquePassGL());
+    
+    if(Utils.supports(Profile.GL3)) {
+      _passes.add(new TechniquePassGL3());
+    } else if(Utils.supports(Profile.GL2) && Utils.supports(Functionality.UNIFORM_BUFFER_OBJECT)) {
+      _passes.add(new TechniquePassGL2_UBO());
+    } else if(Utils.supports(Profile.GL2)) {
+      _passes.add(new TechniquePassGL2());
+    } else {
+      throw new IllegalStateException(
+          "Current Profile [" + 
+              Core.getCore().getRenderManager().getProfile() + 
+                              "] not implemented.");
+    }
 
     passes = Collections.unmodifiableList(_passes);
   }

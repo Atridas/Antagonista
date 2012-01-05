@@ -1,6 +1,7 @@
 package cat.atridas.antagonista.graphics;
 
 import java.awt.Canvas;
+import java.util.HashSet;
 import java.util.logging.Logger;
 
 import org.lwjgl.LWJGLException;
@@ -79,16 +80,48 @@ public abstract class RenderManager {
   public abstract void setAlphaBlend(BlendOperation operation, int renderTarget);
   public abstract void setAlphaBlend(BlendOperationSeparate operation, int renderTarget);
 	
+  public abstract void noVertexArray();
+  
   public abstract SceneData getSceneData();
   
   public abstract boolean hasGLErrors();
 	
+  public static enum Functionality {
+    UNIFORM_BUFFER_OBJECT,
+    VERTEX_ARRAY_OBJECT,
+    INSTANCING
+  }
   
   public static enum Profile {
-    GL2,
-    GL3,
-    GL4,
-    GLES2;
+    GL2         (2,false),
+    GL2_UBO     (2,false,Functionality.UNIFORM_BUFFER_OBJECT),
+    GL2_VAO     (2,false,Functionality.VERTEX_ARRAY_OBJECT),
+    GL2_UBO_VAO (2,false,Functionality.UNIFORM_BUFFER_OBJECT,Functionality.VERTEX_ARRAY_OBJECT),
+    GL2_VAO_INST(2,false,Functionality.UNIFORM_BUFFER_OBJECT,Functionality.VERTEX_ARRAY_OBJECT,Functionality.INSTANCING),
+    GL3         (3,false),
+    GL4         (4,false),
+    GLES2       (2,true);
+    
+    private final int glVersion;
+    private final boolean gles;
+    private final HashSet<Functionality> functionality = new HashSet<>();
+
+    private Profile(int _glVersion, boolean _gles) {
+      glVersion = _glVersion;
+      gles = _gles;
+      if(glVersion > 2) {
+        functionality.add(Functionality.UNIFORM_BUFFER_OBJECT);
+        functionality.add(Functionality.INSTANCING);
+        functionality.add(Functionality.VERTEX_ARRAY_OBJECT);
+      }
+    }
+    
+    private Profile(int _glVersion, boolean _gles, Functionality... f) {
+      glVersion = _glVersion;
+      gles = _gles;
+      for(int i = 0; i < f.length; ++i)
+        functionality.add(f[i]);
+    }
     
     public static Profile getFromString(String str) {
       switch(str) {
@@ -98,36 +131,46 @@ public abstract class RenderManager {
         return GL3;
       case "GL4":
         return GL4;
+
+      case "GL2_UBO":
+        return GL2_UBO;
+      case "GL2_VAO":
+        return GL2_VAO;
+      case "GL2_UBO_VAO":
+        return GL2_UBO_VAO;
+      case "GL2_VAO_INST":
+        return GL2_VAO_INST;
+        
       case "GLES2":
         return GLES2;
+        
       default:
         throw new IllegalArgumentException();
       }
     }
     
     public boolean supports(Profile other) {
-      switch (this) {
-      case GLES2:
-        return other == GLES2;
-      case GL4:
-        return other != GLES2;
-      case GL3:
-        return other == GL2 || other == GL3;
-      case GL2:
-        return other == GL2;
-      default:
-        throw new IllegalStateException();
-      }
+      if(glVersion < other.glVersion)
+        return false;
+      if(gles != other.gles)
+        return false;
+      
+      return functionality.containsAll(other.functionality);
+    }
+    
+    public boolean supports(Functionality _functionality) {
+      
+      return functionality.contains(_functionality);
     }
     
     public void supportOrException(Profile other, String functionality) {
       if(!supports(other)) {
-        LOGGER.severe("Functionality " + functionality + " needs a context of " + toString() + " or greater.");
+        LOGGER.severe("Functionality " + functionality + " needs a context of " + other.toString() + " or greater.");
         throw new IllegalStateException();
       }
     }
     
-    @Override
+    /*@Override
     public String toString() {
       switch (this) {
       case GLES2:
@@ -141,7 +184,7 @@ public abstract class RenderManager {
       default:
         throw new IllegalStateException();
       }
-    }
+    }*/
   }
   
 
