@@ -34,7 +34,7 @@ public abstract class TechniquePass {
   public static final int UV_ATTRIBUTE           = 4;
   public static final int BLEND_INDEX_ATTRIBUTE  = 5;
   public static final int BLEND_WEIGHT_ATTRIBUTE = 6;
-
+  
   public static final String POSITION_ATTRIBUTE_NAME     = "a_v3Position";
   public static final String NORMAL_ATTRIBUTE_NAME       = "a_v3Normal";
   public static final String TANGENT_ATTRIBUTE_NAME      = "a_v3Tangent";
@@ -43,6 +43,13 @@ public abstract class TechniquePass {
   public static final String BLEND_INDEX_ATTRIBUTE_NAME  = "a_i4BlendIndexs";
   public static final String BLEND_WEIGHT_ATTRIBUTE_NAME = "a_v4BlendWeights";
 
+
+  //Fragment data ----------------------------------------------------------------------
+  
+  public static final int COLOR_FRAGMENT_DATA_LOCATION = 0;
+  
+  public static final String COLOR_FRAGMENT_DATA_NAME = "f_v4Color";
+  
   //Uniforms ----------------------------------------------------------------------------
   public static final String ALBEDO_TEXTURE_UNIFORM = "u_s2Albedo";
   public static final int    ALBEDO_TEXTURE_UNIT =    0;
@@ -163,6 +170,29 @@ public abstract class TechniquePass {
     }
     
     shaderProgram = completeShaderProgram(vs, tc, te, gs, fs, rm);
+  }
+  
+  protected TechniquePass() {
+    vs = tc = te = gs = fs = 0;
+
+    //EffectManager em = Core.getCore().getEffectManager();
+    RenderManager rm = Core.getCore().getRenderManager();
+
+    vs = getDefaultShader(ShaderType.VERTEX);
+    fs = getDefaultShader(ShaderType.FRAGMENT);
+    changeDepthTest = 
+    depthTestStatus = 
+    changeAlphaBlending =
+    position =
+    color = true;
+    alphaBlendingActive = false;
+    
+    try {
+      shaderProgram = completeShaderProgram(vs, tc, te, gs, fs, rm);
+    } catch (AntagonistException e) {
+      LOGGER.severe(Utils.logExceptionStringAndStack(e));
+      throw new RuntimeException(e);
+    }
   }
   
   private int loadShader(Element shaderXML, ShaderType st, EffectManager em, RenderManager rm) {

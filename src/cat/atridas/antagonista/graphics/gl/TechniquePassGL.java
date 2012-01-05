@@ -2,6 +2,7 @@ package cat.atridas.antagonista.graphics.gl;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL32.*;
 import static org.lwjgl.opengl.GL40.*;
 
@@ -30,6 +31,12 @@ public class TechniquePassGL extends TechniquePass {
   private int ambientUniform, directionalDirUniform, directionalColorUniform;
   private int specularFactorUniform, specularGlossinessUniform, heightUniform;
   
+  private static int defaultVertexShader   = -1,
+                     defaultFragmentShader = -1,
+                     defaultGeometryShader = -1,
+                     defaultTessControl   = -1,
+                     defaultTessEval       = -1;
+  
   private static final boolean GL_ARB_uniform_buffer_object, GL3;
 
   static {
@@ -39,6 +46,9 @@ public class TechniquePassGL extends TechniquePass {
   
   public TechniquePassGL(Element techniquePassXML) throws AntagonistException {
     super(techniquePassXML);
+  }
+  
+  public TechniquePassGL() {
   }
   
   @Override
@@ -163,7 +173,11 @@ public class TechniquePassGL extends TechniquePass {
     if(bones) {
       glBindAttribLocation(program, BLEND_INDEX_ATTRIBUTE, BLEND_INDEX_ATTRIBUTE_NAME);
       glBindAttribLocation(program, BLEND_WEIGHT_ATTRIBUTE, BLEND_WEIGHT_ATTRIBUTE_NAME);
-    }    
+    }
+    
+    if(color && GL3) {
+      glBindFragDataLocation(program, COLOR_FRAGMENT_DATA_LOCATION, COLOR_FRAGMENT_DATA_NAME);
+    }
     
     glLinkProgram(program);
 
@@ -205,6 +219,18 @@ public class TechniquePassGL extends TechniquePass {
     }
     
     assert !Utils.hasGLErrors();
+
+    assert !position || glGetAttribLocation(program, POSITION_ATTRIBUTE_NAME) == POSITION_ATTRIBUTE;
+    assert !normal   || glGetAttribLocation(program, NORMAL_ATTRIBUTE_NAME) == NORMAL_ATTRIBUTE;
+    assert !tangents || glGetAttribLocation(program, TANGENT_ATTRIBUTE_NAME) == TANGENT_ATTRIBUTE;
+    assert !tangents || glGetAttribLocation(program, BITANGENT_ATTRIBUTE_NAME) == BITANGENT_ATTRIBUTE;
+    assert !uv       || glGetAttribLocation(program, UV_ATTRIBUTE_NAME) == UV_ATTRIBUTE;
+    assert !bones    || glGetAttribLocation(program, BLEND_INDEX_ATTRIBUTE_NAME) == BLEND_INDEX_ATTRIBUTE;
+    assert !bones    || glGetAttribLocation(program, BLEND_WEIGHT_ATTRIBUTE_NAME) == BLEND_WEIGHT_ATTRIBUTE;
+    
+    int fragDataLoc = glGetFragDataLocation(program, COLOR_FRAGMENT_DATA_NAME);
+    assert !(color && GL3) || fragDataLoc == COLOR_FRAGMENT_DATA_LOCATION;
+    
     
     rm.activateShader(0);
     
@@ -359,9 +385,40 @@ public class TechniquePassGL extends TechniquePass {
 
   @Override
   protected int getDefaultShader(ShaderType st) {
-    // TODO Auto-generated method stub
-    assert false;
-    return 0;
+    switch(st) {
+    case VERTEX:
+      if(defaultVertexShader < 0) {
+        defaultVertexShader = generateShaderObject(st, Core.getCore().getRenderManager());
+        compileShader(defaultVertexShader, Core.getCore().getEffectManager().getDefaultShaderSource(st));
+      }
+      return defaultVertexShader;
+    case FRAGMENT:
+      if(defaultFragmentShader < 0) {
+        defaultFragmentShader = generateShaderObject(st, Core.getCore().getRenderManager());
+        compileShader(defaultFragmentShader, Core.getCore().getEffectManager().getDefaultShaderSource(st));
+      }
+      return defaultFragmentShader;
+    case GEOMETRY:
+      if(defaultGeometryShader < 0) {
+        defaultGeometryShader = generateShaderObject(st, Core.getCore().getRenderManager());
+        compileShader(defaultGeometryShader, Core.getCore().getEffectManager().getDefaultShaderSource(st));
+      }
+      return defaultGeometryShader;
+    case TESS_CONTROL:
+      if(defaultTessControl < 0) {
+        defaultTessControl = generateShaderObject(st, Core.getCore().getRenderManager());
+        compileShader(defaultTessControl, Core.getCore().getEffectManager().getDefaultShaderSource(st));
+      }
+      return defaultTessControl;
+    case TESS_EVALUATION:
+      if(defaultTessEval < 0) {
+        defaultTessEval = generateShaderObject(st, Core.getCore().getRenderManager());
+        compileShader(defaultTessEval, Core.getCore().getEffectManager().getDefaultShaderSource(st));
+      }
+      return defaultTessEval;
+    default:
+      throw new IllegalStateException("Oops " + st);
+    }
   }
 
   @Override

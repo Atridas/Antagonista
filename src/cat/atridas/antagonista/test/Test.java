@@ -52,13 +52,13 @@ public class Test {
     HashedString hs2 = new HashedString("Normalmap proves");
     HashedString hs3 = new HashedString("Heightmap proves");
     HashedString hs4 = new HashedString("Textura nivell proves");
-    HashedString hs5 = new HashedString("nanana");
+    //HashedString hs5 = new HashedString("nanana");
     TextureManager tm = Core.getCore().getTextureManager();
     tm.getResource(hs);
     tm.getResource(hs3);
     tm.getResource(hs2);
     tm.getResource(hs4);
-    tm.getResource(hs5);
+    //tm.getResource(hs5);
     tm.getResource(hs);
     
     
@@ -103,9 +103,10 @@ public class Test {
     
     rm.initFrame();
 
-    HashedString hs7 = new HashedString("Habitacio");
+    //HashedString hs7 = new HashedString("Habitacio");
     MeshManager mem  = Core.getCore().getMeshManager();
-    Mesh mesh = mem.getResource(hs7);
+    //Mesh mesh = mem.getResource(hs7);
+    Mesh mesh = mem.getResource(null);
 
     SceneData sceneData = rm.getSceneData();
 

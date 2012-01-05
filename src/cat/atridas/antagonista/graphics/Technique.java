@@ -10,6 +10,7 @@ import org.w3c.dom.NodeList;
 
 import cat.atridas.antagonista.AntagonistException;
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.graphics.RenderManager.Profile;
 import cat.atridas.antagonista.graphics.gl.TechniquePassGL;
 
 public final class Technique {
@@ -26,10 +27,18 @@ public final class Technique {
     for(int i = 0; i < nl.getLength(); ++i) {
       Element pass = ((Element)nl.item(i));
       
+      Utils.supportOrException(Profile.GL2, "OpenGL ES not yet supported.");
       _passes.add(new TechniquePassGL(pass));
       assert !Utils.hasGLErrors();
     }
     
+    passes = Collections.unmodifiableList(_passes);
+  }
+  
+  protected Technique() {
+    ArrayList<TechniquePass> _passes = new ArrayList<>();
+    _passes.add(new TechniquePassGL());
+
     passes = Collections.unmodifiableList(_passes);
   }
 }

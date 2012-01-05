@@ -5,6 +5,7 @@ import java.io.InputStream;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Resource;
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.graphics.RenderManager.Profile;
 
 public final class Shader extends Resource {
 
@@ -67,22 +68,28 @@ public final class Shader extends Resource {
     switch(type) {
     case VERTEX: //TODO
       source =  "attribute vec3 a_v3Position;\n" +
-    
-                "uniform struct {\n" +
-                "  mat4 m4ModelViewProjection;\n" +
-                "  mat4 m4ModelView;\n" +
-                "} u_InstanceInfo[1];\n" +
                 
                 "void main()\n" +
                 "{\n" +
-                "  gl_Position = u_InstanceInfo[0].m4ModelViewProjection * vec4(a_v3Position,1.0);\n" +
+                "  gl_Position = vec4(a_v3Position,1.0);\n" +
                 "}\n";
       break;
     case FRAGMENT:
-      source =  "void main(void)\n" +
-                "{\n" +
-                "  gl_FragColor = vec4(1,1,1,1);\n" +
-                "}\n";
+      if(Utils.supports(Profile.GL3)) {
+        source =  "#version 150\n" +
+      
+                  "out vec4 f_v4Color;\n" +
+            
+                  "void main(void)\n" +
+                  "{\n" +
+                  "  f_v4Color = vec4(1,1,1,1);\n" +
+                  "}\n";
+      } else {
+        source =  "void main(void)\n" +
+                  "{\n" +
+                  "  gl_FragColor = vec4(1,1,1,1);\n" +
+                  "}\n";
+      }
       break;
     case GEOMETRY: //TODO
       source =  "#version 150\n" +

@@ -32,6 +32,8 @@ public class EffectManager extends ResourceManager<Effect> {
                         tessControlShaderManager,
                         tessEvalShaderManager;
   
+  private Effect defaultResource;
+  
   boolean isInit;
   
   public void init(String configFile, RenderManager rm) {
@@ -142,6 +144,9 @@ public class EffectManager extends ResourceManager<Effect> {
       throw new IllegalArgumentException(e);
     }
     
+    defaultResource = new Effect(Utils.DEFAULT);
+    defaultResource.loadDefault();
+    
     assert !Utils.hasGLErrors();
   }
   
@@ -204,8 +209,8 @@ public class EffectManager extends ResourceManager<Effect> {
   @Override
   public Effect getDefaultResource() {
     assert isInit;
-    // TODO Auto-generated method stub
-    return null;
+    assert defaultResource != null;
+    return defaultResource;
   }
 
   public TechniquePass getDefaultTechnique() {

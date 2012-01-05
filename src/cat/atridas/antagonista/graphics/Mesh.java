@@ -24,7 +24,7 @@ public abstract class Mesh extends Resource {
 
   
   protected int numVerts, numSubMeshes, numFaces[];
-  private Material materials[];
+  protected Material materials[];
   
   protected Mesh(HashedString _resourceName) {
     super(_resourceName);

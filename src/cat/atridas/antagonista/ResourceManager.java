@@ -26,28 +26,31 @@ public abstract class ResourceManager<T extends Resource> {
     
     if(resource == null) {
       synchronized(this) {
-        resource = createNewResource(resourceName);
-        
-        ArrayList<String> extensions = getExtensionsPriorized();
-        InputStream is = null;
-        
-        String extension = null;
-        for(int i = 0; i < extensions.size(); ++i) {
-          extension = extensions.get(i);
-          String path = getBasePath() + resourceName + "." + extension;
-          try { //TODO fer aix� d'una manera m�s decent
-            is = Utils.findInputStream(path);
-            break;
-          } catch(Exception e) {
-            // ---
+        if(resourceName == null) {
+          resource = getDefaultResource();
+        } else {
+          resource = createNewResource(resourceName);
+          
+          ArrayList<String> extensions = getExtensionsPriorized();
+          InputStream is = null;
+          
+          String extension = null;
+          for(int i = 0; i < extensions.size(); ++i) {
+            extension = extensions.get(i);
+            String path = getBasePath() + resourceName + "." + extension;
+            try { //TODO fer aix� d'una manera m�s decent
+              is = Utils.findInputStream(path);
+              break;
+            } catch(Exception e) {
+              // ---
+            }
+          }
+          
+          if(is == null || !resource.load(is, extension)) {
+            LOGGER.warning("Resource " + resourceName + " not found, loading Default resource [" + resource.getClass().getName() + "]");
+            resource = getDefaultResource();
           }
         }
-        
-        if(is == null || !resource.load(is, extension)) {
-          LOGGER.warning("Resource " + resourceName + " not found, loading Default resource [" + resource.getClass().getName() + "]");
-          resource = getDefaultResource();
-        }
-        
         resourceRef = new Reference(resource, resourceName);
       }
     }

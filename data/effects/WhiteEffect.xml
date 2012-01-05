@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<effect name="WhiteEffect">
+  <technique type="forward">
+    <pass>
+      <render_states>
+        <depth_test>true</depth_test>
+        <depth_function>LESS</depth_function>
+        <alpha_blending>false</alpha_blending>
+      </render_states>
+      
+      <attributes>
+        <position/>
+      </attributes>
+      
+      <uniforms>
+      </uniforms>
+      
+      <results>
+        <color/>
+      </results>
+      
+      <vertex_shader>
+        <resource>simple</resource>
+      </vertex_shader>
+      <fragment_shader>
+        <resource>white</resource>
+      </fragment_shader>
+    
+    </pass>
+  </technique>
+</effect>

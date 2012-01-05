@@ -26,8 +26,9 @@ import cat.atridas.antagonista.graphics.RenderManager.Profile;
 public abstract class Utils {
   private static Logger LOGGER = Logger.getLogger(Utils.class.getCanonicalName());
   
-  
+
   public static final HashedString DEFAULT = new HashedString("default");
+  public static final HashedString WHITE_EFFECT = new HashedString("WhiteEffect");
   
   
   public static final float EPSILON = 0.0001f;

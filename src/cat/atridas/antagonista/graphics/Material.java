@@ -65,6 +65,7 @@ public abstract class Material extends Resource {
     height         = .2f;
     alphaBlend = false;
     albedo = Core.getCore().getTextureManager().getDefaultResource();
+    effect = Core.getCore().getEffectManager().getDefaultResource();
   }
 
   private boolean loadText(InputStream is) {

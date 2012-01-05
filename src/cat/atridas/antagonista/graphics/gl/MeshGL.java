@@ -3,6 +3,7 @@ package cat.atridas.antagonista.graphics.gl;
 import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GLContext;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
@@ -15,6 +16,7 @@ import org.lwjgl.opengl.GL31;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
+import cat.atridas.antagonista.graphics.Material;
 import cat.atridas.antagonista.graphics.Mesh;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
@@ -128,7 +130,129 @@ public class MeshGL extends Mesh {
 
   @Override
   protected void loadDefault() {
-    LOGGER.warning("Not yet implemented, but I don't want to crash");
+    LOGGER.config("Loading default mesh [GL]");
+    animated = false;
+    
+    ByteBuffer _vertexBuffer = BufferUtils.createByteBuffer(3 * 4 * Utils.FLOAT_SIZE);
+    ByteBuffer _faces        = BufferUtils.createByteBuffer(3 * 4 * Utils.SHORT_SIZE);
+    
+
+    _vertexBuffer.putFloat(-.5f);
+    _vertexBuffer.putFloat(-.5f);
+    _vertexBuffer.putFloat(-.5f);    
+
+    _vertexBuffer.putFloat(+.5f);
+    _vertexBuffer.putFloat(-.5f);
+    _vertexBuffer.putFloat(-.5f);
+
+    _vertexBuffer.putFloat( .0f);
+    _vertexBuffer.putFloat(-.5f);
+    _vertexBuffer.putFloat(+.5f);
+
+    _vertexBuffer.putFloat( .0f);
+    _vertexBuffer.putFloat(+.5f);
+    _vertexBuffer.putFloat( .0f);
+
+
+    
+    _faces.putShort((short)0);
+    _faces.putShort((short)2);
+    _faces.putShort((short)1);
+    
+    _faces.putShort((short)0);
+    _faces.putShort((short)1);
+    _faces.putShort((short)3);
+    
+    _faces.putShort((short)1);
+    _faces.putShort((short)2);
+    _faces.putShort((short)3);
+    
+    _faces.putShort((short)2);
+    _faces.putShort((short)0);
+    _faces.putShort((short)3);
+    
+    
+    _vertexBuffer.rewind();
+    _faces.rewind();
+    
+    numSubMeshes = 1;
+    numFaces     = new int[1];
+    numFaces[0]  = 4;
+    materials    = new Material[1];
+    materials[0] = Core.getCore().getMaterialManager().getDefaultResource();
+    
+    if(GL3) {
+      GL30.glBindVertexArray(0);
+    } else if(GL_ARB_vertex_array_object) {
+      ARBVertexArrayObject.glBindVertexArray(0);
+    }
+    
+    vertexBuffer = glGenBuffers();
+
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, _vertexBuffer, GL_STATIC_DRAW);
+    
+    assert !Utils.hasGLErrors();
+    
+    indexBuffer = glGenBuffers();
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, _faces, GL_STATIC_DRAW);
+    
+    assert !Utils.hasGLErrors();
+    
+    if(GL3 || GL_ARB_vertex_array_object) {
+      int stride = 3 * Utils.FLOAT_SIZE;
+      
+
+
+      if(GL3) {
+        vertexArrayObject = GL30.glGenVertexArrays();
+        GL30.glBindVertexArray(vertexArrayObject);
+      } else {
+        vertexArrayObject = ARBVertexArrayObject.glGenVertexArrays();
+        ARBVertexArrayObject.glBindVertexArray(vertexArrayObject);
+      }
+      glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+
+      
+      glEnableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
+      glVertexAttribPointer(TechniquePass.POSITION_ATTRIBUTE, 3, GL_FLOAT, false, stride, 0);
+      
+      //TODO
+      /*
+      glEnableVertexAttribArray(TechniquePass.NORMAL_ATTRIBUTE);
+      glVertexAttribPointer(TechniquePass.NORMAL_ATTRIBUTE, 3, GL_FLOAT, false, stride, 3 * Utils.FLOAT_SIZE);
+      
+      glEnableVertexAttribArray(TechniquePass.TANGENT_ATTRIBUTE);
+      glVertexAttribPointer(TechniquePass.TANGENT_ATTRIBUTE, 3, GL_FLOAT, false, stride, 6 * Utils.FLOAT_SIZE);
+      
+      glEnableVertexAttribArray(TechniquePass.BITANGENT_ATTRIBUTE);
+      glVertexAttribPointer(TechniquePass.BITANGENT_ATTRIBUTE, 3, GL_FLOAT, false, stride, 9 * Utils.FLOAT_SIZE);
+      
+      glEnableVertexAttribArray(TechniquePass.UV_ATTRIBUTE);
+      glVertexAttribPointer(TechniquePass.UV_ATTRIBUTE, 2, GL_FLOAT, false, stride, 12 * Utils.FLOAT_SIZE);
+      
+      if(animated) {
+        glEnableVertexAttribArray(TechniquePass.BLEND_INDEX_ATTRIBUTE);
+        glVertexAttribPointer(TechniquePass.BLEND_INDEX_ATTRIBUTE, 4, GL_SHORT, false, stride, 15 * Utils.FLOAT_SIZE);
+        
+        glEnableVertexAttribArray(TechniquePass.BLEND_WEIGHT_ATTRIBUTE);
+        glVertexAttribPointer(TechniquePass.BLEND_WEIGHT_ATTRIBUTE, 4, GL_FLOAT, false, stride, 15 * Utils.FLOAT_SIZE + 4 * Utils.SHORT_SIZE);
+      } else {
+        glDisableVertexAttribArray(TechniquePass.BLEND_INDEX_ATTRIBUTE);
+        glDisableVertexAttribArray(TechniquePass.BLEND_WEIGHT_ATTRIBUTE);
+      }
+      */
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+
+      if(GL3) {
+        GL30.glBindVertexArray(0);
+      } else if(GL_ARB_vertex_array_object) {
+        ARBVertexArrayObject.glBindVertexArray(0);
+      }
+    }
+    
+    assert !Utils.hasGLErrors();
   }
 
   @Override

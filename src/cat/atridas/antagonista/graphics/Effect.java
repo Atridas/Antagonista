@@ -32,7 +32,7 @@ public class Effect extends Resource {
   public boolean load(InputStream is, String extension) {
     assert "xml".compareTo(extension) == 0;
     
-    LOGGER.config("Loading effect");
+    LOGGER.config("Loading effect [" + resourceName + "]");
     
     boolean gl = Core.getCore().getRenderManager().getProfile().supports(Profile.GL2);
     EffectManager em = Core.getCore().getEffectManager();
@@ -118,6 +118,16 @@ public class Effect extends Resource {
       return false;
     }
     return true;
+  }
+  
+  void loadDefault() {
+    for(TechniqueType tt : TechniqueType.values()) {
+      
+      Technique technique = new Technique();
+      HashMap<Quality, Technique> qToTech = new HashMap<>();
+      qToTech.put(Quality.LOW, technique);
+      techniques.put(tt, qToTech);
+    }
   }
 
   
