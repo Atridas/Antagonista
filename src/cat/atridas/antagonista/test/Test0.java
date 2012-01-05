@@ -51,17 +51,18 @@ public class Test0 {
                               "layout(location = 0) in vec3 position;\n" +
                               "layout(location = 1) in vec3 color;\n" +
                               
-                              "out vec3 v_color;\n" +
+                              "smooth out vec3 v_color;\n" +
                               
                               "void main()\n" +
                               "{" +
                               "    v_color = color;\n" +
+                              //"    v_color = position;\n" +
                               "    gl_Position = vec4(position,1);\n" +
                               "}\n",
                               
          l_szFragmentShader = "#version 330\n" +
                             
-                              "in vec3 v_color;\n" +
+                              "smooth in vec3 v_color;\n" +
                               
                               "out vec4 outputColor;\n" +
                               "void main()\n" +
@@ -117,7 +118,7 @@ public class Test0 {
     };
     
     float c[] = {
-        0.f, 1.f, 0.f,
+        1.f, 0.f, 0.f,
         0.f, 1.f, 0.f,
         0.f, 0.f, 1.f
     };
@@ -137,8 +138,8 @@ public class Test0 {
     ib.rewind();
 
     int positionBufferObject = glGenBuffers();
-    int colorBufferObject = glGenBuffers();
-    int indexBufferObject = glGenBuffers();
+    int colorBufferObject    = glGenBuffers();
+    int indexBufferObject    = glGenBuffers();
 
     glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);
     glBufferData(GL_ARRAY_BUFFER, vb, GL_STATIC_DRAW);
@@ -159,8 +160,8 @@ public class Test0 {
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
 
-    int vertexArrayObject = GL30.glGenVertexArrays();
-    GL30.glBindVertexArray(vertexArrayObject);
+    int vertexArrayObject = glGenVertexArrays();
+    glBindVertexArray(vertexArrayObject);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
     
@@ -173,13 +174,27 @@ public class Test0 {
     glVertexAttribPointer(0, 3, GL_FLOAT, false, 0,  0);
     
 
-    //glBindBuffer(GL_ARRAY_BUFFER, colorBufferObject);
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, colorBufferObject);
     glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
     assert !Utils.hasGLErrors();
 
+    glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    
     glUseProgram(program);
     assert !Utils.hasGLErrors();
-    
+
+    glBindVertexArray(vertexArrayObject);
     //glDrawArrays(GL_TRIANGLES, 0, 3);
     glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, 0);
     assert !Utils.hasGLErrors();
