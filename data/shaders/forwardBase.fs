@@ -11,55 +11,30 @@
 
 #line 13
 
-#if __VERSION__ < 330
-  #define in varying
-  #define f_v4Color gl_FragColor
-  #define texture texture2D
-#else
-  out vec4 f_v4Color;
-#endif
-
 // Vertex transformed info ------------------------------------
 in vec3 v_v3Position; //View space position
 in vec3 v_v3Normal;      //View
-#if defined(TANGENTS)
-  in vec3 v_v3Tangent;   //View
-  in vec3 v_v3Bitangent; //View
-#endif
 in vec2 v_v2UV;
 
+out vec4 f_v4Color;
 
 // Uniforms ----------------------------------------
 
 uniform sampler2D u_s2Albedo;
-#if defined(TANGENTS)
-  uniform sampler2D u_s2Normalmap;
-#endif
 
-#if __VERSION__ < 330
-  uniform vec3 u_v3AmbientLight;
-  uniform vec3 u_v3DirectionalLightDirection;
-  uniform vec3 u_v3DirectionalLightColor;
-  
-  uniform float u_fSpecularFactor;
-  uniform float u_fGlossiness;
-  uniform float u_fHeight;
+layout(std140) uniform UniformLight
+{
+  vec3 u_v3AmbientLight;
+  vec3 u_v3DirectionalLightDirection;
+  vec3 u_v3DirectionalLightColor;
+};
 
-#else
-  layout(std140) uniform UniformLight
-  {
-    vec3 u_v3AmbientLight;
-    vec3 u_v3DirectionalLightDirection;
-    vec3 u_v3DirectionalLightColor;
-  };
-
-  layout(std140) uniform UniformMaterials
-  {
-    float u_fSpecularFactor;
-    float u_fGlossiness;
-    float u_fHeight;
-  };
-#endif
+layout(std140) uniform UniformMaterials
+{
+  float u_fSpecularFactor;
+  float u_fGlossiness;
+  float u_fHeight;
+};
 
 //----------------------------------------------------------
 void main()
@@ -84,5 +59,15 @@ void main()
   
   f_v4Color = vec4(l_v3AmbientColor + l_v3DiffuseColor + l_v3SpecularColor, l_v4TexColor.a );
   f_v4Color = clamp(f_v4Color, 0, 1);
+  
+  //f_v4Color = mix(vec4(u_v3AmbientLight,1), f_v4Color, 0.1);
+  
+  /*
+  vec4 aux = texture(u_s2Albedo, v_v2UV);
+  vec4 aux2 = vec4(1,1,1,1);
+  vec4 aux3 = mix(aux, aux2, 0.1);
+  vec4 aux4 = clamp(vec4(v_v3Normal.x, v_v3Normal.y, v_v3Normal.z, 1),0,1);
+  f_v4Color = mix(aux4, aux3, 0.1);
+  */
 }
 
