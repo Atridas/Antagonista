@@ -217,6 +217,7 @@ public class MeshGL extends Mesh {
       
       glEnableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
       glVertexAttribPointer(TechniquePass.POSITION_ATTRIBUTE, 3, GL_FLOAT, false, stride, 0);
+      assert !Utils.hasGLErrors();
       
       //TODO
       /*
