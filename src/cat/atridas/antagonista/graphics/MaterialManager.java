@@ -8,9 +8,9 @@ import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.RenderManager.Functionality;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
-import cat.atridas.antagonista.graphics.gl.MaterialGL2;
-import cat.atridas.antagonista.graphics.gl.MaterialGL2_UBO;
-import cat.atridas.antagonista.graphics.gl.MaterialGL3;
+import cat.atridas.antagonista.graphics.gl2.MaterialGL2;
+import cat.atridas.antagonista.graphics.gl2.MaterialGL2_UBO;
+import cat.atridas.antagonista.graphics.gl3.MaterialGL3;
 
 public class MaterialManager extends ResourceManager<Material> {
 

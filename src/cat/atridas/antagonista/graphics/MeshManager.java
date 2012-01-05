@@ -8,12 +8,9 @@ import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.RenderManager.Functionality;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
-import cat.atridas.antagonista.graphics.gl.MaterialGL2;
-import cat.atridas.antagonista.graphics.gl.MaterialGL2_UBO;
-import cat.atridas.antagonista.graphics.gl.MaterialGL3;
-import cat.atridas.antagonista.graphics.gl.MeshGL;
-import cat.atridas.antagonista.graphics.gl.MeshGL2;
-import cat.atridas.antagonista.graphics.gl.MeshGL3;
+import cat.atridas.antagonista.graphics.gl2.MeshGL2;
+import cat.atridas.antagonista.graphics.gl2.MeshGL2_VAO;
+import cat.atridas.antagonista.graphics.gl3.MeshGL3;
 
 public class MeshManager extends ResourceManager<Mesh> {
 
@@ -45,6 +42,10 @@ public class MeshManager extends ResourceManager<Mesh> {
   protected Mesh createNewResource(HashedString name) {
     if(Utils.supports(Profile.GL3)) {
       return new MeshGL3(Utils.DEFAULT);
+    } else if(Utils.supports(Profile.GL2) && Utils.supports(Functionality.VERTEX_ARRAY_OBJECT) && Utils.supports(Functionality.UNIFORM_BUFFER_OBJECT) && Utils.supports(Functionality.INSTANCING)) {
+      return new MeshGL2_VAO(Utils.DEFAULT);
+    } else if(Utils.supports(Profile.GL2) && Utils.supports(Functionality.VERTEX_ARRAY_OBJECT)) {
+      return new MeshGL2_VAO(Utils.DEFAULT);
     } else if(Utils.supports(Profile.GL2)) {
       return new MeshGL2(Utils.DEFAULT);
     } else {

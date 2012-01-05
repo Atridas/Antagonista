@@ -1,5 +1,7 @@
-package cat.atridas.antagonista.graphics.gl;
+package cat.atridas.antagonista.graphics.gl2;
 
+import static org.lwjgl.opengl.ARBVertexArrayObject.*;
+import static org.lwjgl.opengl.ARBDrawInstanced.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
@@ -8,31 +10,29 @@ import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.TechniquePass;
+import cat.atridas.antagonista.graphics.gl.MeshGL;
 
-public class MeshGL2 extends MeshGL {
+public final class MeshGL2_VAO_INST extends MeshGL {
 
-  public MeshGL2(HashedString _resourceName) {
+private int vertexArrayObject;
+  
+  public MeshGL2_VAO_INST(HashedString _resourceName) {
     super(_resourceName);
   }
-
+  
   @Override
   protected void createArrayBuffer() {
-    // --
-  }
-
-  @Override
-  protected void deleteArrayBuffer() {
-    // --
-  }
-
-  @Override
-  public void preRender() {
+    assert !cleaned;
     int stride;
     if(animated) {
       stride = ANIMATED_MESH_STRIDE;
     } else {
       stride = STATIC_MESH_STRIDE;
     }
+
+
+    vertexArrayObject = glGenVertexArrays();
+    glBindVertexArray(vertexArrayObject);
     
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 
@@ -58,18 +58,49 @@ public class MeshGL2 extends MeshGL {
       
       glEnableVertexAttribArray(TechniquePass.BLEND_WEIGHT_ATTRIBUTE);
       glVertexAttribPointer(TechniquePass.BLEND_WEIGHT_ATTRIBUTE, 4, GL_FLOAT, false, stride, 15 * Utils.FLOAT_SIZE + 4 * Utils.SHORT_SIZE);
-    } else {
-      glDisableVertexAttribArray(TechniquePass.BLEND_INDEX_ATTRIBUTE);
-      glDisableVertexAttribArray(TechniquePass.BLEND_WEIGHT_ATTRIBUTE);
     }
     
-
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+
+    glBindVertexArray(0);
+
+    glDisableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
+    glDisableVertexAttribArray(TechniquePass.NORMAL_ATTRIBUTE);
+    glDisableVertexAttribArray(TechniquePass.TANGENT_ATTRIBUTE);
+    glDisableVertexAttribArray(TechniquePass.BITANGENT_ATTRIBUTE);
+    glDisableVertexAttribArray(TechniquePass.UV_ATTRIBUTE);
+    glDisableVertexAttribArray(TechniquePass.BLEND_INDEX_ATTRIBUTE);
+    glDisableVertexAttribArray(TechniquePass.BLEND_WEIGHT_ATTRIBUTE);
+
+    assert !Utils.hasGLErrors();
   }
 
   @Override
-  public void render(int _submesh, int instances, RenderManager rm) {
-    throw new IllegalStateException("Calling draw instanced when hardware does not support instancing");
+  protected void deleteArrayBuffer() {
+    assert !cleaned;
+    glDeleteVertexArrays(vertexArrayObject);
+    assert !Utils.hasGLErrors();
+  }
+
+  @Override
+  public void preRender() {
+    assert !cleaned;
+    glBindVertexArray(vertexArrayObject);
+    assert !Utils.hasGLErrors();
+  }
+
+  @Override
+  public void render(int _submesh, int _instances, RenderManager rm) {
+    assert !cleaned;
+    assert _submesh < numSubMeshes;
+    int stride = 0;
+    for(int i = 0; i < _submesh; ++i) {
+      stride += numFaces[i] * 3 * Utils.SHORT_SIZE;
+    }
+    
+    glDrawElementsInstancedARB(GL_TRIANGLES, numFaces[_submesh], GL_SHORT, stride, _instances);
+
+    assert !Utils.hasGLErrors();
   }
 
 }

@@ -1,4 +1,4 @@
-package cat.atridas.antagonista.graphics.gl;
+package cat.atridas.antagonista.graphics.gl2;
 
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.ARBUniformBufferObject.*;

@@ -35,6 +35,7 @@ import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.Technique;
 import cat.atridas.antagonista.graphics.TechniquePass;
 
+@SuppressWarnings("unused")
 public class Test0 {
 
   /**

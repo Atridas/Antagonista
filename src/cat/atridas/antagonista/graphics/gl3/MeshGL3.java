@@ -1,4 +1,4 @@
-package cat.atridas.antagonista.graphics.gl;
+package cat.atridas.antagonista.graphics.gl3;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
@@ -10,6 +10,7 @@ import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.TechniquePass;
+import cat.atridas.antagonista.graphics.gl.MeshGL;
 
 public final class MeshGL3 extends MeshGL {
 

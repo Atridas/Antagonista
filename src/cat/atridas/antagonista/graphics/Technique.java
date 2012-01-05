@@ -13,9 +13,9 @@ import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
 import cat.atridas.antagonista.graphics.RenderManager.Functionality;
-import cat.atridas.antagonista.graphics.gl.TechniquePassGL2;
-import cat.atridas.antagonista.graphics.gl.TechniquePassGL2_UBO;
-import cat.atridas.antagonista.graphics.gl.TechniquePassGL3;
+import cat.atridas.antagonista.graphics.gl2.TechniquePassGL2;
+import cat.atridas.antagonista.graphics.gl2.TechniquePassGL2_UBO;
+import cat.atridas.antagonista.graphics.gl3.TechniquePassGL3;
 
 public final class Technique {
   //private static Logger LOGGER = Logger.getLogger(TechniquePass.class.getCanonicalName());

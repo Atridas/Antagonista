@@ -1,4 +1,4 @@
-package cat.atridas.antagonista.graphics.gl;
+package cat.atridas.antagonista.graphics.gl2;
 
 import static org.lwjgl.opengl.GL20.*;
 
@@ -10,6 +10,7 @@ import cat.atridas.antagonista.AntagonistException;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.Shader.ShaderType;
+import cat.atridas.antagonista.graphics.gl.TechniquePassGL;
 
 public class TechniquePassGL2 extends TechniquePassGL {
   private static Logger LOGGER = Logger.getLogger(TechniquePassGL2.class.getCanonicalName());

@@ -1,4 +1,4 @@
-package cat.atridas.antagonista.graphics.gl;
+package cat.atridas.antagonista.graphics.gl2;
 
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Utils;

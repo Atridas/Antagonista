@@ -1,4 +1,4 @@
-package cat.atridas.antagonista.graphics.gl;
+package cat.atridas.antagonista.graphics.gl3;
 
 import java.util.logging.Logger;
 
@@ -8,6 +8,7 @@ import cat.atridas.antagonista.AntagonistException;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.Shader.ShaderType;
+import cat.atridas.antagonista.graphics.gl.TechniquePassGL;
 
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL31.*;
