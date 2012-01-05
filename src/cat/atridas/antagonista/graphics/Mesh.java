@@ -71,7 +71,7 @@ public abstract class Mesh extends Resource {
     boolean animated = Boolean.parseBoolean(vertsParams[1]);
     assert !animated;//TODO animats
     
-    ByteBuffer vertexBuffer = BufferUtils.createByteBuffer(numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH * Utils.FLOAT_SIZE);
+    float[] vtxs = new float[ numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH ];
     
     assert lines.length >= firstVertexLine + numVerts;
     
@@ -81,7 +81,8 @@ public abstract class Mesh extends Resource {
       
       for(int j = 0; j < NUM_ELEMENTS_PER_VERTEX_STATIC_MESH; ++j) {
         float f = Float.parseFloat(elements[j]);
-        vertexBuffer.putFloat(f);
+        //vertexBuffer.putFloat(f);
+        vtxs[i * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH + j] = f;
       }
       
     }
@@ -106,20 +107,31 @@ public abstract class Mesh extends Resource {
       aux += 2;
     }
     
-    ByteBuffer faces = BufferUtils.createByteBuffer(totalNumFaces * 3 * Utils.SHORT_SIZE);
-
+    short idxs[] = new short[totalNumFaces * 3];
+    
+    int faceIndex = 0;
     for(int i = 0; i < numSubMeshes; ++i) {
 
       for(int face = 0; face < numFaces[i]; face++) {
         String[] indexes = lines[aux + face].split(" ");
         assert indexes.length == 3;
-        for(int j = 0; j < 3; ++j) {
-          short index = Short.parseShort(indexes[j]);
-          faces.putShort(index);
-        }
+        //for(int j = 0; j < 3; ++j) {
+        //  short index = Short.parseShort(indexes[j]);
+        //  faces.putShort(index);
+        //}
+        idxs[faceIndex * 3 + 0] = Short.parseShort(indexes[0]);
+        idxs[faceIndex * 3 + 1] = Short.parseShort(indexes[1]);
+        idxs[faceIndex * 3 + 2] = Short.parseShort(indexes[2]);
+        faceIndex++;
       }
       aux += numFaces[i];
     }
+    
+    ByteBuffer vertexBuffer = BufferUtils.createByteBuffer(numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH * Utils.FLOAT_SIZE);
+    ByteBuffer faces = BufferUtils.createByteBuffer(totalNumFaces * 3 * Utils.SHORT_SIZE);
+
+    vertexBuffer.asFloatBuffer().put(vtxs);
+    faces.asShortBuffer().put(idxs);
     
     return loadBuffers(vertexBuffer, faces, animated); 
   }

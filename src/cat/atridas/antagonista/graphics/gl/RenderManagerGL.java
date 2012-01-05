@@ -34,6 +34,7 @@ public final class RenderManagerGL extends RenderManager {
       throw new IllegalStateException("Can not load an opengl 2.1 or greater context.");
     }
     
+    glViewport(0, 0, width, height);
     
     glClearColor(1,0,1,0);
     

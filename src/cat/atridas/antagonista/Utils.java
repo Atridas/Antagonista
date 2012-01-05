@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -196,5 +197,13 @@ public abstract class Utils {
       in.getColumn(i, f);
       out.put(f);
     }
+  }
+
+  public static void matrixToBuffer(Matrix4f in, ByteBuffer out) {
+    int pos = out.position();
+    FloatBuffer fb = out.asFloatBuffer();
+    //fb.position(pos / FLOAT_SIZE);
+    matrixToBuffer(in, fb);
+    out.position(pos + (16 * FLOAT_SIZE));
   }
 }

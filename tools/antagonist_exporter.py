@@ -319,7 +319,7 @@ def createMesh(mesh, consolePrint):
             vertices[face.v2] = i
             face.i2 = i
             i = i + 1
-            verticesArray.append(face.v1)
+            verticesArray.append(face.v2)
         
         if face.v3 in vertices:
             face.i3 = vertices[face.v3]
@@ -327,7 +327,7 @@ def createMesh(mesh, consolePrint):
             vertices[face.v3] = i
             face.i3 = i
             i = i + 1
-            verticesArray.append(face.v1)
+            verticesArray.append(face.v3)
         
     if consolePrint:
         i = 0
@@ -352,6 +352,7 @@ def saveMeshText(mesh, filepath):
     f.write("antagonist text")
     f.write("\npos, normal, tangent, bitangent, uv")
     f.write("\n%s" % len(mesh.vertices))
+    f.write(" "    + str(False)) #Animats
     for v in mesh.vertices:
         f.write("\n%s" % v.x)
         f.write(" %s"  % v.y)
@@ -376,6 +377,7 @@ def saveMeshText(mesh, filepath):
     for material in mesh.materialFaces.keys():
         f.write('\n%s' % material)
         f.write('\n%s' % len(mesh.materialFaces[material]))
+    for material in mesh.materialFaces.keys():
         for face in mesh.materialFaces[material]:
             f.write('\n%s' % face.i1)
             f.write(' %s'  % face.i2)

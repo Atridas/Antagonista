@@ -111,9 +111,6 @@ public class MeshGL extends Mesh {
         
         glEnableVertexAttribArray(TechniquePass.BLEND_WEIGHT_ATTRIBUTE);
         glVertexAttribPointer(TechniquePass.BLEND_WEIGHT_ATTRIBUTE, 4, GL_FLOAT, false, stride, 15 * Utils.FLOAT_SIZE + 4 * Utils.SHORT_SIZE);
-      } else {
-        glDisableVertexAttribArray(TechniquePass.BLEND_INDEX_ATTRIBUTE);
-        glDisableVertexAttribArray(TechniquePass.BLEND_WEIGHT_ATTRIBUTE);
       }
       
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -123,6 +120,15 @@ public class MeshGL extends Mesh {
       } else if(GL_ARB_vertex_array_object) {
         ARBVertexArrayObject.glBindVertexArray(0);
       }
+      
+
+      glDisableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
+      glDisableVertexAttribArray(TechniquePass.NORMAL_ATTRIBUTE);
+      glDisableVertexAttribArray(TechniquePass.TANGENT_ATTRIBUTE);
+      glDisableVertexAttribArray(TechniquePass.BITANGENT_ATTRIBUTE);
+      glDisableVertexAttribArray(TechniquePass.UV_ATTRIBUTE);
+      glDisableVertexAttribArray(TechniquePass.BLEND_INDEX_ATTRIBUTE);
+      glDisableVertexAttribArray(TechniquePass.BLEND_WEIGHT_ATTRIBUTE);
     }
     
     return !Utils.hasGLErrors();
@@ -133,51 +139,98 @@ public class MeshGL extends Mesh {
     LOGGER.config("Loading default mesh [GL]");
     animated = false;
     
-    ByteBuffer _vertexBuffer = BufferUtils.createByteBuffer(3 * 4 * Utils.FLOAT_SIZE);
-    ByteBuffer _faces        = BufferUtils.createByteBuffer(3 * 4 * Utils.SHORT_SIZE);
     
 
-    _vertexBuffer.putFloat(-.5f);
-    _vertexBuffer.putFloat(-.5f);
-    _vertexBuffer.putFloat(-.5f);    
+    float vtx[] = {
+        -.5f, -.5f, +.5f,             //pos
+          -.57735f, -.57735f, +.57735f, //norm
+          1,0,0,     //tan
+          0,0,1,     //bitan
+          0.f, 0.f,                   //uv
 
-    _vertexBuffer.putFloat(+.5f);
-    _vertexBuffer.putFloat(-.5f);
-    _vertexBuffer.putFloat(-.5f);
-
-    _vertexBuffer.putFloat( .0f);
-    _vertexBuffer.putFloat(-.5f);
-    _vertexBuffer.putFloat(+.5f);
-
-    _vertexBuffer.putFloat( .0f);
-    _vertexBuffer.putFloat(+.5f);
-    _vertexBuffer.putFloat( .0f);
+        +.5f, -.5f, +.5f, //pos
+          +.57735f, -.57735f, +.57735f, //norm
+          1,0,0,     //tan
+          0,0,1,     //bitan
+          0.f, 1.f,        //uv
+                 
+        +.5f, -.5f, -.5f, //pos
+          +.57735f, -.57735f, -.57735f, //norm
+          1,0,0,     //tan
+          0,0,1,     //bitan
+          1.f, 1.f,       //uv
+                  
+        -.5f, -.5f, -.5f, //pos
+          -.57735f, -.57735f, -.57735f, //norm
+          1,0,0,     //tan
+          0,0,1,     //bitan
+          1.f, 0.f,       //uv
+                 
+        -.5f, +.5f, +.5f, //pos
+          //-.57735f, +.57735f, +.57735f, //norm
+          -0.f, +1.f, +0.f, //norm
+          1,0,0,     //tan
+          0,0,1,     //bitan
+          1.f, 0.f,       //uv
+                  
+        +.5f, +.5f, +.5f, //pos
+          //+.57735f, +.57735f, +.57735f, //norm
+          -0.f, +1.f, +0.f, //norm
+          1,0,0,     //tan
+          0,0,1,     //bitan
+          1.f, 1.f,       //uv
+                  
+        +.5f, +.5f, -.5f, //pos
+          //+.57735f, +.57735f, -.57735f, //norm
+          -0.f, +1.f, +0.f, //norm
+          1,0,0,     //tan
+          0,0,1,     //bitan
+          0.f, 1.f,       //uv
+                  
+        -.5f, +.5f, -.5f, //pos
+          //-.57735f, +.57735f, -.57735f, //norm
+          -0.f, +1.f, +0.f, //norm
+          1,0,0,     //tan
+          0,0,1,     //bitan
+          0.f, 0.f,       //uv
+                  
+    };
 
 
     
-    _faces.putShort((short)0);
-    _faces.putShort((short)2);
-    _faces.putShort((short)1);
+    short idx[] = {
+      0,2,1,
+      0,3,2,
+      
+      0,1,5,
+      0,5,4,
+      
+      1,2,5,
+      5,2,6,
+      
+      2,3,6,
+      6,3,7,
+      
+      3,0,4,
+      3,4,7,
+      
+      4,5,6,
+      4,6,7,
+    };
     
-    _faces.putShort((short)0);
-    _faces.putShort((short)1);
-    _faces.putShort((short)3);
+
+    ByteBuffer _vertexBuffer = BufferUtils.createByteBuffer(vtx.length * Utils.FLOAT_SIZE);
+    ByteBuffer _faces        = BufferUtils.createByteBuffer(idx.length * Utils.SHORT_SIZE);
     
-    _faces.putShort((short)1);
-    _faces.putShort((short)2);
-    _faces.putShort((short)3);
-    
-    _faces.putShort((short)2);
-    _faces.putShort((short)0);
-    _faces.putShort((short)3);
-    
+    _vertexBuffer.asFloatBuffer().put(vtx);
+    _faces.asShortBuffer().put(idx);
     
     _vertexBuffer.rewind();
     _faces.rewind();
     
     numSubMeshes = 1;
     numFaces     = new int[1];
-    numFaces[0]  = 4;
+    numFaces[0]  = idx.length/3;
     materials    = new Material[1];
     materials[0] = Core.getCore().getMaterialManager().getDefaultResource();
     
@@ -201,7 +254,7 @@ public class MeshGL extends Mesh {
     assert !Utils.hasGLErrors();
     
     if(GL3 || GL_ARB_vertex_array_object) {
-      int stride = 3 * Utils.FLOAT_SIZE;
+      int stride = 14 * Utils.FLOAT_SIZE;
       
 
 
@@ -217,10 +270,7 @@ public class MeshGL extends Mesh {
       
       glEnableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
       glVertexAttribPointer(TechniquePass.POSITION_ATTRIBUTE, 3, GL_FLOAT, false, stride, 0);
-      assert !Utils.hasGLErrors();
       
-      //TODO
-      /*
       glEnableVertexAttribArray(TechniquePass.NORMAL_ATTRIBUTE);
       glVertexAttribPointer(TechniquePass.NORMAL_ATTRIBUTE, 3, GL_FLOAT, false, stride, 3 * Utils.FLOAT_SIZE);
       
@@ -232,7 +282,10 @@ public class MeshGL extends Mesh {
       
       glEnableVertexAttribArray(TechniquePass.UV_ATTRIBUTE);
       glVertexAttribPointer(TechniquePass.UV_ATTRIBUTE, 2, GL_FLOAT, false, stride, 12 * Utils.FLOAT_SIZE);
+      assert !Utils.hasGLErrors();
       
+      //TODO
+      /*
       if(animated) {
         glEnableVertexAttribArray(TechniquePass.BLEND_INDEX_ATTRIBUTE);
         glVertexAttribPointer(TechniquePass.BLEND_INDEX_ATTRIBUTE, 4, GL_SHORT, false, stride, 15 * Utils.FLOAT_SIZE);
@@ -251,6 +304,13 @@ public class MeshGL extends Mesh {
       } else if(GL_ARB_vertex_array_object) {
         ARBVertexArrayObject.glBindVertexArray(0);
       }
+      
+
+      glDisableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
+      glDisableVertexAttribArray(TechniquePass.NORMAL_ATTRIBUTE);
+      glDisableVertexAttribArray(TechniquePass.TANGENT_ATTRIBUTE);
+      glDisableVertexAttribArray(TechniquePass.BITANGENT_ATTRIBUTE);
+      glDisableVertexAttribArray(TechniquePass.UV_ATTRIBUTE);
     }
     
     assert !Utils.hasGLErrors();
@@ -258,6 +318,7 @@ public class MeshGL extends Mesh {
 
   @Override
   public void preRender() {
+    assert !cleaned;
 
     if(GL3 || GL_ARB_vertex_array_object) {
       if(GL3) {
@@ -309,17 +370,19 @@ public class MeshGL extends Mesh {
   
   @Override
   public void render(int _submesh, RenderManager rm) {
+    assert !cleaned;
     int stride = 0;
     for(int i = 0; i < _submesh; ++i) {
       stride += numFaces[i] * 3 * Utils.SHORT_SIZE;
     }
-    glDrawElements(GL_TRIANGLES, numFaces[_submesh], GL_UNSIGNED_SHORT, stride);
+    glDrawElements(GL_TRIANGLES, numFaces[_submesh] * 3, GL_UNSIGNED_SHORT, stride);
 
     assert !Utils.hasGLErrors();
   }
   
   @Override
   public void render(int _submesh, int _instances, RenderManager rm) {
+    assert !cleaned;
     int stride = 0;
     for(int i = 0; i < _submesh; ++i) {
       stride += numFaces[i] * 3 * Utils.SHORT_SIZE;

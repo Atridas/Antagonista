@@ -12,7 +12,9 @@ import org.lwjgl.opengl.PixelFormat;
 public abstract class RenderManager {
   private static Logger LOGGER = Logger.getLogger(RenderManager.class.getCanonicalName());
 	
-	private int width, height;
+	protected int width;
+
+  protected int height;
 
 	public final int getWidth() {
 		return width;
@@ -27,7 +29,7 @@ public abstract class RenderManager {
 		
 		//TODO
 		PixelFormat pf = new PixelFormat().withDepthBits(24).withBitsPerPixel(32).withAlphaBits(8);
-		ContextAttribs ca = new ContextAttribs(4, 2).withForwardCompatible(true);//.withDebug(true);
+		ContextAttribs ca = new ContextAttribs(4, 2).withForwardCompatible(true).withDebug(true);
 		
 		// ? ca.withDebug(true);
 		

@@ -52,7 +52,7 @@ public abstract class SceneData {
   }
    
   public final void setPerspective(float fovy, float aspect, float zNear, float zFar) {
-    float f = (float)(1.0 / Math.tan(fovy/2.));
+    float f = (float)(1.0 / Math.tan((fovy/2.) * (Math.PI/180.f)));
     projectionMatrix.setColumn(0, 
         f/aspect,
         0,

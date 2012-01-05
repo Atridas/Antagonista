@@ -5,17 +5,35 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.logging.Level;
 
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.util.vector.Matrix;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL12.*;
+import static org.lwjgl.opengl.GL13.*;
+import static org.lwjgl.opengl.GL14.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL31.*;
+import static org.lwjgl.opengl.GL32.*;
+import static org.lwjgl.opengl.GL33.*;
 
+import cat.atridas.antagonista.HashedString;
+import cat.atridas.antagonista.Quality;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
+import cat.atridas.antagonista.graphics.Effect.TechniqueType;
+import cat.atridas.antagonista.graphics.Material;
+import cat.atridas.antagonista.graphics.Mesh;
 import cat.atridas.antagonista.graphics.RenderManager;
+import cat.atridas.antagonista.graphics.Technique;
+import cat.atridas.antagonista.graphics.TechniquePass;
 
 public class Test0 {
 
@@ -34,11 +52,10 @@ public class Test0 {
     
     RenderManager rm = Core.getCore().getRenderManager();
     
-    rm.initFrame();
     
     assert !Utils.hasGLErrors();
     
-    glDisable(GL_DEPTH_TEST);
+    //glDisable(GL_DEPTH_TEST);
 
     assert !Utils.hasGLErrors();
 
@@ -49,20 +66,30 @@ public class Test0 {
     
     String l_szVertexShader = "#version 330\n" +
                               "layout(location = 0) in vec3 position;\n" +
-                              "layout(location = 1) in vec3 color;\n" +
+                              "layout(location = 1) in vec3 normal;\n" +
+                              "layout(location = 4) in vec2 uv;\n" +
+
+                              "out vec3 v_color;\n" +
                               
-                              "smooth out vec3 v_color;\n" +
+                              "layout(std140) uniform UniformInstances {\n" +
+                              //"  struct {\n" +
+                              "    mat4 m4ModelViewProjection;\n" +
+                              "    mat4 m4ModelView;\n" +
+                              //"  };\n" +
+                              "};\n" +
                               
                               "void main()\n" +
                               "{" +
-                              "    v_color = color;\n" +
-                              //"    v_color = position;\n" +
-                              "    gl_Position = vec4(position,1);\n" +
+                              //"    v_color = color;\n" +
+                              "    v_color = (normal + 1) * 0.5;\n" +
+                              "    gl_Position = m4ModelViewProjection * vec4(position,1);\n" +
+                              //"    gl_Position = vec4(position,1);\n" +
+                              //"    z = gl_Position.z;\n" +
                               "}\n",
                               
          l_szFragmentShader = "#version 330\n" +
-                            
-                              "smooth in vec3 v_color;\n" +
+
+                              "in vec3 v_color;\n" +
                               
                               "out vec4 outputColor;\n" +
                               "void main()\n" +
@@ -71,6 +98,7 @@ public class Test0 {
                               "    outputColor = vec4(v_color, 1.0f);\n" +
                               //"    float r = gl_FragCoord.x / 800;\n" +
                               //"    float g = gl_FragCoord.y / 600;\n" +
+                              //"    float b = gl_FragDepth;\n" +
                               //"    outputColor = vec4(r, g, 0, 1.0f);\n" +
                               "}\n";
     
@@ -102,8 +130,16 @@ public class Test0 {
 
     assert glGetAttribLocation(program, "position") == 0;
     //assert glGetAttribLocation(program, "color")    == 1;
+    //assert glGetAttribLocation(program, "uv")    == 4;
 
     assert !Utils.hasGLErrors();
+    
+    
+    int uniform = glGetUniformBlockIndex(program, "UniformInstances");
+    
+    glUniformBlockBinding(program, uniform, 0);
+    
+    
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,7 +194,6 @@ public class Test0 {
     ///////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    
 
     int vertexArrayObject = glGenVertexArrays();
     glBindVertexArray(vertexArrayObject);
@@ -191,24 +226,84 @@ public class Test0 {
     ///////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
-    glUseProgram(program);
-    assert !Utils.hasGLErrors();
+    rm.getSceneData().setPerspective(30, 1.f, 100);
+    rm.getSceneData().setCamera(new Point3f(20,20,10), new Point3f(0,0,0), new Vector3f(0,0,1));
 
-    glBindVertexArray(vertexArrayObject);
-    //glDrawArrays(GL_TRIANGLES, 0, 3);
-    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, 0);
-    assert !Utils.hasGLErrors();
+    rm.getSceneData().setAmbientLight(new Point3f(.2f, .2f, .2f));
+    rm.getSceneData().setDirectionalLight(new Vector3f(1,0,-1), new Point3f(.8f, .8f, .8f) );
     
-    rm.present();
+    Matrix4f mvp = new Matrix4f();
+    mvp.setIdentity();
+    rm.getSceneData().getViewProjectionMatrix(mvp);
+
     
-    synchronized (rm) {
-      try {
-        rm.wait(5000);
-      } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+    ByteBuffer bb = BufferUtils.createByteBuffer(8*4 * 4);
+    
+    Utils.matrixToBuffer(mvp, bb);
+
+    mvp.setIdentity();
+    rm.getSceneData().getViewMatrix(mvp);
+    Utils.matrixToBuffer(mvp, bb);
+    
+    bb.rewind();
+
+    int uniformBufferObject = glGenBuffers();
+    
+    glBindBuffer(GL_UNIFORM_BUFFER, uniformBufferObject);
+    glBufferData(GL_UNIFORM_BUFFER, bb, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    
+    
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    //glDisable(GL_CULL_FACE);
+    //glDisable(GL_DEPTH_TEST);
+
+    //Mesh mesh = Core.getCore().getMeshManager().getResource(new HashedString("Cub"));
+    //Mesh mesh = Core.getCore().getMeshManager().getResource(new HashedString("CubBlend"));
+    Mesh mesh = Core.getCore().getMeshManager().getResource(new HashedString("Habitacio"));
+
+    //mesh = Core.getCore().getMeshManager().getDefaultResource();
+    
+    
+    rm.getSceneData().setUniforms();
+    
+    while(!Core.getCore().getInputManager().isCloseRequested()) {
+      rm.initFrame();
+    
+      //glUseProgram(program);
+      //assert !Utils.hasGLErrors();
+  
+      //glBindVertexArray(vertexArrayObject);
+      glBindBufferRange(GL_UNIFORM_BUFFER, 0, uniformBufferObject, 0, 8*4*4);
+      
+      //glDrawArrays(GL_TRIANGLES, 0, 3);
+      //glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, 0);
+      
+      mesh.preRender();
+      
+
+      for(int i1 = 0; i1 < mesh.getNumSubmeshes(); i1++) {
+        Material material = mesh.getMaterial(i1);
+        material.setUpUniforms(rm);
+        Technique technique = material.getEffect().getTechnique(TechniqueType.FORWARD, Quality.MID);
+        TechniquePass pass = technique.passes.get(0);
+        pass.activate(rm);
+        rm.getSceneData().setUniforms(pass);
+        
+        mesh.render(i1, rm);
       }
       
+      assert !Utils.hasGLErrors();
+      
+      rm.present();
+      
+      Core.getCore().getInputManager().update();
     }
     
     Core.getCore().close();
