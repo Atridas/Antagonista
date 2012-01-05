@@ -14,6 +14,7 @@ import org.newdawn.slick.opengl.LoadableImageData;
 
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.graphics.RenderManager.Profile;
 import cat.atridas.antagonista.graphics.Texture;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -69,7 +70,7 @@ public final class TextureGL extends Texture {
     id = glGenTextures();
     activate(0);
     
-    if(GLContext.getCapabilities().OpenGL30) {
+    if(Utils.supports(Profile.GL3)) {
       
       glTexImage2D(GL_TEXTURE_2D, 
           0,               //mipmap level
