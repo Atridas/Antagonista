@@ -55,7 +55,7 @@ public abstract class TechniquePass {
   public static final int    ALBEDO_TEXTURE_UNIT =    0;
   public static final String NORMALMAP_TEXTURE_UNIFORM = "u_s2Normalmap";
   public static final int    NORMALMAP_TEXTURE_UNIT =    1;
-  public static final String HEIGHTMAP_TEXTURE_UNIFORM = "u_s2Haightmap";
+  public static final String HEIGHTMAP_TEXTURE_UNIFORM = "u_s2Heightmap";
   public static final int    HEIGHTMAP_TEXTURE_UNIT =    2;
   
 
@@ -89,7 +89,7 @@ public abstract class TechniquePass {
   protected boolean position, normal, tangents, uv, bones;
   
   //uniforms
-  protected boolean albedoTexture;
+  protected boolean albedoTexture, normalTexture, heightTexture;
   protected boolean basicInstanceUniforms;
   protected boolean basicLight;
   protected boolean basicMaterial;
@@ -419,7 +419,7 @@ public abstract class TechniquePass {
         bones = true;
         break;
       default:
-        LOGGER.warning("Unrecognized tag name" + element.getTagName());
+        LOGGER.warning("Unrecognized tag name " + element.getTagName());
       }
     }
   }
@@ -442,6 +442,14 @@ public abstract class TechniquePass {
         assert !albedoTexture;
         albedoTexture = true;
         break;
+      case "normal_texture":
+        assert !normalTexture;
+        normalTexture = true;
+        break;
+      case "height_texture":
+        assert !heightTexture;
+        heightTexture = true;
+        break;
       case "basic_instance_uniforms":
         assert !basicInstanceUniforms;
         basicInstanceUniforms = true;
@@ -462,7 +470,7 @@ public abstract class TechniquePass {
         basicMaterial = true;
         break;
       default:
-        LOGGER.warning("Unrecognized tag name" + element.getTagName());
+        LOGGER.warning("Unrecognized tag name " + element.getTagName());
       }
     }
   }

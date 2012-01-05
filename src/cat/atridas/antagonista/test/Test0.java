@@ -238,13 +238,18 @@ public class Test0 {
     rm.getSceneData().getViewProjectionMatrix(mvp);
 
     
-    ByteBuffer bb = BufferUtils.createByteBuffer(8*4 * 4);
+    ByteBuffer bb = BufferUtils.createByteBuffer(12*4 * 4);
     
     Utils.matrixToBuffer(mvp, bb);
 
     mvp.setIdentity();
     rm.getSceneData().getViewMatrix(mvp);
     Utils.matrixToBuffer(mvp, bb);
+    
+    mvp.invert();
+    mvp.transpose();
+    Utils.matrixToBuffer(mvp, bb);
+    
     
     bb.rewind();
 

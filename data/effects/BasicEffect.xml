@@ -11,11 +11,13 @@
       <attributes>
         <position/>
         <normal/>
+        <tangents/>
         <uv/>
       </attributes>
       
       <uniforms>
         <albedo_texture/>
+        <normal_texture/>
         <basic_instance_uniforms/>
         <basic_light/>
         <basic_material/>

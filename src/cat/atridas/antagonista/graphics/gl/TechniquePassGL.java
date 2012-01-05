@@ -2,6 +2,7 @@ package cat.atridas.antagonista.graphics.gl;
 
 import static org.lwjgl.opengl.GL20.*;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
@@ -17,7 +18,7 @@ import cat.atridas.antagonista.graphics.Shader.ShaderType;
 public abstract class TechniquePassGL extends TechniquePass {
   private static Logger LOGGER = Logger.getLogger(TechniquePassGL.class.getCanonicalName());
 
-  private int albedoTextureUniform;
+  private int albedoTextureUniform, normalTextureUniform, heightTextureUniform;
   
   
   private static int defaultVertexShader   = -1,
@@ -162,11 +163,29 @@ public abstract class TechniquePassGL extends TechniquePass {
     if(albedoTexture) {
       albedoTextureUniform = glGetUniformLocation(program, ALBEDO_TEXTURE_UNIFORM);
       if(albedoTextureUniform < 0) {
-        LOGGER.severe("Albedo texture requested but not active!");
-        throw new AntagonistException();
+        LOGGER.warning("Albedo texture requested but not active!");
+        //hrow new AntagonistException();
+      } else {
+        glUniform1i(albedoTextureUniform, ALBEDO_TEXTURE_UNIT);
       }
-      
-      glUniform1i(albedoTextureUniform, ALBEDO_TEXTURE_UNIT);
+    }
+    if(normalTexture) {
+      normalTextureUniform = glGetUniformLocation(program, NORMALMAP_TEXTURE_UNIFORM);
+      if(normalTextureUniform < 0) {
+        LOGGER.warning("Normal texture requested but not active!");
+        //throw new AntagonistException();
+      } else {
+        glUniform1i(normalTextureUniform, NORMALMAP_TEXTURE_UNIT);
+      }
+    }
+    if(heightTexture) {
+      heightTextureUniform = glGetUniformLocation(program, HEIGHTMAP_TEXTURE_UNIFORM);
+      if(heightTextureUniform < 0) {
+        LOGGER.warning("Height texture requested but not active!");
+        //throw new AntagonistException();
+      } else {
+        glUniform1i(heightTextureUniform, HEIGHTMAP_TEXTURE_UNIT);
+      }
     }
     assert !Utils.hasGLErrors();
     
@@ -182,14 +201,39 @@ public abstract class TechniquePassGL extends TechniquePass {
     
     assert !Utils.hasGLErrors();
 
-    assert !position || glGetAttribLocation(program, POSITION_ATTRIBUTE_NAME) == POSITION_ATTRIBUTE;
-    assert !normal   || glGetAttribLocation(program, NORMAL_ATTRIBUTE_NAME) == NORMAL_ATTRIBUTE;
-    assert !tangents || glGetAttribLocation(program, TANGENT_ATTRIBUTE_NAME) == TANGENT_ATTRIBUTE;
-    assert !tangents || glGetAttribLocation(program, BITANGENT_ATTRIBUTE_NAME) == BITANGENT_ATTRIBUTE;
-    assert !uv       || glGetAttribLocation(program, UV_ATTRIBUTE_NAME) == UV_ATTRIBUTE;
-    assert !bones    || glGetAttribLocation(program, BLEND_INDEX_ATTRIBUTE_NAME) == BLEND_INDEX_ATTRIBUTE;
-    assert !bones    || glGetAttribLocation(program, BLEND_WEIGHT_ATTRIBUTE_NAME) == BLEND_WEIGHT_ATTRIBUTE;
+    if(LOGGER.isLoggable(Level.WARNING)) {
+
+      int positionLocation = glGetAttribLocation(program, POSITION_ATTRIBUTE_NAME);
+      int normalLocation = glGetAttribLocation(program, NORMAL_ATTRIBUTE_NAME);
+      int tangentLocation = glGetAttribLocation(program, TANGENT_ATTRIBUTE_NAME);
+      int bitangentLocation = glGetAttribLocation(program, BITANGENT_ATTRIBUTE_NAME);
+      int uvLocation = glGetAttribLocation(program, UV_ATTRIBUTE_NAME);
+      int bonesILocation = glGetAttribLocation(program, BLEND_INDEX_ATTRIBUTE_NAME);
+      int bonesWLocation = glGetAttribLocation(program, BLEND_WEIGHT_ATTRIBUTE_NAME);
+
+      if(position && positionLocation != POSITION_ATTRIBUTE) {
+        LOGGER.warning("Expected position attribute at " + POSITION_ATTRIBUTE + " but found in " + positionLocation);
+      }
+      if(normal && normalLocation != NORMAL_ATTRIBUTE) {
+        LOGGER.warning("Expected normal attribute at " + NORMAL_ATTRIBUTE + " but found in " + normalLocation);
+      }
+      if(tangents && tangentLocation != TANGENT_ATTRIBUTE) {
+        LOGGER.warning("Expected tangent attribute at " + TANGENT_ATTRIBUTE + " but found in " + tangentLocation);
+      }
+      if(tangents && bitangentLocation != BITANGENT_ATTRIBUTE) {
+        LOGGER.warning("Expected bitangent attribute at " + BITANGENT_ATTRIBUTE + " but found in " + bitangentLocation);
+      }
+      if(uv && uvLocation != UV_ATTRIBUTE) {
+        LOGGER.warning("Expected uv attribute at " + UV_ATTRIBUTE + " but found in " + uvLocation);
+      }
+      if(bones && bonesILocation != BLEND_INDEX_ATTRIBUTE) {
+        LOGGER.warning("Expected bone indexes attribute at " + BLEND_INDEX_ATTRIBUTE + " but found in " + bonesILocation);
+      }
+      if(bones && bonesWLocation != BLEND_WEIGHT_ATTRIBUTE) {
+        LOGGER.warning("Expected bone weights attribute at " + BLEND_WEIGHT_ATTRIBUTE + " but found in " + bonesWLocation);
+      }
     
+    }
     //int fragDataLoc = glGetFragDataLocation(program, COLOR_FRAGMENT_DATA_NAME);
     //assert !(color && GL3) || fragDataLoc == COLOR_FRAGMENT_DATA_LOCATION;
     

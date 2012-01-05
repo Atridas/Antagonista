@@ -83,16 +83,10 @@ public class Test {
     sceneData.setAmbientLight(new Point3f(0.3f, 0.3f, 0.3f));
     sceneData.setDirectionalLight(new Vector3f(0,1,1), new Point3f(0.3f, 0.3f, 0.3f));
     
-    render(rm);
     
-    synchronized (rm) {
-      try {
-        rm.wait(5000);
-      } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-      
+    while(!Core.getCore().getInputManager().isCloseRequested()) {
+      render(rm);
+      Core.getCore().getInputManager().update();
     }
     
     Core.getCore().close();
@@ -103,10 +97,10 @@ public class Test {
     
     rm.initFrame();
 
-    //HashedString hs7 = new HashedString("Habitacio");
+    HashedString hs7 = new HashedString("Habitacio");
     MeshManager mem  = Core.getCore().getMeshManager();
     //Mesh mesh = mem.getResource(hs7);
-    Mesh mesh = mem.getResource(null);
+    Mesh mesh = mem.getResource(hs7);
 
     SceneData sceneData = rm.getSceneData();
 
