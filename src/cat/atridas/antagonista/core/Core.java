@@ -86,6 +86,24 @@ public final class Core {
     mem.init(al, "data/meshes/");
 	}
 	
+	public void cleanUnusedResources(boolean weakify) {
+	  if(weakify) {
+	    tm.weakify();
+	    em.weakify();
+	    mm.weakify();
+	    mem.weakify();
+	  }
+
+    System.gc();
+
+    tm.cleanUnusedReferences();
+    em.cleanUnusedReferences();
+    mm.cleanUnusedReferences();
+    mem.cleanUnusedReferences();
+
+    System.runFinalization();
+	}
+	
 	public void close() {
 		
 		//sm.cleanUp();

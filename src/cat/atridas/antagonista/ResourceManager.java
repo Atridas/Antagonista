@@ -3,24 +3,29 @@ package cat.atridas.antagonista;
 import java.io.InputStream;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 public abstract class ResourceManager<T extends Resource> {
   private static Logger LOGGER = Logger.getLogger(ResourceManager.class.getCanonicalName());
   
-  private final HashMap<HashedString, Reference> resources = new HashMap<>();
+  private final HashMap<HashedString, AReference<T>> resources = new HashMap<>();
   private final ReferenceQueue<? super T> refQueue = new ReferenceQueue<>();
   
   
   public final T getResource(HashedString resourceName) {
     //cleanUnusedReferences();
     
-    SoftReference<T> resourceRef = resources.get(resourceName);
+    AReference<T> resourceRef = resources.get(resourceName);
     T resource = null;
     if(resourceRef != null)
     {
+      if(resourceRef instanceof ResourceManager.AWeakReference) {
+        new ASoftReference((ResourceManager<T>.AWeakReference)resourceRef);
+      }
       resource = resourceRef.get();
     }
     
@@ -51,7 +56,7 @@ public abstract class ResourceManager<T extends Resource> {
             resource = getDefaultResource();
           }
         }
-        resourceRef = new Reference(resource, resourceName);
+        resourceRef = new ASoftReference(resource, resourceName);
       }
     }
     
@@ -60,9 +65,16 @@ public abstract class ResourceManager<T extends Resource> {
   
   @SuppressWarnings("unchecked")
   public final synchronized void cleanUnusedReferences() {
-    Reference ref;
-    while((ref = (Reference)refQueue.poll()) != null) {
-      resources.remove(ref.resourceName);
+    AReference<T> ref;
+    while((ref = (AReference<T>)refQueue.poll()) != null) {
+      resources.remove(ref.getResourceName());
+    }
+  }
+  
+  
+  public final synchronized void weakify() {
+    for(Entry<HashedString, AReference<T>> entry : resources.entrySet() ) {
+      new AWeakReference(entry.getValue());
     }
   }
   
@@ -75,7 +87,7 @@ public abstract class ResourceManager<T extends Resource> {
     cleanUnusedReferences();
     
     int cont = 0;
-    for(Reference resourceRef : resources.values()) {
+    for(AReference<T> resourceRef : resources.values()) {
       T resource = resourceRef.get();
       if(resource != null)
         cont += resource.getRAMBytesEstimation();
@@ -87,7 +99,7 @@ public abstract class ResourceManager<T extends Resource> {
     cleanUnusedReferences();
     
     int cont = 0;
-    for(Reference resourceRef : resources.values()) {
+    for(AReference<T> resourceRef : resources.values()) {
       T resource = resourceRef.get();
       if(resource != null)
         cont += resource.getVRAMBytesEstimation();
@@ -95,13 +107,49 @@ public abstract class ResourceManager<T extends Resource> {
     return cont;
   }
   
-  private final class Reference extends SoftReference<T> {
+  private static interface AReference<K> {
+    HashedString getResourceName();
+    
+    K get();
+  }
+  
+  private final class ASoftReference extends SoftReference<T> implements AReference<T> {
     HashedString resourceName;
 
-    public Reference(T referent, HashedString _resourceName) {
+
+    public ASoftReference(T referent, HashedString _resourceName) {
       super(referent, refQueue);
       resourceName = _resourceName;
       resources.put(resourceName, this);
+    }
+
+    public ASoftReference(AWeakReference _ref) {
+      super(_ref.get(), refQueue);
+      resourceName = _ref.getResourceName();
+      resources.put(resourceName, this);
+    }
+
+    @Override
+    public HashedString getResourceName() {
+      return resourceName;
+    }
+    
+  }
+  
+  private final class AWeakReference extends WeakReference<T> implements AReference<T> {
+    HashedString resourceName;
+    
+
+
+    public AWeakReference(AReference<T> _ref) {
+      super(_ref.get(), refQueue);
+      resourceName = _ref.getResourceName();
+      resources.put(resourceName, this);
+    }
+
+    @Override
+    public HashedString getResourceName() {
+      return resourceName;
     }
     
   }

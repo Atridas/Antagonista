@@ -89,6 +89,9 @@ public class Test {
       Core.getCore().getInputManager().update();
     }
     
+    Core.getCore().cleanUnusedResources(false);
+    Core.getCore().cleanUnusedResources(true);
+    
     Core.getCore().close();
   }
 
