@@ -9,21 +9,24 @@ import cat.atridas.antagonista.graphics.FontManager;
 import cat.atridas.antagonista.graphics.MaterialManager;
 import cat.atridas.antagonista.graphics.MeshManager;
 import cat.atridas.antagonista.graphics.RenderManager;
+import cat.atridas.antagonista.graphics.RenderableObjectManager;
 import cat.atridas.antagonista.graphics.TextureManager;
 import cat.atridas.antagonista.graphics.gl.FontManagerGL;
 import cat.atridas.antagonista.graphics.gl.RenderManagerGL;
+import cat.atridas.antagonista.graphics.gl3.RenderableObjectManagerGL3;
 import cat.atridas.antagonista.input.InputManager;
 
 public final class Core {
 	
-	private RenderManager   rm  = new RenderManagerGL();//TODO
-	private InputManager    im  = new InputManager();
-	private TextureManager  tm  = new TextureManager();
-	private ShaderManager   sm  = new ShaderManager();
-	private FontManager     fm  = new FontManagerGL();//TODO
-  private EffectManager   em  = new EffectManager(); //TODO
-  private MaterialManager mm  = new MaterialManager();
-  private MeshManager     mem = new MeshManager();
+	private RenderManager           rm  = new RenderManagerGL();//TODO
+	private InputManager            im  = new InputManager();
+	private TextureManager          tm  = new TextureManager();
+	private ShaderManager           sm  = new ShaderManager();
+	private FontManager             fm  = new FontManagerGL();//TODO
+  private EffectManager           em  = new EffectManager(); //TODO
+  private MaterialManager         mm  = new MaterialManager();
+  private MeshManager             mem = new MeshManager();
+  private RenderableObjectManager rom;
 
 	public RenderManager getRenderManager()
 	{
@@ -64,6 +67,11 @@ public final class Core {
   {
     return mem;
   }
+  
+  public RenderableObjectManager getRenderableObjectManager()
+  {
+    return rom;
+  }
 	
 	public void init(int w, int h, String title, Canvas displayParent) {
 		rm.initDisplay(w, h, title, displayParent);
@@ -84,6 +92,10 @@ public final class Core {
     al.clear();
     al.add("mesh");
     mem.init(al, "data/meshes/");
+    
+    //TODO !!!!!!!! perfils sispli
+    rom = new RenderableObjectManagerGL3();
+    rom.init();
 	}
 	
 	public void cleanUnusedResources(boolean weakify) {
@@ -110,6 +122,7 @@ public final class Core {
 		//TODO tm.cleanUp();
 		
 
+	  rom = null;
     mem = null;
     mm  = null;
     em  = null;

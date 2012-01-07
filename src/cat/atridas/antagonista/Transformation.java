@@ -20,7 +20,7 @@ public final class Transformation {
   private final Vector3f translation = new Vector3f();
   
   private final Quat4f   rotation    = new Quat4f(0,0,0,1);
-  private boolean rotationUpdated;
+  private boolean rotationUpdated = true;
   
   //auxiliar
   private final Matrix4f transformMatrix = new Matrix4f();
@@ -28,6 +28,17 @@ public final class Transformation {
   
   private Tuple3f yawPitchRoll = new Point3f();
   private boolean yawPithRollUpdated = false;
+  
+  public void setTransform(Transformation _other) {
+    translation    .set(_other.translation);
+    rotation       .set(_other.rotation);
+    transformMatrix.set(_other.transformMatrix);
+    yawPitchRoll   .set(_other.yawPitchRoll);
+    
+    rotationUpdated    = _other.rotationUpdated;
+    matrixUpdated      = _other.matrixUpdated;
+    yawPithRollUpdated = _other.yawPithRollUpdated;
+  }
   
   public void setTransform(Matrix4f _transform) {
     translation.set(_transform.m03, _transform.m13, _transform.m23);

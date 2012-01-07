@@ -23,6 +23,7 @@ import cat.atridas.antagonista.graphics.Mesh;
 import cat.atridas.antagonista.graphics.MeshManager;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
+import cat.atridas.antagonista.graphics.RenderableObject;
 import cat.atridas.antagonista.graphics.SceneData;
 import cat.atridas.antagonista.graphics.Technique;
 import cat.atridas.antagonista.graphics.TechniquePass;
@@ -69,8 +70,11 @@ public class Test {
     
     m.activate(TechniqueType.FORWARD, Quality.MID, rm);
     */
-    
-    HashedString hs7 = new HashedString("Habitacio");
+
+    HashedString hs7  = new HashedString("Habitacio");
+    HashedString hs8  = new HashedString("Habitacio 2");
+    HashedString hs9  = new HashedString("Habitacio 3");
+    HashedString hs10 = new HashedString("Habitacio 4");
     MeshManager mem  = Core.getCore().getMeshManager();
     mem.getResource(hs7);
     
@@ -80,12 +84,35 @@ public class Test {
 
     SceneData sceneData = rm.getSceneData();
 
+    sceneData.setPerspective(45, 1, 100);
+    sceneData.setCamera(new Point3f(30, 30, 30), new Point3f(0, 0, 0), new Vector3f(0, 0, 1));
     sceneData.setAmbientLight(new Point3f(0.3f, 0.3f, 0.3f));
     sceneData.setDirectionalLight(new Vector3f(0,1,1), new Point3f(0.3f, 0.3f, 0.3f));
+
+    RenderableObject ro1 = Core.getCore().getRenderableObjectManager().addRenderableObject(hs7,  hs7);
+    RenderableObject ro2 = Core.getCore().getRenderableObjectManager().addRenderableObject(hs8,  hs7);
+    RenderableObject ro3 = Core.getCore().getRenderableObjectManager().addRenderableObject(hs9,  hs7);
+    RenderableObject ro4 = Core.getCore().getRenderableObjectManager().addRenderableObject(hs10, hs7);
     
+    Matrix4f mat = new Matrix4f();
+    mat.setIdentity();
+
+    ro1.setTransformation(mat);
+    mat.setTranslation(new Vector3f( 25,  0, 0));
+    ro2.setTransformation(mat);
+    mat.setTranslation(new Vector3f(-25,  0, 0));
+    ro3.setTransformation(mat);
+    mat.setTranslation(new Vector3f(  0, 25, 0));
+    ro4.setTransformation(mat);
     
     while(!Core.getCore().getInputManager().isCloseRequested()) {
-      render(rm);
+      rm.initFrame();
+      
+      Core.getCore().getRenderableObjectManager().renderAll(rm);
+      
+      rm.present();
+      
+      //render(rm);
       Core.getCore().getInputManager().update();
     }
     
