@@ -171,6 +171,17 @@ public abstract class SceneData {
     viewMatrix.invert();
   }
   
+  public final void setCamera(Camera camera) {
+    Point3f eye    = new Point3f();
+    Point3f lookAt = new Point3f();
+    Vector3f up    = new Vector3f();
+    
+    camera.getCameraParams(eye, lookAt, up);
+    setCamera(eye, lookAt, up);
+    
+    setPerspective(camera.getFovY(), camera.getZNear(), camera.getZFar());
+  }
+  
   public final void getViewProjectionMatrix(Matrix4f viewProjection_) {
     viewProjection_.mul( projectionMatrix );
     viewProjection_.mul( viewMatrix   );

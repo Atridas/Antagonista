@@ -1,34 +1,21 @@
 package cat.atridas.antagonista.test;
 
-import java.nio.FloatBuffer;
 import java.util.logging.Level;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GL31;
-import org.lwjgl.opengl.GLContext;
-
 import cat.atridas.antagonista.HashedString;
-import cat.atridas.antagonista.Quality;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
-import cat.atridas.antagonista.graphics.Material;
-import cat.atridas.antagonista.graphics.Mesh;
 import cat.atridas.antagonista.graphics.MeshManager;
 import cat.atridas.antagonista.graphics.RenderManager;
-import cat.atridas.antagonista.graphics.RenderManager.Profile;
+import cat.atridas.antagonista.graphics.RTSCamera;
 import cat.atridas.antagonista.graphics.RenderableObject;
 import cat.atridas.antagonista.graphics.SceneData;
-import cat.atridas.antagonista.graphics.Technique;
-import cat.atridas.antagonista.graphics.TechniquePass;
 import cat.atridas.antagonista.graphics.TextureManager;
-import cat.atridas.antagonista.graphics.Effect.TechniqueType;
+import cat.atridas.antagonista.input.InputManager;
 
 public class Test {
   
@@ -83,9 +70,10 @@ public class Test {
     
 
     SceneData sceneData = rm.getSceneData();
+    RTSCamera camera = new RTSCamera();
 
-    sceneData.setPerspective(45, 1, 100);
-    sceneData.setCamera(new Point3f(30, 30, 30), new Point3f(0, 0, 0), new Vector3f(0, 0, 1));
+    //sceneData.setPerspective(45, 1, 100);
+    //sceneData.setCamera(new Point3f(30, 30, 30), new Point3f(0, 0, 0), new Vector3f(0, 0, 1));
     sceneData.setAmbientLight(new Point3f(0.3f, 0.3f, 0.3f));
     sceneData.setDirectionalLight(new Vector3f(0,1,1), new Point3f(0.3f, 0.3f, 0.3f));
 
@@ -105,7 +93,17 @@ public class Test {
     mat.setTranslation(new Vector3f(  0, 25, 0));
     ro4.setTransformation(mat);
     
-    while(!Core.getCore().getInputManager().isCloseRequested()) {
+    
+    InputManager im = Core.getCore().getInputManager();
+    im.loadActions("data/xml/inputManager.xml");
+    
+    im.activateMode(Utils.MAIN_GAME);
+    
+    while(!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
+      
+      
+      sceneData.setCamera(camera);
+      
       rm.initFrame();
       
       Core.getCore().getRenderableObjectManager().renderAll(rm);
@@ -122,7 +120,7 @@ public class Test {
     Core.getCore().close();
   }
 
-  
+  /*
   static void render(RenderManager rm) {
     
     rm.initFrame();
@@ -203,4 +201,5 @@ public class Test {
       GL15.glDeleteBuffers(matrixBuffer);
     }
   }
+  */
 }

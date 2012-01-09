@@ -1,5 +1,6 @@
 package cat.atridas.antagonista.graphics;
 
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 public interface Camera {
@@ -7,5 +8,5 @@ public interface Camera {
   float getZNear(); 
   float getZFar();
   
-  void getCameraParams(Vector3f eye_, Vector3f lookat_, Vector3f up_);
+  void getCameraParams(Point3f eye_, Point3f lookat_, Vector3f up_);
 }

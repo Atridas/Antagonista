@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<input_manager>
+  <mode name="main_game">
+    <event name="close" type="keyboard" action="up_down" key="KEY_ESCAPE"/>
+    
+    <event name="move_camera_up"    type="keyboard" action="down" key="KEY_W"/>
+    <event name="move_camera_left"  type="keyboard" action="down" key="KEY_A"/>
+    <event name="move_camera_down"  type="keyboard" action="down" key="KEY_S"/>
+    <event name="move_camera_right" type="keyboard" action="down" key="KEY_D"/>
+  </mode>
+
+</input_manager>

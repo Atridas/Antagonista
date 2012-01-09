@@ -31,6 +31,8 @@ public abstract class Utils {
 
   public static final HashedString DEFAULT = new HashedString("default");
   public static final HashedString WHITE_EFFECT = new HashedString("WhiteEffect");
+  public static final HashedString CLOSE = new HashedString("close");
+  public static final HashedString MAIN_GAME = new HashedString("main_game");
   
   
   public static final float EPSILON = 0.0001f;

@@ -2,14 +2,15 @@ package cat.atridas.antagonista.graphics;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 public class RTSCamera implements Camera {
   
   private float fovY = 30, zNear = 0.5f, zFar = 40;
-  private final Vector3f  eye = new Vector3f(),
-                          lookat = new Vector3f(0,0,0),
-                          up = new Vector3f(0,0,1);
+  private final Point3f  eye    = new Point3f(),
+                         lookat = new Point3f(0,0,0);
+  private final Vector3f up     = new Vector3f(0,0,1);
 
   private Vector3f rightDisplacement = new Vector3f();
   private Vector3f upDisplacement = new Vector3f();
@@ -34,7 +35,10 @@ public class RTSCamera implements Camera {
 
   private float minDistance = 2,
                 maxDistance = 5;
-  
+
+  private final Vector3f v3Aux1 = new Vector3f();
+  private final AxisAngle4f aaAux1 = new AxisAngle4f();
+  private final Matrix3f m3Aux1 = new Matrix3f();
   {
     updateVariables();
   }
@@ -87,9 +91,6 @@ public class RTSCamera implements Camera {
     setDistance(ndistance);
   }
 
-  private final Vector3f v3Aux1 = new Vector3f();
-  private final AxisAngle4f aaAux1 = new AxisAngle4f();
-  private final Matrix3f m3Aux1 = new Matrix3f();
   
   public void moveRight(float distance) {
     assert rightDisplacement.z == 0;
@@ -160,7 +161,7 @@ public class RTSCamera implements Camera {
   }
 
   @Override
-  public void getCameraParams(Vector3f eye_, Vector3f lookat_, Vector3f up_) {
+  public void getCameraParams(Point3f eye_, Point3f lookat_, Vector3f up_) {
     eye_.set(eye);
     lookat_.set(lookat);
     up_.set(up);
