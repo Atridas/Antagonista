@@ -20,7 +20,6 @@ import org.w3c.dom.NodeList;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
-import cat.atridas.antagonista.deprecated.ShaderObject;
 
 /**
  * Classe que representa una font creada amb el <b>Bitmap Font Generator</b>
@@ -32,7 +31,7 @@ import cat.atridas.antagonista.deprecated.ShaderObject;
  * @author Isaac 'Atridas' Serrano Guasch
  *
  */
-public abstract class Font {
+public class Font {
   private static Logger logger = Logger.getLogger(Font.class.getCanonicalName());
   
   public final int width, height, lineHeight, highestChar;
@@ -152,7 +151,7 @@ public abstract class Font {
          + 4 * Byte.SIZE    / 8; // channel
   }
   
-  public int numTextures() {
+  public final int numTextures() {
     return pages.size();
   }
   
@@ -269,13 +268,6 @@ public abstract class Font {
     return maxX;
   }
   
-  public abstract void setAttributes(
-      ShaderObject shader,
-      int position,
-      int texCoord,
-      int channel,
-      int page);
-  
   private static class Char {
     float x, y, fwidth, fheight; 
     int width, height, xoffset, yoffset, xadvance, page, chanel;
@@ -310,4 +302,11 @@ public abstract class Font {
   }
   
   protected Font() {width = height = lineHeight = highestChar = 0;}
+  
+  static final class NullFont extends Font {
+
+    public NullFont() {super();}
+    public int fillBuffers(CharSequence characters, ByteBuffer vertexBuffer, IntBuffer indexBuffer, Texture[] textures) {return 0;}
+    
+  }
 }

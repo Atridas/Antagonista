@@ -34,6 +34,8 @@
       <render_states>
         <depth_test>true</depth_test>
         <depth_function>LESS</depth_function> -> LESS, GREATER, EQUAL, NOTEQUAL, LEQUAL, GEQUAL, ALWAYS, NEVER
+        <z_write>true</z_write>
+        
         <alpha_blending render_target="">false</alpha_blending> -> render_target o bé res, o bé 0, 1, 2, ...
         <blend_func render_target="">
           <source>SRC_ALPHA</source>

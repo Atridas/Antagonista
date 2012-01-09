@@ -16,7 +16,7 @@ public abstract class FontManager {
   private static Logger logger = Logger.getLogger(FontManager.class.getCanonicalName());
   
   private Map<String, SoftReference<Font>> fonts = new HashMap<String, SoftReference<Font>>();
-  private Font defaultFont = getDefaultFont();
+  private Font defaultFont = new Font.NullFont();
   
   public Font getFont(String file) {
     Font font = null;
@@ -30,7 +30,7 @@ public abstract class FontManager {
     
     
     try {
-      font = createFont(file);
+      font = new Font(file);
     } catch (IOException e) {
       font = defaultFont;
       logger.warning(e.toString());
@@ -42,15 +42,12 @@ public abstract class FontManager {
     return font;
   }
   
-  protected abstract Font getDefaultFont();
-  protected abstract Font createFont(String path) throws IOException;
-  
-  public final void printString(String font, String text, Tuple3f color, Matrix4f WVPmatrix) {
-    printString(getFont(font), text, color, WVPmatrix, false);
+  public final void printString(String font, String text, Tuple3f color, Matrix4f WVPmatrix, RenderManager rm) {
+    printString(getFont(font), text, color, WVPmatrix, false, rm);
   }
   
-  public final void printString(String font, String text, Tuple3f color, Matrix4f WVPmatrix, boolean centered) {
-    printString(getFont(font), text, color, WVPmatrix, centered);
+  public final void printString(String font, String text, Tuple3f color, Matrix4f WVPmatrix, boolean centered, RenderManager rm) {
+    printString(getFont(font), text, color, WVPmatrix, centered, rm);
   }
   
   public abstract void printString(
@@ -58,7 +55,8 @@ public abstract class FontManager {
       String text,
       Tuple3f color,
       Matrix4f WVPmatrix,
-      boolean centered);
+      boolean centered,
+      RenderManager rm);
   
   
   static void printBuffers(ByteBuffer bb, IntBuffer ib) {

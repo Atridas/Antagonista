@@ -8,6 +8,7 @@ import org.w3c.dom.Element;
 
 import cat.atridas.antagonista.AntagonistException;
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.Shader.ShaderType;
 import cat.atridas.antagonista.graphics.gl.TechniquePassGL;
@@ -20,11 +21,17 @@ public class TechniquePassGL2 extends TechniquePassGL {
   private int ambientUniform, directionalDirUniform, directionalColorUniform;
   private int specularFactorUniform, specularGlossinessUniform, heightUniform;
   
+  private int fontWVPUniform, fontColorUniform;
+  
   public TechniquePassGL2(Element pass) throws AntagonistException {
     super(pass);
   }
-  
+
   public TechniquePassGL2() {}
+  
+  public TechniquePassGL2(boolean fontPass) {
+    super(fontPass);
+  }
 
   @Override
   protected int generateShaderObject(ShaderType st, RenderManager rm) {
@@ -65,6 +72,12 @@ public class TechniquePassGL2 extends TechniquePassGL {
     if(bones) {
       glBindAttribLocation(program, BLEND_INDEX_ATTRIBUTE, BLEND_INDEX_ATTRIBUTE_NAME);
       glBindAttribLocation(program, BLEND_WEIGHT_ATTRIBUTE, BLEND_WEIGHT_ATTRIBUTE_NAME);
+    }
+    if(fontTechnique) {
+      glBindAttribLocation(program, FONT_POSITION_ATTRIBUTE, FONT_POSITION_ATTRIBUTE_NAME);
+      glBindAttribLocation(program, FONT_TEX_ATTRIBUTE, FONT_TEX_ATTRIBUTE_NAME);
+      glBindAttribLocation(program, FONT_CHANNEL_ATTRIBUTE, FONT_CHANNEL_ATTRIBUTE_NAME);
+      glBindAttribLocation(program, FONT_PAGE_ATTRIBUTE, FONT_PAGE_ATTRIBUTE_NAME);
     }
     assert !Utils.hasGLErrors();
   }
@@ -120,6 +133,21 @@ public class TechniquePassGL2 extends TechniquePassGL {
       throw new AntagonistException();
     }
   }
+
+  @Override
+  protected void loadFontUniforms(int program)
+      throws AntagonistException {
+    fontWVPUniform   = glGetUniformLocation(program, FONT_WVP_MATRIX_UNIFORM);
+    fontColorUniform = glGetUniformLocation(program, FONT_COLOR_UNIFORM);
+    if(fontWVPUniform < 0) {
+      LOGGER.severe("Font uniforms requested but worldviewprojection uniform not active!");
+      throw new AntagonistException();
+    }
+    if(fontColorUniform < 0) {
+      LOGGER.severe("Font uniforms requested but color uniform not active!");
+      throw new AntagonistException();
+    }
+  }
   
   @Override
   public int getSpecularFactorUniform() {
@@ -161,5 +189,64 @@ public class TechniquePassGL2 extends TechniquePassGL {
   protected long getMaxUniformBufferSize() {
     throw new IllegalStateException("Uniform Buffers not supported with " + Utils.getProfile());
   }
+  
+  private static int textVertexShaderID = -1,
+                     textFragmentShaderID = -1;
+  
+  @Override
+  protected int getFontShader(ShaderType shaderType) {
+    switch(shaderType) {
+    case VERTEX:
+      if(textVertexShaderID < 0) {
+        textVertexShaderID = generateShaderObject(shaderType, Core.getCore().getRenderManager());
+        compileShader(textVertexShaderID, textVertexShader);
+      }
+      return textVertexShaderID;
+    case FRAGMENT:
+      if(textFragmentShaderID < 0) {
+        textFragmentShaderID = generateShaderObject(shaderType, Core.getCore().getRenderManager());
+        compileShader(textFragmentShaderID, textFragmentShader);
+      }
+      return textFragmentShaderID;
+    default:
+      return 0;
+    }
+  }
+  
+  public static final String textVertexShader = 
+      "attribute vec2  a_position;\n" +
+      "attribute vec2  a_texCoord;\n" +
+      "attribute vec4  a_channel;\n" +
+      "attribute float a_page;\n" +
+    
+    
+      "varying vec4 v_channel;\n" +
+      "varying float v_page;\n" +
+      "varying vec2 v_texCoord;\n" +
+    
+      "uniform mat4 u_WorldViewProj;\n" +
+    
+      "void main() {  gl_Position = u_WorldViewProj * vec4(a_position, 0, 1);\n" +
+        "v_texCoord  = a_texCoord;\n" +
+        "v_channel   = a_channel;\n" +
+        "v_page      = a_page;\n" +
+      "}\n";
+  
+  public static final String textFragmentShader = 
+      "varying vec2  v_texCoord;\n" +
+      "varying vec4  v_channel;\n" +
+      "varying float v_page;\n" +
+    
+      "uniform sampler2D u_page0;\n" +
+      "uniform vec3 u_color;\n" +
+    
+      "void main() {  \n" +
+        "vec4 pixel = texture2D(u_page0, v_texCoord);\n" +
+        "float val  = dot(v_channel, pixel);\n" +
+        "if(val == 0.0) {\n" +
+          "val = pixel.x;\n" +
+        "}\n" +
+        "gl_FragColor = vec4(u_color,val);\n" +
+      "}\n";
 
 }

@@ -12,34 +12,22 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 
 import cat.atridas.antagonista.core.Core;
-import cat.atridas.antagonista.deprecated.ShaderObject;
 import cat.atridas.antagonista.graphics.Font;
 import cat.atridas.antagonista.graphics.FontManager;
+import cat.atridas.antagonista.graphics.RenderManager;
+import cat.atridas.antagonista.graphics.TechniquePass;
 import cat.atridas.antagonista.graphics.Texture;
-import cat.atridas.antagonista.graphics.gl.FontGL.NullFont;
 
 public class FontManagerGL extends FontManager {
-
-  private static final FontGL defaultFont = new NullFont();
 
   private int vertexBuffer = -1, indexBuffer = -1;
   private int vbLen = 0, ibLen = 0;
   
-  private int u_WVPmatrix, a_position, a_texCoord, a_channel, a_page, u_color, u_tex0;
-  
-  private ShaderObject shader = null;
+  //private ShaderObject shader = null;
+  private TechniquePass pass;
   
   @Override
-  protected final Font getDefaultFont() {
-    return defaultFont;
-  }
-
-  @Override
-  protected final Font createFont(String path) throws IOException {
-    return new FontGL(path);
-  }
-  
-  public final void printString(Font font, String text, Tuple3f color, Matrix4f WVPmatrix, boolean centered) {
+  public final void printString(Font font, String text, Tuple3f color, Matrix4f WVPmatrix, boolean centered, RenderManager rm) {
     int len = text.length();
     int buffer1Size = Font.getVertexSize() * len * 4;
     ByteBuffer buffer1 = BufferUtils.createByteBuffer(buffer1Size);
@@ -86,29 +74,23 @@ public class FontManagerGL extends FontManager {
     }
     
     
-    if(shader == null) {
+    if(pass == null) {
       //shader = new ShaderObject(Font.VERTEX_SHADER, Font.FRAGMENT_SHADER_1_TEX);
-      shader = Core.getCore().getShaderManager().getShader("text");
-      u_WVPmatrix = shader.getUniform("u_WorldViewProj");
-      u_tex0      = shader.getUniform("u_page0");
-      u_color     = shader.getUniform("u_color");
-      a_position  = shader.getAttrib("a_position");
-      a_texCoord  = shader.getAttrib("a_texCoord");
-      a_channel   = shader.getAttrib("a_channel");
-      a_page      = shader.getAttrib("a_page");
+      pass = Core.getCore().getEffectManager().getFontPass();
     }
     
     for(int i = 0; i < tex.length; ++i) {
       tex[i].activate(i);
     }
     
-    shader.activate();
+    //shader.activate();
 
-    shader.setUniform(u_WVPmatrix, WVPmatrix);
-    shader.setUniform(u_color, color);
-    shader.setTextureUniform(u_tex0, 0);
+    //shader.setUniform(u_WVPmatrix, WVPmatrix);
+    //shader.setUniform(u_color, color);
+    //shader.setTextureUniform(u_tex0, 0);
     
-    font.setAttributes(shader, a_position, a_texCoord, a_channel, a_page);
+    //font.setAttributes(shader, a_position, a_texCoord, a_channel, a_page);
+    pass.activate(rm);
     
     glDrawElements(GL_TRIANGLES, len * 6, GL_UNSIGNED_INT, 0);
   }

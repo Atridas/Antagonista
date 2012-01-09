@@ -79,11 +79,30 @@ public abstract class TechniquePass {
   public static final String SPECULAR_GLOSS_UNIFORM = "u_fGlossiness";
   public static final String HEIGHT_UNIFORM = "u_fHeight";
   
+  // Font atributes & uniforms
+  public static final int FONT_POSITION_ATTRIBUTE = 0;
+  public static final int FONT_TEX_ATTRIBUTE = 1;
+  public static final int FONT_CHANNEL_ATTRIBUTE = 2;
+  public static final int FONT_PAGE_ATTRIBUTE = 3;
+
+  public static final String FONT_POSITION_ATTRIBUTE_NAME = "a_position";
+  public static final String FONT_TEX_ATTRIBUTE_NAME = "a_texCoord";
+  public static final String FONT_CHANNEL_ATTRIBUTE_NAME = "a_channel";
+  public static final String FONT_PAGE_ATTRIBUTE_NAME = "a_page";
+
+  public static final String FONT_TEXTURE_UNIFORM = "u_page0";
+  public static final int    FONT_TEXTURE_UNIT =    0;
+
+  public static final String FONT_WVP_MATRIX_UNIFORM = "u_WorldViewProj";
+  public static final String FONT_COLOR_UNIFORM = "u_color";
   
   private int shaderProgram;
   private int vs, tc, te, gs, fs;
   
   private int maxInstances = 1;
+  
+  //is font technique (atributs + uniforms)
+  protected boolean fontTechnique;
   
   //attributes
   protected boolean position, normal, tangents, uv, bones;
@@ -100,6 +119,8 @@ public abstract class TechniquePass {
   //Render states
   private boolean changeDepthTest = false;
   private boolean depthTestStatus;
+  private boolean changeZWrite = false;
+  private boolean zWrite;
   private DepthFunction depthFunction = null;
   
   private boolean changeAlphaBlending = false;
@@ -195,6 +216,44 @@ public abstract class TechniquePass {
     }
   }
   
+  /**
+   * Crea la technique per renderitzar textos.
+   * @param fontShader
+   */
+  protected TechniquePass(boolean fontShader) {
+    assert fontShader = true;
+    
+    vs = tc = te = gs = fs = 0;
+
+    //EffectManager em = Core.getCore().getEffectManager();
+    RenderManager rm = Core.getCore().getRenderManager();
+
+    vs = getFontShader(ShaderType.VERTEX);
+    fs = getFontShader(ShaderType.FRAGMENT);
+    gs = getFontShader(ShaderType.GEOMETRY);
+    fontTechnique =
+    changeDepthTest = 
+    depthTestStatus = 
+    changeZWrite =
+    changeAlphaBlending = 
+    alphaBlendingActive = true;
+    
+    zWrite = false;
+    
+    alphaOperation = new BlendOperation();
+    alphaOperation.src = BlendOperator.SRC_ALPHA;
+    alphaOperation.dst = BlendOperator.ONE_MINUS_SRC_ALPHA;
+    
+    try {
+      shaderProgram = completeShaderProgram(vs, tc, te, gs, fs, rm);
+    } catch (AntagonistException e) {
+      LOGGER.severe(Utils.logExceptionStringAndStack(e));
+      throw new RuntimeException(e);
+    }
+  }
+  
+  protected abstract int getFontShader(ShaderType shaderType);
+  
   private int loadShader(Element shaderXML, ShaderType st, EffectManager em, RenderManager rm) {
     int shaderID = generateShaderObject(st, rm);
     String resourceName  = Utils.getStringContentFromXMLSubElement(shaderXML, "resource");
@@ -278,6 +337,25 @@ public abstract class TechniquePass {
           LOGGER.warning(log);
           depthFunction = null;
         }
+        break;
+        
+      case "z_write":
+        if(LOGGER.isLoggable(Level.CONFIG))
+          LOGGER.config("Loading z write");
+        
+        assert !changeZWrite;
+        switch(element.getTextContent()) {
+        case "true":
+          zWrite = true;
+          break;
+        case "false":
+          zWrite = false;
+          break;
+        default:
+          LOGGER.warning("Unrecognized parameter" + element.getTextContent());
+          break FIRST_SWITCH;
+        }
+        changeZWrite = true;
         break;
         
       case "alpha_blending":
@@ -534,6 +612,8 @@ public abstract class TechniquePass {
       rm.setDepthTest(depthTestStatus);
     if(depthFunction != null)
       rm.setDepthTest(depthFunction);
+    if(changeZWrite)
+      rm.setZWrite(zWrite);
     
     if(changeAlphaBlending)
       rm.setAlphaBlend(alphaBlendingActive);
@@ -590,4 +670,5 @@ public abstract class TechniquePass {
       cleanUp();
     }
   }
+  
 }

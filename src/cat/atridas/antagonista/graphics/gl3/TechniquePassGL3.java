@@ -130,4 +130,16 @@ public final class TechniquePassGL3 extends TechniquePassGL {
   protected long getMaxUniformBufferSize() {
     return glGetInteger64(GL_MAX_UNIFORM_BLOCK_SIZE);
   }
+
+  @Override
+  protected void loadFontUniforms(int program) throws AntagonistException {
+    // TODO Auto-generated method stub
+    throw new RuntimeException("not implemented");
+  }
+
+  @Override
+  protected int getFontShader(ShaderType shaderType) {
+    // TODO Auto-generated method stub
+    throw new RuntimeException("not implemented");
+  }
 }

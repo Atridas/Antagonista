@@ -18,7 +18,7 @@ import cat.atridas.antagonista.graphics.Shader.ShaderType;
 public abstract class TechniquePassGL extends TechniquePass {
   private static Logger LOGGER = Logger.getLogger(TechniquePassGL.class.getCanonicalName());
 
-  private int albedoTextureUniform, normalTextureUniform, heightTextureUniform;
+  private int albedoTextureUniform, normalTextureUniform, heightTextureUniform, fontTextureUniform;
   
   
   private static int defaultVertexShader   = -1,
@@ -32,7 +32,10 @@ public abstract class TechniquePassGL extends TechniquePass {
   }
   
   public TechniquePassGL() {}
-  
+
+  public TechniquePassGL(boolean fontPass) {
+    super(fontPass);
+  }
   /*
   @Override
   protected int generateShaderObject(ShaderType st, RenderManager rm) {
@@ -187,6 +190,15 @@ public abstract class TechniquePassGL extends TechniquePass {
         glUniform1i(heightTextureUniform, HEIGHTMAP_TEXTURE_UNIT);
       }
     }
+    if(fontTechnique) {
+      fontTextureUniform = glGetUniformLocation(program, FONT_TEXTURE_UNIFORM);
+      if(fontTextureUniform < 0) {
+        LOGGER.warning("Font texture requested but not active!");
+        //throw new AntagonistException();
+      } else {
+        glUniform1i(fontTextureUniform, FONT_TEXTURE_UNIT);
+      }
+    }
     assert !Utils.hasGLErrors();
     
     if(basicInstanceUniforms) {
@@ -197,6 +209,9 @@ public abstract class TechniquePassGL extends TechniquePass {
     }
     if(basicMaterial) {
       loadBasicMaterialUniforms(program);
+    }
+    if(fontTechnique) {
+      loadFontUniforms(program);
     }
     
     assert !Utils.hasGLErrors();
@@ -217,21 +232,22 @@ public abstract class TechniquePassGL extends TechniquePass {
       if(normal && normalLocation != NORMAL_ATTRIBUTE) {
         LOGGER.warning("Expected normal attribute at " + NORMAL_ATTRIBUTE + " but found in " + normalLocation);
       }
-      if(tangents && tangentLocation != TANGENT_ATTRIBUTE) {
-        LOGGER.warning("Expected tangent attribute at " + TANGENT_ATTRIBUTE + " but found in " + tangentLocation);
-      }
-      if(tangents && bitangentLocation != BITANGENT_ATTRIBUTE) {
-        LOGGER.warning("Expected bitangent attribute at " + BITANGENT_ATTRIBUTE + " but found in " + bitangentLocation);
+      if(tangents) {
+        if(tangentLocation != TANGENT_ATTRIBUTE)
+          LOGGER.warning("Expected tangent attribute at " + TANGENT_ATTRIBUTE + " but found in " + tangentLocation);
+        if(bitangentLocation != BITANGENT_ATTRIBUTE)
+          LOGGER.warning("Expected bitangent attribute at " + BITANGENT_ATTRIBUTE + " but found in " + bitangentLocation);
       }
       if(uv && uvLocation != UV_ATTRIBUTE) {
         LOGGER.warning("Expected uv attribute at " + UV_ATTRIBUTE + " but found in " + uvLocation);
       }
-      if(bones && bonesILocation != BLEND_INDEX_ATTRIBUTE) {
-        LOGGER.warning("Expected bone indexes attribute at " + BLEND_INDEX_ATTRIBUTE + " but found in " + bonesILocation);
+      if(bones) {
+        if(bonesILocation != BLEND_INDEX_ATTRIBUTE) 
+          LOGGER.warning("Expected bone indexes attribute at " + BLEND_INDEX_ATTRIBUTE + " but found in " + bonesILocation);
+        if(bonesWLocation != BLEND_WEIGHT_ATTRIBUTE)
+          LOGGER.warning("Expected bone weights attribute at " + BLEND_WEIGHT_ATTRIBUTE + " but found in " + bonesWLocation);
       }
-      if(bones && bonesWLocation != BLEND_WEIGHT_ATTRIBUTE) {
-        LOGGER.warning("Expected bone weights attribute at " + BLEND_WEIGHT_ATTRIBUTE + " but found in " + bonesWLocation);
-      }
+      //TODO comprovar atributs de les fonts (mandra)
     
     }
     //int fragDataLoc = glGetFragDataLocation(program, COLOR_FRAGMENT_DATA_NAME);
@@ -248,6 +264,7 @@ public abstract class TechniquePassGL extends TechniquePass {
   protected abstract void loadBasicInstanceUniforms(int program) throws AntagonistException;
   protected abstract void loadBasicLightUniforms(int program) throws AntagonistException;
   protected abstract void loadBasicMaterialUniforms(int program) throws AntagonistException;
+  protected abstract void loadFontUniforms(int program) throws AntagonistException;
   
   @Override
   protected void deleteShaderProgram(int shaderProgramID) {

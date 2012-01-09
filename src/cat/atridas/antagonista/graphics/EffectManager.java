@@ -18,6 +18,7 @@ import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.ResourceManager;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.graphics.Shader.ShaderType;
+import cat.atridas.antagonista.graphics.gl2.TechniquePassGL2;
 
 public class EffectManager extends ResourceManager<Effect> {
   private static Logger LOGGER = Logger.getLogger(EffectManager.class.getCanonicalName());
@@ -33,6 +34,7 @@ public class EffectManager extends ResourceManager<Effect> {
                         tessEvalShaderManager;
   
   private Effect defaultResource;
+  private TechniquePass fontPass;
   
   boolean isInit;
   
@@ -147,9 +149,15 @@ public class EffectManager extends ResourceManager<Effect> {
     defaultResource = new Effect(Utils.DEFAULT);
     defaultResource.loadDefault();
     
+    //TODO millor
+    fontPass = new TechniquePassGL2(true);
+    
     assert !Utils.hasGLErrors();
   }
   
+  public TechniquePass getFontPass() {
+    return fontPass;
+  }
   
   public String getShaderSource(HashedString shader, ShaderType st) {
     assert isInit;

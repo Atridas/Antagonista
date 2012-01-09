@@ -71,6 +71,7 @@ public abstract class RenderManager {
 	public abstract void activateShader(int shader);
 
   public abstract void setDepthTest(boolean enable);
+  public abstract void setZWrite(boolean enable);
   public abstract void setDepthTest(DepthFunction function);
 
   public abstract void setAlphaBlend(boolean enable);

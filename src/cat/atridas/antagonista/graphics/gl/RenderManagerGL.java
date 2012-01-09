@@ -111,6 +111,11 @@ public final class RenderManagerGL extends RenderManager {
 
 
   @Override
+  public void setZWrite(boolean enable) {
+    glDepthMask(enable);
+  }
+
+  @Override
   public void setAlphaBlend(boolean enable) {
     if(enable)
       glEnable(GL_BLEND);

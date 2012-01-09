@@ -3,7 +3,6 @@ package cat.atridas.antagonista.core;
 import java.awt.Canvas;
 import java.util.ArrayList;
 
-import cat.atridas.antagonista.deprecated.ShaderManager;
 import cat.atridas.antagonista.graphics.EffectManager;
 import cat.atridas.antagonista.graphics.FontManager;
 import cat.atridas.antagonista.graphics.MaterialManager;
@@ -21,7 +20,6 @@ public final class Core {
 	private RenderManager           rm  = new RenderManagerGL();//TODO
 	private InputManager            im  = new InputManager();
 	private TextureManager          tm  = new TextureManager();
-	private ShaderManager           sm  = new ShaderManager();
 	private FontManager             fm  = new FontManagerGL();//TODO
   private EffectManager           em  = new EffectManager(); //TODO
   private MaterialManager         mm  = new MaterialManager();
@@ -41,11 +39,6 @@ public final class Core {
 	public TextureManager getTextureManager()
 	{
 		return tm;
-	}
-
-	public ShaderManager getShaderManager()
-	{
-		return sm;
 	}
   
   public FontManager getFontManager()
@@ -127,7 +120,6 @@ public final class Core {
     mm  = null;
     em  = null;
     fm  = null;
-    sm  = null;
     tm  = null;
     
     System.gc();
