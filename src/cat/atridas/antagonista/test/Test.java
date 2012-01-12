@@ -98,8 +98,27 @@ public class Test {
     im.loadActions("data/xml/inputManager.xml");
     
     im.activateMode(Utils.MAIN_GAME);
+
+    HashedString camUp    = new HashedString("move_camera_up");
+    HashedString camDown  = new HashedString("move_camera_down");
+    HashedString camLeft  = new HashedString("move_camera_left");
+    HashedString camRight = new HashedString("move_camera_right");
     
+    float dt = 0.01f;;
     while(!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
+
+      if(im.isActionActive(camUp)) {
+        camera.moveUp(0.1f * dt);
+      }
+      if(im.isActionActive(camDown)) {
+        camera.moveUp(-0.1f * dt);
+      }
+      if(im.isActionActive(camLeft)) {
+        camera.moveRight(-0.1f * dt);
+      }
+      if(im.isActionActive(camRight)) {
+        camera.moveRight(0.1f * dt);
+      }
       
       
       sceneData.setCamera(camera);

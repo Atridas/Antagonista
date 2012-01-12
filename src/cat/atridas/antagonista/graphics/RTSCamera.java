@@ -127,11 +127,11 @@ public class RTSCamera implements Camera {
     Vector3f v3CenterToEye = v3Aux1;
     v3CenterToEye.set(0, -1, 0);
     
-    aaAux1.set(1,0,0, pitch);
+    aaAux1.set(-1,0,0, pitch * (float) Math.PI / 180);
     m3Aux1.set(aaAux1);
     m3Aux1.transform(v3CenterToEye);
     
-    aaAux1.set(0, 0, 1, yaw);
+    aaAux1.set(0, 0, 1, yaw * (float) Math.PI / 180);
     m3Aux1.set(aaAux1);
     m3Aux1.transform(v3CenterToEye);
     
