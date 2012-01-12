@@ -11,6 +11,12 @@
 
 #line 13
 
+#if __VERSION__ >= 330
+  #define varying in
+  out vec4 f_v4Color;
+  #define gl_FragColor f_v4Color
+#endif
+
 // Vertex transformed info ------------------------------------
 varying vec3 v_v3Position; //View space position
 varying vec3 v_v3Normal;      //View

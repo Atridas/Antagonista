@@ -7,6 +7,11 @@
 
 #line 9
 
+#if __VERSION__ >= 330
+  #define attribute in
+  #define varying out
+#endif
+
 // Vertex Atributes ------------------------------------
 attribute vec3 a_v3Position;
 attribute vec3 a_v3Normal;

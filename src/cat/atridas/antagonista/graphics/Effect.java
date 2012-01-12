@@ -34,7 +34,6 @@ public class Effect extends Resource {
     
     LOGGER.config("Loading effect [" + resourceName + "]");
     
-    boolean gl = Core.getCore().getRenderManager().getProfile().supports(Profile.GL2);
     EffectManager em = Core.getCore().getEffectManager();
     
     
@@ -96,7 +95,7 @@ public class Effect extends Resource {
         } else {
           Profile p = Profile.getFromString(techniqueXML.getAttribute("min_version"));
           if(Utils.supports(p)) {
-            technique = new Technique(techniqueXML, gl);
+            technique = new Technique(techniqueXML);
             assert !Utils.hasGLErrors();
           } else {
             technique = null;

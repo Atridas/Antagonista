@@ -22,20 +22,23 @@ public final class Technique {
 
   public final List<TechniquePass> passes;
   
-  public Technique(Element techniqueXML, boolean gl) throws AntagonistException {
+  public Technique(Element techniqueXML) throws AntagonistException {
     assert techniqueXML.getTagName().equals("technique");
     
     ArrayList<TechniquePass> _passes = new ArrayList<>();
 
+
+    Profile p = Profile.getFromString(techniqueXML.getAttribute("min_version"));
+    
     NodeList nl = techniqueXML.getElementsByTagName("pass");
     for(int i = 0; i < nl.getLength(); ++i) {
       Element pass = ((Element)nl.item(i));
 
-      if(Utils.supports(Profile.GL3)) {
+      if(p.supports(Profile.GL3)) {
         _passes.add(new TechniquePassGL3(pass));
-      } else if(Utils.supports(Profile.GL2) && Utils.supports(Functionality.UNIFORM_BUFFER_OBJECT)) {
+      } else if(p.supports(Profile.GL2) && p.supports(Functionality.UNIFORM_BUFFER_OBJECT)) {
         _passes.add(new TechniquePassGL2_UBO(pass));
-      } else if(Utils.supports(Profile.GL2)) {
+      } else if(p.supports(Profile.GL2)) {
         _passes.add(new TechniquePassGL2(pass));
       } else {
         throw new IllegalStateException(
