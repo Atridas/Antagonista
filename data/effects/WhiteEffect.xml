@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <effect name="WhiteEffect">
-  <technique type="forward">
+  <technique type="forward" min_version="GL2">
     <pass>
       <render_states>
         <depth_test>true</depth_test>

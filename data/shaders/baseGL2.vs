@@ -1,34 +1,30 @@
-// ******* base.vs
+// ******* baseGL2.vs
 
 // nota: farem 3 perfils:
-// b√†sic (OpenGL 2.1, GLSL 1.20)
+// b‡sic (OpenGL 2.1, GLSL 1.20)
 // mig   (OpenGL 3.3, GLSL 3.30)
 // alt   (OpenGL 4.2, GLSL 4.20)
 
 #line 9
 
 // Vertex Atributes ------------------------------------
-layout(location = 0) in vec3 a_v3Position;
-layout(location = 1) in vec3 a_v3Normal;
-layout(location = 2) in vec3 a_v3Tangent;
-layout(location = 3) in vec3 a_v3Bitangent;
-layout(location = 4) in vec2 a_v2UV;
+attribute vec3 a_v3Position;
+attribute vec3 a_v3Normal;
+attribute vec3 a_v3Tangent;
+attribute vec3 a_v3Bitangent;
+attribute vec2 a_v2UV;
 
 // Vertex transformed info ------------------------------------
-out vec3 v_v3Position; //View space position
-out vec3 v_v3Normal;      //View
-out vec3 v_v3Tangent;
-out vec3 v_v3Bitangent;
-out vec2 v_v2UV;
+varying vec3 v_v3Position; //View space position
+varying vec3 v_v3Normal;      //View
+varying vec3 v_v3Tangent;
+varying vec3 v_v3Bitangent;
+varying vec2 v_v2UV;
 
 // Uniforms -----------------------------------------------------
-layout(std140) uniform UniformInstances {
-  //struct {
-    mat4 u_m4ModelViewProjection;
-    mat4 u_m4ModelView;
-    mat4 u_m4ModelViewIT;
-  //} u_InstanceInfo[MAX_INSTANCES];
-};
+uniform mat4 u_m4ModelViewProjection;
+uniform mat4 u_m4ModelView;
+uniform mat4 u_m4ModelViewIT;
   
   
 // -------------------------------------------------------------------------

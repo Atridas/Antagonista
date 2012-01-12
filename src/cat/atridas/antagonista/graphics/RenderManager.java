@@ -170,6 +170,18 @@ public abstract class RenderManager {
       }
     }
     
+    public Profile withFunctionality(Functionality f) {
+      for(Profile p : Profile.values()) {
+        if( p.gles == this.gles &&
+            p.glVersion == this.glVersion &&
+            p.functionality.contains(f) &&
+            p.functionality.containsAll(this.functionality) &&
+            p.functionality.size() <= this.functionality.size() + 1)
+          return p;
+      }
+      throw new IllegalArgumentException("The requested profile does not exist.");
+    }
+    
     /*@Override
     public String toString() {
       switch (this) {

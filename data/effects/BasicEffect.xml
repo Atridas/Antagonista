@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <effect name="BasicEffect">
-  <technique type="forward">
+  <technique type="forward" quality="mid" min_version="GL3">
     <pass>
+        
       <render_states>
         <depth_test>true</depth_test>
         <depth_function>LESS</depth_function>
@@ -29,16 +30,51 @@
       
       <vertex_shader>
         <resource>base</resource>
-        <min_version>2</min_version>
       </vertex_shader>
       <fragment_shader>
         <resource>forwardBase</resource>
-        <min_version>2</min_version>
       </fragment_shader>
     
     </pass>
   </technique>
-  <technique type="shadow">
+  <technique type="forward" quality="low" min_version="GL2">
+    <pass>
+        
+      <render_states>
+        <depth_test>true</depth_test>
+        <depth_function>LESS</depth_function>
+        <alpha_blending>false</alpha_blending>
+      </render_states>
+      
+      <attributes>
+        <position/>
+        <normal/>
+        <tangents/>
+        <uv/>
+      </attributes>
+      
+      <uniforms>
+        <albedo_texture/>
+        <normal_texture/>
+        <basic_instance_uniforms/>
+        <basic_light/>
+        <basic_material/>
+      </uniforms>
+      
+      <results>
+        <color/>
+      </results>
+      
+      <vertex_shader>
+        <resource>baseGL2</resource>
+      </vertex_shader>
+      <fragment_shader>
+        <resource>forwardBaseGL2</resource>
+      </fragment_shader>
+    
+    </pass>
+  </technique>
+  <technique type="shadow" min_version="GL3">
     <pass>
       <render_states>
         <depth_test>true</depth_test>

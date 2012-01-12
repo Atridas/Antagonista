@@ -63,16 +63,17 @@ public abstract class TechniquePassGL extends TechniquePass {
 
   @Override
   protected String getVersionDeclaration(RenderManager rm) {
-    switch(rm.getProfile()) {
-    case GL2:
-      return "#version 120";
-    case GL3:
-      return "#version 330";
-    case GL4:
+    
+    if(Utils.supports(Profile.GL4)) {
       return "#version 420";
-    default:
+    } else if(Utils.supports(Profile.GL3)) {
+      return "#version 330";
+    } else if(Utils.supports(Profile.GL2)) {
+      return "#version 120";
+    } else {
       throw new IllegalArgumentException();
     }
+    
   }
 
   @Override
