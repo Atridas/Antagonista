@@ -17,7 +17,6 @@ import cat.atridas.antagonista.graphics.RenderManager.BlendOperation;
 import cat.atridas.antagonista.graphics.RenderManager.BlendOperationSeparate;
 import cat.atridas.antagonista.graphics.RenderManager.BlendOperator;
 import cat.atridas.antagonista.graphics.RenderManager.DepthFunction;
-import cat.atridas.antagonista.graphics.RenderManager.Profile;
 import cat.atridas.antagonista.graphics.Shader.ShaderType;
 
 public abstract class TechniquePass {
@@ -65,6 +64,7 @@ public abstract class TechniquePass {
   public static final String BASIC_INSTANCE_UNIFORMS_STRUCT       = "u_InstanceInfo";
   public static final String MODEL_VIEW_PROJECTION_UNIFORMS = "u_m4ModelViewProjection";
   public static final String MODEL_VIEW_UNIFORMS            = "u_m4ModelView";
+  public static final String MODEL_VIEW_IT_UNIFORMS            = "u_m4ModelViewIT";
   //public static final String BONES_UNIFORMS                 = "u_m34Bones";
 
   public static final int    BASIC_LIGHT_UNIFORMS_BINDING = 1;
@@ -151,16 +151,7 @@ public abstract class TechniquePass {
         continue;
       Element element = ((Element)n);
       
-      switch(element.getTagName()) {
-      case "min_version":
-        String versionString = element.getTextContent();
-        
-        Profile p = Profile.getFromString(versionString);
-        if(!rm.getProfile().supports(p)) {
-          LOGGER.warning("This technique needs a profile compatible with " + p);
-          throw new AntagonistException();
-        }
-        
+      switch(element.getTagName()) {        
       case "vertex_shader":
         if(!uniformsDefined) {
           LOGGER.warning("Uniforms must be defined before vertex_shader");
@@ -603,6 +594,7 @@ public abstract class TechniquePass {
   
   public abstract int getModelViewProjectionUniform();
   public abstract int getModelViewUniform();
+  public abstract int getModelViewITUniform();
   
   public void activate(RenderManager rm) {
     assert !cleaned;

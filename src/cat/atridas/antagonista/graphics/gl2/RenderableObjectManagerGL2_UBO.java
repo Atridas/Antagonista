@@ -1,20 +1,18 @@
-package cat.atridas.antagonista.graphics.gl3;
+package cat.atridas.antagonista.graphics.gl2;
 
 import java.nio.FloatBuffer;
 
 import javax.vecmath.Matrix4f;
 
 import org.lwjgl.BufferUtils;
-import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.opengl.GL31.*;
-
+import static org.lwjgl.opengl.ARBUniformBufferObject.*;
 import static org.lwjgl.opengl.GL15.*;
 
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.graphics.RenderableObjectManager;
 import cat.atridas.antagonista.graphics.TechniquePass;
 
-public final class RenderableObjectManagerGL3 extends RenderableObjectManager {
+public final class RenderableObjectManagerGL2_UBO extends RenderableObjectManager {
 
   private static final int BUFFER_SIZE = 3 * 16; // 3 matrius de 16 floats
   

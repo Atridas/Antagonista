@@ -94,8 +94,13 @@ public class Effect extends Resource {
           }
           
         } else {
-          technique = new Technique(techniqueXML, gl);
-          assert !Utils.hasGLErrors();
+          Profile p = Profile.getFromString(techniqueXML.getAttribute("min_version"));
+          if(Utils.supports(p)) {
+            technique = new Technique(techniqueXML, gl);
+            assert !Utils.hasGLErrors();
+          } else {
+            technique = null;
+          }
         }
         
         HashMap<Quality, Technique> qToTech = techniques.get(techniqueType);
@@ -107,8 +112,8 @@ public class Effect extends Resource {
         if(qToTech.containsKey(q)) {
           throw new IllegalArgumentException("Technique " + techniqueType + " with quality " + q + " defined twice.");
         }
-        
-        qToTech.put(q, technique);
+        if(technique != null)
+          qToTech.put(q, technique);
       }
 
       assert !Utils.hasGLErrors();
@@ -117,6 +122,9 @@ public class Effect extends Resource {
       Utils.hasGLErrors();
       return false;
     }
+    
+    
+    
     return true;
   }
   

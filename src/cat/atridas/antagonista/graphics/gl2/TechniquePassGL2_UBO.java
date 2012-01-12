@@ -143,6 +143,10 @@ public final class TechniquePassGL2_UBO extends TechniquePassGL {
   public int getModelViewUniform() {
     throw new IllegalStateException("Trying to fetch a uniform. Use uniform blocks instead.");
   }
+  @Override
+  public int getModelViewITUniform() {
+    throw new IllegalStateException("Trying to fetch a uniform. Use uniform blocks instead.");
+  }
 
 
   @Override
