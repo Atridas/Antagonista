@@ -1,6 +1,5 @@
 package cat.atridas.antagonista.graphics.gl;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
