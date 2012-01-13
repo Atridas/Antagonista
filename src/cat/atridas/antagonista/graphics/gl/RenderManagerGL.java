@@ -300,4 +300,12 @@ public final class RenderManagerGL extends RenderManager {
     }
     return errorEncountered;
   }
+
+  @Override
+  public void clearSilentlyGLErrors() {
+    int error = glGetError();
+    while(error != GL_NO_ERROR) {
+      error = glGetError();
+    }
+  }
 }

@@ -226,6 +226,7 @@ public abstract class TechniquePassGL extends TechniquePass {
       int uvLocation = glGetAttribLocation(program, UV_ATTRIBUTE_NAME);
       int bonesILocation = glGetAttribLocation(program, BLEND_INDEX_ATTRIBUTE_NAME);
       int bonesWLocation = glGetAttribLocation(program, BLEND_WEIGHT_ATTRIBUTE_NAME);
+      int colorLocation = glGetAttribLocation(program, COLOR_ATTRIBUTE_NAME);
 
       if(position && positionLocation != POSITION_ATTRIBUTE) {
         LOGGER.warning("Expected position attribute at " + POSITION_ATTRIBUTE + " but found in " + positionLocation);
@@ -250,6 +251,11 @@ public abstract class TechniquePassGL extends TechniquePass {
       }
       //TODO comprovar atributs de les fonts (mandra)
     
+      if(colorAttr) {
+        if(colorLocation != COLOR_ATTRIBUTE) {
+          LOGGER.warning("Expected color attribute at " + COLOR_ATTRIBUTE + " but found in " + colorLocation);
+        }
+      }
     }
     //int fragDataLoc = glGetFragDataLocation(program, COLOR_FRAGMENT_DATA_NAME);
     //assert !(color && GL3) || fragDataLoc == COLOR_FRAGMENT_DATA_LOCATION;

@@ -4,6 +4,7 @@ import java.awt.Canvas;
 import java.util.ArrayList;
 
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.graphics.EffectManager;
 import cat.atridas.antagonista.graphics.FontManager;
 import cat.atridas.antagonista.graphics.MaterialManager;
@@ -17,6 +18,7 @@ import cat.atridas.antagonista.graphics.gl.FontManagerGL;
 import cat.atridas.antagonista.graphics.gl.RenderManagerGL;
 import cat.atridas.antagonista.graphics.gl2.RenderableObjectManagerGL2;
 import cat.atridas.antagonista.graphics.gl2.RenderableObjectManagerGL2_UBO;
+import cat.atridas.antagonista.graphics.gl3.DebugRenderGL3;
 import cat.atridas.antagonista.graphics.gl3.RenderableObjectManagerGL3;
 import cat.atridas.antagonista.input.InputManager;
 
@@ -28,6 +30,7 @@ public final class Core {
 	private FontManager             fm  = new FontManagerGL();//TODO
   private EffectManager           em  = new EffectManager(); //TODO
   private MaterialManager         mm  = new MaterialManager();
+  private DebugRender             dr;
   private MeshManager             mem = new MeshManager();
   private RenderableObjectManager rom;
 
@@ -61,6 +64,11 @@ public final class Core {
     return mm;
   }
   
+  public DebugRender getDebugRender()
+  {
+    return dr;
+  }
+  
   public MeshManager getMeshManager()
   {
     return mem;
@@ -87,11 +95,18 @@ public final class Core {
     al.add("mat");
     mm.init(al, "data/materials/");
     
+    if(Utils.supports(Profile.GL3)) {
+      dr = new DebugRenderGL3();
+    } else {
+      //TODO
+      throw new RuntimeException("Not implemented");
+    }
+    
     al.clear();
     al.add("mesh");
     mem.init(al, "data/meshes/");
     
-    //TODO !!!!!!!! perfils sispli
+
     if(Utils.supports(Profile.GL3))
       rom = new RenderableObjectManagerGL3();
     else if(Utils.supports(Profile.GL2)) {

@@ -68,7 +68,8 @@
         <tangents/> -> vec3 a_v3Tangent, a_v3Bitangent (2/3)
         <uv/>       -> vec2 a_v2UV                     (4)
         <bones/>    -> ivec4 a_i4BlendIndexs           (5)
-                        vec4 a_v4BlendWeights           (6)
+                        vec4 a_v4BlendWeights          (6)
+        <color/>    -> vec4 a_v4Color                  (7) 
       </attributes>
       
       <uniforms>

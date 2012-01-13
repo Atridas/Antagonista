@@ -2,6 +2,7 @@ package cat.atridas.antagonista.test;
 
 import java.util.logging.Level;
 
+import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -32,9 +33,10 @@ public class Test {
     
     Utils.setConsoleLogLevel(Level.CONFIG);
     
-    Core.getCore().init(800, 600, Test.class.getName(), null);
+    Core core = Core.getCore();
+    core.init(800, 600, Test.class.getName(), null);
     
-    RenderManager rm = Core.getCore().getRenderManager();
+    RenderManager rm = core.getRenderManager();
     
     
     HashedString hs = new HashedString("Textura 2");
@@ -63,7 +65,7 @@ public class Test {
     HashedString hs8  = new HashedString("Habitacio 2");
     HashedString hs9  = new HashedString("Habitacio 3");
     HashedString hs10 = new HashedString("Habitacio 4");
-    MeshManager mem  = Core.getCore().getMeshManager();
+    MeshManager mem  = core.getMeshManager();
     mem.getResource(hs7);
     
     
@@ -80,10 +82,10 @@ public class Test {
     sceneData.setAmbientLight(new Point3f(0.3f, 0.3f, 0.3f));
     sceneData.setDirectionalLight(new Vector3f(0,1,1), new Point3f(0.3f, 0.3f, 0.3f));
 
-    RenderableObject ro1 = Core.getCore().getRenderableObjectManager().addRenderableObject(hs7,  hs7);
-    RenderableObject ro2 = Core.getCore().getRenderableObjectManager().addRenderableObject(hs8,  hs7);
-    RenderableObject ro3 = Core.getCore().getRenderableObjectManager().addRenderableObject(hs9,  hs7);
-    RenderableObject ro4 = Core.getCore().getRenderableObjectManager().addRenderableObject(hs10, hs7);
+    RenderableObject ro1 = core.getRenderableObjectManager().addRenderableObject(hs7,  hs7);
+    RenderableObject ro2 = core.getRenderableObjectManager().addRenderableObject(hs8,  hs7);
+    RenderableObject ro3 = core.getRenderableObjectManager().addRenderableObject(hs9,  hs7);
+    RenderableObject ro4 = core.getRenderableObjectManager().addRenderableObject(hs10, hs7);
     
     Matrix4f mat = new Matrix4f();
     mat.setIdentity();
@@ -107,6 +109,8 @@ public class Test {
     HashedString camLeft  = new HashedString("move_camera_left");
     HashedString camRight = new HashedString("move_camera_right");
     HashedString camDist  = new HashedString("move_camera_distance");
+
+    core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(25,25,25), new Color3f(1,1,1), 30);
     
     Clock clock = new Clock();
     while(!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
@@ -129,12 +133,27 @@ public class Test {
         camera.addDistance( -.01f * im.getActionValue(camDist) );
       }
       
+
+      core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(0,0,25), new Color3f(0,0,1));
+      core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(0,25,0), new Color3f(0,1,0));
+      core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(25,0,0), new Color3f(1,0,0));
+      //core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(0,-25,0), new Color3f(1,0,0));
+      //core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(0,25,25), new Color3f(1,0,0));
+      //core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(0,-25,25), new Color3f(1,0,0));
+      //core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(25,0,25), new Color3f(1,0,0));
+      //core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(-25,0,25), new Color3f(1,0,0));
+
+      core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(0,0,-25), new Color3f(0,0,0.5f));
+      core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(0,-25,0), new Color3f(0,0.5f,0));
+      core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(-25,0,0), new Color3f(0.5f,0,0));
       
-      sceneData.setCamera(camera);
+      
+      //sceneData.setCamera(camera);
       
       rm.initFrame();
       
-      Core.getCore().getRenderableObjectManager().renderAll(rm);
+      core.getRenderableObjectManager().renderAll(rm);
+      core.getDebugRender().render(rm,dt);
       
       rm.present();
       

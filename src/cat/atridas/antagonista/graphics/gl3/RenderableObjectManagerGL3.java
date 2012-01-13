@@ -5,7 +5,6 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 
-import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL31.*;
 
@@ -17,14 +16,8 @@ import cat.atridas.antagonista.graphics.RenderableObjectManager;
 import cat.atridas.antagonista.graphics.TechniquePass;
 
 public final class RenderableObjectManagerGL3 extends RenderableObjectManager {
-
-  private static final int BUFFER_MATRIXES_SIZE = 3 * 16; // 3 matrius de 16 floats
-  private static final int BUFFER_COLORS_SIZE = 3 * 16; // 3 matrius de 16 floats
   
-  private static final int COLOR_OFFSET;
-  private static final int BUFFER_SIZE; 
-  
-  private FloatBuffer buffer = BufferUtils.createFloatBuffer(BUFFER_SIZE);
+  private FloatBuffer buffer = BufferUtils.createFloatBuffer(InstanceBufferUtils.BUFFER_SIZE);
   private int bufferID = -1;
 
   @Override
@@ -38,7 +31,7 @@ public final class RenderableObjectManagerGL3 extends RenderableObjectManager {
       return false;
     }
     glBindBuffer(GL_UNIFORM_BUFFER, bufferID);
-    glBufferData(GL_UNIFORM_BUFFER, BUFFER_SIZE * Utils.FLOAT_SIZE, GL_DYNAMIC_DRAW);
+    glBufferData(GL_UNIFORM_BUFFER, InstanceBufferUtils.BUFFER_SIZE * Utils.FLOAT_SIZE, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     
     return !Utils.hasGLErrors();
@@ -54,7 +47,7 @@ public final class RenderableObjectManagerGL3 extends RenderableObjectManager {
     Utils.matrixToBuffer(instanceData.modelView, buffer);
     Utils.matrixToBuffer(instanceData.modelViewInvTransp, buffer);
 
-    buffer.position(COLOR_OFFSET);
+    buffer.position(InstanceBufferUtils.COLOR_OFFSET);
     
     buffer.put(instanceData.specialColor0.x);
     buffer.put(instanceData.specialColor0.y);
@@ -98,7 +91,7 @@ public final class RenderableObjectManagerGL3 extends RenderableObjectManager {
         GL_UNIFORM_BUFFER, 
         TechniquePass.SPECIAL_COLORS_UNIFORMS_BINDING, 
         bufferID, 
-        COLOR_OFFSET, 
+        InstanceBufferUtils.COLOR_OFFSET, 
         4 *  4 * Utils.FLOAT_SIZE);
     
     assert !Utils.hasGLErrors();
@@ -119,16 +112,5 @@ public final class RenderableObjectManagerGL3 extends RenderableObjectManager {
     glDeleteBuffers(bufferID);
     
     cleaned = true;
-  }
-
-  static {
-    int aligment = glGetInteger(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT);
-    
-    int k = 0;
-    while(aligment * k < BUFFER_MATRIXES_SIZE) {
-      k++;
-    }
-    COLOR_OFFSET = aligment * k;
-    BUFFER_SIZE  = COLOR_OFFSET + BUFFER_COLORS_SIZE;
   }
 }

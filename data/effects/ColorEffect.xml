@@ -3,17 +3,15 @@
   <technique type="forward" min_version="GL2">
     <pass>
       <render_states>
-        <depth_test>true</depth_test>
         <depth_function>LESS</depth_function>
-        <alpha_blending>false</alpha_blending>
       </render_states>
       
       <attributes>
         <position/>
+        <color/>
       </attributes>
       
       <uniforms>
-        <special_color/>
       </uniforms>
       
       <results>
@@ -21,7 +19,7 @@
       </results>
       
       <vertex_shader>
-        <resource>simple</resource>
+        <resource>color</resource>
       </vertex_shader>
       <fragment_shader>
         <resource>color</resource>

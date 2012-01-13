@@ -9,6 +9,9 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
+import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.core.Core;
+
 public abstract class DebugRender {
 
   protected final ArrayList<Line>        lines = new ArrayList<>();
@@ -21,14 +24,19 @@ public abstract class DebugRender {
   protected final ArrayList<OBB>         obbs = new ArrayList<>();
   protected final ArrayList<DebugString> strings = new ArrayList<>();
 
+  protected Material debugMaterial;
+  
+  {
+    debugMaterial = Core.getCore().getMaterialManager().getResource(Utils.DEBUG_MATERIAL_NAME);
+  }
+  
   public void addLine( 
       Point3f origin, 
       Point3f destination, 
       Color3f color, 
-      float lineWidth, 
       float duration, 
       boolean depthEnabled) {
-    lines.add(new Line(origin, destination, duration, depthEnabled, color, lineWidth));
+    lines.add(new Line(origin, destination, duration, depthEnabled, color));
   }
   
   public void addCross( 
@@ -72,31 +80,28 @@ public abstract class DebugRender {
       Point3f v0, 
       Point3f v1, 
       Point3f v2,
-      Color3f color, 
-      float lineWidth, 
+      Color3f color,
       float duration, 
       boolean depthEnabled) {
-    triangles.add(new Triangle(v0, v1, v2, duration, depthEnabled, color, lineWidth));
+    triangles.add(new Triangle(v0, v1, v2, duration, depthEnabled, color));
   }
   
   public void addAABB( 
       Point3f minCoords, 
       Point3f maxCoords, 
       Color3f color, 
-      float lineWidth, 
       float duration, 
       boolean depthEnabled) {
-    aabbs.add(new AABB(minCoords, maxCoords, duration, depthEnabled, color, lineWidth));
+    aabbs.add(new AABB(minCoords, maxCoords, duration, depthEnabled, color));
   }
   
   public void addOBB( 
       Matrix4f centerTransformation,
       Tuple3f scaleXYZ, 
-      Color3f color, 
-      float lineWidth, 
+      Color3f color,  
       float duration, 
       boolean depthEnabled) {
-    obbs.add(new OBB(centerTransformation, scaleXYZ, duration, depthEnabled, color, lineWidth));
+    obbs.add(new OBB(centerTransformation, scaleXYZ, duration, depthEnabled, color));
   }
   
   public void addString( 
@@ -116,23 +121,15 @@ public abstract class DebugRender {
       Point3f origin, 
       Point3f destination, 
       Color3f color, 
-      float lineWidth, 
       float duration 
       ) {
-    addLine(origin,destination,color,lineWidth,duration,true);
-  }
-  public void addLine( 
-      Point3f origin, 
-      Point3f destination, 
-      Color3f color, 
-      float lineWidth) {
-    addLine(origin,destination,color,lineWidth,0,true);
+    addLine(origin,destination,color,duration,true);
   }
   public void addLine( 
       Point3f origin, 
       Point3f destination, 
       Color3f color) {
-    addLine(origin,destination,color,1,0,true);
+    addLine(origin,destination,color,0,true);
   }
   
 
@@ -202,70 +199,45 @@ public abstract class DebugRender {
       Point3f v1, 
       Point3f v2,
       Color3f color, 
-      float lineWidth, 
       float duration) {
-    addTriangle(v0, v1, v2, color, lineWidth, duration, true);
-  }
-  public void addTriangle( 
-      Point3f v0, 
-      Point3f v1, 
-      Point3f v2,
-      Color3f color, 
-      float lineWidth) {
-    addTriangle(v0, v1, v2, color, lineWidth, 0, true);
+    addTriangle(v0, v1, v2, color, duration, true);
   }
   public void addTriangle( 
       Point3f v0, 
       Point3f v1, 
       Point3f v2,
       Color3f color) {
-    addTriangle(v0, v1, v2, color, 1, 0, true);
+    addTriangle(v0, v1, v2, color, 0, true);
   }
   
 
   public void addAABB( 
       Point3f minCoords, 
       Point3f maxCoords, 
-      Color3f color, 
-      float lineWidth, 
+      Color3f color,  
       float duration) {
-    addAABB(minCoords, maxCoords, color, lineWidth, duration, true);
-  }
-  public void addAABB( 
-      Point3f minCoords, 
-      Point3f maxCoords, 
-      Color3f color, 
-      float lineWidth) {
-    addAABB(minCoords, maxCoords, color, lineWidth, 0, true);
+    addAABB(minCoords, maxCoords, color, duration, true);
   }
   public void addAABB( 
       Point3f minCoords, 
       Point3f maxCoords, 
       Color3f color) {
-    addAABB(minCoords, maxCoords, color, 1, 0, true);
+    addAABB(minCoords, maxCoords, color, 0, true);
   }
   
 
   public void addOBB( 
       Matrix4f centerTransformation,
       Tuple3f scaleXYZ, 
-      Color3f color, 
-      float lineWidth, 
+      Color3f color,
       float duration) {
-    addOBB( centerTransformation, scaleXYZ, color, lineWidth, duration, true);
-  }
-  public void addOBB( 
-      Matrix4f centerTransformation,
-      Tuple3f scaleXYZ, 
-      Color3f color, 
-      float lineWidth) {
-    addOBB( centerTransformation, scaleXYZ, color, lineWidth, 0, true);
+    addOBB( centerTransformation, scaleXYZ, color, duration, true);
   }
   public void addOBB( 
       Matrix4f centerTransformation,
       Tuple3f scaleXYZ, 
       Color3f color) {
-    addOBB( centerTransformation, scaleXYZ, color, 1, 0, true);
+    addOBB( centerTransformation, scaleXYZ, color, 0, true);
   }
 
   public void addString( 
@@ -291,8 +263,18 @@ public abstract class DebugRender {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
   
   
-  public void render(float dt) {
-    renderArrays();
+  public void render(RenderManager rm, float dt) {
+    beginRender(rm);
+    renderLines(rm);
+    renderCrosses();
+    renderSpheres();
+    renderCircles();
+    renderAxes();
+    renderTriangles();
+    renderAABBs();
+    renderOBBs();
+    renderStrings();
+    endRender();
 
     cleanList(lines, dt);
     cleanList(crosses, dt);
@@ -321,8 +303,19 @@ public abstract class DebugRender {
       list.remove(i);
     }
   }
-  
-  protected abstract void renderArrays();
+
+  protected abstract void beginRender(RenderManager rm);
+  protected abstract void endRender();
+
+  protected abstract void renderLines(RenderManager rm);
+  protected abstract void renderCrosses();
+  protected abstract void renderSpheres();
+  protected abstract void renderCircles();
+  protected abstract void renderAxes();
+  protected abstract void renderTriangles();
+  protected abstract void renderAABBs();
+  protected abstract void renderOBBs();
+  protected abstract void renderStrings();
   
   
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -334,9 +327,9 @@ public abstract class DebugRender {
   
 
   protected static class DebugObject {
-    float duration;
-    boolean depthEnabled;
-    Color3f color;
+    public float duration;
+    public boolean depthEnabled;
+    public Color3f color;
 
     DebugObject(final float _duration, final boolean _depthEnabled, final Color3f _color) {
       duration = _duration;
@@ -345,30 +338,21 @@ public abstract class DebugRender {
     }
   }
   
-  protected static class DebugObjectWithWidth extends DebugObject {
-    float lineWidth;
-    
-    DebugObjectWithWidth(final float duration, final boolean depthEnabled, final Color3f color, final float _lineWidth) {
-      super(duration, depthEnabled, color);
-      lineWidth = _lineWidth;
-    }
-  }
-  
-  protected static final class Line extends DebugObjectWithWidth {
-    Point3f origin;
-    Point3f destination;
+  protected static final class Line extends DebugObject {
+    public Point3f origin;
+    public Point3f destination;
     
     Line(Point3f _origin, Point3f _destination,
-        final float duration, final boolean depthEnabled, final Color3f color, final float lineWidth) {
-      super(duration, depthEnabled, color, lineWidth);
+        final float duration, final boolean depthEnabled, final Color3f color) {
+      super(duration, depthEnabled, color);
       origin= new Point3f( _origin );
       destination = new Point3f( _destination );
     }
   }
   
   protected static final class Cross extends DebugObject {
-    Point3f center;
-    float size;
+    public Point3f center;
+    public float size;
     
     Cross(Point3f _center, float _size,
         final float duration, final boolean depthEnabled, final Color3f color) {
@@ -379,8 +363,8 @@ public abstract class DebugRender {
   }
   
   protected static final class Sphere extends DebugObject {
-    Point3f center;
-    float radius;
+    public Point3f center;
+    public float radius;
     
     Sphere(Point3f _center, float _radius,
         final float duration, final boolean depthEnabled, final Color3f color) {
@@ -391,9 +375,9 @@ public abstract class DebugRender {
   }
   
   protected static final class Circle extends DebugObject {
-    Point3f center;
-    Vector3f planeNormal;
-    float radius;
+    public Point3f center;
+    public Vector3f planeNormal;
+    public float radius;
     
     Circle(Point3f _center, float _radius, Vector3f _planeNormal,
         final float duration, final boolean depthEnabled, final Color3f color) {
@@ -405,8 +389,8 @@ public abstract class DebugRender {
   }
   
   protected static final class Axes extends DebugObject {
-    Matrix4f transformation;
-    float size;
+    public Matrix4f transformation;
+    public float size;
     
     Axes(Matrix4f _transformation, float _size,
         final float duration, final boolean depthEnabled, final Color3f color) {
@@ -416,47 +400,47 @@ public abstract class DebugRender {
     }
   }
   
-  protected static final class Triangle extends DebugObjectWithWidth {
-    Point3f v0;
-    Point3f v1;
-    Point3f v2;
+  protected static final class Triangle extends DebugObject {
+    public Point3f v0;
+    public Point3f v1;
+    public Point3f v2;
     
     Triangle(Point3f _v0, Point3f _v1, Point3f _v2,
-        final float duration, final boolean depthEnabled, final Color3f color, final float lineWidth) {
-      super(duration, depthEnabled, color, lineWidth);
+        final float duration, final boolean depthEnabled, final Color3f color) {
+      super(duration, depthEnabled, color);
       v0 = new Point3f(_v0);
       v1 = new Point3f(_v1);
       v2 = new Point3f(_v2);
     }
   }
   
-  protected static final class AABB extends DebugObjectWithWidth {
-    Point3f minCoords;
-    Point3f maxCoords;
+  protected static final class AABB extends DebugObject {
+    public Point3f minCoords;
+    public Point3f maxCoords;
     
     AABB(Point3f _minCoords, Point3f _maxCoords,
-        final float duration, final boolean depthEnabled, final Color3f color, final float lineWidth) {
-      super(duration, depthEnabled, color, lineWidth);
+        final float duration, final boolean depthEnabled, final Color3f color) {
+      super(duration, depthEnabled, color);
       minCoords = new Point3f(_minCoords);
       maxCoords = new Point3f(_maxCoords);
     }
   }
   
-  protected static final class OBB extends DebugObjectWithWidth {
-    Matrix4f centerTransformation;
-    Tuple3f scaleXYZ;
+  protected static final class OBB extends DebugObject {
+    public Matrix4f centerTransformation;
+    public Tuple3f scaleXYZ;
     
     OBB(final Matrix4f _centerTransformation, final Tuple3f _scaleXYZ,
-        final float duration, final boolean depthEnabled, final Color3f color, final float lineWidth) {
-      super(duration, depthEnabled, color, lineWidth);
+        final float duration, final boolean depthEnabled, final Color3f color) {
+      super(duration, depthEnabled, color);
       centerTransformation = new Matrix4f(_centerTransformation);
       scaleXYZ = new Point3f(_scaleXYZ);
     }
   }
   
   protected static final class DebugString extends DebugObject {
-    Point3f position;
-    String text;
+    public Point3f position;
+    public String text;
     
     DebugString(final Point3f _position, final String _text,
         final float duration, final boolean depthEnabled, final Color3f color) {

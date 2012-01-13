@@ -33,6 +33,7 @@ public abstract class TechniquePass {
   public static final int UV_ATTRIBUTE           = 4;
   public static final int BLEND_INDEX_ATTRIBUTE  = 5;
   public static final int BLEND_WEIGHT_ATTRIBUTE = 6;
+  public static final int COLOR_ATTRIBUTE        = 7;
   
   public static final String POSITION_ATTRIBUTE_NAME     = "a_v3Position";
   public static final String NORMAL_ATTRIBUTE_NAME       = "a_v3Normal";
@@ -41,6 +42,7 @@ public abstract class TechniquePass {
   public static final String UV_ATTRIBUTE_NAME           = "a_v2UV";
   public static final String BLEND_INDEX_ATTRIBUTE_NAME  = "a_i4BlendIndexs";
   public static final String BLEND_WEIGHT_ATTRIBUTE_NAME = "a_v4BlendWeights";
+  public static final String COLOR_ATTRIBUTE_NAME        = "a_v4Color";
 
 
   //Fragment data ----------------------------------------------------------------------
@@ -114,7 +116,7 @@ public abstract class TechniquePass {
   protected boolean fontTechnique;
   
   //attributes
-  protected boolean position, normal, tangents, uv, bones;
+  protected boolean position, normal, tangents, uv, bones, colorAttr;
   
   //uniforms
   protected boolean albedoTexture, normalTexture, heightTexture;
@@ -124,7 +126,7 @@ public abstract class TechniquePass {
   protected boolean basicMaterial;
   
   //results
-  protected boolean color, depth;
+  protected boolean colorResult, depthResult;
   
   //Render states
   private boolean changeDepthTest = false;
@@ -206,7 +208,7 @@ public abstract class TechniquePass {
     depthTestStatus = 
     changeAlphaBlending =
     position =
-    color = true;
+    colorResult = true;
     alphaBlendingActive = false;
     
     try {
@@ -497,6 +499,10 @@ public abstract class TechniquePass {
         assert !bones;
         bones = true;
         break;
+      case "color":
+        assert !colorAttr;
+        colorAttr = true;
+        break;
       default:
         LOGGER.warning("Unrecognized tag name " + element.getTagName());
       }
@@ -578,12 +584,12 @@ public abstract class TechniquePass {
       
       switch(element.getTagName()) {
       case "color":
-        assert !color;
-        color = true;
+        assert !colorResult;
+        colorResult = true;
         break;
       case "depth":
-        assert !depth;
-        depth = true;
+        assert !depthResult;
+        depthResult = true;
         break;
       default:
         LOGGER.warning("Unrecognized tag name" + element.getTagName());

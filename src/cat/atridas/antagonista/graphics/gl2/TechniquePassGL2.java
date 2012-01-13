@@ -79,6 +79,9 @@ public class TechniquePassGL2 extends TechniquePassGL {
       glBindAttribLocation(program, FONT_CHANNEL_ATTRIBUTE, FONT_CHANNEL_ATTRIBUTE_NAME);
       glBindAttribLocation(program, FONT_PAGE_ATTRIBUTE, FONT_PAGE_ATTRIBUTE_NAME);
     }
+    if(colorAttr) {
+      glBindAttribLocation(program, COLOR_ATTRIBUTE, COLOR_ATTRIBUTE_NAME);
+    }
     assert !Utils.hasGLErrors();
   }
 

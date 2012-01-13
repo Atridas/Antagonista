@@ -16,12 +16,17 @@ public abstract class RenderManager {
 	protected int width;
 
   protected int height;
+  
+  private boolean forwardCompatible = true;
 
 	public final int getWidth() {
 		return width;
 	}
 	public final int getHeight() {
 		return height;
+	}
+	public final boolean isForwardCompatible() {
+	  return forwardCompatible;
 	}
 	
 	public final void initDisplay(final int _width, final int _height, final String title, Canvas displayParent) {
@@ -30,7 +35,7 @@ public abstract class RenderManager {
 		
 		//TODO
 		PixelFormat pf = new PixelFormat().withDepthBits(24).withBitsPerPixel(32).withAlphaBits(8);
-		ContextAttribs ca = new ContextAttribs(4, 2).withForwardCompatible(true);//.withDebug(true);
+		ContextAttribs ca = new ContextAttribs(4, 2).withForwardCompatible(forwardCompatible);//.withDebug(true);
 		
 		// ? ca.withDebug(true);
 		
@@ -84,8 +89,9 @@ public abstract class RenderManager {
   public abstract void noVertexArray();
   
   public abstract SceneData getSceneData();
-  
+
   public abstract boolean hasGLErrors();
+  public abstract void clearSilentlyGLErrors();
 	
   public static enum Functionality {
     UNIFORM_BUFFER_OBJECT,

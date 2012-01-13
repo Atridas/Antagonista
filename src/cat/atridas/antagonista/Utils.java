@@ -33,6 +33,7 @@ public abstract class Utils {
   public static final HashedString WHITE_EFFECT = new HashedString("WhiteEffect");
   public static final HashedString CLOSE = new HashedString("close");
   public static final HashedString MAIN_GAME = new HashedString("main_game");
+  public static final HashedString DEBUG_MATERIAL_NAME = new HashedString("Debug");
   
   
   public static final float EPSILON = 0.0001f;
@@ -149,9 +150,12 @@ public abstract class Utils {
     
   }
   
-  
+
   public static boolean hasGLErrors() {
     return Core.getCore().getRenderManager().hasGLErrors();
+  }
+  public static void clearSilentlyGLErrors() {
+    Core.getCore().getRenderManager().clearSilentlyGLErrors();
   }
   
   public static Profile getProfile() {
