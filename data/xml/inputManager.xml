@@ -7,6 +7,8 @@
     <event name="move_camera_left"  type="keyboard" action="down" key="KEY_A"/>
     <event name="move_camera_down"  type="keyboard" action="down" key="KEY_S"/>
     <event name="move_camera_right" type="keyboard" action="down" key="KEY_D"/>
+    
+    <event name="move_camera_distance" type="mouse" action="move" key="MOUSE_WHEEL"/>
   </mode>
 
 </input_manager>

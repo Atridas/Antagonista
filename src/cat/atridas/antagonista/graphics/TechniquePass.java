@@ -58,22 +58,31 @@ public abstract class TechniquePass {
   public static final int    HEIGHTMAP_TEXTURE_UNIT =    2;
   
 
-  public static final int    BASIC_INSTANCE_UNIFORMS_BINDING = 0;
-  public static final String BASIC_INSTANCE_UNIFORMS_BLOCK = "UniformInstances";
-  public static final int    BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE = Utils.FLOAT_SIZE * (4*4) * 2; 
-  public static final String BASIC_INSTANCE_UNIFORMS_STRUCT       = "u_InstanceInfo";
-  public static final String MODEL_VIEW_PROJECTION_UNIFORMS = "u_m4ModelViewProjection";
-  public static final String MODEL_VIEW_UNIFORMS            = "u_m4ModelView";
-  public static final String MODEL_VIEW_IT_UNIFORMS            = "u_m4ModelViewIT";
+  public static final int    BASIC_INSTANCE_UNIFORMS_BINDING    = 0;
+  public static final String BASIC_INSTANCE_UNIFORMS_BLOCK      = "UniformInstances";
+  public static final int    BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE = Utils.FLOAT_SIZE * (4*4) * 3; 
+  public static final String BASIC_INSTANCE_UNIFORMS_STRUCT     = "u_InstanceInfo";
+  public static final String MODEL_VIEW_PROJECTION_UNIFORM      = "u_m4ModelViewProjection";
+  public static final String MODEL_VIEW_UNIFORM                 = "u_m4ModelView";
+  public static final String MODEL_VIEW_IT_UNIFORM              = "u_m4ModelViewIT";
   //public static final String BONES_UNIFORMS                 = "u_m34Bones";
 
-  public static final int    BASIC_LIGHT_UNIFORMS_BINDING = 1;
+  public static final int    SPECIAL_COLORS_UNIFORMS_BINDING    = 1;
+  public static final String SPECIAL_COLORS_UNIFORMS_BLOCK      = "SpecialColors";
+  public static final int    SPECIAL_COLORS_UNIFORMS_BLOCK_SIZE = Utils.FLOAT_SIZE * 4 * 4; 
+  public static final String SPECIAL_COLOR_0_UNIFORM            = "u_v4SpecialColor0";
+  public static final String SPECIAL_COLOR_1_UNIFORM            = "u_v4SpecialColor1";
+  public static final String SPECIAL_COLOR_2_UNIFORM            = "u_v4SpecialColor2";
+  public static final String SPECIAL_COLOR_3_UNIFORM            = "u_v4SpecialColor3";
+  
+
+  public static final int    BASIC_LIGHT_UNIFORMS_BINDING = 2;
   public static final String BASIC_LIGHT_UNIFORMS_BLOCK = "UniformLight";
   public static final String AMBIENT_LIGHT_UNIFORM = "u_v3AmbientLight";
   public static final String DIRECTIONAL_LIGHT_DIR_UNIFORM = "u_v3DirectionalLightDirection";
   public static final String DIRECTIONAL_LIGHT_COLOR_UNIFORMS = "u_v3DirectionalLightColor";
 
-  public static final int    BASIC_MATERIAL_UNIFORMS_BINDING = 2;
+  public static final int    BASIC_MATERIAL_UNIFORMS_BINDING = 3;
   public static final String BASIC_MATERIAL_UNIFORMS_BLOCK = "UniformMaterials";
   public static final String SPECULAR_FACTOR_UNIFORM = "u_fSpecularFactor";
   public static final String SPECULAR_GLOSS_UNIFORM = "u_fGlossiness";
@@ -110,6 +119,7 @@ public abstract class TechniquePass {
   //uniforms
   protected boolean albedoTexture, normalTexture, heightTexture;
   protected boolean basicInstanceUniforms;
+  protected boolean specialColorsUniforms;
   protected boolean basicLight;
   protected boolean basicMaterial;
   
@@ -530,6 +540,17 @@ public abstract class TechniquePass {
           }
         }
         break;
+      case "special_colors":
+        assert !specialColorsUniforms;
+        specialColorsUniforms = true;
+        
+        if(maxUniformBufferSize > 0) {
+          int newMaxInstances = (int) (maxUniformBufferSize / SPECIAL_COLORS_UNIFORMS_BLOCK_SIZE);
+          if(maxInstances == 1 || newMaxInstances < maxInstances) {
+            maxInstances = newMaxInstances;
+          }
+        }
+        break;
       case "basic_light":
         assert !basicLight;
         basicLight = true;
@@ -595,6 +616,18 @@ public abstract class TechniquePass {
   public abstract int getModelViewProjectionUniform();
   public abstract int getModelViewUniform();
   public abstract int getModelViewITUniform();
+  
+  public abstract int getSpecialColor0Uniform();
+  public abstract int getSpecialColor1Uniform();
+  public abstract int getSpecialColor2Uniform();
+  public abstract int getSpecialColor3Uniform();
+
+  public boolean hasBasicInstanceUniforms() {
+    return basicInstanceUniforms;
+  }
+  public boolean hasSpecialColorsUniforms() {
+    return specialColorsUniforms;
+  }
   
   public void activate(RenderManager rm) {
     assert !cleaned;

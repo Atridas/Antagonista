@@ -10,6 +10,7 @@
   
   <effect name="BasicEffect"></effect>
   <effect name="WhiteEffect"></effect>
+  <effect name="ColorEffect"></effect>
   
   
   
@@ -75,6 +76,8 @@
         <normal_texture/>          -> sampler2D u_s2Normalmap 
         <height_texture/>          -> sampler2D u_s2Heightmap 
         <basic_instance_uniforms/> -> UniformInstances { m44ModelViewProjection, m44ModelView  } u_InstanceInfo[instances] 
+        <special_colors/>          -> SpecialColors { u_v4SpecialColor0, u_v4SpecialColor1, u_v4SpecialColor2, u_v4SpecialColor3 } u_ColorInfo[instances] 
+        
         <basic_light/>             -> UniformLight { u_v3AmbientLight, u_v3DirectionalLightDirection, u_v3DirectionalLightColor } 
         <basic_material/>          -> UniformMaterials { u_fSpecularFactor, u_fGlossiness, u_fHeight } 
       </uniforms>

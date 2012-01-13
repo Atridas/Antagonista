@@ -20,6 +20,7 @@ public final class MaterialGL2_UBO extends Material {
 
   public MaterialGL2_UBO(HashedString _resourceName) {
     super(_resourceName);
+    throw new RuntimeException("Not implemented");
   }
   
   @Override

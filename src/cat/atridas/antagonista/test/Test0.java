@@ -24,6 +24,7 @@ import static org.lwjgl.opengl.GL31.*;
 import static org.lwjgl.opengl.GL32.*;
 import static org.lwjgl.opengl.GL33.*;
 
+import cat.atridas.antagonista.Clock;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Quality;
 import cat.atridas.antagonista.Utils;
@@ -279,7 +280,11 @@ public class Test0 {
     
     rm.getSceneData().setUniforms();
     
+    Clock clock = new Clock();
+    
     while(!Core.getCore().getInputManager().isCloseRequested()) {
+      float dt = clock.update();
+      
       rm.initFrame();
     
       //glUseProgram(program);
@@ -309,7 +314,7 @@ public class Test0 {
       
       rm.present();
       
-      Core.getCore().getInputManager().update();
+      Core.getCore().getInputManager().update(dt);
     }
     
     Core.getCore().close();

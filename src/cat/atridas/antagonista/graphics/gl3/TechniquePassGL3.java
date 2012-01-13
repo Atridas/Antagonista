@@ -10,6 +10,8 @@ import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.Shader.ShaderType;
 import cat.atridas.antagonista.graphics.gl.TechniquePassGL;
 
+import static org.lwjgl.opengl.ARBUniformBufferObject.glGetUniformBlockIndex;
+import static org.lwjgl.opengl.ARBUniformBufferObject.glUniformBlockBinding;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL31.*;
 import static org.lwjgl.opengl.GL32.*;
@@ -59,6 +61,19 @@ public final class TechniquePassGL3 extends TechniquePassGL {
     }
     
     glUniformBlockBinding(program, basicInstanceBlock, BASIC_INSTANCE_UNIFORMS_BINDING);
+    assert !Utils.hasGLErrors();
+  }
+
+  @Override
+  protected void loadSpecialColorsUniforms(int program)
+      throws AntagonistException {
+    int specialColorsBlock = glGetUniformBlockIndex(program, SPECIAL_COLORS_UNIFORMS_BLOCK);
+    if(specialColorsBlock < 0) {
+      LOGGER.severe("Special Colors requested but not active!");
+      throw new AntagonistException();
+    }
+    
+    glUniformBlockBinding(program, specialColorsBlock, SPECIAL_COLORS_UNIFORMS_BINDING);
     assert !Utils.hasGLErrors();
   }
 
@@ -126,6 +141,23 @@ public final class TechniquePassGL3 extends TechniquePassGL {
   }
   @Override
   public int getModelViewITUniform() {
+    throw new IllegalStateException("Trying to fetch a uniform. Use uniform blocks instead.");
+  }
+
+  @Override
+  public int getSpecialColor0Uniform() {
+    throw new IllegalStateException("Trying to fetch a uniform. Use uniform blocks instead.");
+  }
+  @Override
+  public int getSpecialColor1Uniform() {
+    throw new IllegalStateException("Trying to fetch a uniform. Use uniform blocks instead.");
+  }
+  @Override
+  public int getSpecialColor2Uniform() {
+    throw new IllegalStateException("Trying to fetch a uniform. Use uniform blocks instead.");
+  }
+  @Override
+  public int getSpecialColor3Uniform() {
     throw new IllegalStateException("Trying to fetch a uniform. Use uniform blocks instead.");
   }
 

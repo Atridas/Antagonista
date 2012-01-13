@@ -55,14 +55,14 @@ public abstract class RenderableObjectManager {
 
     sceneData.setUniforms();
     
-    
+    InstanceData instanceData = new InstanceData();
 
     Matrix4f viewProj           = new Matrix4f();
     Matrix4f view               = new Matrix4f();
     Matrix4f model              = new Matrix4f();
-    Matrix4f modelViewProj      = new Matrix4f();
-    Matrix4f modelView          = new Matrix4f();
-    Matrix4f modelViewInvTransp = new Matrix4f();
+    //Matrix4f modelViewProj      = new Matrix4f();
+    //Matrix4f modelView          = new Matrix4f();
+    //Matrix4f modelViewInvTransp = new Matrix4f();
     viewProj.setIdentity();
     view .setIdentity();
     
@@ -75,14 +75,14 @@ public abstract class RenderableObjectManager {
       
       renderableObject.getTransformation(model);
 
-      modelView.mul(view, model);
-      modelViewProj.mul(viewProj, model);
+      instanceData.modelView.mul(view, model);
+      instanceData.modelViewProj.mul(viewProj, model);
       
-      modelViewInvTransp.invert(modelView);
-      modelViewInvTransp.transpose();
+      instanceData.modelViewInvTransp.invert(instanceData.modelView);
+      instanceData.modelViewInvTransp.transpose();
       
       
-      setInstanceUniforms( modelViewProj, modelView, modelViewInvTransp );
+      setInstanceUniforms( instanceData );
       
       
       int numSubmeshes = mesh.getNumSubmeshes();
@@ -96,7 +96,7 @@ public abstract class RenderableObjectManager {
           material.setUpUniforms(pass, rm);
           sceneData.setUniforms(pass);
 
-          setInstanceUniforms( pass, modelViewProj, modelView, modelViewInvTransp );
+          setInstanceUniforms( pass, instanceData );
           
           mesh.render(submesh, rm);
         }
@@ -104,15 +104,10 @@ public abstract class RenderableObjectManager {
     }
   }
 
-  protected abstract void setInstanceUniforms(
-                                Matrix4f modelViewProj, 
-                                Matrix4f modelView, 
-                                Matrix4f modelViewInvTransp);
+  protected abstract void setInstanceUniforms(InstanceData instanceData);
   protected abstract void setInstanceUniforms(
                                 TechniquePass pass,
-                                Matrix4f modelViewProj, 
-                                Matrix4f modelView, 
-                                Matrix4f modelViewInvTransp);
+                                InstanceData instanceData);
   
   
 

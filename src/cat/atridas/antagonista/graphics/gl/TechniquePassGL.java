@@ -263,6 +263,7 @@ public abstract class TechniquePassGL extends TechniquePass {
 
   protected abstract void bindAttributes(int program);
   protected abstract void loadBasicInstanceUniforms(int program) throws AntagonistException;
+  protected abstract void loadSpecialColorsUniforms(int program) throws AntagonistException;
   protected abstract void loadBasicLightUniforms(int program) throws AntagonistException;
   protected abstract void loadBasicMaterialUniforms(int program) throws AntagonistException;
   protected abstract void loadFontUniforms(int program) throws AntagonistException;

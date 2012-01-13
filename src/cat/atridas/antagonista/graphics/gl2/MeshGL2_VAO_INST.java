@@ -18,6 +18,7 @@ private int vertexArrayObject;
   
   public MeshGL2_VAO_INST(HashedString _resourceName) {
     super(_resourceName);
+    throw new RuntimeException("Not implemented");
   }
   
   @Override

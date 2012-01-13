@@ -17,12 +17,16 @@ import static org.lwjgl.opengl.ARBUniformBufferObject.*;
 
 public final class TechniquePassGL2_UBO extends TechniquePassGL {
   private static Logger LOGGER = Logger.getLogger(TechniquePassGL3.class.getCanonicalName());
-
+  
+  
   public TechniquePassGL2_UBO(Element pass) throws AntagonistException {
     super(pass);
+    throw new RuntimeException("Not implemented");
   }
   
-  public TechniquePassGL2_UBO() {}
+  public TechniquePassGL2_UBO() {
+    throw new RuntimeException("Not implemented");
+  }
 
   @Override
   protected int generateShaderObject(ShaderType st, RenderManager rm) {
@@ -78,6 +82,19 @@ public final class TechniquePassGL2_UBO extends TechniquePassGL {
     }
     
     glUniformBlockBinding(program, basicInstanceBlock, BASIC_INSTANCE_UNIFORMS_BINDING);
+    assert !Utils.hasGLErrors();
+  }
+
+  @Override
+  protected void loadSpecialColorsUniforms(int program)
+      throws AntagonistException {
+    int specialColorsBlock = glGetUniformBlockIndex(program, SPECIAL_COLORS_UNIFORMS_BLOCK);
+    if(specialColorsBlock < 0) {
+      LOGGER.severe("Special Colors requested but not active!");
+      throw new AntagonistException();
+    }
+    
+    glUniformBlockBinding(program, specialColorsBlock, SPECIAL_COLORS_UNIFORMS_BINDING);
     assert !Utils.hasGLErrors();
   }
 
@@ -164,5 +181,22 @@ public final class TechniquePassGL2_UBO extends TechniquePassGL {
   protected int getFontShader(ShaderType shaderType) {
     // TODO Auto-generated method stub
     throw new RuntimeException("not implemented");
+  }
+
+  @Override
+  public int getSpecialColor0Uniform() {
+    throw new IllegalStateException("Trying to fetch a uniform. Use uniform blocks instead.");
+  }
+  @Override
+  public int getSpecialColor1Uniform() {
+    throw new IllegalStateException("Trying to fetch a uniform. Use uniform blocks instead.");
+  }
+  @Override
+  public int getSpecialColor2Uniform() {
+    throw new IllegalStateException("Trying to fetch a uniform. Use uniform blocks instead.");
+  }
+  @Override
+  public int getSpecialColor3Uniform() {
+    throw new IllegalStateException("Trying to fetch a uniform. Use uniform blocks instead.");
   }
 }

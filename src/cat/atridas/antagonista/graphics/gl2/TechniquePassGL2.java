@@ -16,8 +16,8 @@ import cat.atridas.antagonista.graphics.gl.TechniquePassGL;
 public class TechniquePassGL2 extends TechniquePassGL {
   private static Logger LOGGER = Logger.getLogger(TechniquePassGL2.class.getCanonicalName());
 
-  
   private int modelViewProjectionUniform, modelViewUniform, modelViewITUniform;//, bonesUniform;
+  private int specialColor0, specialColor1, specialColor2, specialColor3;
   private int ambientUniform, directionalDirUniform, directionalColorUniform;
   private int specularFactorUniform, specularGlossinessUniform, heightUniform;
   
@@ -85,9 +85,9 @@ public class TechniquePassGL2 extends TechniquePassGL {
   @Override
   protected void loadBasicInstanceUniforms(int program)
       throws AntagonistException {
-    modelViewProjectionUniform = glGetUniformLocation(program, MODEL_VIEW_PROJECTION_UNIFORMS);
-    modelViewUniform = glGetUniformLocation(program, MODEL_VIEW_UNIFORMS);
-    modelViewITUniform = glGetUniformLocation(program, MODEL_VIEW_IT_UNIFORMS);
+    modelViewProjectionUniform = glGetUniformLocation(program, MODEL_VIEW_PROJECTION_UNIFORM);
+    modelViewUniform = glGetUniformLocation(program, MODEL_VIEW_UNIFORM);
+    modelViewITUniform = glGetUniformLocation(program, MODEL_VIEW_IT_UNIFORM);
     if(modelViewProjectionUniform < 0) {
       LOGGER.severe("Basic instance uniforms requested but ModelViewProjection matrix not active!");
       throw new AntagonistException();
@@ -97,6 +97,21 @@ public class TechniquePassGL2 extends TechniquePassGL {
       throw new AntagonistException();
     }
     assert !Utils.hasGLErrors();
+  }
+  
+  @Override
+  protected void loadSpecialColorsUniforms(int program)
+      throws AntagonistException {
+    specialColor0 = glGetUniformLocation(program, SPECIAL_COLOR_0_UNIFORM);
+    specialColor1 = glGetUniformLocation(program, SPECIAL_COLOR_1_UNIFORM);
+    specialColor2 = glGetUniformLocation(program, SPECIAL_COLOR_2_UNIFORM);
+    specialColor3 = glGetUniformLocation(program, SPECIAL_COLOR_3_UNIFORM);
+
+    if(specialColor0 < 0) {
+      LOGGER.severe("Special colors uniforms requested but SpecialColor0 is not active!");
+      throw new AntagonistException();
+    }
+    
   }
 
   @Override
@@ -188,6 +203,23 @@ public class TechniquePassGL2 extends TechniquePassGL {
   @Override
   public int getModelViewITUniform() {
     return modelViewITUniform;
+  }
+  @Override
+  public int getSpecialColor0Uniform() {
+    return specialColor0;
+  }
+
+  @Override
+  public int getSpecialColor1Uniform() {
+    return specialColor1;
+  }
+  @Override
+  public int getSpecialColor2Uniform() {
+    return specialColor2;
+  }
+  @Override
+  public int getSpecialColor3Uniform() {
+    return specialColor3;
   }
 
   @Override

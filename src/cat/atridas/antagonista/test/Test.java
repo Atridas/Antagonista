@@ -6,6 +6,7 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import cat.atridas.antagonista.Clock;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
@@ -71,9 +72,11 @@ public class Test {
 
     SceneData sceneData = rm.getSceneData();
     RTSCamera camera = new RTSCamera();
+    
+    camera.setMaxDistance(20);
 
-    //sceneData.setPerspective(45, 1, 100);
-    //sceneData.setCamera(new Point3f(30, 30, 30), new Point3f(0, 0, 0), new Vector3f(0, 0, 1));
+    sceneData.setPerspective(45, 1, 100);
+    sceneData.setCamera(new Point3f(30, -30, 30), new Point3f(0, 0, 0), new Vector3f(0, 0, 1));
     sceneData.setAmbientLight(new Point3f(0.3f, 0.3f, 0.3f));
     sceneData.setDirectionalLight(new Vector3f(0,1,1), new Point3f(0.3f, 0.3f, 0.3f));
 
@@ -103,21 +106,27 @@ public class Test {
     HashedString camDown  = new HashedString("move_camera_down");
     HashedString camLeft  = new HashedString("move_camera_left");
     HashedString camRight = new HashedString("move_camera_right");
+    HashedString camDist  = new HashedString("move_camera_distance");
     
-    float dt = 0.01f;;
+    Clock clock = new Clock();
     while(!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
 
+      float dt = clock.update();
+      
       if(im.isActionActive(camUp)) {
-        camera.moveUp(0.1f * dt);
+        camera.moveUp(2f * dt);
       }
       if(im.isActionActive(camDown)) {
-        camera.moveUp(-0.1f * dt);
+        camera.moveUp(-2f * dt);
       }
       if(im.isActionActive(camLeft)) {
-        camera.moveRight(-0.1f * dt);
+        camera.moveRight(-2f * dt);
       }
       if(im.isActionActive(camRight)) {
-        camera.moveRight(0.1f * dt);
+        camera.moveRight(2f * dt);
+      }
+      if(im.isActionActive(camDist)) {
+        camera.addDistance( -.01f * im.getActionValue(camDist) );
       }
       
       
@@ -130,7 +139,7 @@ public class Test {
       rm.present();
       
       //render(rm);
-      Core.getCore().getInputManager().update();
+      Core.getCore().getInputManager().update(dt);
     }
     
     Core.getCore().cleanUnusedResources(false);

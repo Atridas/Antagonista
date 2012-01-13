@@ -23,14 +23,18 @@ import cat.atridas.antagonista.Utils;
 
 public final class InputManager {
   private static final Logger LOGGER = Logger.getLogger(InputManager.class.getCanonicalName());
-	
+
+  public static final int MOUSE_EVENT_KEY_MOVEMENT_X     = 0;
+  public static final int MOUSE_EVENT_KEY_MOVEMENT_Y     = 1;
+  public static final int MOUSE_EVENT_KEY_MOVEMENT_WHEEL = 2;
+  
 	private boolean close = false;
 
 	private final HashMap<Event, HashedString> actions = new HashMap<>();
 	private final HashMap<HashedString, HashedString> actionToMode = new HashMap<>();
 	
 	private int mouseX, mouseY, deltaMouseX, deltaMouseY, deltaMouseZ;
-	private HashSet<HashedString> activeActions = new HashSet<>();
+	private HashMap<HashedString,Float> activeActions = new HashMap<>();
 	private HashSet<HashedString> activeModes = new HashSet<>();
 	
 	public void init() {
@@ -107,7 +111,7 @@ public final class InputManager {
 		actions.put(event, name);
 		actionToMode.put(name, mode);
 		if(event.getAction() == EventAction.UP) {
-			activeActions.add(name);
+			activeActions.put(name, 1.f);
 		}
 	}
 	
@@ -143,28 +147,41 @@ public final class InputManager {
 	public int getDeltaMouseZ() {
 		return deltaMouseZ;
 	}
+  
+  public boolean isActionActive(final HashedString action) {
+    return activeActions.containsKey(action) && activeModes.contains(actionToMode.get(action));
+  }
+  
+  public float getActionValue(final HashedString action) {
+    assert isActionActive(action);
+    return activeActions.get(action);
+  }
 	
-	public boolean isActionActive(final HashedString action) {
-		return activeActions.contains(action) && activeModes.contains(actionToMode.get(action));
-	}
-	
-	public void update()
+	public void update(float dt)
 	{
 		if(Display.isCloseRequested())
 		{
 			close = true;
 		}
 		
-		HashSet<HashedString> oneFrameActions = new HashSet<>();
+		//HashSet<HashedString> oneFrameActions = new HashSet<>();
 		for(Entry<Event, HashedString> action : actions.entrySet()) {
 			switch(action.getKey().getAction()) {
 			case UP_DOWN:
-			case DOWN_UP:
-				oneFrameActions.add(action.getValue());
+      case DOWN_UP:
+      case MOVE:
+				//oneFrameActions.add(action.getValue());
+        activeActions.remove(action.getValue());
+        break;
+      default:
+        Float f = activeActions.get(action.getValue());
+        if(f != null) {
+          activeActions.put(action.getValue(), f + dt);
+        }
 			}
 		}
 		
-		activeActions.removeAll(oneFrameActions);
+		//activeActions.keySet().removeAll(oneFrameActions);
 		
 		mouseX = Mouse.getX();
 		mouseY = Mouse.getY();
@@ -179,6 +196,51 @@ public final class InputManager {
 				deltaMouseX = Mouse.getDX();
 				deltaMouseY = Mouse.getDY();
 				deltaMouseZ = Mouse.getDWheel();
+				
+
+        if(deltaMouseX != 0) {
+          HashedString action = null;
+
+          action = actions.get(
+              new Event(
+                  EventType.MOUSE, 
+                  EventAction.MOVE,
+                  MOUSE_EVENT_KEY_MOVEMENT_X
+                  ));
+          
+          if(action != null) {
+            activeActions.put(action, (float)deltaMouseX);
+          }
+        }
+        if(deltaMouseY != 0) {
+          HashedString action = null;
+
+          action = actions.get(
+              new Event(
+                  EventType.MOUSE, 
+                  EventAction.MOVE,
+                  MOUSE_EVENT_KEY_MOVEMENT_Y
+                  ));
+          
+          if(action != null) {
+            activeActions.put(action, (float)deltaMouseY);
+          }
+        }
+        if(deltaMouseZ != 0) {
+          HashedString action = null;
+
+          action = actions.get(
+              new Event(
+                  EventType.MOUSE, 
+                  EventAction.MOVE,
+                  MOUSE_EVENT_KEY_MOVEMENT_WHEEL
+                  ));
+          
+          if(action != null) {
+            activeActions.put(action, (float)deltaMouseZ);
+          }
+        }
+				
 			} else {
 			  HashedString action                  = null;
 			  HashedString actionPermanent         = null;
@@ -226,17 +288,16 @@ public final class InputManager {
 				}
 
 				if(action != null) {
-					activeActions.add(action);
+					activeActions.put(action, 1.f);
 				}
 				if(actionPermanent != null) {
-					activeActions.add(actionPermanent);
+					activeActions.put(actionPermanent, dt);
 				}
 				if(actionPermanentToRemove != null) {
 					activeActions.remove(actionPermanentToRemove);
 				}
 			}
 		}
-		
 		
 		while(Keyboard.next()) {
 		  HashedString action                  = null;
@@ -285,10 +346,10 @@ public final class InputManager {
 			}
 			
 			if(action != null) {
-				activeActions.add(action);
+				activeActions.put(action, 1.f);
 			}
 			if(actionPermanent != null) {
-				activeActions.add(actionPermanent);
+				activeActions.put(actionPermanent, dt);
 			}
 			if(actionPermanentToRemove != null) {
 				activeActions.remove(actionPermanentToRemove);
@@ -400,12 +461,22 @@ public final class InputManager {
       return Keyboard.KEY_F11;
     case "KEY_F12":
       return Keyboard.KEY_F12;
+    case "MOUSE_X":
+      return MOUSE_EVENT_KEY_MOVEMENT_X;
+    case "MOUSE_Y":
+      return MOUSE_EVENT_KEY_MOVEMENT_Y;
+    case "MOUSE_WHEEL":
+      return MOUSE_EVENT_KEY_MOVEMENT_WHEEL;
     default:
+      if(key_name.toUpperCase().startsWith("MOUSE")) {
+        return Integer.parseInt(key_name.substring(5)); //strlen("MOUSE")
+      }
       throw new IllegalArgumentException(key_name);
 	  }
 	}
 	
 	public static enum EventAction {
+	  MOVE,
 		UP,
 		DOWN,
 		UP_DOWN,
@@ -413,6 +484,8 @@ public final class InputManager {
     
     public static EventAction getFromString(String str) {
       switch(str.toUpperCase()) {
+      case "MOVE":
+        return MOVE;
       case "UP":
         return UP;
       case "DOWN":

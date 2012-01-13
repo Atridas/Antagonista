@@ -43,6 +43,22 @@ public class RTSCamera implements Camera {
     updateVariables();
   }
   
+  public void setMinDistance(float _minDistance) {
+    minDistance = _minDistance;
+  }
+  
+  public void setMaxDistance(float _maxDistance) {
+    maxDistance = _maxDistance;
+  }
+  
+  public float getMinDistance() {
+    return minDistance;
+  }
+  
+  public float getMaxDistance() {
+    return maxDistance;
+  }
+  
   public void setYaw(float _yaw) {
     yaw = _yaw;
     updateVariables();
