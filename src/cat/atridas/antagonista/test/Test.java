@@ -123,11 +123,11 @@ public class Test {
       if(im.isActionActive(camDown)) {
         camera.moveUp(-2f * dt);
       }
-      if(im.isActionActive(camLeft)) {
-        camera.moveRight(-2f * dt);
-      }
       if(im.isActionActive(camRight)) {
         camera.moveRight(2f * dt);
+      }
+      if(im.isActionActive(camLeft)) {
+        camera.moveRight(-2f * dt);
       }
       if(im.isActionActive(camDist)) {
         camera.addDistance( -.01f * im.getActionValue(camDist) );

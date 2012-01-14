@@ -6,10 +6,12 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL31.*;
+import static org.lwjgl.opengl.GL33.*;
 
 import java.nio.BufferOverflowException;
 import java.nio.FloatBuffer;
-import java.util.Collections;
+import java.nio.ShortBuffer;
+import java.util.ArrayList;
 
 import javax.vecmath.Matrix4f;
 
@@ -25,16 +27,120 @@ import cat.atridas.antagonista.graphics.TechniquePass;
 import cat.atridas.antagonista.graphics.Effect.TechniqueType;
 
 public class DebugRenderGL3 extends DebugRender {
+  
+  public final static int SPHERE_STACKS = 10;
+  public final static int SPHERE_SUBDIV = 10;
+  
 
   private FloatBuffer globalDataBuffer = BufferUtils.createFloatBuffer(InstanceBufferUtils.BUFFER_SIZE);
   private FloatBuffer buffer1, buffer2;
   private int glBuffer = -1, glVAO = -1, glGlobalDataBuffer = -1;
+  
+  //esferes
+  private int sphereIndexBuffer = -1, sphereVertexBuffer = -1, sphereVAO = -1, sphereColorBuffer = -1;
   
   private static final int POS_COL_VERTEX_SIZE = (3 + 3); //Floats
   
   {
     buffer1 = BufferUtils.createFloatBuffer(POS_COL_VERTEX_SIZE * 50);
     buffer2 = BufferUtils.createFloatBuffer(POS_COL_VERTEX_SIZE * 50);
+  }
+  
+  private void initSphere() {
+    assert !cleaned;
+    ArrayList<Float> vertices = new ArrayList<>();
+
+    vertices.add( 0.f);
+    vertices.add( 0.f);
+    vertices.add( 1.f); //top
+    
+    vertices.add( 0.f);
+    vertices.add( 0.f);
+    vertices.add(-1.f); //botom
+    
+    for(int i = 1; i < SPHERE_STACKS; i++) {
+      float z = i / (SPHERE_STACKS/2.f) - 1;
+      for(int j = 0; j < SPHERE_SUBDIV; ++j) {
+        float len = (float)Math.sqrt(1 - z*z);
+        float x = (float) Math.sin( j * Math.PI * 2 ) * len;
+        float y = (float) Math.cos( j * Math.PI * 2 ) * len;
+        
+
+        vertices.add(x);
+        vertices.add(y);
+        vertices.add(z);
+      }
+    }
+    //////////////////////////////////////////////////////////////
+    Float faux1[] = vertices.toArray(new Float[vertices.size()]);
+    float faux2[] = new float[faux1.length];
+    for(int i = 0; i < faux1.length; i++) {
+      faux2[i] = faux1[i];
+    }
+    faux1 = null;
+    vertices = null;
+    //////////////////////////////////////////////////////////////
+    
+    ArrayList<Short> indexes = new ArrayList<>();
+
+    for(short i = 1; i < SPHERE_STACKS; i++) {
+      short baseStack = (short)( (i-1) * SPHERE_SUBDIV + 2 );
+      for(short j = 0; j < SPHERE_SUBDIV; ++j) {
+        indexes.add( (short)( baseStack + j    ) );
+      }
+      indexes.add( (short)( baseStack ) );
+    }
+    //////////////////////////////////////////////////////////////
+    Short saux1[] = indexes.toArray(new Short[indexes.size()]);
+    short saux2[] = new short[saux1.length];
+    for(int i = 0; i < saux1.length; i++) {
+      saux2[i] = saux1[i];
+    }
+    saux1 = null;
+    indexes = null;
+    //////////////////////////////////////////////////////////////
+
+    sphereVAO = glGenVertexArrays();
+    glBindVertexArray(sphereVAO);
+    
+    sphereVertexBuffer = glGenBuffers();
+    glBindBuffer(GL_ARRAY_BUFFER, sphereVertexBuffer);
+    FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
+    vertexBuffer.put(faux2);
+    vertexBuffer.rewind();
+    glBufferData(GL_ARRAY_BUFFER,vertexBuffer, GL_STATIC_DRAW);
+    
+    sphereIndexBuffer = glGenBuffers();
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereIndexBuffer);
+    ShortBuffer indexBuffer = BufferUtils.createShortBuffer(saux2.length);
+    indexBuffer.put(saux2);
+    indexBuffer.rewind();
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW);
+    
+
+
+    glEnableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
+    glEnableVertexAttribArray(TechniquePass.COLOR_ATTRIBUTE);
+
+    glVertexAttribPointer(TechniquePass.POSITION_ATTRIBUTE, 3, GL_FLOAT, false, 0, 0);
+    
+    
+    sphereColorBuffer = glGenBuffers();
+    glBindBuffer(GL_ARRAY_BUFFER, sphereColorBuffer);
+    glBufferData(GL_ARRAY_BUFFER, POS_COL_VERTEX_SIZE * 50, GL_DYNAMIC_DRAW);
+    
+    glVertexAttribPointer(TechniquePass.COLOR_ATTRIBUTE, 3, GL_FLOAT, false, 0, 0);
+    glVertexAttribDivisor(TechniquePass.COLOR_ATTRIBUTE, 1);
+
+    
+    
+    glBindVertexArray(0);
+    glDisableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
+    glDisableVertexAttribArray(TechniquePass.COLOR_ATTRIBUTE);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    
+    assert !Utils.hasGLErrors();
   }
   
   private void initBuffers() {
@@ -67,6 +173,10 @@ public class DebugRenderGL3 extends DebugRender {
       glBindBuffer(GL_UNIFORM_BUFFER, 0);
       glDisableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
       glDisableVertexAttribArray(TechniquePass.COLOR_ATTRIBUTE);
+
+      assert !Utils.hasGLErrors();
+      
+      initSphere();
     }
   }
   
@@ -80,6 +190,11 @@ public class DebugRenderGL3 extends DebugRender {
 
       glDrawArrays(mode, 0, elements);
     }
+  }
+  
+  private void growBuffers() {
+    buffer1 = BufferUtils.createFloatBuffer( buffer1.capacity() / Utils.FLOAT_SIZE + POS_COL_VERTEX_SIZE * 50 );
+    buffer2 = BufferUtils.createFloatBuffer( buffer2.capacity() / Utils.FLOAT_SIZE + POS_COL_VERTEX_SIZE * 50 );
   }
   
   @Override
@@ -152,8 +267,7 @@ public class DebugRenderGL3 extends DebugRender {
     } catch(BufferOverflowException e) {
       //fem creixer el buffer i rellancem el métode.
       //brut pq és una classe per fer debug.
-      buffer1 = BufferUtils.createFloatBuffer( buffer1.capacity() / Utils.FLOAT_SIZE + POS_COL_VERTEX_SIZE * 50 );
-      buffer2 = BufferUtils.createFloatBuffer( buffer2.capacity() / Utils.FLOAT_SIZE + POS_COL_VERTEX_SIZE * 50 );
+      growBuffers();
       renderLines(rm);
     }
     
@@ -268,7 +382,11 @@ public class DebugRenderGL3 extends DebugRender {
       if(glBuffer > 0) {
         glDeleteBuffers(glBuffer);
         glDeleteBuffers(glGlobalDataBuffer);
+        glDeleteBuffers(sphereIndexBuffer);
+        glDeleteBuffers(sphereVertexBuffer);
+        glDeleteBuffers(sphereColorBuffer);
         glDeleteVertexArrays(glVAO);
+        glDeleteVertexArrays(sphereVAO);
       }
       
       cleaned = true;
