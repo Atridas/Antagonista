@@ -56,9 +56,7 @@ public final class TextureGL extends Texture {
     bpp    = loader.getDepth();
     hasAlpha = bpp == 32;
 
-    IntBuffer temp = BufferUtils.createIntBuffer(16);
-    glGetInteger(GL_MAX_TEXTURE_SIZE, temp);
-    int max = temp.get(0);
+    int max = glGetInteger(GL_MAX_TEXTURE_SIZE);
 
     if ((width > max) || (height > max)) {
       LOGGER.warning("Attempt to allocate a texture to big for the current hardware");

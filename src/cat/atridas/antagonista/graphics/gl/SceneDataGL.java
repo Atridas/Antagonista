@@ -39,8 +39,11 @@ public class SceneDataGL extends SceneData {
 
       if(bufferId < 0) {
         bufferId  = glGenBuffers();
+        glBindBuffer(GL31.GL_UNIFORM_BUFFER, bufferId);
+        glBufferData(GL31.GL_UNIFORM_BUFFER, 12 * Utils.FLOAT_SIZE, GL_DYNAMIC_DRAW);
       }
 
+      bb.clear();
       bb.putFloat(0  * Utils.FLOAT_SIZE, ambientLightColor.x);
       bb.putFloat(1  * Utils.FLOAT_SIZE, ambientLightColor.y);
       bb.putFloat(2  * Utils.FLOAT_SIZE, ambientLightColor.z);
@@ -52,10 +55,11 @@ public class SceneDataGL extends SceneData {
       bb.putFloat(8  * Utils.FLOAT_SIZE, directionalLightColor.x);
       bb.putFloat(9  * Utils.FLOAT_SIZE, directionalLightColor.y);
       bb.putFloat(10 * Utils.FLOAT_SIZE, directionalLightColor.z);
-      bb.rewind();
+      bb.position(0);
+      bb.limit(12);
       
       glBindBuffer(GL31.GL_UNIFORM_BUFFER, bufferId);
-      glBufferData(GL31.GL_UNIFORM_BUFFER, bb, GL_DYNAMIC_DRAW);
+      glBufferSubData(GL31.GL_UNIFORM_BUFFER, 0, bb);
       
       if(GL3) {
         GL30.glBindBufferRange(GL31.GL_UNIFORM_BUFFER, TechniquePass.BASIC_LIGHT_UNIFORMS_BINDING,

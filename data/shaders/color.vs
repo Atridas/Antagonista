@@ -14,12 +14,16 @@
   layout(location = 7) in vec4 a_v4Color;
   
   layout(std140) uniform UniformInstances {
-  //struct {
-    mat4 u_m4ModelViewProjection;
-    mat4 u_m4ModelView;
-    mat4 u_m4ModelViewIT;
-  //} u_InstanceInfo[MAX_INSTANCES];
-};
+    struct {
+      mat4 m4ModelViewProjection;
+      mat4 m4ModelView;
+      mat4 m4ModelViewIT;
+    } u_InstanceInfo[MAX_INSTANCES];
+  };
+  
+  #define u_m4ModelViewProjection u_InstanceInfo[gl_InstanceID].m4ModelViewProjection
+  #define u_m4ModelView           u_InstanceInfo[gl_InstanceID].m4ModelView
+  #define u_m4ModelViewIT         u_InstanceInfo[gl_InstanceID].m4ModelViewIT
 #endif
 
 // Vertex Atributes ------------------------------------
