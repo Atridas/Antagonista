@@ -127,6 +127,14 @@ public abstract class DebugRender {
   public void addLine( 
       Point3f origin, 
       Point3f destination, 
+      Color3f color, 
+      boolean depthEnabled
+      ) {
+    addLine(origin,destination,color,0,depthEnabled);
+  }
+  public void addLine( 
+      Point3f origin, 
+      Point3f destination, 
       Color3f color) {
     addLine(origin,destination,color,0,true);
   }
@@ -142,6 +150,13 @@ public abstract class DebugRender {
   public void addCross( 
       Point3f center,
       Color3f color, 
+      float size, 
+      boolean depthEnabled) {
+    addCross(center,color,size,0,depthEnabled);
+  }
+  public void addCross( 
+      Point3f center,
+      Color3f color, 
       float size) {
     addCross(center,color,size,0,true);
   }
@@ -153,6 +168,13 @@ public abstract class DebugRender {
       Color3f color, 
       float duration) {
     addSphere(center,radius,color,duration,true);
+  }
+  public void addSphere( 
+      Point3f center,
+      float radius,
+      Color3f color, 
+      boolean depthEnabled) {
+    addSphere(center,radius,color,0,depthEnabled);
   }
   public void addSphere( 
       Point3f center,
@@ -173,6 +195,14 @@ public abstract class DebugRender {
       Point3f center, 
       Vector3f planeNormal,
       float radius,
+      Color3f color, 
+      boolean depthEnabled) {
+    addCircle(center, planeNormal, radius, color, 0, depthEnabled);
+  }
+  public void addCircle( 
+      Point3f center, 
+      Vector3f planeNormal,
+      float radius,
       Color3f color) {
     addCircle(center, planeNormal, radius, color, 0, true);
   }
@@ -183,6 +213,12 @@ public abstract class DebugRender {
       float size,
       float duration) {
     addAxes(transformation, size, duration, true);
+  }
+  public void addAxes( 
+      Matrix4f transformation,
+      float size,
+      boolean depthEnabled) {
+    addAxes(transformation, size, 0, depthEnabled);
   }
   public void addAxes( 
       Matrix4f transformation,
@@ -203,6 +239,14 @@ public abstract class DebugRender {
       Point3f v0, 
       Point3f v1, 
       Point3f v2,
+      Color3f color, 
+      boolean depthEnabled) {
+    addTriangle(v0, v1, v2, color, 0, depthEnabled);
+  }
+  public void addTriangle( 
+      Point3f v0, 
+      Point3f v1, 
+      Point3f v2,
       Color3f color) {
     addTriangle(v0, v1, v2, color, 0, true);
   }
@@ -214,6 +258,13 @@ public abstract class DebugRender {
       Color3f color,  
       float duration) {
     addAABB(minCoords, maxCoords, color, duration, true);
+  }
+  public void addAABB( 
+      Point3f minCoords, 
+      Point3f maxCoords, 
+      Color3f color,  
+      boolean depthEnabled) {
+    addAABB(minCoords, maxCoords, color, 0, depthEnabled);
   }
   public void addAABB( 
       Point3f minCoords, 
@@ -233,6 +284,13 @@ public abstract class DebugRender {
   public void addOBB( 
       Matrix4f centerTransformation,
       Tuple3f scaleXYZ, 
+      Color3f color,
+      boolean depthEnabled) {
+    addOBB( centerTransformation, scaleXYZ, color, 0, depthEnabled);
+  }
+  public void addOBB( 
+      Matrix4f centerTransformation,
+      Tuple3f scaleXYZ, 
       Color3f color) {
     addOBB( centerTransformation, scaleXYZ, color, 0, true);
   }
@@ -243,6 +301,13 @@ public abstract class DebugRender {
       Color3f color, 
       float duration) {
     addString(position, text, color, duration, true);
+  }
+  public void addString( 
+      Point3f position,
+      String text,
+      Color3f color, 
+      boolean depthEnabled) {
+    addString(position, text, color, 0, depthEnabled);
   }
   public void addString( 
       Point3f position,

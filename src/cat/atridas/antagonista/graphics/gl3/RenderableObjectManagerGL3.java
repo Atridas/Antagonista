@@ -72,7 +72,7 @@ public final class RenderableObjectManagerGL3 extends RenderableObjectManager {
     buffer.rewind();
     
     glBindBuffer(GL_UNIFORM_BUFFER, bufferID);
-    glBufferData(GL_UNIFORM_BUFFER, buffer, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer);
     
     glBindBufferRange(
         GL_UNIFORM_BUFFER, 

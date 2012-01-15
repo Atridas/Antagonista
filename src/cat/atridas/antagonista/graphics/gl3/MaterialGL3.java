@@ -27,16 +27,19 @@ public final class MaterialGL3 extends Material {
   public void setUpUniforms(RenderManager rm) {
     if(bufferId < 0) {
       bufferId  = glGenBuffers();
+
+      glBindBuffer(GL_UNIFORM_BUFFER, bufferId);
+      glBufferData(GL_UNIFORM_BUFFER, 3 * Utils.FLOAT_SIZE, GL_DYNAMIC_DRAW);
     }
     
-    bb.rewind();
+    bb.clear();
     bb.putFloat(specularFactor);
     bb.putFloat(specularPower);
     bb.putFloat(height);
-    bb.rewind();
+    bb.flip();
     
     glBindBuffer(GL_UNIFORM_BUFFER, bufferId);
-    glBufferData(GL_UNIFORM_BUFFER, bb, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, bb);
     
     glBindBufferRange(GL_UNIFORM_BUFFER, TechniquePass.BASIC_MATERIAL_UNIFORMS_BINDING,
           bufferId, 0, 3 * Float.SIZE);

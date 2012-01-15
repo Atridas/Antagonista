@@ -132,6 +132,11 @@ public abstract class Mesh extends Resource {
 
     vertexBuffer.asFloatBuffer().put(vtxs);
     faces.asShortBuffer().put(idxs);
+
+    vertexBuffer.position(0);
+    vertexBuffer.limit(numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH * Utils.FLOAT_SIZE);
+    faces.position(0);
+    faces.limit(totalNumFaces * 3 * Utils.SHORT_SIZE);
     
     return loadBuffers(vertexBuffer, faces, animated); 
   }

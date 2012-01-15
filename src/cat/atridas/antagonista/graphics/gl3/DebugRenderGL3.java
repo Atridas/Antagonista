@@ -35,10 +35,13 @@ public class DebugRenderGL3 extends DebugRender {
 
   private FloatBuffer globalDataBuffer = BufferUtils.createFloatBuffer(InstanceBufferUtils.BUFFER_SIZE);
   private FloatBuffer buffer1, buffer2, buffer3, buffer4;
-  private int glBuffer = -1, glVAO = -1, glGlobalDataBuffer = -1;
+  private int linesBuffer = -1, linesVAO = -1, singleInstanceGlobalDataBuffer = -1;
+  
+  
+  private int multipleInstancesGlobalDataBuffer = -1, instancesColorBuffer = -1;
   
   //esferes
-  private int sphereIndexBuffer = -1, sphereVertexBuffer = -1, sphereVAO = -1, sphereColorBuffer = -1;
+  private int sphereIndexBuffer = -1, sphereVertexBuffer = -1, sphereVAO = -1;
   private int shpereNumInices;
   
   private static final int POS_COL_VERTEX_SIZE = (3 + 3); //Floats
@@ -172,9 +175,7 @@ public class DebugRenderGL3 extends DebugRender {
     glVertexAttribPointer(TechniquePass.POSITION_ATTRIBUTE, 3, GL_FLOAT, false, 0, 0);
     
     
-    sphereColorBuffer = glGenBuffers();
-    glBindBuffer(GL_ARRAY_BUFFER, sphereColorBuffer);
-    glBufferData(GL_ARRAY_BUFFER, POS_COL_VERTEX_SIZE * 50, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
     
     glVertexAttribPointer(TechniquePass.COLOR_ATTRIBUTE, 3, GL_FLOAT, false, 0, 0);
     glVertexAttribDivisor(TechniquePass.COLOR_ATTRIBUTE, 1);
@@ -190,23 +191,23 @@ public class DebugRenderGL3 extends DebugRender {
     assert !Utils.hasGLErrors();
   }
   
-  private void initBuffers() {
+  private void initBuffers(RenderManager rm) {
     assert !cleaned;
-    if(glBuffer < 0) {
-      glBuffer = glGenBuffers();
-      glBindBuffer(GL_ARRAY_BUFFER, glBuffer);
+    if(linesBuffer < 0) {
+      linesBuffer = glGenBuffers();
+      glBindBuffer(GL_ARRAY_BUFFER, linesBuffer);
       glBufferData(GL_ARRAY_BUFFER, POS_COL_VERTEX_SIZE * 50, GL_DYNAMIC_DRAW);
       
       
-      glGlobalDataBuffer = glGenBuffers();
-      glBindBuffer(GL_UNIFORM_BUFFER, glGlobalDataBuffer);
-      glBufferData(GL_UNIFORM_BUFFER, InstanceBufferUtils.BUFFER_SIZE, GL_DYNAMIC_DRAW);
+      singleInstanceGlobalDataBuffer = glGenBuffers();
+      glBindBuffer(GL_UNIFORM_BUFFER, singleInstanceGlobalDataBuffer);
+      glBufferData(GL_UNIFORM_BUFFER, TechniquePass.BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE, GL_DYNAMIC_DRAW);
       
       
-      glVAO = glGenVertexArrays();
-      glBindVertexArray(glVAO);
+      linesVAO = glGenVertexArrays();
+      glBindVertexArray(linesVAO);
 
-      glBindBuffer(GL_ARRAY_BUFFER, glBuffer);
+      glBindBuffer(GL_ARRAY_BUFFER, linesBuffer);
 
       glEnableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
       glEnableVertexAttribArray(TechniquePass.COLOR_ATTRIBUTE);
@@ -220,6 +221,20 @@ public class DebugRenderGL3 extends DebugRender {
       glBindBuffer(GL_UNIFORM_BUFFER, 0);
       glDisableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
       glDisableVertexAttribArray(TechniquePass.COLOR_ATTRIBUTE);
+
+      assert !Utils.hasGLErrors();
+      
+
+      instancesColorBuffer = glGenBuffers();
+      glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+      glBufferData(GL_ARRAY_BUFFER, rm.getMaxInstancesBasic() * 3 * Utils.FLOAT_SIZE, GL_DYNAMIC_DRAW);
+      
+      multipleInstancesGlobalDataBuffer = glGenBuffers();
+      glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+      glBufferData(GL_UNIFORM_BUFFER, TechniquePass.BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE * rm.getMaxInstancesBasic(), GL_DYNAMIC_DRAW);
+
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
       assert !Utils.hasGLErrors();
       
@@ -240,6 +255,7 @@ public class DebugRenderGL3 extends DebugRender {
     assert !Utils.hasGLErrors();
   }
   
+  @SuppressWarnings("unused")
   private void renderElements(int mode, int numIndices, RenderManager rm) {
     debugMaterial.setUpUniforms(rm);
 
@@ -320,15 +336,15 @@ public class DebugRenderGL3 extends DebugRender {
       
       if(linesToDraw1 + linesToDraw2 > 0) {
         setGlobalMatrixes(rm);
-        glBindVertexArray(glVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, glBuffer);
+        glBindVertexArray(linesVAO);
       }
       
       if(linesToDraw1>0) {
         buffer1.flip();
       
         glEnable(GL_DEPTH_TEST);
-      
+
+        glBindBuffer(GL_ARRAY_BUFFER, linesBuffer);
         glBufferData(GL_ARRAY_BUFFER, buffer1, GL_DYNAMIC_DRAW);
       
         renderArrays(GL_LINES, linesToDraw1 * 2, rm);
@@ -340,7 +356,8 @@ public class DebugRenderGL3 extends DebugRender {
         buffer2.flip();
       
         glDisable(GL_DEPTH_TEST);
-      
+
+        glBindBuffer(GL_ARRAY_BUFFER, linesBuffer);
         glBufferData(GL_ARRAY_BUFFER, buffer2, GL_DYNAMIC_DRAW);
       
         renderArrays(GL_LINES, linesToDraw2 * 2, rm);
@@ -438,10 +455,10 @@ public class DebugRenderGL3 extends DebugRender {
       
       if(spheresToDraw1 + spheresToDraw2 > 0) {
         glBindVertexArray(sphereVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, sphereColorBuffer);
-        glBindBuffer(GL_UNIFORM_BUFFER, glGlobalDataBuffer);
-        
-        
+
+        glBindBufferBase( GL_UNIFORM_BUFFER, 
+                          TechniquePass.BASIC_INSTANCE_UNIFORMS_BINDING, 
+                          multipleInstancesGlobalDataBuffer);
       }
       
       if(spheresToDraw1>0) {
@@ -449,28 +466,35 @@ public class DebugRenderGL3 extends DebugRender {
         buffer2.flip();
       
         glEnable(GL_DEPTH_TEST);
-      
-        glBufferData(GL_ARRAY_BUFFER, buffer1, GL_DYNAMIC_DRAW);
-        glBufferData(GL_UNIFORM_BUFFER, buffer2, GL_DYNAMIC_DRAW);
+
+        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, buffer1);
+        
+        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer2);
       
         renderElementsInstanced(GL_LINE_STRIP, shpereNumInices, spheresToDraw1, rm);
 
         assert !Utils.hasGLErrors();
       }
-      /*
+      
       if(spheresToDraw2>0) {
         buffer3.flip();
         buffer4.flip();
       
         glDisable(GL_DEPTH_TEST);
+
+        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, buffer3);
+        
+        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer4);
+
       
-        glBufferData(GL_ARRAY_BUFFER, buffer2, GL_DYNAMIC_DRAW);
-      
-        renderArrays(GL_LINES, linesToDraw2 * 2, rm);
+        renderElementsInstanced(GL_LINE_STRIP, shpereNumInices, spheresToDraw2, rm);
 
         assert !Utils.hasGLErrors();
       }
-      */
         
     } catch(BufferOverflowException e) {
       //fem creixer el buffer i rellancem el métode.
@@ -528,11 +552,11 @@ public class DebugRenderGL3 extends DebugRender {
     Utils.matrixToBuffer(mat, globalDataBuffer);
  // fins aqui
     globalDataBuffer.flip();
-    glBindBuffer(GL_UNIFORM_BUFFER, glGlobalDataBuffer);
+    glBindBuffer(GL_UNIFORM_BUFFER, singleInstanceGlobalDataBuffer);
     glBufferData(GL_UNIFORM_BUFFER, globalDataBuffer, GL_DYNAMIC_DRAW);
     glBindBufferBase( GL_UNIFORM_BUFFER, 
                       TechniquePass.BASIC_INSTANCE_UNIFORMS_BINDING, 
-                      glGlobalDataBuffer);
+                      singleInstanceGlobalDataBuffer);
   }
 
   private boolean prevDepthMask;
@@ -540,7 +564,7 @@ public class DebugRenderGL3 extends DebugRender {
   @Override
   protected void beginRender(RenderManager rm) {
     assert !cleaned;
-    initBuffers();
+    initBuffers(rm);
     prevDepthMask = glGetBoolean(GL_DEPTH_WRITEMASK);
     glDepthMask(false);
     
@@ -568,13 +592,14 @@ public class DebugRenderGL3 extends DebugRender {
   @Override
   public void finalize() {
     if(!cleaned) {
-      if(glBuffer > 0) {
-        glDeleteBuffers(glBuffer);
-        glDeleteBuffers(glGlobalDataBuffer);
+      if(linesBuffer > 0) {
+        glDeleteBuffers(linesBuffer);
+        glDeleteBuffers(singleInstanceGlobalDataBuffer);
         glDeleteBuffers(sphereIndexBuffer);
         glDeleteBuffers(sphereVertexBuffer);
-        glDeleteBuffers(sphereColorBuffer);
-        glDeleteVertexArrays(glVAO);
+        glDeleteBuffers(instancesColorBuffer);
+        glDeleteBuffers(multipleInstancesGlobalDataBuffer);
+        glDeleteVertexArrays(linesVAO);
         glDeleteVertexArrays(sphereVAO);
       }
       
