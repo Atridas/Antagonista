@@ -2,11 +2,14 @@ package cat.atridas.antagonista.graphics.gl;
 
 import java.util.logging.Logger;
 
+import org.lwjgl.opengl.ARBUniformBufferObject;
 import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.ContextCapabilities;
+import org.lwjgl.opengl.GL31;
 import org.lwjgl.opengl.GLContext;
 
 import cat.atridas.antagonista.graphics.RenderManager;
+import cat.atridas.antagonista.graphics.TechniquePass;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL14.*;
@@ -21,6 +24,31 @@ public final class RenderManagerGL extends RenderManager {
   private Profile profile;
   
   private SceneDataGL sceneData;
+  
+  private int maxInstancesBasic, maxInstancesColors;//, maxInstancesBones;
+  
+  private void initInstances() {
+    int maxUniformSize = 0;
+    switch(profile) {
+    case GL3:
+    case GL4:
+      maxUniformSize = glGetInteger(GL31.GL_MAX_UNIFORM_BLOCK_SIZE);
+      break;
+    default:
+      if(profile.supports(Functionality.UNIFORM_BUFFER_OBJECT)) {
+        maxUniformSize = glGetInteger(ARBUniformBufferObject.GL_MAX_UNIFORM_BLOCK_SIZE);
+      }
+    }
+
+    if(maxUniformSize > 0) {
+      maxInstancesBasic  = maxUniformSize / TechniquePass.BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE;
+      maxInstancesColors = maxUniformSize / TechniquePass.SPECIAL_COLORS_UNIFORMS_BLOCK_SIZE;
+      //maxInstancesBasic = maxUniformSize / TechniquePass.BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE;
+    } else {
+      maxInstancesBasic  = 1;
+      maxInstancesColors = 1;
+    }
+  }
   
   @Override
   public void initGL() {
@@ -55,6 +83,8 @@ public final class RenderManagerGL extends RenderManager {
     
     glEnable(GL_DEPTH_TEST);
     glClearDepth(1);
+    
+    initInstances();
     
     sceneData = new SceneDataGL(this);
     
@@ -307,5 +337,20 @@ public final class RenderManagerGL extends RenderManager {
     while(error != GL_NO_ERROR) {
       error = glGetError();
     }
+  }
+
+  @Override
+  public int getMaxInstancesBasic() {
+    return maxInstancesBasic;
+  }
+
+  @Override
+  public int getMaxInstancesWithBones() {
+    throw new RuntimeException("Not yet implemented");
+  }
+
+  @Override
+  public int getMaxInstancesWithColors() {
+    return maxInstancesColors;
   }
 }

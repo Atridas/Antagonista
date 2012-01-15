@@ -69,11 +69,10 @@ public abstract class DebugRender {
   
   public void addAxes( 
       Matrix4f transformation,
-      Color3f color,
       float size,
       float duration, 
       boolean depthEnabled) {
-    axes.add(new Axes(transformation, size, duration, depthEnabled, color));
+    axes.add(new Axes(transformation, size, duration, depthEnabled));
   }
   
   public void addTriangle( 
@@ -181,16 +180,14 @@ public abstract class DebugRender {
 
   public void addAxes( 
       Matrix4f transformation,
-      Color3f color,
       float size,
       float duration) {
-    addAxes(transformation, color, size, duration, true);
+    addAxes(transformation, size, duration, true);
   }
   public void addAxes( 
       Matrix4f transformation,
-      Color3f color,
       float size) {
-    addAxes(transformation, color, size, 0, true);
+    addAxes(transformation, size, 0, true);
   }
   
 
@@ -266,14 +263,13 @@ public abstract class DebugRender {
   public void render(RenderManager rm, float dt) {
     beginRender(rm);
     renderLines(rm);
-    renderCrosses();
-    renderSpheres();
-    renderCircles();
-    renderAxes();
-    renderTriangles();
-    renderAABBs();
-    renderOBBs();
-    renderStrings();
+    renderCrosses(rm);
+    renderSpheres(rm);
+    renderCircles(rm);
+    renderAxes(rm);
+    renderTriangles(rm);
+    renderBBs(rm);
+    renderStrings(rm);
     endRender();
 
     cleanList(lines, dt);
@@ -308,14 +304,13 @@ public abstract class DebugRender {
   protected abstract void endRender();
 
   protected abstract void renderLines(RenderManager rm);
-  protected abstract void renderCrosses();
-  protected abstract void renderSpheres();
-  protected abstract void renderCircles();
-  protected abstract void renderAxes();
-  protected abstract void renderTriangles();
-  protected abstract void renderAABBs();
-  protected abstract void renderOBBs();
-  protected abstract void renderStrings();
+  protected abstract void renderCrosses(RenderManager rm);
+  protected abstract void renderSpheres(RenderManager rm);
+  protected abstract void renderCircles(RenderManager rm);
+  protected abstract void renderAxes(RenderManager rm);
+  protected abstract void renderTriangles(RenderManager rm);
+  protected abstract void renderBBs(RenderManager rm);
+  protected abstract void renderStrings(RenderManager rm);
   
   
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -324,21 +319,28 @@ public abstract class DebugRender {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
-  
+
 
   protected static class DebugObject {
     public float duration;
     public boolean depthEnabled;
-    public Color3f color;
 
-    DebugObject(final float _duration, final boolean _depthEnabled, final Color3f _color) {
+    DebugObject(final float _duration, final boolean _depthEnabled) {
       duration = _duration;
       depthEnabled = _depthEnabled;
+    }
+  }
+
+  protected static class DebugObjectWithColor extends DebugObject {
+    public Color3f color;
+
+    DebugObjectWithColor(final float _duration, final boolean _depthEnabled, final Color3f _color) {
+      super(_duration, _depthEnabled);
       color = new Color3f(_color);
     }
   }
   
-  protected static final class Line extends DebugObject {
+  protected static final class Line extends DebugObjectWithColor {
     public Point3f origin;
     public Point3f destination;
     
@@ -350,7 +352,7 @@ public abstract class DebugRender {
     }
   }
   
-  protected static final class Cross extends DebugObject {
+  protected static final class Cross extends DebugObjectWithColor {
     public Point3f center;
     public float size;
     
@@ -362,7 +364,7 @@ public abstract class DebugRender {
     }
   }
   
-  protected static final class Sphere extends DebugObject {
+  protected static final class Sphere extends DebugObjectWithColor {
     public Point3f center;
     public float radius;
     
@@ -374,7 +376,7 @@ public abstract class DebugRender {
     }
   }
   
-  protected static final class Circle extends DebugObject {
+  protected static final class Circle extends DebugObjectWithColor {
     public Point3f center;
     public Vector3f planeNormal;
     public float radius;
@@ -393,14 +395,14 @@ public abstract class DebugRender {
     public float size;
     
     Axes(Matrix4f _transformation, float _size,
-        final float duration, final boolean depthEnabled, final Color3f color) {
-      super(duration, depthEnabled, color);
+        final float duration, final boolean depthEnabled) {
+      super(duration, depthEnabled);
       transformation = new Matrix4f( _transformation );
       size = _size;
     }
   }
   
-  protected static final class Triangle extends DebugObject {
+  protected static final class Triangle extends DebugObjectWithColor {
     public Point3f v0;
     public Point3f v1;
     public Point3f v2;
@@ -414,7 +416,7 @@ public abstract class DebugRender {
     }
   }
   
-  protected static final class AABB extends DebugObject {
+  protected static final class AABB extends DebugObjectWithColor {
     public Point3f minCoords;
     public Point3f maxCoords;
     
@@ -426,7 +428,7 @@ public abstract class DebugRender {
     }
   }
   
-  protected static final class OBB extends DebugObject {
+  protected static final class OBB extends DebugObjectWithColor {
     public Matrix4f centerTransformation;
     public Tuple3f scaleXYZ;
     
@@ -438,7 +440,7 @@ public abstract class DebugRender {
     }
   }
   
-  protected static final class DebugString extends DebugObject {
+  protected static final class DebugString extends DebugObjectWithColor {
     public Point3f position;
     public String text;
     

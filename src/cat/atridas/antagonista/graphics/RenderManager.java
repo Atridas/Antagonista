@@ -92,6 +92,10 @@ public abstract class RenderManager {
 
   public abstract boolean hasGLErrors();
   public abstract void clearSilentlyGLErrors();
+
+  public abstract int getMaxInstancesBasic();
+  public abstract int getMaxInstancesWithBones();
+  public abstract int getMaxInstancesWithColors();
 	
   public static enum Functionality {
     UNIFORM_BUFFER_OBJECT,

@@ -143,9 +143,11 @@ public class Test {
       //core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(25,0,25), new Color3f(1,0,0));
       //core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(-25,0,25), new Color3f(1,0,0));
 
-      core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(0,0,-25), new Color3f(0,0,0.5f));
-      core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(0,-25,0), new Color3f(0,0.5f,0));
-      core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(-25,0,0), new Color3f(0.5f,0,0));
+      //core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(0,0,-25), new Color3f(0,0,0.5f));
+      //core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(0,-25,0), new Color3f(0,0.5f,0));
+      //core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(-25,0,0), new Color3f(0.5f,0,0));
+      
+      core.getDebugRender().addSphere(new Point3f(0,0,10), 5, new Color3f(1,1,1));
       
       
       //sceneData.setCamera(camera);
