@@ -14,11 +14,13 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
 import org.lwjgl.BufferUtils;
 
 import cat.atridas.antagonista.Quality;
+import cat.atridas.antagonista.Transformation;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.graphics.RenderManager;
@@ -42,10 +44,25 @@ public class DebugRenderGL3 extends DebugRender {
   
   //esferes
   private int sphereIndexBuffer = -1, sphereVertexBuffer = -1, sphereVAO = -1;
-  private int shpereNumInices;
+  private int shpereNumIndices;
   
+  //creus
   private int crossesVertexBuffer = -1, crossesVAO = -1;
   private static final int crossesNumVertexs = 6;
+  
+  //cercles
+  private int circlesVertexBuffer = -1, circlesVAO = -1;
+  private int circlesNumVertexs;
+  
+  //axes
+  private int axesVertexBuffer = -1, axesVAO = -1;
+  private static final int axesNumVertexs = 6;
+  
+  //triangles ho farem com les línees
+  
+  //BBs
+  private int bbIndexBuffer = -1, bbVertexBuffer = -1, bbVAO = -1;
+  private int bbNumIndices;
   
   private static final int POS_COL_VERTEX_SIZE = (3 + 3); //Floats
   
@@ -165,7 +182,7 @@ public class DebugRenderGL3 extends DebugRender {
     sphereIndexBuffer = glGenBuffers();
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereIndexBuffer);
     ShortBuffer indexBuffer = BufferUtils.createShortBuffer(saux2.length);
-    shpereNumInices = saux2.length;
+    shpereNumIndices = saux2.length;
     indexBuffer.put(saux2);
     indexBuffer.flip();
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW);
@@ -268,6 +285,158 @@ public class DebugRenderGL3 extends DebugRender {
     assert !Utils.hasGLErrors();
   }
   
+  private void initCirclesBuffers() {
+    assert !cleaned;
+    ArrayList<Float> vertices = new ArrayList<>();
+
+    for(int j = 0; j < SPHERE_SUBDIV; ++j) {
+      float x = (float) Math.sin( j * Math.PI * 2 / SPHERE_SUBDIV);
+      float y = (float) Math.cos( j * Math.PI * 2 / SPHERE_SUBDIV);
+      
+
+      vertices.add(x);
+      vertices.add(y);
+      vertices.add(0.f);
+    }
+    //////////////////////////////////////////////////////////////
+    Float faux1[] = vertices.toArray(new Float[vertices.size()]);
+    circlesNumVertexs = faux1.length / 3;
+    float faux2[] = new float[faux1.length];
+    for(int i = 0; i < faux1.length; i++) {
+      faux2[i] = faux1[i];
+    }
+    faux1 = null;
+    vertices = null;
+    //////////////////////////////////////////////////////////////
+    
+
+    circlesVAO = glGenVertexArrays();
+    glBindVertexArray(circlesVAO);
+    
+    circlesVertexBuffer = glGenBuffers();
+    glBindBuffer(GL_ARRAY_BUFFER, circlesVertexBuffer);
+    FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
+    vertexBuffer.put(faux2);
+    vertexBuffer.flip();
+    glBufferData(GL_ARRAY_BUFFER,vertexBuffer, GL_STATIC_DRAW);
+    
+
+
+    glEnableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
+    glEnableVertexAttribArray(TechniquePass.COLOR_ATTRIBUTE);
+
+    glVertexAttribPointer(TechniquePass.POSITION_ATTRIBUTE, 3, GL_FLOAT, false, 0, 0);
+    
+    
+    glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+    
+    glVertexAttribPointer(TechniquePass.COLOR_ATTRIBUTE, 3, GL_FLOAT, false, 0, 0);
+    glVertexAttribDivisor(TechniquePass.COLOR_ATTRIBUTE, 1);
+
+    
+    
+    glBindVertexArray(0);
+    glDisableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
+    glDisableVertexAttribArray(TechniquePass.COLOR_ATTRIBUTE);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    
+    assert !Utils.hasGLErrors();
+  }
+  
+  private void initAxesBuffers() {
+    assert !cleaned;
+    ArrayList<Float> vertices = new ArrayList<>();
+
+    vertices.add(0.f);////////////////////////
+    vertices.add(0.f);
+    vertices.add(0.f);
+    
+    vertices.add(1.f); //color
+    vertices.add(0.f);
+    vertices.add(0.f);
+
+    vertices.add(1.f);
+    vertices.add(0.f);
+    vertices.add(0.f);
+    
+    vertices.add(1.f); //color
+    vertices.add(0.f);
+    vertices.add(0.f);
+
+    vertices.add(0.f);////////////////////////
+    vertices.add(0.f);
+    vertices.add(0.f);
+    
+    vertices.add(0.f); //color
+    vertices.add(1.f);
+    vertices.add(0.f);
+
+    vertices.add(0.f);
+    vertices.add(1.f);
+    vertices.add(0.f);
+    
+    vertices.add(0.f); //color
+    vertices.add(1.f);
+    vertices.add(0.f);
+
+    vertices.add(0.f);////////////////////////
+    vertices.add(0.f);
+    vertices.add(0.f);
+    
+    vertices.add(0.f); //color
+    vertices.add(0.f);
+    vertices.add(1.f);
+
+    vertices.add(0.f);
+    vertices.add(0.f);
+    vertices.add(1.f);
+    
+    vertices.add(0.f); //color
+    vertices.add(0.f);
+    vertices.add(1.f);
+    
+    //////////////////////////////////////////////////////////////
+    Float faux1[] = vertices.toArray(new Float[vertices.size()]);
+    circlesNumVertexs = faux1.length / 3;
+    float faux2[] = new float[faux1.length];
+    for(int i = 0; i < faux1.length; i++) {
+      faux2[i] = faux1[i];
+    }
+    faux1 = null;
+    vertices = null;
+    //////////////////////////////////////////////////////////////
+    
+
+    axesVAO = glGenVertexArrays();
+    glBindVertexArray(axesVAO);
+    
+    axesVertexBuffer = glGenBuffers();
+    glBindBuffer(GL_ARRAY_BUFFER, axesVertexBuffer);
+    FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
+    vertexBuffer.put(faux2);
+    vertexBuffer.flip();
+    glBufferData(GL_ARRAY_BUFFER,vertexBuffer, GL_STATIC_DRAW);
+    
+
+
+    glEnableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
+    glEnableVertexAttribArray(TechniquePass.COLOR_ATTRIBUTE   );
+
+    glVertexAttribPointer(TechniquePass.POSITION_ATTRIBUTE, 3, GL_FLOAT, false, 6 * Utils.FLOAT_SIZE, 0                   );
+    glVertexAttribPointer(TechniquePass.COLOR_ATTRIBUTE   , 3, GL_FLOAT, false, 6 * Utils.FLOAT_SIZE, 3 * Utils.FLOAT_SIZE);
+
+    
+    
+    glBindVertexArray(0);
+    glDisableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
+    glDisableVertexAttribArray(TechniquePass.COLOR_ATTRIBUTE);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    
+    assert !Utils.hasGLErrors();
+  }
+  
   private void initBuffers(RenderManager rm) {
     assert !cleaned;
     if(linesBuffer < 0) {
@@ -317,6 +486,8 @@ public class DebugRenderGL3 extends DebugRender {
 
       initSphereBuffers();
       initCrossesBuffers();
+      initCirclesBuffers();
+      initAxesBuffers();
     }
   }
   
@@ -341,7 +512,7 @@ public class DebugRenderGL3 extends DebugRender {
       pass.activate(rm);
       debugMaterial.setUpUniforms(pass, rm);
 
-      glDrawArraysInstanced(mode, 0, numInstances, numInstances);
+      glDrawArraysInstanced(mode, 0, numElements, numInstances);
     }
     assert !Utils.hasGLErrors();
   }
@@ -682,7 +853,7 @@ public class DebugRenderGL3 extends DebugRender {
         glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
         glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer2);
       
-        renderElementsInstanced(GL_LINE_STRIP, shpereNumInices, spheresToDraw1, rm);
+        renderElementsInstanced(GL_LINE_STRIP, shpereNumIndices, spheresToDraw1, rm);
 
         assert !Utils.hasGLErrors();
       }
@@ -700,7 +871,7 @@ public class DebugRenderGL3 extends DebugRender {
         glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer4);
 
       
-        renderElementsInstanced(GL_LINE_STRIP, shpereNumInices, spheresToDraw2, rm);
+        renderElementsInstanced(GL_LINE_STRIP, shpereNumIndices, spheresToDraw2, rm);
 
         assert !Utils.hasGLErrors();
       }
@@ -716,19 +887,355 @@ public class DebugRenderGL3 extends DebugRender {
   @Override
   protected void renderCircles(RenderManager rm) {
     assert !cleaned;
-    //TODO
+
+    if(circles.size() == 0)
+      return;
+    
+    try {
+      float[] color = new float[3];
+
+      int circlesToDraw1 = 0;
+      int circlesToDraw2 = 0;
+
+      //per esferes amb ztest
+      buffer1.clear(); // colors
+      buffer2.clear(); // matrius
+      
+      //per esferes SENSE ztest
+      buffer3.clear(); // colors
+      buffer4.clear(); // matrius
+      
+
+      Vector3f v3Aux = new Vector3f();
+      Quat4f   qAux  = new Quat4f();
+
+      //////////////////////////////////////////////
+
+      Matrix4f viewProj           = new Matrix4f();
+      Matrix4f view               = new Matrix4f();
+      Matrix4f model              = new Matrix4f();
+      Matrix4f modelViewProj      = new Matrix4f();
+      Matrix4f modelView          = new Matrix4f();
+      Matrix4f modelViewInvTransp = new Matrix4f();
+      viewProj.setIdentity();
+      view .setIdentity();
+      
+      rm.getSceneData().getViewMatrix(view);
+      rm.getSceneData().getViewProjectionMatrix(viewProj);
+      ///////////////////////////////////////////////
+      
+      for(Circle circle: circles) {
+        FloatBuffer colorBuffer, matrixesBuffer;
+        if(circle.depthEnabled) {
+          colorBuffer = buffer1;
+          matrixesBuffer = buffer2;
+          circlesToDraw1++;
+        } else {
+          colorBuffer = buffer3;
+          matrixesBuffer = buffer4;
+          circlesToDraw2++;
+        }
+        
+        color[0] = circle.color.x;
+        color[1] = circle.color.y;
+        color[2] = circle.color.z;
+        
+        colorBuffer.put(color);
+
+        model.setIdentity();
+        v3Aux.set(circle.center);
+        model.setTranslation(v3Aux);
+        model.setScale(circle.radius);
+
+        v3Aux.set(0,0,1);
+        Transformation.getClosestRotation(v3Aux, circle.planeNormal, qAux);
+        model.setRotation(qAux);
+
+        modelView.mul(view, model);
+        modelViewProj.mul(viewProj, model);
+        
+        modelViewInvTransp.invert(modelView);
+        modelViewInvTransp.transpose();
+
+        Utils.matrixToBuffer(modelViewProj, matrixesBuffer);
+        Utils.matrixToBuffer(modelView, matrixesBuffer);
+        Utils.matrixToBuffer(modelViewInvTransp, matrixesBuffer);
+      }
+
+      
+      if(circlesToDraw1 + circlesToDraw2 > 0) {
+        glBindVertexArray(circlesVAO);
+
+        glBindBufferBase( GL_UNIFORM_BUFFER, 
+                          TechniquePass.BASIC_INSTANCE_UNIFORMS_BINDING, 
+                          multipleInstancesGlobalDataBuffer);
+      }
+      
+      if(circlesToDraw1>0) {
+        buffer1.flip();
+        buffer2.flip();
+      
+        glEnable(GL_DEPTH_TEST);
+        assert !Utils.hasGLErrors();
+
+        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, buffer1);
+        assert !Utils.hasGLErrors();
+        
+        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer2);
+        assert !Utils.hasGLErrors();
+      
+        renderArraysInstanced(GL_LINE_LOOP, circlesNumVertexs, circlesToDraw1, rm);
+
+        assert !Utils.hasGLErrors();
+      }
+      
+      if(circlesToDraw2>0) {
+        buffer3.flip();
+        buffer4.flip();
+      
+        glDisable(GL_DEPTH_TEST);
+
+        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, buffer3);
+        
+        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer4);
+
+      
+        renderArraysInstanced(GL_LINE_LOOP, circlesNumVertexs, circlesToDraw2, rm);
+
+        assert !Utils.hasGLErrors();
+      }
+        
+    } catch(BufferOverflowException e) {
+      //fem creixer el buffer i rellancem el métode.
+      //brut pq és una classe per fer debug.
+      growBuffers();
+      renderCircles(rm);
+    }
   }
   
   @Override
   protected void renderAxes(RenderManager rm) {
     assert !cleaned;
-    //TODO
+
+    if(axes.size() == 0)
+      return;
+    
+    try {
+
+      int axesToDraw1 = 0;
+      int axesToDraw2 = 0;
+
+      buffer1.clear();
+      buffer2.clear();
+
+      //////////////////////////////////////////////
+
+      Matrix4f viewProj           = new Matrix4f();
+      Matrix4f view               = new Matrix4f();
+      Matrix4f model              = new Matrix4f();
+      Matrix4f modelViewProj      = new Matrix4f();
+      Matrix4f modelView          = new Matrix4f();
+      Matrix4f modelViewInvTransp = new Matrix4f();
+      viewProj.setIdentity();
+      view .setIdentity();
+      
+      rm.getSceneData().getViewMatrix(view);
+      rm.getSceneData().getViewProjectionMatrix(viewProj);
+      ///////////////////////////////////////////////
+      
+      for(Axes axe: axes) {
+        FloatBuffer matrixesBuffer;
+        if(axe.depthEnabled) {
+          matrixesBuffer = buffer1;
+          axesToDraw1++;
+        } else {
+          matrixesBuffer = buffer2;
+          axesToDraw2++;
+        }
+
+        model.set(axe.transformation);
+        model.setScale(axe.size);
+
+        modelView.mul(view, model);
+        modelViewProj.mul(viewProj, model);
+        
+        modelViewInvTransp.invert(modelView);
+        modelViewInvTransp.transpose();
+
+        Utils.matrixToBuffer(modelViewProj, matrixesBuffer);
+        Utils.matrixToBuffer(modelView, matrixesBuffer);
+        Utils.matrixToBuffer(modelViewInvTransp, matrixesBuffer);
+      }
+
+      
+      if(axesToDraw1 + axesToDraw2 > 0) {
+        glBindVertexArray(axesVAO);
+
+        glBindBufferBase( GL_UNIFORM_BUFFER, 
+                          TechniquePass.BASIC_INSTANCE_UNIFORMS_BINDING, 
+                          multipleInstancesGlobalDataBuffer);
+      }
+      
+      if(axesToDraw1>0) {
+        buffer1.flip();
+      
+        glEnable(GL_DEPTH_TEST);
+        
+        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer1);
+        assert !Utils.hasGLErrors();
+      
+        renderArraysInstanced(GL_LINES, axesNumVertexs, axesToDraw1, rm);
+
+        assert !Utils.hasGLErrors();
+      }
+      
+      if(axesToDraw2>0) {
+        buffer2.flip();
+      
+        glDisable(GL_DEPTH_TEST);
+        
+        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer1);
+        assert !Utils.hasGLErrors();
+      
+        renderArraysInstanced(GL_LINES, axesNumVertexs, axesToDraw2, rm);
+
+        assert !Utils.hasGLErrors();
+      }
+        
+    } catch(BufferOverflowException e) {
+      //fem creixer el buffer i rellancem el métode.
+      //brut pq és una classe per fer debug.
+      growBuffers();
+      renderCircles(rm);
+    }
   }
   
   @Override
   protected void renderTriangles(RenderManager rm) {
     assert !cleaned;
-    //TODO
+    
+
+    if(triangles.size() == 0)
+      return;
+    
+    try {      
+      float[] vertex = new float[POS_COL_VERTEX_SIZE * 6];
+
+      int trianglesToDraw1 = 0;
+      int trianglesToDraw2 = 0;
+      buffer1.clear();
+      buffer2.clear();
+
+      
+      for(Triangle triangle: triangles) {
+
+        ///////////////////////////////////////
+        vertex[0] = triangle.v0.x;
+        vertex[1] = triangle.v0.y;
+        vertex[2] = triangle.v0.z;
+
+        vertex[3] = triangle.color.x;
+        vertex[4] = triangle.color.y;
+        vertex[5] = triangle.color.z;
+        
+        vertex[6] = triangle.v1.x;
+        vertex[7] = triangle.v1.y;
+        vertex[8] = triangle.v1.z;
+
+        vertex[9]  = triangle.color.x;
+        vertex[10] = triangle.color.y;
+        vertex[11] = triangle.color.z;
+        
+        
+        ///////////////////////////////////////
+        vertex[12] = triangle.v0.x;
+        vertex[13] = triangle.v0.y;
+        vertex[14] = triangle.v0.z;
+
+        vertex[15] = triangle.color.x;
+        vertex[16] = triangle.color.y;
+        vertex[17] = triangle.color.z;
+        
+        vertex[18] = triangle.v2.x;
+        vertex[19] = triangle.v2.y;
+        vertex[20] = triangle.v2.z;
+
+        vertex[21] = triangle.color.x;
+        vertex[22] = triangle.color.y;
+        vertex[23] = triangle.color.z;
+        
+
+        ///////////////////////////////////////
+        vertex[24] = triangle.v2.x;
+        vertex[25] = triangle.v2.y;
+        vertex[26] = triangle.v2.z;
+
+        vertex[27] = triangle.color.x;
+        vertex[28] = triangle.color.y;
+        vertex[29] = triangle.color.z;
+        
+        vertex[30] = triangle.v1.x;
+        vertex[31] = triangle.v1.y;
+        vertex[32] = triangle.v1.z;
+
+        vertex[33] = triangle.color.x;
+        vertex[34] = triangle.color.y;
+        vertex[35] = triangle.color.z;
+
+        ///////////////////////////////////////
+        if(triangle.depthEnabled) {
+          buffer1.put(vertex);
+          trianglesToDraw1++;
+        } else {
+          buffer2.put(vertex);
+          trianglesToDraw2++;
+        }
+      }
+      
+      if(trianglesToDraw1 + trianglesToDraw2 > 0) {
+        setGlobalMatrixes(rm);
+        glBindVertexArray(linesVAO);
+      }
+      
+      if(trianglesToDraw1>0) {
+        buffer1.flip();
+      
+        glEnable(GL_DEPTH_TEST);
+
+        glBindBuffer(GL_ARRAY_BUFFER, linesBuffer);
+        glBufferData(GL_ARRAY_BUFFER, buffer1, GL_DYNAMIC_DRAW);
+      
+        renderArrays(GL_LINES, trianglesToDraw1 * 6, rm);
+
+        assert !Utils.hasGLErrors();
+      }
+      
+      if(trianglesToDraw2>0) {
+        buffer2.flip();
+      
+        glDisable(GL_DEPTH_TEST);
+
+        glBindBuffer(GL_ARRAY_BUFFER, linesBuffer);
+        glBufferData(GL_ARRAY_BUFFER, buffer2, GL_DYNAMIC_DRAW);
+      
+        renderArrays(GL_LINES, trianglesToDraw2 * 6, rm);
+
+        assert !Utils.hasGLErrors();
+      }
+      
+    } catch(BufferOverflowException e) {
+      //fem creixer el buffer i rellancem el métode.
+      //brut pq és una classe per fer debug.
+      growBuffers();
+      renderTriangles(rm);
+    }
+    
   }
   
   @Override
@@ -811,6 +1318,11 @@ public class DebugRenderGL3 extends DebugRender {
         
         glDeleteBuffers(crossesVertexBuffer);
         
+        glDeleteBuffers(circlesVertexBuffer);
+
+        glDeleteBuffers(bbIndexBuffer);
+        glDeleteBuffers(bbVertexBuffer);
+        
         
         glDeleteBuffers(instancesColorBuffer);
         glDeleteBuffers(multipleInstancesGlobalDataBuffer);
@@ -819,6 +1331,8 @@ public class DebugRenderGL3 extends DebugRender {
         glDeleteVertexArrays(linesVAO);
         glDeleteVertexArrays(sphereVAO);
         glDeleteVertexArrays(crossesVAO);
+        glDeleteVertexArrays(circlesVAO);
+        glDeleteVertexArrays(bbVAO);
       }
       
       cleaned = true;

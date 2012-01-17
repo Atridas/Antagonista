@@ -2,6 +2,7 @@ package cat.atridas.antagonista.test;
 
 import java.util.logging.Level;
 
+import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
@@ -11,6 +12,7 @@ import cat.atridas.antagonista.Clock;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
+import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.graphics.MeshManager;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.RTSCamera;
@@ -110,9 +112,12 @@ public class Test {
     HashedString camRight = new HashedString("move_camera_right");
     HashedString camDist  = new HashedString("move_camera_distance");
 
-    core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(25,25,25), new Color3f(1,1,1), 30);
     
-    core.getDebugRender().deactivate();
+    DebugRender dr = core.getDebugRender();
+    
+    dr.addLine(new Point3f(0,0,0), new Point3f(25,25,25), new Color3f(1,1,1), 30);
+    
+    dr.activate();
     
     Clock clock = new Clock();
     while(!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
@@ -135,31 +140,44 @@ public class Test {
         camera.addDistance( -.01f * im.getActionValue(camDist) );
       }
       
+      /*
+      dr.addLine(new Point3f(0,0,0), new Point3f(0,0,25), new Color3f(0,0,1));
+      dr.addLine(new Point3f(0,0,0), new Point3f(0,25,0), new Color3f(0,1,0),false);
+      dr.addLine(new Point3f(0,0,0), new Point3f(25,0,0), new Color3f(1,0,0));
 
-      core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(0,0,25), new Color3f(0,0,1));
-      core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(0,25,0), new Color3f(0,1,0),false);
-      core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(25,0,0), new Color3f(1,0,0));
-      //core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(0,-25,0), new Color3f(1,0,0));
-      //core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(0,25,25), new Color3f(1,0,0));
-      //core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(0,-25,25), new Color3f(1,0,0));
-      //core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(25,0,25), new Color3f(1,0,0));
-      //core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(-25,0,25), new Color3f(1,0,0));
+      dr.addSphere(new Point3f(0,0,10), 5, new Color3f(1,1,1));
+      dr.addSphere(new Point3f(10,0,0), 5, new Color3f(1,0,0));
+      dr.addSphere(new Point3f(0,-10,0), 5, new Color3f(0,1,0),false);
 
-      //core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(0,0,-25), new Color3f(0,0,0.5f));
-      //core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(0,-25,0), new Color3f(0,0.5f,0));
-      //core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(-25,0,0), new Color3f(0.5f,0,0));
+      dr.addCross(new Point3f(0,10,10), new Color3f(0,0,0), 1);
+      dr.addCross(new Point3f(10,10,0), new Color3f(0,0,1), 2);
+      dr.addCross(new Point3f(-10,-10,0), new Color3f(1,0,0), 1,false);
 
-      core.getDebugRender().addSphere(new Point3f(0,0,10), 5, new Color3f(1,1,1));
-      core.getDebugRender().addSphere(new Point3f(10,0,0), 5, new Color3f(1,0,0));
-      core.getDebugRender().addSphere(new Point3f(0,-10,0), 5, new Color3f(0,1,0),false);
+      dr.addCircle(new Point3f(0,5,7), new Vector3f(0,0,1), 1, new Color3f(0,1,0));
+      dr.addCircle(new Point3f(5,5,7), new Vector3f(0,1,0), 2, new Color3f(0,0,1));
+      dr.addCircle(new Point3f(-5,-5,7), new Vector3f(1,0,0), 1, new Color3f(1,0,0), false);
       
+
+      dr.addTriangle(new Point3f(-10,0,0), new Point3f(0,-10,0), new Point3f(0,0,10), new Color3f(1,1,1));
+      dr.addTriangle(new Point3f(20,0,0), new Point3f(0,20,0), new Point3f(0,0,20), new Color3f(1,1,1));
+      dr.addTriangle(new Point3f(10,0,0), new Point3f(0,10,0), new Point3f(0,0,10), new Color3f(1,1,1),false);
+      */
+      
+      Matrix4f matN = new Matrix4f();
+      matN.setIdentity();
+      matN.setTranslation(new Vector3f(3,3,5));
+      dr.addAxes(matN, 3);
+      
+      matN.setTranslation(new Vector3f(3,-3,5));
+      matN.setRotation(new AxisAngle4f(0,0,1, (float)Math.PI / 6));
+      dr.addAxes(matN, 3);
       
       //sceneData.setCamera(camera);
       
       rm.initFrame();
       
       core.getRenderableObjectManager().renderAll(rm);
-      //core.getDebugRender().render(rm,dt);
+      core.getDebugRender().render(rm,dt);
       
       rm.present();
       

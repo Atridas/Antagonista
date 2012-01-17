@@ -479,7 +479,11 @@ public abstract class DebugRender {
       super(duration, depthEnabled, color);
       center = new Point3f ( _center );
       radius = _radius ;
-      planeNormal = new Vector3f( _planeNormal );
+      
+      assert Math.abs(_planeNormal.lengthSquared() - 1) < Utils.EPSILON;
+      
+      planeNormal = new Vector3f();
+      planeNormal.normalize(_planeNormal);
     }
   }
   

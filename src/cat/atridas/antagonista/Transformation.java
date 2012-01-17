@@ -166,4 +166,37 @@ public final class Transformation {
       rotationUpdated = true;
     }
   }
+  
+  private static final Vector3f g_v3aux1 = new Vector3f();
+  public static void getClosestRotation(Vector3f _originalDir, Vector3f _finalDir, Quat4f rotation_) {
+    assert Math.abs(_originalDir.lengthSquared() - 1.0) < Utils.EPSILON;
+    assert Math.abs(_finalDir.lengthSquared() - 1.0) < Utils.EPSILON;
+    
+
+    float angle = _originalDir.angle(_finalDir);
+    if(angle > Math.PI - Utils.EPSILON) { //mitja volta
+      rotation_.x = 1;
+      rotation_.y = 0;
+      rotation_.z = 0;
+      rotation_.w = 0;
+      return;
+    } else if(angle < Utils.EPSILON) { //no rotem
+      rotation_.x = 0;
+      rotation_.y = 0;
+      rotation_.z = 0;
+      rotation_.w = 1;
+      return;
+    }
+    
+    g_v3aux1.cross(_originalDir, _finalDir);
+    g_v3aux1.normalize();
+
+    float sin = (float)Math.sin(angle / 2);
+    float cos = (float)Math.cos(angle / 2);
+
+    rotation_.x = g_v3aux1.x * sin;
+    rotation_.y = g_v3aux1.y * sin;
+    rotation_.z = g_v3aux1.z * sin;
+    rotation_.w = cos;
+  }
 }
