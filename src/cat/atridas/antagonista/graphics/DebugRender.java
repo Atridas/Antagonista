@@ -13,6 +13,8 @@ import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 
 public abstract class DebugRender {
+  
+  private boolean active;
 
   protected final ArrayList<Line>        lines = new ArrayList<>();
   protected final ArrayList<Cross>       crosses = new ArrayList<>();
@@ -29,6 +31,23 @@ public abstract class DebugRender {
   {
     debugMaterial = Core.getCore().getMaterialManager().getResource(Utils.DEBUG_MATERIAL_NAME);
   }
+
+  
+  public void activate(boolean _active) {
+    active = _active;
+  }
+  
+  public boolean isActive() {
+    return active;
+  }
+  
+  public void activate() {
+    active = true;
+  }
+  
+  public void deactivate() {
+    active = false;
+  }
   
   public void addLine( 
       Point3f origin, 
@@ -36,7 +55,8 @@ public abstract class DebugRender {
       Color3f color, 
       float duration, 
       boolean depthEnabled) {
-    lines.add(new Line(origin, destination, duration, depthEnabled, color));
+    if(active)
+      lines.add(new Line(origin, destination, duration, depthEnabled, color));
   }
   
   public void addCross( 
@@ -45,7 +65,8 @@ public abstract class DebugRender {
       float size, 
       float duration, 
       boolean depthEnabled) {
-    crosses.add(new Cross(center, size, duration, depthEnabled, color));
+    if(active)
+      crosses.add(new Cross(center, size, duration, depthEnabled, color));
   }
   
   public void addSphere( 
@@ -54,7 +75,8 @@ public abstract class DebugRender {
       Color3f color, 
       float duration, 
       boolean depthEnabled) {
-    spheres.add( new Sphere(center, radius, duration, depthEnabled, color));
+    if(active)
+      spheres.add( new Sphere(center, radius, duration, depthEnabled, color));
   }
   
   public void addCircle( 
@@ -64,7 +86,8 @@ public abstract class DebugRender {
       Color3f color, 
       float duration, 
       boolean depthEnabled) {
-    circles.add( new Circle(center, radius, planeNormal, duration, depthEnabled, color));
+    if(active)
+      circles.add( new Circle(center, radius, planeNormal, duration, depthEnabled, color));
   }
   
   public void addAxes( 
@@ -72,7 +95,8 @@ public abstract class DebugRender {
       float size,
       float duration, 
       boolean depthEnabled) {
-    axes.add(new Axes(transformation, size, duration, depthEnabled));
+    if(active)
+      axes.add(new Axes(transformation, size, duration, depthEnabled));
   }
   
   public void addTriangle( 
@@ -82,7 +106,8 @@ public abstract class DebugRender {
       Color3f color,
       float duration, 
       boolean depthEnabled) {
-    triangles.add(new Triangle(v0, v1, v2, duration, depthEnabled, color));
+    if(active)
+      triangles.add(new Triangle(v0, v1, v2, duration, depthEnabled, color));
   }
   
   public void addAABB( 
@@ -91,7 +116,8 @@ public abstract class DebugRender {
       Color3f color, 
       float duration, 
       boolean depthEnabled) {
-    aabbs.add(new AABB(minCoords, maxCoords, duration, depthEnabled, color));
+    if(active)
+      aabbs.add(new AABB(minCoords, maxCoords, duration, depthEnabled, color));
   }
   
   public void addOBB( 
@@ -100,7 +126,8 @@ public abstract class DebugRender {
       Color3f color,  
       float duration, 
       boolean depthEnabled) {
-    obbs.add(new OBB(centerTransformation, scaleXYZ, duration, depthEnabled, color));
+    if(active)
+      obbs.add(new OBB(centerTransformation, scaleXYZ, duration, depthEnabled, color));
   }
   
   public void addString( 
@@ -109,7 +136,8 @@ public abstract class DebugRender {
       Color3f color, 
       float duration, 
       boolean depthEnabled) {
-    strings.add(new DebugString(position, text, duration, depthEnabled, color));
+    if(active)
+      strings.add(new DebugString(position, text, duration, depthEnabled, color));
   }
   
   

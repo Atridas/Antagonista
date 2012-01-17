@@ -112,6 +112,8 @@ public class Test {
 
     core.getDebugRender().addLine(new Point3f(0,0,0), new Point3f(25,25,25), new Color3f(1,1,1), 30);
     
+    core.getDebugRender().deactivate();
+    
     Clock clock = new Clock();
     while(!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
 
@@ -157,7 +159,7 @@ public class Test {
       rm.initFrame();
       
       core.getRenderableObjectManager().renderAll(rm);
-      core.getDebugRender().render(rm,dt);
+      //core.getDebugRender().render(rm,dt);
       
       rm.present();
       

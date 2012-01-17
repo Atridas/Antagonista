@@ -44,11 +44,11 @@ public class MaterialManager extends ResourceManager<Material> {
   @Override
   protected Material createNewResource(HashedString name) {
     if(Utils.supports(Profile.GL3)) {
-      return new MaterialGL3(Utils.DEFAULT);
+      return new MaterialGL3(name);
     } else if(Utils.supports(Profile.GL2) && Utils.supports(Functionality.UNIFORM_BUFFER_OBJECT)) {
-      return new MaterialGL2_UBO(Utils.DEFAULT);
+      return new MaterialGL2_UBO(name);
     } else if(Utils.supports(Profile.GL2)) {
-      return new MaterialGL2(Utils.DEFAULT);
+      return new MaterialGL2(name);
     } else {
       throw new IllegalStateException(
           "Current Profile [" + 

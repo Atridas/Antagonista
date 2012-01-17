@@ -44,6 +44,9 @@ public class DebugRenderGL3 extends DebugRender {
   private int sphereIndexBuffer = -1, sphereVertexBuffer = -1, sphereVAO = -1;
   private int shpereNumInices;
   
+  private int crossesVertexBuffer = -1, crossesVAO = -1;
+  private static final int crossesNumVertexs = 6;
+  
   private static final int POS_COL_VERTEX_SIZE = (3 + 3); //Floats
   
   {
@@ -53,7 +56,7 @@ public class DebugRenderGL3 extends DebugRender {
     buffer4 = BufferUtils.createFloatBuffer(POS_COL_VERTEX_SIZE * 50);
   }
   
-  private void initSphere() {
+  private void initSphereBuffers() {
     assert !cleaned;
     ArrayList<Float> vertices = new ArrayList<>();
 
@@ -191,6 +194,80 @@ public class DebugRenderGL3 extends DebugRender {
     assert !Utils.hasGLErrors();
   }
   
+  private void initCrossesBuffers() {
+    assert !cleaned;
+    ArrayList<Float> vertices = new ArrayList<>();
+
+    vertices.add(1.f);
+    vertices.add(0.f);
+    vertices.add(0.f);
+    
+    vertices.add(-1.f);
+    vertices.add(0.f);
+    vertices.add(0.f);
+
+    
+    vertices.add(0.f);
+    vertices.add(1.f);
+    vertices.add(0.f);
+    
+    vertices.add(0.f);
+    vertices.add(-1.f);
+    vertices.add(0.f);
+
+    
+    vertices.add(0.f);
+    vertices.add(0.f);
+    vertices.add(1.f);
+    
+    vertices.add(0.f);
+    vertices.add(0.f);
+    vertices.add(-1.f);
+    //////////////////////////////////////////////////////////////
+    Float faux1[] = vertices.toArray(new Float[vertices.size()]);
+    float faux2[] = new float[faux1.length];
+    for(int i = 0; i < faux1.length; i++) {
+      faux2[i] = faux1[i];
+    }
+    faux1 = null;
+    vertices = null;
+    //////////////////////////////////////////////////////////////
+    
+
+    crossesVAO = glGenVertexArrays();
+    glBindVertexArray(crossesVAO);
+    
+    crossesVertexBuffer = glGenBuffers();
+    glBindBuffer(GL_ARRAY_BUFFER, crossesVertexBuffer);
+    FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
+    vertexBuffer.put(faux2);
+    vertexBuffer.flip();
+    glBufferData(GL_ARRAY_BUFFER,vertexBuffer, GL_STATIC_DRAW);
+    
+
+
+    glEnableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
+    glEnableVertexAttribArray(TechniquePass.COLOR_ATTRIBUTE);
+
+    glVertexAttribPointer(TechniquePass.POSITION_ATTRIBUTE, 3, GL_FLOAT, false, 0, 0);
+    
+    
+    glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+    
+    glVertexAttribPointer(TechniquePass.COLOR_ATTRIBUTE, 3, GL_FLOAT, false, 0, 0);
+    glVertexAttribDivisor(TechniquePass.COLOR_ATTRIBUTE, 1);
+
+    
+    
+    glBindVertexArray(0);
+    glDisableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
+    glDisableVertexAttribArray(TechniquePass.COLOR_ATTRIBUTE);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    
+    assert !Utils.hasGLErrors();
+  }
+  
   private void initBuffers(RenderManager rm) {
     assert !cleaned;
     if(linesBuffer < 0) {
@@ -237,8 +314,9 @@ public class DebugRenderGL3 extends DebugRender {
       glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
       assert !Utils.hasGLErrors();
-      
-      initSphere();
+
+      initSphereBuffers();
+      initCrossesBuffers();
     }
   }
   
@@ -251,6 +329,19 @@ public class DebugRenderGL3 extends DebugRender {
       debugMaterial.setUpUniforms(pass, rm);
 
       glDrawArrays(mode, 0, numElements);
+    }
+    assert !Utils.hasGLErrors();
+  }
+  
+  private void renderArraysInstanced(int mode, int numElements, int numInstances, RenderManager rm) {
+    debugMaterial.setUpUniforms(rm);
+
+    Technique technique = debugMaterial.getEffect().getTechnique(TechniqueType.FORWARD, Quality.MID);
+    for(TechniquePass pass: technique.passes) {
+      pass.activate(rm);
+      debugMaterial.setUpUniforms(pass, rm);
+
+      glDrawArraysInstanced(mode, 0, numInstances, numInstances);
     }
     assert !Utils.hasGLErrors();
   }
@@ -377,14 +468,132 @@ public class DebugRenderGL3 extends DebugRender {
   @Override
   protected void renderCrosses(RenderManager rm) {
     assert !cleaned;
-    //TODO
+
+    if(crosses.size() == 0)
+      return;
+    
+    try {
+      float[] color = new float[3];
+
+      int crossesToDraw1 = 0;
+      int crossesToDraw2 = 0;
+
+      //per esferes amb ztest
+      buffer1.clear(); // colors
+      buffer2.clear(); // matrius
+      
+      //per esferes SENSE ztest
+      buffer3.clear(); // colors
+      buffer4.clear(); // matrius
+
+      //////////////////////////////////////////////
+      Vector3f v3Aux = new Vector3f();
+
+      Matrix4f viewProj           = new Matrix4f();
+      Matrix4f view               = new Matrix4f();
+      Matrix4f model              = new Matrix4f();
+      Matrix4f modelViewProj      = new Matrix4f();
+      Matrix4f modelView          = new Matrix4f();
+      Matrix4f modelViewInvTransp = new Matrix4f();
+      viewProj.setIdentity();
+      view .setIdentity();
+      
+      rm.getSceneData().getViewMatrix(view);
+      rm.getSceneData().getViewProjectionMatrix(viewProj);
+      ///////////////////////////////////////////////
+      
+      for(Cross cross: crosses) {
+        FloatBuffer colorBuffer, matrixesBuffer;
+        if(cross.depthEnabled) {
+          colorBuffer = buffer1;
+          matrixesBuffer = buffer2;
+          crossesToDraw1++;
+        } else {
+          colorBuffer = buffer3;
+          matrixesBuffer = buffer4;
+          crossesToDraw2++;
+        }
+        
+        color[0] = cross.color.x;
+        color[1] = cross.color.y;
+        color[2] = cross.color.z;
+        
+        colorBuffer.put(color);
+
+        model.setIdentity();
+        v3Aux.set(cross.center);
+        model.setTranslation(v3Aux);
+        model.setScale(cross.size);
+
+
+        modelView.mul(view, model);
+        modelViewProj.mul(viewProj, model);
+        
+        modelViewInvTransp.invert(modelView);
+        modelViewInvTransp.transpose();
+
+        Utils.matrixToBuffer(modelViewProj, matrixesBuffer);
+        Utils.matrixToBuffer(modelView, matrixesBuffer);
+        Utils.matrixToBuffer(modelViewInvTransp, matrixesBuffer);
+      }
+
+      
+      if(crossesToDraw1 + crossesToDraw2 > 0) {
+        glBindVertexArray(crossesVAO);
+
+        glBindBufferBase( GL_UNIFORM_BUFFER, 
+                          TechniquePass.BASIC_INSTANCE_UNIFORMS_BINDING, 
+                          multipleInstancesGlobalDataBuffer);
+      }
+      
+      if(crossesToDraw1>0) {
+        buffer1.flip();
+        buffer2.flip();
+      
+        glEnable(GL_DEPTH_TEST);
+
+        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, buffer1);
+        
+        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer2);
+      
+        renderArraysInstanced(GL_LINES, crossesNumVertexs, crossesToDraw1, rm);
+
+        assert !Utils.hasGLErrors();
+      }
+      
+      if(crossesToDraw2>0) {
+        buffer3.flip();
+        buffer4.flip();
+      
+        glDisable(GL_DEPTH_TEST);
+
+        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, buffer3);
+        
+        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer4);
+
+      
+        renderArraysInstanced(GL_LINES, crossesNumVertexs, crossesToDraw2, rm);
+
+        assert !Utils.hasGLErrors();
+      }
+        
+    } catch(BufferOverflowException e) {
+      //fem creixer el buffer i rellancem el métode.
+      //brut pq és una classe per fer debug.
+      growBuffers();
+      renderCrosses(rm);
+    }
   }
   
   @Override
   protected void renderSpheres(RenderManager rm) {
     assert !cleaned;
 
-    if(lines.size() == 0)
+    if(spheres.size() == 0)
       return;
     
     try {
@@ -500,7 +709,7 @@ public class DebugRenderGL3 extends DebugRender {
       //fem creixer el buffer i rellancem el métode.
       //brut pq és una classe per fer debug.
       growBuffers();
-      renderLines(rm);
+      renderSpheres(rm);
     }
   }
   
@@ -581,6 +790,7 @@ public class DebugRenderGL3 extends DebugRender {
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     
     assert !Utils.hasGLErrors();
@@ -595,12 +805,20 @@ public class DebugRenderGL3 extends DebugRender {
       if(linesBuffer > 0) {
         glDeleteBuffers(linesBuffer);
         glDeleteBuffers(singleInstanceGlobalDataBuffer);
+        
         glDeleteBuffers(sphereIndexBuffer);
         glDeleteBuffers(sphereVertexBuffer);
+        
+        glDeleteBuffers(crossesVertexBuffer);
+        
+        
         glDeleteBuffers(instancesColorBuffer);
         glDeleteBuffers(multipleInstancesGlobalDataBuffer);
+        
+        
         glDeleteVertexArrays(linesVAO);
         glDeleteVertexArrays(sphereVAO);
+        glDeleteVertexArrays(crossesVAO);
       }
       
       cleaned = true;
