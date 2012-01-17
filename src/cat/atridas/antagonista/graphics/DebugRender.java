@@ -493,7 +493,7 @@ public abstract class DebugRender {
     
     Axes(Matrix4f _transformation, float _size,
         final float duration, final boolean depthEnabled) {
-      super(duration, depthEnabled);
+      super(duration, depthEnabled);      
       transformation = new Matrix4f( _transformation );
       size = _size;
     }
