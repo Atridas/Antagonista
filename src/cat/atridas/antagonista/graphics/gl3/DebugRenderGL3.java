@@ -1386,8 +1386,8 @@ public class DebugRenderGL3 extends DebugRender {
     try {
       float[] color = new float[3];
 
-      int spheresToDraw1 = 0;
-      int spheresToDraw2 = 0;
+      int bbToDraw1 = 0;
+      int bbToDraw2 = 0;
 
       //per esferes amb ztest
       buffer1.clear(); // colors
@@ -1418,11 +1418,11 @@ public class DebugRenderGL3 extends DebugRender {
         if(aabb.depthEnabled) {
           colorBuffer = buffer1;
           matrixesBuffer = buffer2;
-          spheresToDraw1++;
+          bbToDraw1++;
         } else {
           colorBuffer = buffer3;
           matrixesBuffer = buffer4;
-          spheresToDraw2++;
+          bbToDraw2++;
         }
         
         color[0] = aabb.color.x;
@@ -1450,9 +1450,52 @@ public class DebugRenderGL3 extends DebugRender {
         Utils.matrixToBuffer(modelView, matrixesBuffer);
         Utils.matrixToBuffer(modelViewInvTransp, matrixesBuffer);
       }
+      
+      for(OBB obb: obbs) {
+        FloatBuffer colorBuffer, matrixesBuffer;
+        if(obb.depthEnabled) {
+          colorBuffer = buffer1;
+          matrixesBuffer = buffer2;
+          bbToDraw1++;
+        } else {
+          colorBuffer = buffer3;
+          matrixesBuffer = buffer4;
+          bbToDraw2++;
+        }
+        
+        color[0] = obb.color.x;
+        color[1] = obb.color.y;
+        color[2] = obb.color.z;
+        
+        colorBuffer.put(color);
+
+        model.set(obb.centerTransformation);
+        model.setM00(obb.scaleXYZ.x * model.getM00());
+        model.setM01(obb.scaleXYZ.y * model.getM01());
+        model.setM02(obb.scaleXYZ.z * model.getM02());
+        
+        model.setM10(obb.scaleXYZ.x * model.getM10());
+        model.setM11(obb.scaleXYZ.y * model.getM11());
+        model.setM12(obb.scaleXYZ.z * model.getM12());
+        
+        model.setM20(obb.scaleXYZ.x * model.getM20());
+        model.setM21(obb.scaleXYZ.y * model.getM21());
+        model.setM22(obb.scaleXYZ.z * model.getM22());
+
+
+        modelView.mul(view, model);
+        modelViewProj.mul(viewProj, model);
+        
+        modelViewInvTransp.invert(modelView);
+        modelViewInvTransp.transpose();
+
+        Utils.matrixToBuffer(modelViewProj, matrixesBuffer);
+        Utils.matrixToBuffer(modelView, matrixesBuffer);
+        Utils.matrixToBuffer(modelViewInvTransp, matrixesBuffer);
+      }
 
       
-      if(spheresToDraw1 + spheresToDraw2 > 0) {
+      if(bbToDraw1 + bbToDraw2 > 0) {
         glBindVertexArray(bbVAO);
 
         glBindBufferBase( GL_UNIFORM_BUFFER, 
@@ -1460,7 +1503,7 @@ public class DebugRenderGL3 extends DebugRender {
                           multipleInstancesGlobalDataBuffer);
       }
       
-      if(spheresToDraw1>0) {
+      if(bbToDraw1>0) {
         buffer1.flip();
         buffer2.flip();
       
@@ -1472,12 +1515,12 @@ public class DebugRenderGL3 extends DebugRender {
         glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
         glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer2);
       
-        renderElementsInstanced(GL_LINES, bbNumIndices, spheresToDraw1, rm);
+        renderElementsInstanced(GL_LINES, bbNumIndices, bbToDraw1, rm);
 
         assert !Utils.hasGLErrors();
       }
       
-      if(spheresToDraw2>0) {
+      if(bbToDraw2>0) {
         buffer3.flip();
         buffer4.flip();
       
@@ -1490,7 +1533,7 @@ public class DebugRenderGL3 extends DebugRender {
         glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer4);
 
       
-        renderElementsInstanced(GL_LINES, bbNumIndices, spheresToDraw2, rm);
+        renderElementsInstanced(GL_LINES, bbNumIndices, bbToDraw2, rm);
 
         assert !Utils.hasGLErrors();
       }

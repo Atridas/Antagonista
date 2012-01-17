@@ -163,7 +163,7 @@ public class Test {
       dr.addTriangle(new Point3f(10,0,0), new Point3f(0,10,0), new Point3f(0,0,10), new Color3f(1,1,1),false);
       */
       
-      /*
+      
       Matrix4f matN = new Matrix4f();
       matN.setIdentity();
       matN.setTranslation(new Vector3f(3,3,5));
@@ -172,10 +172,20 @@ public class Test {
       matN.setTranslation(new Vector3f(3,-3,5));
       matN.setRotation(new AxisAngle4f(0,0,1, (float)Math.PI / 6));
       dr.addAxes(matN, 3);
-      */
+      
 
       dr.addAABB(new Point3f(-5,-5,-5), new Point3f(5,5,5), new Color3f(1,1,1));
       dr.addAABB(new Point3f(-2,-2,0), new Point3f(2,2,4), new Color3f(.5f,.5f,.5f), false);
+
+      
+      //Matrix4f matN = new Matrix4f();
+      matN.setIdentity();
+      matN.setTranslation(new Vector3f(3,3,5));
+      dr.addOBB(matN, new Vector3f(3,3,3), new Color3f(1,1,1));
+      
+      matN.setTranslation(new Vector3f(3,-3,5));
+      matN.setRotation(new AxisAngle4f(0,0,1, (float)Math.PI / 6));
+      dr.addOBB(matN, new Vector3f(2,3,3), new Color3f(1,1,1));
       
       //sceneData.setCamera(camera);
       
