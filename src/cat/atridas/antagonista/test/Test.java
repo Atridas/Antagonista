@@ -140,7 +140,7 @@ public class Test {
         camera.addDistance( -.01f * im.getActionValue(camDist) );
       }
       
-      /*
+      
       dr.addLine(new Point3f(0,0,0), new Point3f(0,0,25), new Color3f(0,0,1));
       dr.addLine(new Point3f(0,0,0), new Point3f(0,25,0), new Color3f(0,1,0),false);
       dr.addLine(new Point3f(0,0,0), new Point3f(25,0,0), new Color3f(1,0,0));
@@ -164,7 +164,7 @@ public class Test {
       dr.addTriangle(new Point3f(10,0,0), new Point3f(0,10,0), new Point3f(0,0,10), new Color3f(.3f,.3f,.3f),false);
       
        
-      */
+      
       
       
       Matrix4f matN = new Matrix4f();

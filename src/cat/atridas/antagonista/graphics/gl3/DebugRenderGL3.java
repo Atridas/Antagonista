@@ -10,8 +10,6 @@ import static org.lwjgl.opengl.GL33.*;
 
 import java.nio.BufferOverflowException;
 import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
-import java.util.ArrayList;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
@@ -44,25 +42,20 @@ public class DebugRenderGL3 extends DebugRender {
   
   //esferes
   private int sphereIndexBuffer = -1, sphereVertexBuffer = -1, sphereVAO = -1;
-  private int shpereNumIndices;
   
   //creus
   private int crossesVertexBuffer = -1, crossesVAO = -1;
-  private static final int crossesNumVertexs = 6;
   
   //cercles
   private int circlesVertexBuffer = -1, circlesVAO = -1;
-  private int circlesNumVertexs;
   
   //axes
   private int axesVertexBuffer = -1, axesVAO = -1;
-  private static final int axesNumVertexs = 6;
   
   //triangles ho farem com les línees
   
   //BBs
   private int bbIndexBuffer = -1, bbVertexBuffer = -1, bbVAO = -1;
-  private int bbNumIndices;
   
   private static final int POS_COL_VERTEX_SIZE = (3 + 3); //Floats
   
@@ -75,117 +68,18 @@ public class DebugRenderGL3 extends DebugRender {
   
   private void initSphereBuffers() {
     assert !cleaned;
-    ArrayList<Float> vertices = new ArrayList<>();
-
-    vertices.add( 0.f);
-    vertices.add( 0.f);
-    vertices.add( 1.f); //top
     
-    vertices.add( 0.f);
-    vertices.add( 0.f);
-    vertices.add(-1.f); //botom
-    
-    for(int i = 1; i < SPHERE_STACKS; i++) {
-      float z = i / (SPHERE_STACKS/2.f) - 1;
-      for(int j = 0; j < SPHERE_SUBDIV; ++j) {
-        float len = (float)Math.sqrt(1 - z*z);
-        float x = (float) Math.sin( j * Math.PI * 2 / SPHERE_SUBDIV) * len;
-        float y = (float) Math.cos( j * Math.PI * 2 / SPHERE_SUBDIV) * len;
-        
-
-        vertices.add(x);
-        vertices.add(y);
-        vertices.add(z);
-      }
-    }
-    //////////////////////////////////////////////////////////////
-    Float faux1[] = vertices.toArray(new Float[vertices.size()]);
-    float faux2[] = new float[faux1.length];
-    for(int i = 0; i < faux1.length; i++) {
-      faux2[i] = faux1[i];
-    }
-    faux1 = null;
-    vertices = null;
-    //////////////////////////////////////////////////////////////
-    
-    ArrayList<Short> indexes = new ArrayList<>();
-    
-    //part de sota
-    indexes.add((short)1);
-    for(short j = 0; j < SPHERE_SUBDIV - 1; j += 2) {
-      indexes.add( (short)( 2 + j    ) );
-      indexes.add( (short)( 2 + j +1 ) );
-      indexes.add((short)1);
-    }
-    short baseStack;
-    
-    //paral·lels
-    for(short i = 1; i < SPHERE_STACKS; i++) {
-      baseStack = (short)( (i-1) * SPHERE_SUBDIV + 2 );
-      for(short j = 0; j < SPHERE_SUBDIV -1; ++j) {
-        indexes.add( (short)( baseStack + j    ) );
-      }
-      indexes.add( (short)( baseStack ) );
-    }
-
-
-    //part de sobre
-    baseStack = (short)( (SPHERE_STACKS-2) * SPHERE_SUBDIV + 2 );
-    indexes.add((short)0);
-    for(short j = 0; j < SPHERE_SUBDIV - 1; j += 2) {
-      indexes.add( (short)( baseStack + j    ) );
-      indexes.add( (short)( baseStack + j +1 ) );
-      indexes.add((short)0);
-    }
-    
-    //meridians
-    for(short j = 1; j < SPHERE_SUBDIV; ++j) {
-      if(j % 2 == 1) {
-        //de dalt a baix
-        //indexes.add( (short)( 1 ) );
-        for(short i = SPHERE_STACKS-1; i > 0; i--) {
-          baseStack = (short)( (i-1) * SPHERE_SUBDIV + 2 );
-          indexes.add( (short)( baseStack + j    ) );
-        }
-        indexes.add( (short)( 1 ) );
-      } else {
-        // de baix a dalt
-        //indexes.add( (short)( 0 ) );
-        for(short i = 1; i < SPHERE_STACKS; i++) {
-          baseStack = (short)( (i-1) * SPHERE_SUBDIV + 2 );
-          indexes.add( (short)( baseStack + j    ) );
-        }
-        indexes.add( (short)( 0 ) );
-      }
-    }
-    
-    //////////////////////////////////////////////////////////////
-    Short saux1[] = indexes.toArray(new Short[indexes.size()]);
-    short saux2[] = new short[saux1.length];
-    for(int i = 0; i < saux1.length; i++) {
-      saux2[i] = saux1[i];
-    }
-    saux1 = null;
-    indexes = null;
-    //////////////////////////////////////////////////////////////
 
     sphereVAO = glGenVertexArrays();
     glBindVertexArray(sphereVAO);
     
     sphereVertexBuffer = glGenBuffers();
     glBindBuffer(GL_ARRAY_BUFFER, sphereVertexBuffer);
-    FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
-    vertexBuffer.put(faux2);
-    vertexBuffer.flip();
-    glBufferData(GL_ARRAY_BUFFER,vertexBuffer, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,createSphereVertexBuffer(), GL_STATIC_DRAW);
     
     sphereIndexBuffer = glGenBuffers();
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereIndexBuffer);
-    ShortBuffer indexBuffer = BufferUtils.createShortBuffer(saux2.length);
-    shpereNumIndices = saux2.length;
-    indexBuffer.put(saux2);
-    indexBuffer.flip();
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, createSphereIndexBuffer(), GL_STATIC_DRAW);
     
 
 
@@ -213,42 +107,6 @@ public class DebugRenderGL3 extends DebugRender {
   
   private void initCrossesBuffers() {
     assert !cleaned;
-    ArrayList<Float> vertices = new ArrayList<>();
-
-    vertices.add(1.f);
-    vertices.add(0.f);
-    vertices.add(0.f);
-    
-    vertices.add(-1.f);
-    vertices.add(0.f);
-    vertices.add(0.f);
-
-    
-    vertices.add(0.f);
-    vertices.add(1.f);
-    vertices.add(0.f);
-    
-    vertices.add(0.f);
-    vertices.add(-1.f);
-    vertices.add(0.f);
-
-    
-    vertices.add(0.f);
-    vertices.add(0.f);
-    vertices.add(1.f);
-    
-    vertices.add(0.f);
-    vertices.add(0.f);
-    vertices.add(-1.f);
-    //////////////////////////////////////////////////////////////
-    Float faux1[] = vertices.toArray(new Float[vertices.size()]);
-    float faux2[] = new float[faux1.length];
-    for(int i = 0; i < faux1.length; i++) {
-      faux2[i] = faux1[i];
-    }
-    faux1 = null;
-    vertices = null;
-    //////////////////////////////////////////////////////////////
     
 
     crossesVAO = glGenVertexArrays();
@@ -256,10 +114,7 @@ public class DebugRenderGL3 extends DebugRender {
     
     crossesVertexBuffer = glGenBuffers();
     glBindBuffer(GL_ARRAY_BUFFER, crossesVertexBuffer);
-    FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
-    vertexBuffer.put(faux2);
-    vertexBuffer.flip();
-    glBufferData(GL_ARRAY_BUFFER,vertexBuffer, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,createCrossVertexBuffer(), GL_STATIC_DRAW);
     
 
 
@@ -287,116 +142,17 @@ public class DebugRenderGL3 extends DebugRender {
   
   private void initBBsBuffers() {
     assert !cleaned;
-    ArrayList<Float> vertices = new ArrayList<>();
-
-    vertices.add( 1.f);
-    vertices.add(-1.f);
-    vertices.add( 1.f);
-
-    vertices.add( 1.f);
-    vertices.add( 1.f);
-    vertices.add( 1.f);
-
-    vertices.add(-1.f);
-    vertices.add( 1.f);
-    vertices.add( 1.f);
-
-    vertices.add(-1.f);
-    vertices.add(-1.f);
-    vertices.add( 1.f);
-
-    vertices.add( 1.f);
-    vertices.add(-1.f);
-    vertices.add(-1.f);
-
-    vertices.add( 1.f);
-    vertices.add( 1.f);
-    vertices.add(-1.f);
-
-    vertices.add(-1.f);
-    vertices.add( 1.f);
-    vertices.add(-1.f);
-
-    vertices.add(-1.f);
-    vertices.add(-1.f);
-    vertices.add(-1.f);
-    //////////////////////////////////////////////////////////////
-    Float faux1[] = vertices.toArray(new Float[vertices.size()]);
-    float faux2[] = new float[faux1.length];
-    for(int i = 0; i < faux1.length; i++) {
-      faux2[i] = faux1[i];
-    }
-    faux1 = null;
-    vertices = null;
-    //////////////////////////////////////////////////////////////
-    ArrayList<Short> indexes = new ArrayList<>();
-
-    //bot
-    indexes.add((short) 0);
-    indexes.add((short) 1);
-
-    indexes.add((short) 1);
-    indexes.add((short) 2);
-
-    indexes.add((short) 2);
-    indexes.add((short) 3);
-
-    indexes.add((short) 3);
-    indexes.add((short) 0);
-
-    //top
-    indexes.add((short) 4);
-    indexes.add((short) 5);
-
-    indexes.add((short) 5);
-    indexes.add((short) 6);
-
-    indexes.add((short) 6);
-    indexes.add((short) 7);
-
-    indexes.add((short) 7);
-    indexes.add((short) 4);
-
-    //up
-    indexes.add((short) 0);
-    indexes.add((short) 4);
-
-    indexes.add((short) 1);
-    indexes.add((short) 5);
-
-    indexes.add((short) 2);
-    indexes.add((short) 6);
-
-    indexes.add((short) 3);
-    indexes.add((short) 7);
-    
-    //////////////////////////////////////////////////////////////
-    Short saux1[] = indexes.toArray(new Short[indexes.size()]);
-    short saux2[] = new short[saux1.length];
-    for(int i = 0; i < saux1.length; i++) {
-      saux2[i] = saux1[i];
-    }
-    saux1 = null;
-    indexes = null;
-    //////////////////////////////////////////////////////////////
 
     bbVAO = glGenVertexArrays();
     glBindVertexArray(bbVAO);
     
     bbVertexBuffer = glGenBuffers();
     glBindBuffer(GL_ARRAY_BUFFER, bbVertexBuffer);
-    FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
-    vertexBuffer.put(faux2);
-    vertexBuffer.flip();
-    glBufferData(GL_ARRAY_BUFFER,vertexBuffer, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,createBBVertexBuffer(), GL_STATIC_DRAW);
     
     bbIndexBuffer = glGenBuffers();
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bbIndexBuffer);
-    ShortBuffer indexBuffer = BufferUtils.createShortBuffer(saux2.length);
-    bbNumIndices = saux2.length;
-    indexBuffer.put(saux2);
-    indexBuffer.flip();
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, createBBIndexBuffer(), GL_STATIC_DRAW);
     
 
 
@@ -424,27 +180,6 @@ public class DebugRenderGL3 extends DebugRender {
   
   private void initCirclesBuffers() {
     assert !cleaned;
-    ArrayList<Float> vertices = new ArrayList<>();
-
-    for(int j = 0; j < SPHERE_SUBDIV; ++j) {
-      float x = (float) Math.sin( j * Math.PI * 2 / SPHERE_SUBDIV);
-      float y = (float) Math.cos( j * Math.PI * 2 / SPHERE_SUBDIV);
-      
-
-      vertices.add(x);
-      vertices.add(y);
-      vertices.add(0.f);
-    }
-    //////////////////////////////////////////////////////////////
-    Float faux1[] = vertices.toArray(new Float[vertices.size()]);
-    circlesNumVertexs = faux1.length / 3;
-    float faux2[] = new float[faux1.length];
-    for(int i = 0; i < faux1.length; i++) {
-      faux2[i] = faux1[i];
-    }
-    faux1 = null;
-    vertices = null;
-    //////////////////////////////////////////////////////////////
     
 
     circlesVAO = glGenVertexArrays();
@@ -452,10 +187,7 @@ public class DebugRenderGL3 extends DebugRender {
     
     circlesVertexBuffer = glGenBuffers();
     glBindBuffer(GL_ARRAY_BUFFER, circlesVertexBuffer);
-    FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
-    vertexBuffer.put(faux2);
-    vertexBuffer.flip();
-    glBufferData(GL_ARRAY_BUFFER,vertexBuffer, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,createCircleVertexBuffer(), GL_STATIC_DRAW);
     
 
 
@@ -483,66 +215,6 @@ public class DebugRenderGL3 extends DebugRender {
   
   private void initAxesBuffers() {
     assert !cleaned;
-    ArrayList<Float> vertices = new ArrayList<>();
-
-    vertices.add(0.f);////////////////////////
-    vertices.add(0.f);
-    vertices.add(0.f);
-    
-    vertices.add(1.f); //color
-    vertices.add(0.f);
-    vertices.add(0.f);
-
-    vertices.add(1.f);
-    vertices.add(0.f);
-    vertices.add(0.f);
-    
-    vertices.add(1.f); //color
-    vertices.add(0.f);
-    vertices.add(0.f);
-
-    vertices.add(0.f);////////////////////////
-    vertices.add(0.f);
-    vertices.add(0.f);
-    
-    vertices.add(0.f); //color
-    vertices.add(1.f);
-    vertices.add(0.f);
-
-    vertices.add(0.f);
-    vertices.add(1.f);
-    vertices.add(0.f);
-    
-    vertices.add(0.f); //color
-    vertices.add(1.f);
-    vertices.add(0.f);
-
-    vertices.add(0.f);////////////////////////
-    vertices.add(0.f);
-    vertices.add(0.f);
-    
-    vertices.add(0.f); //color
-    vertices.add(0.f);
-    vertices.add(1.f);
-
-    vertices.add(0.f);
-    vertices.add(0.f);
-    vertices.add(1.f);
-    
-    vertices.add(0.f); //color
-    vertices.add(0.f);
-    vertices.add(1.f);
-    
-    //////////////////////////////////////////////////////////////
-    Float faux1[] = vertices.toArray(new Float[vertices.size()]);
-    circlesNumVertexs = faux1.length / 3;
-    float faux2[] = new float[faux1.length];
-    for(int i = 0; i < faux1.length; i++) {
-      faux2[i] = faux1[i];
-    }
-    faux1 = null;
-    vertices = null;
-    //////////////////////////////////////////////////////////////
     
 
     axesVAO = glGenVertexArrays();
@@ -550,10 +222,7 @@ public class DebugRenderGL3 extends DebugRender {
     
     axesVertexBuffer = glGenBuffers();
     glBindBuffer(GL_ARRAY_BUFFER, axesVertexBuffer);
-    FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
-    vertexBuffer.put(faux2);
-    vertexBuffer.flip();
-    glBufferData(GL_ARRAY_BUFFER,vertexBuffer, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,createAxesVertexBuffer(), GL_STATIC_DRAW);
     
 
 
@@ -991,7 +660,7 @@ public class DebugRenderGL3 extends DebugRender {
         glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
         glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer2);
       
-        renderElementsInstanced(GL_LINE_STRIP, shpereNumIndices, spheresToDraw1, rm);
+        renderElementsInstanced(GL_LINE_STRIP, sphereNumIndices, spheresToDraw1, rm);
 
         assert !Utils.hasGLErrors();
       }
@@ -1009,7 +678,7 @@ public class DebugRenderGL3 extends DebugRender {
         glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer4);
 
       
-        renderElementsInstanced(GL_LINE_STRIP, shpereNumIndices, spheresToDraw2, rm);
+        renderElementsInstanced(GL_LINE_STRIP, sphereNumIndices, spheresToDraw2, rm);
 
         assert !Utils.hasGLErrors();
       }
