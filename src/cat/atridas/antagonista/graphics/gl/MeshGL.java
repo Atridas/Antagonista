@@ -165,60 +165,6 @@ public abstract class MeshGL extends Mesh {
     
     assert result;
   }
-
-  /*
-  @Override
-  public void preRender() {
-    assert !cleaned;
-
-    if(GL3 || GL_ARB_vertex_array_object) {
-      if(GL3) {
-        GL30.glBindVertexArray(vertexArrayObject);
-      } else {
-        ARBVertexArrayObject.glBindVertexArray(vertexArrayObject);
-      }
-    } else {
-      int stride;
-      if(animated) {
-        stride = ANIMATED_MESH_STRIDE;
-      } else {
-        stride = STATIC_MESH_STRIDE;
-      }
-      
-      glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-
-      
-      glEnableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
-      glVertexAttribPointer(TechniquePass.POSITION_ATTRIBUTE, 3, GL_FLOAT, false, stride, 0);
-      
-      glEnableVertexAttribArray(TechniquePass.NORMAL_ATTRIBUTE);
-      glVertexAttribPointer(TechniquePass.NORMAL_ATTRIBUTE, 3, GL_FLOAT, false, stride, 3 * Utils.FLOAT_SIZE);
-      
-      glEnableVertexAttribArray(TechniquePass.TANGENT_ATTRIBUTE);
-      glVertexAttribPointer(TechniquePass.TANGENT_ATTRIBUTE, 3, GL_FLOAT, false, stride, 6 * Utils.FLOAT_SIZE);
-      
-      glEnableVertexAttribArray(TechniquePass.BITANGENT_ATTRIBUTE);
-      glVertexAttribPointer(TechniquePass.BITANGENT_ATTRIBUTE, 3, GL_FLOAT, false, stride, 9 * Utils.FLOAT_SIZE);
-      
-      glEnableVertexAttribArray(TechniquePass.UV_ATTRIBUTE);
-      glVertexAttribPointer(TechniquePass.UV_ATTRIBUTE, 2, GL_FLOAT, false, stride, 12 * Utils.FLOAT_SIZE);
-      
-      if(animated) {
-        glEnableVertexAttribArray(TechniquePass.BLEND_INDEX_ATTRIBUTE);
-        glVertexAttribPointer(TechniquePass.BLEND_INDEX_ATTRIBUTE, 4, GL_SHORT, false, stride, 15 * Utils.FLOAT_SIZE);
-        
-        glEnableVertexAttribArray(TechniquePass.BLEND_WEIGHT_ATTRIBUTE);
-        glVertexAttribPointer(TechniquePass.BLEND_WEIGHT_ATTRIBUTE, 4, GL_FLOAT, false, stride, 15 * Utils.FLOAT_SIZE + 4 * Utils.SHORT_SIZE);
-      } else {
-        glDisableVertexAttribArray(TechniquePass.BLEND_INDEX_ATTRIBUTE);
-        glDisableVertexAttribArray(TechniquePass.BLEND_WEIGHT_ATTRIBUTE);
-      }
-      
-
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    }
-  }
-  */
   
   @Override
   public void render(int _submesh, RenderManager rm) {
@@ -228,32 +174,15 @@ public abstract class MeshGL extends Mesh {
     for(int i = 0; i < _submesh; ++i) {
       stride += numFaces[i] * 3 * Utils.SHORT_SIZE;
     }
+    assert assertReadyToRender();
     glDrawElements(GL_TRIANGLES, numFaces[_submesh] * 3, GL_UNSIGNED_SHORT, stride);
 
     assert !Utils.hasGLErrors();
   }
-  
-  /*
-  @Override
-  public void render(int _submesh, int _instances, RenderManager rm) {
-    assert !cleaned;
-    int stride = 0;
-    for(int i = 0; i < _submesh; ++i) {
-      stride += numFaces[i] * 3 * Utils.SHORT_SIZE;
-    }
-    
-    if(GL3) {
-      GL31.glDrawElementsInstanced(GL_TRIANGLES, numFaces[_submesh], GL_SHORT, stride, _instances);
-    } else if(GL_ARB_draw_instanced) {
-      ARBDrawInstanced.glDrawElementsInstancedARB(
-                                  GL_TRIANGLES, numFaces[_submesh], GL_SHORT, stride, _instances);
-    } else {
-      throw new IllegalStateException("Calling draw instanced when hardware does not support instancing");
-    }
 
-    assert !Utils.hasGLErrors();
+  protected boolean assertReadyToRender() {
+    return true;
   }
-  */
 
   @Override
   public void cleanUp() {
@@ -263,13 +192,6 @@ public abstract class MeshGL extends Mesh {
     glDeleteBuffers(indexBuffer);
     
     deleteArrayBuffer();
-    /*
-    if(GL3) {
-      GL30.glDeleteVertexArrays(vertexArrayObject);
-    } else if(GL_ARB_vertex_array_object){
-      ARBVertexArrayObject.glDeleteVertexArrays(vertexArrayObject);
-    }
-    */
     cleaned = true;
   }
 }

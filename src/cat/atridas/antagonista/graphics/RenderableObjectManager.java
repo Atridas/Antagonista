@@ -102,13 +102,15 @@ public abstract class RenderableObjectManager {
         }
       }
     }
+    
+    resetGLState();
   }
 
   protected abstract void setInstanceUniforms(InstanceData instanceData);
   protected abstract void setInstanceUniforms(
                                 TechniquePass pass,
                                 InstanceData instanceData);
-  
+  protected abstract void resetGLState();
   
 
   public abstract void cleanUp();

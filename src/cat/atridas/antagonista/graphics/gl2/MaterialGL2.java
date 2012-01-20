@@ -29,11 +29,13 @@ public final class MaterialGL2 extends Material {
 
   @Override
   public void setUpUniforms(TechniquePass pass, RenderManager rm) {
-    glUniform1f(pass.getSpecularFactorUniform(), specularFactor);
-    glUniform1f(pass.getSpecularGlossinessUniform(), specularPower);
-    glUniform1f(pass.getHeightUniform(), height);
-      
-    assert !Utils.hasGLErrors();
+    if(pass.hasBasicMaterialUniforms()) {
+      glUniform1f(pass.getSpecularFactorUniform(), specularFactor);
+      glUniform1f(pass.getSpecularGlossinessUniform(), specularPower);
+      glUniform1f(pass.getHeightUniform(), height);
+        
+      assert !Utils.hasGLErrors();
+    }
   }
   
   @Override

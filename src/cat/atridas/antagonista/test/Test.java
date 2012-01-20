@@ -145,22 +145,25 @@ public class Test {
       dr.addLine(new Point3f(0,0,0), new Point3f(0,25,0), new Color3f(0,1,0),false);
       dr.addLine(new Point3f(0,0,0), new Point3f(25,0,0), new Color3f(1,0,0));
 
-      dr.addSphere(new Point3f(0,0,10), 5, new Color3f(1,1,1));
-      dr.addSphere(new Point3f(10,0,0), 5, new Color3f(1,0,0));
-      dr.addSphere(new Point3f(0,-10,0), 5, new Color3f(0,1,0),false);
-
       dr.addCross(new Point3f(0,10,10), new Color3f(0,0,0), 1);
       dr.addCross(new Point3f(10,10,0), new Color3f(0,0,1), 2);
       dr.addCross(new Point3f(-10,-10,0), new Color3f(1,0,0), 1,false);
 
+      dr.addSphere(new Point3f(0,0,10), 5, new Color3f(1,1,1));
+      dr.addSphere(new Point3f(10,0,0), 5, new Color3f(1,0,0));
+      dr.addSphere(new Point3f(0,-10,0), 5, new Color3f(0,1,0),false);
+      
       dr.addCircle(new Point3f(0,5,7), new Vector3f(0,0,1), 1, new Color3f(0,1,0));
       dr.addCircle(new Point3f(5,5,7), new Vector3f(0,1,0), 2, new Color3f(0,0,1));
       dr.addCircle(new Point3f(-5,-5,7), new Vector3f(1,0,0), 1, new Color3f(1,0,0), false);
       
 
+      
       dr.addTriangle(new Point3f(-10,0,0), new Point3f(0,-10,0), new Point3f(0,0,10), new Color3f(1,1,1));
-      dr.addTriangle(new Point3f(20,0,0), new Point3f(0,20,0), new Point3f(0,0,20), new Color3f(1,1,1));
-      dr.addTriangle(new Point3f(10,0,0), new Point3f(0,10,0), new Point3f(0,0,10), new Color3f(1,1,1),false);
+      dr.addTriangle(new Point3f(20,0,0), new Point3f(0,20,0), new Point3f(0,0,20), new Color3f(.7f,.7f,.7f));
+      dr.addTriangle(new Point3f(10,0,0), new Point3f(0,10,0), new Point3f(0,0,10), new Color3f(.3f,.3f,.3f),false);
+      
+       
       */
       
       
@@ -173,7 +176,7 @@ public class Test {
       matN.setRotation(new AxisAngle4f(0,0,1, (float)Math.PI / 6));
       dr.addAxes(matN, 3);
       
-
+      
       dr.addAABB(new Point3f(-5,-5,-5), new Point3f(5,5,5), new Color3f(1,1,1));
       dr.addAABB(new Point3f(-2,-2,0), new Point3f(2,2,4), new Color3f(.5f,.5f,.5f), false);
 
@@ -186,6 +189,7 @@ public class Test {
       matN.setTranslation(new Vector3f(3,-3,5));
       matN.setRotation(new AxisAngle4f(0,0,1, (float)Math.PI / 6));
       dr.addOBB(matN, new Vector3f(2,3,3), new Color3f(1,1,1));
+      
       
       //sceneData.setCamera(camera);
       

@@ -3,7 +3,7 @@
 #line 13
 
 #if __VERSION__ < 330
-  attribute vec4 a_vColor;
+  varying vec4 v_v4Color;
   
   #define f_v4Color gl_FragColor
 #else

@@ -1,5 +1,7 @@
 package cat.atridas.antagonista.graphics;
 
+import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -9,10 +11,15 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
+import org.lwjgl.BufferUtils;
+
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 
 public abstract class DebugRender {
+  
+  public final static int SPHERE_STACKS = 15;
+  public final static int SPHERE_SUBDIV = 15;
   
   private boolean active;
 
@@ -547,5 +554,384 @@ public abstract class DebugRender {
       position = new Point3f( _position );
       text = _text;
     }
+  }
+  
+  
+
+  protected int sphereNumIndices, circlesNumVertexs, bbNumIndices;
+  protected static final int crossesNumVertexs = 6;
+  protected static final int axesNumVertexs = 6;
+  
+  protected final FloatBuffer createCrossVertexBuffer() {
+    ArrayList<Float> vertices = new ArrayList<>();
+
+    vertices.add(1.f);
+    vertices.add(0.f);
+    vertices.add(0.f);
+    
+    vertices.add(-1.f);
+    vertices.add(0.f);
+    vertices.add(0.f);
+
+    
+    vertices.add(0.f);
+    vertices.add(1.f);
+    vertices.add(0.f);
+    
+    vertices.add(0.f);
+    vertices.add(-1.f);
+    vertices.add(0.f);
+
+    
+    vertices.add(0.f);
+    vertices.add(0.f);
+    vertices.add(1.f);
+    
+    vertices.add(0.f);
+    vertices.add(0.f);
+    vertices.add(-1.f);
+    //////////////////////////////////////////////////////////////
+    Float faux1[] = vertices.toArray(new Float[vertices.size()]);
+    float faux2[] = new float[faux1.length];
+    for(int i = 0; i < faux1.length; i++) {
+      faux2[i] = faux1[i];
+    }
+    faux1 = null;
+    vertices = null;
+    //////////////////////////////////////////////////////////////
+    
+
+    FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
+    vertexBuffer.put(faux2);
+    vertexBuffer.flip();
+    
+    return vertexBuffer;
+  }
+  
+
+  protected final FloatBuffer createSphereVertexBuffer() {
+    ArrayList<Float> vertices = new ArrayList<>();
+
+    vertices.add( 0.f);
+    vertices.add( 0.f);
+    vertices.add( 1.f); //top
+    
+    vertices.add( 0.f);
+    vertices.add( 0.f);
+    vertices.add(-1.f); //botom
+    
+    for(int i = 1; i < SPHERE_STACKS; i++) {
+      float z = i / (SPHERE_STACKS/2.f) - 1;
+      for(int j = 0; j < SPHERE_SUBDIV; ++j) {
+        float len = (float)Math.sqrt(1 - z*z);
+        float x = (float) Math.sin( j * Math.PI * 2 / SPHERE_SUBDIV) * len;
+        float y = (float) Math.cos( j * Math.PI * 2 / SPHERE_SUBDIV) * len;
+        
+
+        vertices.add(x);
+        vertices.add(y);
+        vertices.add(z);
+      }
+    }
+    //////////////////////////////////////////////////////////////
+    Float faux1[] = vertices.toArray(new Float[vertices.size()]);
+    float faux2[] = new float[faux1.length];
+    for(int i = 0; i < faux1.length; i++) {
+      faux2[i] = faux1[i];
+    }
+    faux1 = null;
+    vertices = null;
+    //////////////////////////////////////////////////////////////
+
+    FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
+    vertexBuffer.put(faux2);
+    vertexBuffer.flip();
+    
+    return vertexBuffer;
+  }
+
+  protected final ShortBuffer createSphereIndexBuffer() {
+
+    ArrayList<Short> indexes = new ArrayList<>();
+    
+    //part de sota
+    indexes.add((short)1);
+    for(short j = 0; j < SPHERE_SUBDIV - 1; j += 2) {
+      indexes.add( (short)( 2 + j    ) );
+      indexes.add( (short)( 2 + j +1 ) );
+      indexes.add((short)1);
+    }
+    short baseStack;
+    
+    //paral·lels
+    for(short i = 1; i < SPHERE_STACKS; i++) {
+      baseStack = (short)( (i-1) * SPHERE_SUBDIV + 2 );
+      for(short j = 0; j < SPHERE_SUBDIV -1; ++j) {
+        indexes.add( (short)( baseStack + j    ) );
+      }
+      indexes.add( (short)( baseStack ) );
+    }
+
+
+    //part de sobre
+    baseStack = (short)( (SPHERE_STACKS-2) * SPHERE_SUBDIV + 2 );
+    indexes.add((short)0);
+    for(short j = 0; j < SPHERE_SUBDIV - 1; j += 2) {
+      indexes.add( (short)( baseStack + j    ) );
+      indexes.add( (short)( baseStack + j +1 ) );
+      indexes.add((short)0);
+    }
+    
+    //meridians
+    for(short j = 1; j < SPHERE_SUBDIV; ++j) {
+      if(j % 2 == 1) {
+        //de dalt a baix
+        //indexes.add( (short)( 1 ) );
+        for(short i = SPHERE_STACKS-1; i > 0; i--) {
+          baseStack = (short)( (i-1) * SPHERE_SUBDIV + 2 );
+          indexes.add( (short)( baseStack + j    ) );
+        }
+        indexes.add( (short)( 1 ) );
+      } else {
+        // de baix a dalt
+        //indexes.add( (short)( 0 ) );
+        for(short i = 1; i < SPHERE_STACKS; i++) {
+          baseStack = (short)( (i-1) * SPHERE_SUBDIV + 2 );
+          indexes.add( (short)( baseStack + j    ) );
+        }
+        indexes.add( (short)( 0 ) );
+      }
+    }
+    
+    //////////////////////////////////////////////////////////////
+    Short saux1[] = indexes.toArray(new Short[indexes.size()]);
+    short saux2[] = new short[saux1.length];
+    for(int i = 0; i < saux1.length; i++) {
+      saux2[i] = saux1[i];
+    }
+    saux1 = null;
+    indexes = null;
+    //////////////////////////////////////////////////////////////
+    
+
+    ShortBuffer indexBuffer = BufferUtils.createShortBuffer(saux2.length);
+    sphereNumIndices = saux2.length;
+    indexBuffer.put(saux2);
+    indexBuffer.flip();
+    
+    return indexBuffer;
+  }
+
+  protected final FloatBuffer createCircleVertexBuffer() {
+    ArrayList<Float> vertices = new ArrayList<>();
+
+    for(int j = 0; j < SPHERE_SUBDIV; ++j) {
+      float x = (float) Math.sin( j * Math.PI * 2 / SPHERE_SUBDIV);
+      float y = (float) Math.cos( j * Math.PI * 2 / SPHERE_SUBDIV);
+      
+
+      vertices.add(x);
+      vertices.add(y);
+      vertices.add(0.f);
+    }
+    //////////////////////////////////////////////////////////////
+    Float faux1[] = vertices.toArray(new Float[vertices.size()]);
+    circlesNumVertexs = faux1.length / 3;
+    float faux2[] = new float[faux1.length];
+    for(int i = 0; i < faux1.length; i++) {
+      faux2[i] = faux1[i];
+    }
+    faux1 = null;
+    vertices = null;
+    //////////////////////////////////////////////////////////////
+
+    FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
+    vertexBuffer.put(faux2);
+    vertexBuffer.flip();
+    
+    return vertexBuffer;
+  }
+
+  protected final FloatBuffer createAxesVertexBuffer() {
+
+    ArrayList<Float> vertices = new ArrayList<>();
+
+    vertices.add(0.f);////////////////////////
+    vertices.add(0.f);
+    vertices.add(0.f);
+    
+    vertices.add(1.f); //color
+    vertices.add(0.f);
+    vertices.add(0.f);
+
+    vertices.add(1.f);
+    vertices.add(0.f);
+    vertices.add(0.f);
+    
+    vertices.add(1.f); //color
+    vertices.add(0.f);
+    vertices.add(0.f);
+
+    vertices.add(0.f);////////////////////////
+    vertices.add(0.f);
+    vertices.add(0.f);
+    
+    vertices.add(0.f); //color
+    vertices.add(1.f);
+    vertices.add(0.f);
+
+    vertices.add(0.f);
+    vertices.add(1.f);
+    vertices.add(0.f);
+    
+    vertices.add(0.f); //color
+    vertices.add(1.f);
+    vertices.add(0.f);
+
+    vertices.add(0.f);////////////////////////
+    vertices.add(0.f);
+    vertices.add(0.f);
+    
+    vertices.add(0.f); //color
+    vertices.add(0.f);
+    vertices.add(1.f);
+
+    vertices.add(0.f);
+    vertices.add(0.f);
+    vertices.add(1.f);
+    
+    vertices.add(0.f); //color
+    vertices.add(0.f);
+    vertices.add(1.f);
+    
+    //////////////////////////////////////////////////////////////
+    Float faux1[] = vertices.toArray(new Float[vertices.size()]);
+    float faux2[] = new float[faux1.length];
+    for(int i = 0; i < faux1.length; i++) {
+      faux2[i] = faux1[i];
+    }
+    faux1 = null;
+    vertices = null;
+    //////////////////////////////////////////////////////////////
+    
+
+    FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
+    vertexBuffer.put(faux2);
+    vertexBuffer.flip();
+    
+    return vertexBuffer;
+  }
+  
+
+  protected final FloatBuffer createBBVertexBuffer() {
+    ArrayList<Float> vertices = new ArrayList<>();
+
+    vertices.add( 1.f);
+    vertices.add(-1.f);
+    vertices.add( 1.f);
+
+    vertices.add( 1.f);
+    vertices.add( 1.f);
+    vertices.add( 1.f);
+
+    vertices.add(-1.f);
+    vertices.add( 1.f);
+    vertices.add( 1.f);
+
+    vertices.add(-1.f);
+    vertices.add(-1.f);
+    vertices.add( 1.f);
+
+    vertices.add( 1.f);
+    vertices.add(-1.f);
+    vertices.add(-1.f);
+
+    vertices.add( 1.f);
+    vertices.add( 1.f);
+    vertices.add(-1.f);
+
+    vertices.add(-1.f);
+    vertices.add( 1.f);
+    vertices.add(-1.f);
+
+    vertices.add(-1.f);
+    vertices.add(-1.f);
+    vertices.add(-1.f);
+    //////////////////////////////////////////////////////////////
+    Float faux1[] = vertices.toArray(new Float[vertices.size()]);
+    float faux2[] = new float[faux1.length];
+    for(int i = 0; i < faux1.length; i++) {
+      faux2[i] = faux1[i];
+    }
+    faux1 = null;
+    vertices = null;
+    //////////////////////////////////////////////////////////////
+    
+
+    FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
+    vertexBuffer.put(faux2);
+    vertexBuffer.flip();
+    
+    return vertexBuffer;
+  }
+
+  protected final ShortBuffer createBBIndexBuffer() {
+    ArrayList<Short> indexes = new ArrayList<>();
+
+    //bot
+    indexes.add((short) 0);
+    indexes.add((short) 1);
+
+    indexes.add((short) 1);
+    indexes.add((short) 2);
+
+    indexes.add((short) 2);
+    indexes.add((short) 3);
+
+    indexes.add((short) 3);
+    indexes.add((short) 0);
+
+    //top
+    indexes.add((short) 4);
+    indexes.add((short) 5);
+
+    indexes.add((short) 5);
+    indexes.add((short) 6);
+
+    indexes.add((short) 6);
+    indexes.add((short) 7);
+
+    indexes.add((short) 7);
+    indexes.add((short) 4);
+
+    //up
+    indexes.add((short) 0);
+    indexes.add((short) 4);
+
+    indexes.add((short) 1);
+    indexes.add((short) 5);
+
+    indexes.add((short) 2);
+    indexes.add((short) 6);
+
+    indexes.add((short) 3);
+    indexes.add((short) 7);
+    
+    //////////////////////////////////////////////////////////////
+    Short saux1[] = indexes.toArray(new Short[indexes.size()]);
+    short saux2[] = new short[saux1.length];
+    for(int i = 0; i < saux1.length; i++) {
+      saux2[i] = saux1[i];
+    }
+    saux1 = null;
+    indexes = null;
+    //////////////////////////////////////////////////////////////
+
+    ShortBuffer indexBuffer = BufferUtils.createShortBuffer(saux2.length);
+    bbNumIndices = saux2.length;
+    indexBuffer.put(saux2);
+    indexBuffer.flip();
+    
+    return indexBuffer;
   }
 }

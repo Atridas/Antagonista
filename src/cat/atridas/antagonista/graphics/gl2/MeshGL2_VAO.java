@@ -58,8 +58,6 @@ public final class MeshGL2_VAO extends MeshGL {
       glEnableVertexAttribArray(TechniquePass.BLEND_WEIGHT_ATTRIBUTE);
       glVertexAttribPointer(TechniquePass.BLEND_WEIGHT_ATTRIBUTE, 4, GL_FLOAT, false, stride, 15 * Utils.FLOAT_SIZE + 4 * Utils.SHORT_SIZE);
     }
-    
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 
     glBindVertexArray(0);
 
@@ -81,10 +79,23 @@ public final class MeshGL2_VAO extends MeshGL {
     assert !Utils.hasGLErrors();
   }
 
+  protected boolean assertReadyToRender() {
+    int elementArrayBufferBinding = glGetInteger(GL_ELEMENT_ARRAY_BUFFER_BINDING);
+    if(elementArrayBufferBinding != indexBuffer)
+      return false;
+    
+    int vertexArrayBinding = glGetInteger(GL_VERTEX_ARRAY_BINDING);
+    if(vertexArrayBinding != vertexArrayObject)
+      return false;
+      
+    return true;
+  }
+
   @Override
   public void preRender() {
     assert !cleaned;
     glBindVertexArray(vertexArrayObject);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
     assert !Utils.hasGLErrors();
   }
 

@@ -4,6 +4,7 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.ARBUniformBufferObject.*;
+import static org.lwjgl.opengl.ARBVertexArrayObject.*;
 import static org.lwjgl.opengl.GL15.*;
 
 import cat.atridas.antagonista.Utils;
@@ -11,14 +12,14 @@ import cat.atridas.antagonista.graphics.InstanceData;
 import cat.atridas.antagonista.graphics.RenderableObjectManager;
 import cat.atridas.antagonista.graphics.TechniquePass;
 
-public final class RenderableObjectManagerGL2_UBO extends RenderableObjectManager {
+public final class RenderableObjectManagerGL2_VAO_UBO extends RenderableObjectManager {
 
   private static final int BUFFER_SIZE = 3 * 16 + 4*4; // 3 matrius de 16 floats + 4 colors(de 4 floats)
   
   private FloatBuffer buffer = BufferUtils.createFloatBuffer(BUFFER_SIZE);
   private int bufferID = -1;
 
-  public RenderableObjectManagerGL2_UBO() {
+  public RenderableObjectManagerGL2_VAO_UBO() {
     throw new RuntimeException("Not implemented");
   }
   
@@ -106,6 +107,16 @@ public final class RenderableObjectManagerGL2_UBO extends RenderableObjectManage
     glDeleteBuffers(bufferID);
     
     cleaned = true;
+  }
+
+  @Override
+  protected void resetGLState() {
+    glBindVertexArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    
   }
 
 }

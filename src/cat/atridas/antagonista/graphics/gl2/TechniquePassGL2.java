@@ -93,11 +93,11 @@ public class TechniquePassGL2 extends TechniquePassGL {
     modelViewITUniform = glGetUniformLocation(program, MODEL_VIEW_IT_UNIFORM);
     if(modelViewProjectionUniform < 0) {
       LOGGER.severe("Basic instance uniforms requested but ModelViewProjection matrix not active!");
-      throw new AntagonistException();
+      //throw new AntagonistException();
     }
     if(modelViewUniform < 0) {
       LOGGER.severe("Basic instance uniforms requested but ModelView matrix not active!");
-      throw new AntagonistException();
+      //throw new AntagonistException();
     }
     assert !Utils.hasGLErrors();
   }

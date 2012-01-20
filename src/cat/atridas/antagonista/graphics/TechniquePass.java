@@ -634,6 +634,12 @@ public abstract class TechniquePass {
   public boolean hasSpecialColorsUniforms() {
     return specialColorsUniforms;
   }
+  public boolean hasBasicMaterialUniforms() {
+    return basicMaterial;
+  }
+  public boolean hasBasicLightUniforms() {
+    return basicLight;
+  }
   
   public void activate(RenderManager rm) {
     assert !cleaned;

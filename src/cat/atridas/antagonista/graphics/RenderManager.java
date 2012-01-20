@@ -105,10 +105,10 @@ public abstract class RenderManager {
   
   public static enum Profile {
     GL2         (2,false),
-    GL2_UBO     (2,false,Functionality.UNIFORM_BUFFER_OBJECT),
+    //GL2_UBO     (2,false,Functionality.UNIFORM_BUFFER_OBJECT),
     GL2_VAO     (2,false,Functionality.VERTEX_ARRAY_OBJECT),
-    GL2_UBO_VAO (2,false,Functionality.UNIFORM_BUFFER_OBJECT,Functionality.VERTEX_ARRAY_OBJECT),
-    GL2_VAO_INST(2,false,Functionality.UNIFORM_BUFFER_OBJECT,Functionality.VERTEX_ARRAY_OBJECT,Functionality.INSTANCING),
+    GL2_UBO_VAO (2,false,Functionality.VERTEX_ARRAY_OBJECT,Functionality.UNIFORM_BUFFER_OBJECT),
+    GL2_VAO_INST(2,false,Functionality.VERTEX_ARRAY_OBJECT,Functionality.UNIFORM_BUFFER_OBJECT,Functionality.INSTANCING),
     GL3         (3,false),
     GL4         (4,false),
     GLES2       (2,true);
@@ -143,8 +143,8 @@ public abstract class RenderManager {
       case "GL4":
         return GL4;
 
-      case "GL2_UBO":
-        return GL2_UBO;
+      //case "GL2_UBO":
+      //  return GL2_UBO;
       case "GL2_VAO":
         return GL2_VAO;
       case "GL2_UBO_VAO":

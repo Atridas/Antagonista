@@ -4,9 +4,8 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
+import static org.lwjgl.opengl.ARBVertexArrayObject.*;
+import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 
 import cat.atridas.antagonista.Utils;
@@ -14,7 +13,7 @@ import cat.atridas.antagonista.graphics.InstanceData;
 import cat.atridas.antagonista.graphics.RenderableObjectManager;
 import cat.atridas.antagonista.graphics.TechniquePass;
 
-public final class RenderableObjectManagerGL2 extends RenderableObjectManager {
+public final class RenderableObjectManagerGL2_VAO extends RenderableObjectManager {
 
   private static final int BUFFER_SIZE = 16; // 3 matrius de 16 floats
   
@@ -93,18 +92,11 @@ public final class RenderableObjectManagerGL2 extends RenderableObjectManager {
 
   @Override
   protected void resetGLState() {
+    glBindVertexArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    glDisableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
-    glDisableVertexAttribArray(TechniquePass.NORMAL_ATTRIBUTE);
-    glDisableVertexAttribArray(TechniquePass.TANGENT_ATTRIBUTE);
-    glDisableVertexAttribArray(TechniquePass.BITANGENT_ATTRIBUTE);
-    glDisableVertexAttribArray(TechniquePass.UV_ATTRIBUTE);
-    glDisableVertexAttribArray(TechniquePass.BLEND_INDEX_ATTRIBUTE);
-    glDisableVertexAttribArray(TechniquePass.BLEND_WEIGHT_ATTRIBUTE);
-    glDisableVertexAttribArray(TechniquePass.COLOR_ATTRIBUTE);
   }
 
 }

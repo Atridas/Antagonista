@@ -113,4 +113,14 @@ public final class RenderableObjectManagerGL3 extends RenderableObjectManager {
     
     cleaned = true;
   }
+
+  @Override
+  protected void resetGLState() {
+    glBindVertexArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    
+  }
 }

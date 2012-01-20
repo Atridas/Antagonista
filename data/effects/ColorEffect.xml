@@ -12,6 +12,7 @@
       </attributes>
       
       <uniforms>
+        <basic_instance_uniforms/>
       </uniforms>
       
       <results>
