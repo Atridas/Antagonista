@@ -20,7 +20,9 @@ import org.lwjgl.BufferUtils;
 import cat.atridas.antagonista.Quality;
 import cat.atridas.antagonista.Transformation;
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.DebugRender;
+import cat.atridas.antagonista.graphics.FontManager;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.SceneData;
 import cat.atridas.antagonista.graphics.Technique;
@@ -1218,7 +1220,43 @@ public class DebugRenderGL3 extends DebugRender {
   @Override
   protected void renderStrings(RenderManager rm) {
     assert !cleaned;
-    //TODO
+    
+    if(strings.size() >= 0)
+      return; //TODO encara no està preparat...
+    
+    FontManager fm = Core.getCore().getFontManager();
+    
+    //////////////////////////////////////////////
+    Vector3f v3Aux = new Vector3f();
+
+    Matrix4f viewProj           = new Matrix4f();
+    //Matrix4f view               = new Matrix4f();
+    Matrix4f model              = new Matrix4f();
+    Matrix4f modelViewProj      = new Matrix4f();
+    //Matrix4f modelView          = new Matrix4f();
+    //Matrix4f modelViewInvTransp = new Matrix4f();
+    viewProj.setIdentity();
+    //view .setIdentity();
+    
+    //rm.getSceneData().getViewMatrix(view);
+    rm.getSceneData().getViewProjectionMatrix(viewProj);
+    ///////////////////////////////////////////////
+    
+    for(DebugString text : strings) {
+
+      model.setIdentity();
+      v3Aux.set(text.position);
+      model.setTranslation(v3Aux);
+
+
+      //modelView.mul(view, model);
+      modelViewProj.mul(viewProj, model);
+      
+      //modelViewInvTransp.invert(modelView);
+      //modelViewInvTransp.transpose();
+
+      fm.printString(text.font, text.text, text.color, modelViewProj, false, rm);
+    }
   }
   
   private void setGlobalMatrixes(RenderManager rm) {

@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Tuple3f;
 
-
+//TODO optimitzar tot lo relacionat amb això.
 public abstract class FontManager {
   private static Logger logger = Logger.getLogger(FontManager.class.getCanonicalName());
   

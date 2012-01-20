@@ -13,6 +13,7 @@ import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.DebugRender;
+import cat.atridas.antagonista.graphics.Font;
 import cat.atridas.antagonista.graphics.MeshManager;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.RTSCamera;
@@ -112,6 +113,7 @@ public class Test {
     HashedString camRight = new HashedString("move_camera_right");
     HashedString camDist  = new HashedString("move_camera_distance");
 
+    Font font = core.getFontManager().getFont("font14"); 
     
     DebugRender dr = core.getDebugRender();
     
@@ -140,7 +142,7 @@ public class Test {
         camera.addDistance( -.01f * im.getActionValue(camDist) );
       }
       
-      
+      /*
       dr.addLine(new Point3f(0,0,0), new Point3f(0,0,25), new Color3f(0,0,1));
       dr.addLine(new Point3f(0,0,0), new Point3f(0,25,0), new Color3f(0,1,0),false);
       dr.addLine(new Point3f(0,0,0), new Point3f(25,0,0), new Color3f(1,0,0));
@@ -189,7 +191,9 @@ public class Test {
       matN.setTranslation(new Vector3f(3,-3,5));
       matN.setRotation(new AxisAngle4f(0,0,1, (float)Math.PI / 6));
       dr.addOBB(matN, new Vector3f(2,3,3), new Color3f(1,1,1));
+      */
       
+      dr.addString(new Point3f(0,0,5), font, "Hola mundu", new Color3f(1,0,0));
       
       //sceneData.setCamera(camera);
       

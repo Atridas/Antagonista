@@ -139,12 +139,25 @@ public abstract class DebugRender {
   
   public void addString( 
       Point3f position,
+      Font font,
       String text,
+      TextAligment aligment,
       Color3f color, 
       float duration, 
       boolean depthEnabled) {
     if(active)
-      strings.add(new DebugString(position, text, duration, depthEnabled, color));
+      strings.add(new DebugString(position, font, text, false, aligment, duration, depthEnabled, color));
+  }
+  
+  public void addString2D( 
+      Point3f position,
+      Font font,
+      String text,
+      TextAligment aligment,
+      Color3f color, 
+      float duration) {
+    if(active)
+      strings.add(new DebugString(position, font, text, true, aligment, duration, false, color));
   }
   
   
@@ -332,23 +345,76 @@ public abstract class DebugRender {
 
   public void addString( 
       Point3f position,
+      Font font,
+      String text,
+      TextAligment aligment,
+      Color3f color, 
+      float duration) {
+    addString(position, font, text, aligment, color, duration, true);
+  }
+  public void addString( 
+      Point3f position,
+      Font font,
+      String text,
+      TextAligment aligment,
+      Color3f color, 
+      boolean depthEnabled) {
+    addString(position, font, text, aligment, color, 0, depthEnabled);
+  }
+  public void addString( 
+      Point3f position,
+      Font font,
+      String text,
+      TextAligment aligment,
+      Color3f color) {
+    addString(position, font, text, aligment, color, 0, true);
+  }
+  public void addString( 
+      Point3f position,
+      Font font,
       String text,
       Color3f color, 
       float duration) {
-    addString(position, text, color, duration, true);
+    addString(position, font, text, TextAligment.LEFT, color, duration, true);
   }
   public void addString( 
       Point3f position,
+      Font font,
       String text,
       Color3f color, 
       boolean depthEnabled) {
-    addString(position, text, color, 0, depthEnabled);
+    addString(position, font, text, TextAligment.LEFT, color, 0, depthEnabled);
   }
   public void addString( 
       Point3f position,
+      Font font,
       String text,
       Color3f color) {
-    addString(position, text, color, 0, true);
+    addString(position, font, text, TextAligment.LEFT, color, 0, true);
+  }
+
+  public void addString2D( 
+      Point3f position,
+      Font font,
+      String text,
+      TextAligment aligment,
+      Color3f color) {
+    addString2D(position, font, text, aligment, color, 0);
+  }
+  public void addString2D( 
+      Point3f position,
+      Font font,
+      String text,
+      Color3f color, 
+      float duration) {
+    addString2D(position, font, text, TextAligment.LEFT, color, duration);
+  }
+  public void addString2D( 
+      Point3f position,
+      Font font,
+      String text,
+      Color3f color) {
+    addString2D(position, font, text, TextAligment.LEFT, color, 0);
   }
   
 
@@ -423,7 +489,7 @@ public abstract class DebugRender {
 
   protected static class DebugObject {
     public float duration;
-    public boolean depthEnabled;
+    public final boolean depthEnabled;
 
     DebugObject(final float _duration, final boolean _depthEnabled) {
       duration = _duration;
@@ -432,7 +498,7 @@ public abstract class DebugRender {
   }
 
   protected static class DebugObjectWithColor extends DebugObject {
-    public Color3f color;
+    public final Color3f color;
 
     DebugObjectWithColor(final float _duration, final boolean _depthEnabled, final Color3f _color) {
       super(_duration, _depthEnabled);
@@ -441,8 +507,8 @@ public abstract class DebugRender {
   }
   
   protected static final class Line extends DebugObjectWithColor {
-    public Point3f origin;
-    public Point3f destination;
+    public final Point3f origin;
+    public final Point3f destination;
     
     Line(Point3f _origin, Point3f _destination,
         final float duration, final boolean depthEnabled, final Color3f color) {
@@ -453,8 +519,8 @@ public abstract class DebugRender {
   }
   
   protected static final class Cross extends DebugObjectWithColor {
-    public Point3f center;
-    public float size;
+    public final Point3f center;
+    public final float size;
     
     Cross(Point3f _center, float _size,
         final float duration, final boolean depthEnabled, final Color3f color) {
@@ -465,8 +531,8 @@ public abstract class DebugRender {
   }
   
   protected static final class Sphere extends DebugObjectWithColor {
-    public Point3f center;
-    public float radius;
+    public final Point3f center;
+    public final float radius;
     
     Sphere(Point3f _center, float _radius,
         final float duration, final boolean depthEnabled, final Color3f color) {
@@ -477,9 +543,9 @@ public abstract class DebugRender {
   }
   
   protected static final class Circle extends DebugObjectWithColor {
-    public Point3f center;
-    public Vector3f planeNormal;
-    public float radius;
+    public final Point3f center;
+    public final Vector3f planeNormal;
+    public final float radius;
     
     Circle(Point3f _center, float _radius, Vector3f _planeNormal,
         final float duration, final boolean depthEnabled, final Color3f color) {
@@ -495,8 +561,8 @@ public abstract class DebugRender {
   }
   
   protected static final class Axes extends DebugObject {
-    public Matrix4f transformation;
-    public float size;
+    public final Matrix4f transformation;
+    public final float size;
     
     Axes(Matrix4f _transformation, float _size,
         final float duration, final boolean depthEnabled) {
@@ -507,9 +573,9 @@ public abstract class DebugRender {
   }
   
   protected static final class Triangle extends DebugObjectWithColor {
-    public Point3f v0;
-    public Point3f v1;
-    public Point3f v2;
+    public final Point3f v0;
+    public final Point3f v1;
+    public final Point3f v2;
     
     Triangle(Point3f _v0, Point3f _v1, Point3f _v2,
         final float duration, final boolean depthEnabled, final Color3f color) {
@@ -521,8 +587,8 @@ public abstract class DebugRender {
   }
   
   protected static final class AABB extends DebugObjectWithColor {
-    public Point3f minCoords;
-    public Point3f maxCoords;
+    public final Point3f minCoords;
+    public final Point3f maxCoords;
     
     AABB(Point3f _minCoords, Point3f _maxCoords,
         final float duration, final boolean depthEnabled, final Color3f color) {
@@ -533,8 +599,8 @@ public abstract class DebugRender {
   }
   
   protected static final class OBB extends DebugObjectWithColor {
-    public Matrix4f centerTransformation;
-    public Tuple3f scaleXYZ;
+    public final Matrix4f centerTransformation;
+    public final Tuple3f scaleXYZ;
     
     OBB(final Matrix4f _centerTransformation, final Tuple3f _scaleXYZ,
         final float duration, final boolean depthEnabled, final Color3f color) {
@@ -545,17 +611,27 @@ public abstract class DebugRender {
   }
   
   protected static final class DebugString extends DebugObjectWithColor {
-    public Point3f position;
-    public String text;
+    public final Point3f position;
+    public final Font font;
+    public final String text;
+    public final boolean on2D;
+    public final TextAligment aligment;
     
-    DebugString(final Point3f _position, final String _text,
+    DebugString(final Point3f _position, final Font _font, final String _text,
+        final boolean _on2D, final TextAligment _aligment,
         final float duration, final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
       position = new Point3f( _position );
+      font = _font;
       text = _text;
+      on2D = _on2D;
+      aligment = _aligment;
     }
   }
   
+  public static enum TextAligment {
+    LEFT, RIGHT, CENTER
+  }
   
 
   protected int sphereNumIndices, circlesNumVertexs, bbNumIndices;
