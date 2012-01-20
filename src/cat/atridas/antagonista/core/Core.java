@@ -12,14 +12,11 @@ import cat.atridas.antagonista.graphics.MeshManager;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.RenderableObjectManager;
 import cat.atridas.antagonista.graphics.TextureManager;
-import cat.atridas.antagonista.graphics.RenderManager.Functionality;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
 import cat.atridas.antagonista.graphics.gl.FontManagerGL;
 import cat.atridas.antagonista.graphics.gl.RenderManagerGL;
 import cat.atridas.antagonista.graphics.gl2.DebugRenderGL2;
 import cat.atridas.antagonista.graphics.gl2.RenderableObjectManagerGL2;
-import cat.atridas.antagonista.graphics.gl2.RenderableObjectManagerGL2_VAO_UBO;
-import cat.atridas.antagonista.graphics.gl2.RenderableObjectManagerGL2_VAO;
 import cat.atridas.antagonista.graphics.gl3.DebugRenderGL3;
 import cat.atridas.antagonista.graphics.gl3.RenderableObjectManagerGL3;
 import cat.atridas.antagonista.input.InputManager;
@@ -113,17 +110,11 @@ public final class Core {
 
     if(Utils.supports(Profile.GL3))
       rom = new RenderableObjectManagerGL3();
-    else if(Utils.supports(Profile.GL2)) {
-      if(Utils.supports(Functionality.VERTEX_ARRAY_OBJECT)) {
-        if(Utils.supports(Functionality.UNIFORM_BUFFER_OBJECT)) {
-          rom = new RenderableObjectManagerGL2_VAO_UBO();
-        } else {
-          rom = new RenderableObjectManagerGL2_VAO();
-        }
-      } else {
-        rom = new RenderableObjectManagerGL2();
-      }
-    }
+    else if(Utils.supports(Profile.GL2))
+      rom = new RenderableObjectManagerGL2();
+    else
+      throw new RuntimeException("Not implemented!");
+    
     rom.init();
 	}
 	

@@ -1,7 +1,6 @@
 package cat.atridas.antagonista.graphics;
 
 import java.awt.Canvas;
-import java.util.HashSet;
 import java.util.logging.Logger;
 
 import org.lwjgl.LWJGLException;
@@ -96,42 +95,19 @@ public abstract class RenderManager {
   public abstract int getMaxInstancesBasic();
   public abstract int getMaxInstancesWithBones();
   public abstract int getMaxInstancesWithColors();
-	
-  public static enum Functionality {
-    UNIFORM_BUFFER_OBJECT,
-    VERTEX_ARRAY_OBJECT,
-    INSTANCING
-  }
   
   public static enum Profile {
     GL2         (2,false),
-    //GL2_UBO     (2,false,Functionality.UNIFORM_BUFFER_OBJECT),
-    GL2_VAO     (2,false,Functionality.VERTEX_ARRAY_OBJECT),
-    GL2_UBO_VAO (2,false,Functionality.VERTEX_ARRAY_OBJECT,Functionality.UNIFORM_BUFFER_OBJECT),
-    GL2_VAO_INST(2,false,Functionality.VERTEX_ARRAY_OBJECT,Functionality.UNIFORM_BUFFER_OBJECT,Functionality.INSTANCING),
     GL3         (3,false),
     GL4         (4,false),
     GLES2       (2,true);
     
     private final int glVersion;
     private final boolean gles;
-    private final HashSet<Functionality> functionality = new HashSet<>();
 
     private Profile(int _glVersion, boolean _gles) {
       glVersion = _glVersion;
       gles = _gles;
-      if(glVersion > 2) {
-        functionality.add(Functionality.UNIFORM_BUFFER_OBJECT);
-        functionality.add(Functionality.INSTANCING);
-        functionality.add(Functionality.VERTEX_ARRAY_OBJECT);
-      }
-    }
-    
-    private Profile(int _glVersion, boolean _gles, Functionality... f) {
-      glVersion = _glVersion;
-      gles = _gles;
-      for(int i = 0; i < f.length; ++i)
-        functionality.add(f[i]);
     }
     
     public static Profile getFromString(String str) {
@@ -143,15 +119,6 @@ public abstract class RenderManager {
       case "GL4":
         return GL4;
 
-      //case "GL2_UBO":
-      //  return GL2_UBO;
-      case "GL2_VAO":
-        return GL2_VAO;
-      case "GL2_UBO_VAO":
-        return GL2_UBO_VAO;
-      case "GL2_VAO_INST":
-        return GL2_VAO_INST;
-        
       case "GLES2":
         return GLES2;
         
@@ -166,12 +133,7 @@ public abstract class RenderManager {
       if(gles != other.gles)
         return false;
       
-      return functionality.containsAll(other.functionality);
-    }
-    
-    public boolean supports(Functionality _functionality) {
-      
-      return functionality.contains(_functionality);
+      return true;
     }
     
     public void supportOrException(Profile other, String functionality) {
@@ -181,19 +143,7 @@ public abstract class RenderManager {
       }
     }
     
-    public Profile withFunctionality(Functionality f) {
-      for(Profile p : Profile.values()) {
-        if( p.gles == this.gles &&
-            p.glVersion == this.glVersion &&
-            p.functionality.contains(f) &&
-            p.functionality.containsAll(this.functionality) &&
-            p.functionality.size() <= this.functionality.size() + 1)
-          return p;
-      }
-      throw new IllegalArgumentException("The requested profile does not exist.");
-    }
-    
-    /*@Override
+    @Override
     public String toString() {
       switch (this) {
       case GLES2:
@@ -207,7 +157,7 @@ public abstract class RenderManager {
       default:
         throw new IllegalStateException();
       }
-    }*/
+    }
   }
   
 

@@ -6,10 +6,8 @@ import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.ResourceManager;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
-import cat.atridas.antagonista.graphics.RenderManager.Functionality;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
 import cat.atridas.antagonista.graphics.gl2.MaterialGL2;
-import cat.atridas.antagonista.graphics.gl2.MaterialGL2_UBO;
 import cat.atridas.antagonista.graphics.gl3.MaterialGL3;
 
 public class MaterialManager extends ResourceManager<Material> {
@@ -45,8 +43,6 @@ public class MaterialManager extends ResourceManager<Material> {
   protected Material createNewResource(HashedString name) {
     if(Utils.supports(Profile.GL3)) {
       return new MaterialGL3(name);
-    } else if(Utils.supports(Profile.GL2) && Utils.supports(Functionality.UNIFORM_BUFFER_OBJECT)) {
-      return new MaterialGL2_UBO(name);
     } else if(Utils.supports(Profile.GL2)) {
       return new MaterialGL2(name);
     } else {

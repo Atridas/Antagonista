@@ -22,7 +22,6 @@ import org.newdawn.slick.util.ResourceLoader;
 import org.w3c.dom.Element;
 
 import cat.atridas.antagonista.core.Core;
-import cat.atridas.antagonista.graphics.RenderManager.Functionality;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
 
 public abstract class Utils {
@@ -164,10 +163,6 @@ public abstract class Utils {
   
   public static boolean supports(Profile profile) {
     return Core.getCore().getRenderManager().getProfile().supports(profile);
-  }
-  
-  public static boolean supports(Functionality functionality) {
-    return Core.getCore().getRenderManager().getProfile().supports(functionality);
   }
   
   public static void supportOrException(Profile profile, String functionality) {

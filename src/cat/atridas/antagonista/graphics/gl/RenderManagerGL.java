@@ -2,8 +2,6 @@ package cat.atridas.antagonista.graphics.gl;
 
 import java.util.logging.Logger;
 
-import org.lwjgl.opengl.ARBUniformBufferObject;
-import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.GL31;
 import org.lwjgl.opengl.GLContext;
@@ -34,10 +32,6 @@ public final class RenderManagerGL extends RenderManager {
     case GL4:
       maxUniformSize = glGetInteger(GL31.GL_MAX_UNIFORM_BLOCK_SIZE);
       break;
-    default:
-      if(profile.supports(Functionality.UNIFORM_BUFFER_OBJECT)) {
-        maxUniformSize = glGetInteger(ARBUniformBufferObject.GL_MAX_UNIFORM_BLOCK_SIZE);
-      }
     }
 
     if(maxUniformSize > 0) {
@@ -59,16 +53,6 @@ public final class RenderManagerGL extends RenderManager {
       profile = Profile.GL3;
     } else if(cc.OpenGL21) {
       profile = Profile.GL2;
-      if(cc.GL_ARB_vertex_array_object) {
-        profile = profile.withFunctionality(Functionality.VERTEX_ARRAY_OBJECT);
-        if(cc.GL_ARB_uniform_buffer_object) {
-          profile = profile.withFunctionality(Functionality.UNIFORM_BUFFER_OBJECT);
-          
-          if(cc.GL_ARB_draw_instanced) {
-            profile = profile.withFunctionality(Functionality.INSTANCING);
-          }
-        }
-      }
     } else {
       throw new IllegalStateException("Can not load an opengl 2.1 or greater context.");
     }
@@ -278,8 +262,6 @@ public final class RenderManagerGL extends RenderManager {
   public void noVertexArray() {
     if(profile.supports(Profile.GL3)) {
       glBindVertexArray(0);
-    } else if(profile.supports(Functionality.VERTEX_ARRAY_OBJECT)) {
-      ARBVertexArrayObject.glBindVertexArray(0);
     }
   }
 

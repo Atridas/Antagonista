@@ -12,9 +12,7 @@ import cat.atridas.antagonista.AntagonistException;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
-import cat.atridas.antagonista.graphics.RenderManager.Functionality;
 import cat.atridas.antagonista.graphics.gl2.TechniquePassGL2;
-import cat.atridas.antagonista.graphics.gl2.TechniquePassGL2_UBO;
 import cat.atridas.antagonista.graphics.gl3.TechniquePassGL3;
 
 public final class Technique {
@@ -36,8 +34,6 @@ public final class Technique {
 
       if(p.supports(Profile.GL3)) {
         _passes.add(new TechniquePassGL3(pass));
-      } else if(p.supports(Profile.GL2) && p.supports(Functionality.UNIFORM_BUFFER_OBJECT)) {
-        _passes.add(new TechniquePassGL2_UBO(pass));
       } else if(p.supports(Profile.GL2)) {
         _passes.add(new TechniquePassGL2(pass));
       } else {
@@ -58,8 +54,6 @@ public final class Technique {
     
     if(Utils.supports(Profile.GL3)) {
       _passes.add(new TechniquePassGL3());
-    } else if(Utils.supports(Profile.GL2) && Utils.supports(Functionality.UNIFORM_BUFFER_OBJECT)) {
-      _passes.add(new TechniquePassGL2_UBO());
     } else if(Utils.supports(Profile.GL2)) {
       _passes.add(new TechniquePassGL2());
     } else {
