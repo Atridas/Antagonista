@@ -182,6 +182,10 @@ public abstract class SceneData {
     setPerspective(camera.getFovY(), camera.getZNear(), camera.getZFar());
   }
   
+  public final void getCameraPosition(Point3f position) {
+    position.set(cameraPosition);
+  }
+  
   public final void getViewProjectionMatrix(Matrix4f viewProjection_) {
     viewProjection_.mul( projectionMatrix );
     viewProjection_.mul( viewMatrix   );

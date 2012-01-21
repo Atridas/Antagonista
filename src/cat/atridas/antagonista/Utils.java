@@ -17,6 +17,7 @@ import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
 
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Vector3f;
 
 import org.newdawn.slick.util.ResourceLoader;
 import org.w3c.dom.Element;
@@ -42,6 +43,14 @@ public abstract class Utils {
   public static final int INTEGER_SIZE = Integer.SIZE / 8;
   public static final int SHORT_SIZE   = Short  .SIZE / 8;
   public static final int BYTE_SIZE    = Byte   .SIZE / 8;
+  
+
+  public static final Vector3f V3_X = new Vector3f(1,0,0);
+  public static final Vector3f V3_Y = new Vector3f(0,1,0);
+  public static final Vector3f V3_Z = new Vector3f(0,0,1);
+  public static final Vector3f V3_MINUS_X = new Vector3f(-1,0,0);
+  public static final Vector3f V3_MINUS_Y = new Vector3f(0,-1,0);
+  public static final Vector3f V3_MINUS_Z = new Vector3f(0,0,-1);
   /*
   public static File findFile(String name) {
     try {

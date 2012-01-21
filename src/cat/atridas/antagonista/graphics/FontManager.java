@@ -23,11 +23,11 @@ public abstract class FontManager extends ResourceManager<Font> {
   }
   
   public final void printString(HashedString font, String text, Tuple3f color, Matrix4f WVPmatrix, RenderManager rm) {
-    printString(getResource(font), text, color, WVPmatrix, false, rm);
+    printString(getResource(font), text, color, WVPmatrix, TextAligment.TOP_LEFT, rm);
   }
   
-  public final void printString(HashedString font, String text, Tuple3f color, Matrix4f WVPmatrix, boolean centered, RenderManager rm) {
-    printString(getResource(font), text, color, WVPmatrix, centered, rm);
+  public final void printString(HashedString font, String text, Tuple3f color, Matrix4f WVPmatrix, TextAligment textAligment, RenderManager rm) {
+    printString(getResource(font), text, color, WVPmatrix, textAligment, rm);
   }
   
   public abstract void printString(
@@ -35,7 +35,7 @@ public abstract class FontManager extends ResourceManager<Font> {
       String text,
       Tuple3f color,
       Matrix4f WVPmatrix,
-      boolean centered,
+      TextAligment textAligment,
       RenderManager rm);
   
   
@@ -75,4 +75,11 @@ public abstract class FontManager extends ResourceManager<Font> {
     return defaultFont;
   }
   
+
+  
+  public static enum TextAligment {
+    TOP_LEFT, TOP_RIGHT, TOP_CENTER,
+    MID_LEFT, MID_RIGHT, MID_CENTER,
+    BOTTOM_LEFT, BOTTOM_RIGHT, BOTTOM_CENTER
+  }
 }

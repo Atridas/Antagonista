@@ -6,6 +6,7 @@ import java.nio.IntBuffer;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Tuple3f;
+import javax.vecmath.Vector3f;
 
 import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.GL11.*;
@@ -29,9 +30,12 @@ public abstract class FontManagerGL extends FontManager {
   private TechniquePass pass;
   
   private FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
+  private Matrix4f    aligmentMatrix = new Matrix4f();
+  private Matrix4f    finalWVP       = new Matrix4f();
+  private Vector3f    translation    = new Vector3f();
   
   @Override
-  public final void printString(Font font, String text, Tuple3f color, Matrix4f WVPmatrix, boolean centered, RenderManager rm) {
+  public final void printString(Font font, String text, Tuple3f color, Matrix4f WVPmatrix, TextAligment aligment, RenderManager rm) {
     int len = text.length();
     int buffer1Size = Font.getVertexSize() * len * 4;
     ByteBuffer buffer1 = BufferUtils.createByteBuffer(buffer1Size);
@@ -40,10 +44,50 @@ public abstract class FontManagerGL extends FontManager {
     Texture tex[] = new Texture[font.numTextures()];
     
     int x = font.fillBuffers(text, buffer1, buffer2, tex);
+
+    translation.z = 0;
     
-    if(centered) {
-      buffer1 = centerText(buffer1, buffer1Size, x);
+    switch(aligment) {
+    case TOP_LEFT:
+    case TOP_RIGHT:
+    case TOP_CENTER:
+      translation.y = 0;
+      break;
+    case BOTTOM_LEFT:
+    case BOTTOM_RIGHT:
+    case BOTTOM_CENTER:
+      translation.y = -font.getLineHeight();
+      break;
+    case MID_LEFT:
+    case MID_RIGHT:
+    case MID_CENTER:
+      translation.y = -font.getLineHeight() / 2.f;
+      break;
     }
+    
+    switch(aligment) {
+    case TOP_LEFT:
+    case MID_LEFT:
+    case BOTTOM_LEFT:
+      translation.x = 0;
+      break;
+    case TOP_RIGHT:
+    case MID_RIGHT:
+    case BOTTOM_RIGHT:
+      translation.x = -x;
+      break;
+    case TOP_CENTER:
+    case BOTTOM_CENTER:
+    case MID_CENTER:
+      translation.x = -x / 2.f;
+      break;
+    }
+
+    aligmentMatrix.setIdentity();
+    aligmentMatrix.setTranslation(translation);
+    
+    
+    finalWVP.mul(WVPmatrix, aligmentMatrix);
     
     buffer1.rewind();
     buffer2.rewind();
@@ -102,7 +146,7 @@ public abstract class FontManagerGL extends FontManager {
     pass.activate(rm);
     
     matrixBuffer.clear();
-    Utils.matrixToBuffer(WVPmatrix, matrixBuffer);
+    Utils.matrixToBuffer(finalWVP, matrixBuffer);
     matrixBuffer.flip();
     
     glUniformMatrix4(pass.getModelViewProjectionUniform(), false, matrixBuffer);
@@ -112,30 +156,5 @@ public abstract class FontManagerGL extends FontManager {
   }
   
   protected abstract void activateVAO();
-  
-  private ByteBuffer centerText(ByteBuffer buffer1, int buffer1Size, int sizeX) {
-
-    ByteBuffer newBuffer1 = BufferUtils.createByteBuffer(buffer1Size);
-
-    buffer1.rewind();
-    
-    for(int i = 0; i < buffer1Size/Font.getVertexSize(); i++)
-    {
-      //vertex 00
-      newBuffer1.putInt(buffer1.getInt() - sizeX/2); //x
-      newBuffer1.putInt(buffer1.getInt()); //y
-        
-      newBuffer1.putInt(buffer1.getInt());   //page
-  
-      newBuffer1.putFloat(buffer1.getFloat());
-      newBuffer1.putFloat(buffer1.getFloat());
-  
-      newBuffer1.put(buffer1.get()); //channel
-      newBuffer1.put(buffer1.get()); //channel
-      newBuffer1.put(buffer1.get()); //channel
-      newBuffer1.put(buffer1.get()); //channel
-    }
-    return newBuffer1;
-  }
 
 }

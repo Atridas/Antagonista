@@ -51,7 +51,7 @@ public class Font extends Resource {
   }
   
   
-  public int width, height, lineHeight, highestChar;
+  private int width, height, lineHeight, highestChar;
   
   private final Map<Integer, Texture> pages = new HashMap<Integer, Texture>();
   private final Map<Character, Char> chars = new HashMap<Character, Char>();
@@ -336,6 +336,22 @@ public class Font extends Resource {
   public int getVRAMBytesEstimation() {
     // TODO Auto-generated method stub
     return 0;
+  }
+
+  public int getWidth() {
+    return width;
+  }
+
+  public int getHeight() {
+    return height;
+  }
+
+  public int getLineHeight() {
+    return lineHeight;
+  }
+
+  public int getHighestChar() {
+    return highestChar;
   }
 
   @Override

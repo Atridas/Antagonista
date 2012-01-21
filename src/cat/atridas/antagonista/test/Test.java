@@ -2,7 +2,6 @@ package cat.atridas.antagonista.test;
 
 import java.util.logging.Level;
 
-import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
@@ -20,6 +19,7 @@ import cat.atridas.antagonista.graphics.RTSCamera;
 import cat.atridas.antagonista.graphics.RenderableObject;
 import cat.atridas.antagonista.graphics.SceneData;
 import cat.atridas.antagonista.graphics.TextureManager;
+import cat.atridas.antagonista.graphics.FontManager.TextAligment;
 import cat.atridas.antagonista.input.InputManager;
 
 public class Test {
@@ -142,11 +142,11 @@ public class Test {
         camera.addDistance( -.01f * im.getActionValue(camDist) );
       }
       
+      /*
       dr.addLine(new Point3f(0,0,0), new Point3f(0,0,25), new Color3f(0,0,1));
       dr.addLine(new Point3f(0,0,0), new Point3f(0,25,0), new Color3f(0,1,0));
       dr.addLine(new Point3f(0,0,0), new Point3f(25,0,0), new Color3f(1,0,0));
 
-      /*
       dr.addCross(new Point3f(0,10,10), new Color3f(0,0,0), 1);
       dr.addCross(new Point3f(10,10,0), new Color3f(0,0,1), 2);
       dr.addCross(new Point3f(-10,-10,0), new Color3f(1,0,0), 1,false);
@@ -193,7 +193,20 @@ public class Test {
       dr.addOBB(matN, new Vector3f(2,3,3), new Color3f(1,1,1));
       */
       
-      dr.addString(new Point3f(0,0,5), font, "Hola mundu", new Color3f(1,0,0));
+      dr.addCross(new Point3f(0,0,2), new Color3f(0,0,1), 1);
+      dr.addString(new Point3f(0,0,2), font, "Hola mundu", 1, new Color3f(1,0,0));
+      
+      dr.addCross(new Point3f(0,0,5), new Color3f(0,0,1), 1);
+      dr.addString(new Point3f(0,0,5), font, "Hola mundu", 1, TextAligment.MID_LEFT, new Color3f(1,0,0));
+      
+      dr.addCross(new Point3f(0,0,8), new Color3f(0,0,1), 1);
+      dr.addString(new Point3f(0,0,8), font, "Hola mundu", 1, TextAligment.BOTTOM_LEFT, new Color3f(1,0,0));
+      
+      dr.addCross(new Point3f(0,0,11), new Color3f(0,0,1), 1);
+      dr.addString(new Point3f(0,0,11), font, "Hola mundu", 1, TextAligment.BOTTOM_CENTER, new Color3f(1,0,0));
+      
+      dr.addCross(new Point3f(0,0,14), new Color3f(0,0,1), 1);
+      dr.addString(new Point3f(0,0,14), font, "Hola mundu", 1, TextAligment.MID_CENTER, new Color3f(1,0,0));
       
       //sceneData.setCamera(camera);
       

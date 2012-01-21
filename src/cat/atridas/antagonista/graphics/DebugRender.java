@@ -8,13 +8,16 @@ import java.util.Collections;
 import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Quat4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.lwjgl.BufferUtils;
 
+import cat.atridas.antagonista.Transformation;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
+import cat.atridas.antagonista.graphics.FontManager.TextAligment;
 
 public abstract class DebugRender {
   
@@ -141,23 +144,25 @@ public abstract class DebugRender {
       Point3f position,
       Font font,
       String text,
+      float desiredHeight,
       TextAligment aligment,
       Color3f color, 
       float duration, 
       boolean depthEnabled) {
     if(active)
-      strings.add(new DebugString(position, font, text, false, aligment, duration, depthEnabled, color));
+      strings.add(new DebugString(position, font, text, desiredHeight, false, aligment, duration, depthEnabled, color));
   }
   
   public void addString2D( 
       Point3f position,
       Font font,
       String text,
+      float desiredHeight,
       TextAligment aligment,
       Color3f color, 
       float duration) {
     if(active)
-      strings.add(new DebugString(position, font, text, true, aligment, duration, false, color));
+      strings.add(new DebugString(position, font, text, desiredHeight, true, aligment, duration, false, color));
   }
   
   
@@ -347,59 +352,91 @@ public abstract class DebugRender {
       Point3f position,
       Font font,
       String text,
+      float desiredHeight,
       TextAligment aligment,
       Color3f color, 
       float duration) {
-    addString(position, font, text, aligment, color, duration, true);
+    addString(position, font, text, desiredHeight, aligment, color, duration, true);
   }
   public void addString( 
       Point3f position,
       Font font,
       String text,
+      float desiredHeight,
       TextAligment aligment,
       Color3f color, 
       boolean depthEnabled) {
-    addString(position, font, text, aligment, color, 0, depthEnabled);
+    addString(position, font, text, desiredHeight, aligment, color, 0, depthEnabled);
   }
   public void addString( 
       Point3f position,
       Font font,
       String text,
+      float desiredHeight,
       TextAligment aligment,
       Color3f color) {
-    addString(position, font, text, aligment, color, 0, true);
+    addString(position, font, text, desiredHeight, aligment, color, 0, true);
   }
   public void addString( 
       Point3f position,
       Font font,
       String text,
+      float desiredHeight,
       Color3f color, 
       float duration) {
-    addString(position, font, text, TextAligment.LEFT, color, duration, true);
+    addString(position, font, text, desiredHeight, TextAligment.MID_CENTER, color, duration, true);
   }
   public void addString( 
       Point3f position,
       Font font,
       String text,
+      float desiredHeight,
       Color3f color, 
       boolean depthEnabled) {
-    addString(position, font, text, TextAligment.LEFT, color, 0, depthEnabled);
+    addString(position, font, text, desiredHeight, TextAligment.MID_CENTER, color, 0, depthEnabled);
   }
   public void addString( 
       Point3f position,
       Font font,
       String text,
+      float desiredHeight,
       Color3f color) {
-    addString(position, font, text, TextAligment.LEFT, color, 0, true);
+    addString(position, font, text, desiredHeight, TextAligment.MID_CENTER, color, 0, true);
   }
 
   public void addString2D( 
       Point3f position,
       Font font,
       String text,
+      float desiredHeight,
       TextAligment aligment,
       Color3f color) {
-    addString2D(position, font, text, aligment, color, 0);
+    addString2D(position, font, text, desiredHeight, aligment, color, 0);
+  }
+  public void addString2D( 
+      Point3f position,
+      Font font,
+      String text,
+      float desiredHeight,
+      Color3f color, 
+      float duration) {
+    addString2D(position, font, text, desiredHeight, TextAligment.TOP_LEFT, color, duration);
+  }
+  public void addString2D( 
+      Point3f position,
+      Font font,
+      String text,
+      float desiredHeight,
+      Color3f color) {
+    addString2D(position, font, text, desiredHeight, TextAligment.TOP_LEFT, color, 0);
+  }
+  public void addString2D( 
+      Point3f position,
+      Font font,
+      String text,
+      TextAligment aligment,
+      Color3f color) {
+    addString2D(position, font, text, font.getLineHeight(), aligment, color, 0);
   }
   public void addString2D( 
       Point3f position,
@@ -407,14 +444,14 @@ public abstract class DebugRender {
       String text,
       Color3f color, 
       float duration) {
-    addString2D(position, font, text, TextAligment.LEFT, color, duration);
+    addString2D(position, font, text, font.getLineHeight(), TextAligment.TOP_LEFT, color, duration);
   }
   public void addString2D( 
       Point3f position,
       Font font,
       String text,
       Color3f color) {
-    addString2D(position, font, text, TextAligment.LEFT, color, 0);
+    addString2D(position, font, text, font.getLineHeight(), TextAligment.TOP_LEFT, color, 0);
   }
   
 
@@ -489,27 +526,34 @@ public abstract class DebugRender {
     FontManager fm = Core.getCore().getFontManager();
     
     //////////////////////////////////////////////
-    Vector3f v3Aux = new Vector3f();
+    Vector3f v3Aux  = new Vector3f();
+    Point3f  p3CameraPos = new Point3f();
+    Quat4f   qAux  = new Quat4f();
 
     Matrix4f viewProj           = new Matrix4f();
-    //Matrix4f view               = new Matrix4f();
     Matrix4f model              = new Matrix4f();
     Matrix4f modelViewProj      = new Matrix4f();
-    //Matrix4f modelView          = new Matrix4f();
-    //Matrix4f modelViewInvTransp = new Matrix4f();
     viewProj.setIdentity();
-    //view .setIdentity();
     
     //rm.getSceneData().getViewMatrix(view);
     rm.getSceneData().getViewProjectionMatrix(viewProj);
+    rm.getSceneData().getCameraPosition(p3CameraPos);
     ///////////////////////////////////////////////
+
+    assert Utils.V3_MINUS_Z.x == 0 && Utils.V3_MINUS_Z.y == 0 && Utils.V3_MINUS_Z.z == -1;
+    assert Utils.V3_Z.x == 0 && Utils.V3_Z.y == 0 && Utils.V3_Z.z == 1;
     
     for(DebugString text : strings) {
 
       model.setIdentity();
       v3Aux.set(text.position);
       model.setTranslation(v3Aux);
+      model.setScale(text.desiredHeight / text.font.getLineHeight());
 
+      v3Aux.sub(p3CameraPos, text.position);
+      v3Aux.normalize();
+      Transformation.getClosestRotation(Utils.V3_MINUS_Z, Utils.V3_MINUS_Y, v3Aux, Utils.V3_Z, qAux);
+      model.setRotation(qAux);
 
       //modelView.mul(view, model);
       modelViewProj.mul(viewProj, model);
@@ -517,7 +561,7 @@ public abstract class DebugRender {
       //modelViewInvTransp.invert(modelView);
       //modelViewInvTransp.transpose();
 
-      fm.printString(text.font, text.text, text.color, modelViewProj, false, rm);
+      fm.printString(text.font, text.text, text.color, modelViewProj, text.aligment, rm);
     }
   }
   
@@ -659,23 +703,20 @@ public abstract class DebugRender {
     public final String text;
     public final boolean on2D;
     public final TextAligment aligment;
+    public final float desiredHeight;
     
-    DebugString(final Point3f _position, final Font _font, final String _text,
+    DebugString(final Point3f _position, final Font _font, final String _text, final float _desiredHeight,
         final boolean _on2D, final TextAligment _aligment,
         final float duration, final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
       position = new Point3f( _position );
       font = _font;
       text = _text;
+      desiredHeight = _desiredHeight;
       on2D = _on2D;
       aligment = _aligment;
     }
   }
-  
-  public static enum TextAligment {
-    LEFT, RIGHT, CENTER
-  }
-  
 
   protected int sphereNumIndices, circlesNumVertexs, bbNumIndices;
   protected static final int crossesNumVertexs = 6;
