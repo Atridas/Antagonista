@@ -496,7 +496,7 @@ public abstract class DebugRender {
   
 
   
-  public final void renderStrings(RenderManager rm) {
+  private final void renderStrings(RenderManager rm) {
     
     if(strings.size() == 0)
       return;
