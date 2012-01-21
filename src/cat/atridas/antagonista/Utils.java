@@ -33,6 +33,7 @@ public abstract class Utils {
   public static final HashedString CLOSE = new HashedString("close");
   public static final HashedString MAIN_GAME = new HashedString("main_game");
   public static final HashedString DEBUG_MATERIAL_NAME = new HashedString("Debug");
+  public static final HashedString NULL_FONT = new HashedString("Null Font");
   
   
   public static final float EPSILON = 0.0001f;
@@ -40,6 +41,7 @@ public abstract class Utils {
   public static final int FLOAT_SIZE   = Float  .SIZE / 8;
   public static final int INTEGER_SIZE = Integer.SIZE / 8;
   public static final int SHORT_SIZE   = Short  .SIZE / 8;
+  public static final int BYTE_SIZE    = Byte   .SIZE / 8;
   /*
   public static File findFile(String name) {
     try {

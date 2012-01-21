@@ -95,17 +95,18 @@ public abstract class TechniquePass {
   public static final int FONT_TEX_ATTRIBUTE = 1;
   public static final int FONT_CHANNEL_ATTRIBUTE = 2;
   public static final int FONT_PAGE_ATTRIBUTE = 3;
+  public static final int FONT_COLOR_ATTRIBUTE = 4;
 
   public static final String FONT_POSITION_ATTRIBUTE_NAME = "a_position";
   public static final String FONT_TEX_ATTRIBUTE_NAME = "a_texCoord";
   public static final String FONT_CHANNEL_ATTRIBUTE_NAME = "a_channel";
   public static final String FONT_PAGE_ATTRIBUTE_NAME = "a_page";
+  public static final String FONT_COLOR_ATTRIBUTE_NAME = "a_color";
 
   public static final String FONT_TEXTURE_UNIFORM = "u_page0";
   public static final int    FONT_TEXTURE_UNIT =    0;
 
   public static final String FONT_WVP_MATRIX_UNIFORM = "u_WorldViewProj";
-  public static final String FONT_COLOR_UNIFORM = "u_color";
   
   private int shaderProgram;
   private int vs, tc, te, gs, fs;
@@ -235,12 +236,11 @@ public abstract class TechniquePass {
     fs = getFontShader(ShaderType.FRAGMENT);
     gs = getFontShader(ShaderType.GEOMETRY);
     fontTechnique =
-    changeDepthTest = 
-    depthTestStatus = 
     changeZWrite =
     changeAlphaBlending = 
     alphaBlendingActive = true;
-    
+
+    changeDepthTest = 
     zWrite = false;
     
     alphaOperation = new BlendOperation();

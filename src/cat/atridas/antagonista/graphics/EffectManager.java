@@ -24,9 +24,6 @@ public class EffectManager extends ResourceManager<Effect> {
   private static Logger LOGGER = Logger.getLogger(EffectManager.class.getCanonicalName());
   
   
-  private String basePath;
-  private ArrayList<String> extensions;
-  
   private ShaderManager vertexShaderManager, 
                         fragmentShaderManager, 
                         geometryShaderManager,
@@ -60,15 +57,16 @@ public class EffectManager extends ResourceManager<Effect> {
         throw new Exception();
       }
       
-      basePath = effectsXML.getAttribute("path");
+      setBasePath( effectsXML.getAttribute("path") );
       
-      extensions = new ArrayList<>();
+      ArrayList<String> extensions = new ArrayList<>();
       
       String[] extensionsArray = effectsXML.getAttribute("extensions").split(",");
       for(String extension : extensionsArray) {
         extensions.add(extension);
       }
       
+      setExtensions(extensions);
       
       Element shadersXML = (Element)effectsXML.getElementsByTagName("shaders").item(0);
       if(shadersXML == null) {
@@ -85,33 +83,33 @@ public class EffectManager extends ResourceManager<Effect> {
         Element shaderConfigXML = (Element)n;
         
         String path = shaderConfigXML.getAttribute("path");
-        ArrayList<String> extensions = new ArrayList<>();
+        ArrayList<String> shaderExtensions = new ArrayList<>();
         
         String[] extensionsArray1 = shaderConfigXML.getAttribute("extensions").split(",");
         for(String extension : extensionsArray1) {
-          extensions.add(extension);
+          shaderExtensions.add(extension);
         }
         
         switch(shaderConfigXML.getTagName()) {
         case "vertex_shaders":
           assert vertexShaderManager == null;
-          vertexShaderManager = new ShaderManager.Vertex(path, extensions);
+          vertexShaderManager = new ShaderManager.Vertex(path, shaderExtensions);
           break;
         case "tesselation_control_shaders":
           assert tessControlShaderManager == null;
-          tessControlShaderManager = new ShaderManager.TessControl(path, extensions);
+          tessControlShaderManager = new ShaderManager.TessControl(path, shaderExtensions);
           break;
         case "tesselation_evaluation_shaders":
           assert tessEvalShaderManager == null;
-          tessEvalShaderManager = new ShaderManager.TessEval(path, extensions);
+          tessEvalShaderManager = new ShaderManager.TessEval(path, shaderExtensions);
           break;
         case "geometry_shaders":
           assert geometryShaderManager == null;
-          geometryShaderManager = new ShaderManager.Geometry(path, extensions);
+          geometryShaderManager = new ShaderManager.Geometry(path, shaderExtensions);
           break;
         case "fragment_shaders":
           assert fragmentShaderManager == null;
-          fragmentShaderManager = new ShaderManager.Fragment(path, extensions);
+          fragmentShaderManager = new ShaderManager.Fragment(path, shaderExtensions);
           break;
         default:
           LOGGER.severe("Unrecognized tag name" + shaderConfigXML.getTagName());
@@ -195,18 +193,6 @@ public class EffectManager extends ResourceManager<Effect> {
       throw new IllegalArgumentException();
     }
   }
-  
-  @Override
-  protected String getBasePath() {
-    assert isInit;
-    return basePath;
-  }
-
-  @Override
-  protected ArrayList<String> getExtensionsPriorized() {
-    assert isInit;
-    return extensions;
-  }
 
   @Override
   protected Effect createNewResource(HashedString resourceName) {
@@ -228,27 +214,14 @@ public class EffectManager extends ResourceManager<Effect> {
   
   private static abstract class ShaderManager extends ResourceManager<Shader> {
 
-    private final String basePath;
-    private final ArrayList<String> extensionsPriorized;
     private final ShaderType type;
     private final Shader defaultShader;
     
     ShaderManager(String _basePath, ArrayList<String> _extensionsPriorized, ShaderType _type) {
-      basePath = _basePath;
-      extensionsPriorized = _extensionsPriorized;
+      super( _basePath, _extensionsPriorized );
       type = _type;
       defaultShader = new Shader(Utils.DEFAULT, type);
       defaultShader.loadDefault();
-    }
-    
-    @Override
-    protected String getBasePath() {
-      return basePath;
-    }
-
-    @Override
-    protected ArrayList<String> getExtensionsPriorized() {
-      return extensionsPriorized;
     }
 
     @Override

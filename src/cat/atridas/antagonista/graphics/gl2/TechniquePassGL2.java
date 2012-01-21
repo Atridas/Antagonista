@@ -21,8 +21,6 @@ public class TechniquePassGL2 extends TechniquePassGL {
   private int ambientUniform, directionalDirUniform, directionalColorUniform;
   private int specularFactorUniform, specularGlossinessUniform, heightUniform;
   
-  private int fontWVPUniform, fontColorUniform;
-  
   public TechniquePassGL2(Element pass) throws AntagonistException {
     super(pass);
   }
@@ -156,14 +154,9 @@ public class TechniquePassGL2 extends TechniquePassGL {
   @Override
   protected void loadFontUniforms(int program)
       throws AntagonistException {
-    fontWVPUniform   = glGetUniformLocation(program, FONT_WVP_MATRIX_UNIFORM);
-    fontColorUniform = glGetUniformLocation(program, FONT_COLOR_UNIFORM);
-    if(fontWVPUniform < 0) {
+    modelViewProjectionUniform   = glGetUniformLocation(program, FONT_WVP_MATRIX_UNIFORM);
+    if(modelViewProjectionUniform < 0) {
       LOGGER.severe("Font uniforms requested but worldviewprojection uniform not active!");
-      throw new AntagonistException();
-    }
-    if(fontColorUniform < 0) {
-      LOGGER.severe("Font uniforms requested but color uniform not active!");
       throw new AntagonistException();
     }
   }
@@ -258,11 +251,13 @@ public class TechniquePassGL2 extends TechniquePassGL {
       "attribute vec2  a_texCoord;\n" +
       "attribute vec4  a_channel;\n" +
       "attribute float a_page;\n" +
+      "attribute vec3  a_color;\n" +
     
     
-      "varying vec4 v_channel;\n" +
+      "varying vec4  v_channel;\n" +
       "varying float v_page;\n" +
-      "varying vec2 v_texCoord;\n" +
+      "varying vec3  v_color;\n" +
+      "varying vec2  v_texCoord;\n" +
     
       "uniform mat4 u_WorldViewProj;\n" +
     
@@ -270,15 +265,29 @@ public class TechniquePassGL2 extends TechniquePassGL {
         "v_texCoord  = a_texCoord;\n" +
         "v_channel   = a_channel;\n" +
         "v_page      = a_page;\n" +
+        "v_color     = a_color;\n" +
       "}\n";
   
   public static final String textFragmentShader = 
       "varying vec2  v_texCoord;\n" +
       "varying vec4  v_channel;\n" +
+      "varying vec3  v_color;\n" +
       "varying float v_page;\n" +
     
       "uniform sampler2D u_page0;\n" +
-      "uniform vec3 u_color;\n" +
+    
+      "void main() {  \n" +
+        "vec4 pixel = texture2D(u_page0, v_texCoord);\n" +
+        "float val = pixel.x;\n" +
+        "gl_FragColor = vec4(v_color,val);\n" +
+      "}\n";
+  /*
+      "varying vec2  v_texCoord;\n" +
+      "varying vec4  v_channel;\n" +
+      "varying vec3  v_color;\n" +
+      "varying float v_page;\n" +
+    
+      "uniform sampler2D u_page0;\n" +
     
       "void main() {  \n" +
         "vec4 pixel = texture2D(u_page0, v_texCoord);\n" +
@@ -286,7 +295,7 @@ public class TechniquePassGL2 extends TechniquePassGL {
         "if(val == 0.0) {\n" +
           "val = pixel.x;\n" +
         "}\n" +
-        "gl_FragColor = vec4(u_color,val);\n" +
+        "gl_FragColor = vec4(v_color,val);\n" +
       "}\n";
-
+*/
 }

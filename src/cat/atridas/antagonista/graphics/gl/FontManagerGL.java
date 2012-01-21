@@ -1,6 +1,7 @@
 package cat.atridas.antagonista.graphics.gl;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import javax.vecmath.Matrix4f;
@@ -9,7 +10,9 @@ import javax.vecmath.Tuple3f;
 import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL20.*;
 
+import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.Font;
 import cat.atridas.antagonista.graphics.FontManager;
@@ -17,13 +20,15 @@ import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.TechniquePass;
 import cat.atridas.antagonista.graphics.Texture;
 
-public class FontManagerGL extends FontManager {
+public abstract class FontManagerGL extends FontManager {
 
-  private int vertexBuffer = -1, indexBuffer = -1;
+  protected int vertexBuffer = -1, indexBuffer = -1;
   private int vbLen = 0, ibLen = 0;
   
   //private ShaderObject shader = null;
   private TechniquePass pass;
+  
+  private FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
   
   @Override
   public final void printString(Font font, String text, Tuple3f color, Matrix4f WVPmatrix, boolean centered, RenderManager rm) {
@@ -42,6 +47,8 @@ public class FontManagerGL extends FontManager {
     
     buffer1.rewind();
     buffer2.rewind();
+    
+    rm.noVertexArray();
     
     //Actualitzar el buffer de vertexos
     if(vbLen < buffer1Size) {
@@ -89,10 +96,22 @@ public class FontManagerGL extends FontManager {
     //shader.setTextureUniform(u_tex0, 0);
     
     //font.setAttributes(shader, a_position, a_texCoord, a_channel, a_page);
+    
+    activateVAO();
+    
     pass.activate(rm);
+    
+    matrixBuffer.clear();
+    Utils.matrixToBuffer(WVPmatrix, matrixBuffer);
+    matrixBuffer.flip();
+    
+    glUniformMatrix4(pass.getModelViewProjectionUniform(), false, matrixBuffer);
+    glVertexAttrib3f(TechniquePass.FONT_COLOR_ATTRIBUTE, color.x, color.y, color.z);
     
     glDrawElements(GL_TRIANGLES, len * 6, GL_UNSIGNED_INT, 0);
   }
+  
+  protected abstract void activateVAO();
   
   private ByteBuffer centerText(ByteBuffer buffer1, int buffer1Size, int sizeX) {
 
@@ -117,6 +136,6 @@ public class FontManagerGL extends FontManager {
       newBuffer1.put(buffer1.get()); //channel
     }
     return newBuffer1;
-}
+  }
 
 }

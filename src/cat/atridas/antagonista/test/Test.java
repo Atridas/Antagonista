@@ -113,7 +113,7 @@ public class Test {
     HashedString camRight = new HashedString("move_camera_right");
     HashedString camDist  = new HashedString("move_camera_distance");
 
-    Font font = core.getFontManager().getFont("font14"); 
+    Font font = core.getFontManager().getResource(new HashedString("font14")); 
     
     DebugRender dr = core.getDebugRender();
     

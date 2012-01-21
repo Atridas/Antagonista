@@ -722,12 +722,6 @@ public class DebugRenderGL2 extends DebugRender {
     
   }
   
-  @Override
-  protected void renderStrings(RenderManager rm) {
-    assert !cleaned;
-    //TODO
-  }
-  
   private void setGlobalMatrixes(TechniquePass pass, Matrix4f model, RenderManager rm) {
     SceneData sd = rm.getSceneData();
     

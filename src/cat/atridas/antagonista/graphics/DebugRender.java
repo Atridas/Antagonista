@@ -476,7 +476,50 @@ public abstract class DebugRender {
   protected abstract void renderAxes(RenderManager rm);
   protected abstract void renderTriangles(RenderManager rm);
   protected abstract void renderBBs(RenderManager rm);
-  protected abstract void renderStrings(RenderManager rm);
+  
+  
+  
+
+  
+  public final void renderStrings(RenderManager rm) {
+    
+    if(strings.size() == 0)
+      return;
+    
+    FontManager fm = Core.getCore().getFontManager();
+    
+    //////////////////////////////////////////////
+    Vector3f v3Aux = new Vector3f();
+
+    Matrix4f viewProj           = new Matrix4f();
+    //Matrix4f view               = new Matrix4f();
+    Matrix4f model              = new Matrix4f();
+    Matrix4f modelViewProj      = new Matrix4f();
+    //Matrix4f modelView          = new Matrix4f();
+    //Matrix4f modelViewInvTransp = new Matrix4f();
+    viewProj.setIdentity();
+    //view .setIdentity();
+    
+    //rm.getSceneData().getViewMatrix(view);
+    rm.getSceneData().getViewProjectionMatrix(viewProj);
+    ///////////////////////////////////////////////
+    
+    for(DebugString text : strings) {
+
+      model.setIdentity();
+      v3Aux.set(text.position);
+      model.setTranslation(v3Aux);
+
+
+      //modelView.mul(view, model);
+      modelViewProj.mul(viewProj, model);
+      
+      //modelViewInvTransp.invert(modelView);
+      //modelViewInvTransp.transpose();
+
+      fm.printString(text.font, text.text, text.color, modelViewProj, false, rm);
+    }
+  }
   
   
   ///////////////////////////////////////////////////////////////////////////////////////////////////////

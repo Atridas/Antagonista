@@ -10,29 +10,17 @@ import cat.atridas.antagonista.graphics.gl.TextureGL;
 
 public class TextureManager extends ResourceManager<Texture> {
 
-  private final ArrayList<String> extensionsPriorized = new ArrayList<>();
-  private String basePath;
   private Texture defaultResource;
   
   public void init(ArrayList<String> _extensionsPriorized, String _basePath) {
-    extensionsPriorized.addAll(_extensionsPriorized);
-    basePath = _basePath;
+    setExtensions(_extensionsPriorized);
+    setBasePath(_basePath);
     
     defaultResource = createNewResource(Utils.DEFAULT);
     
     defaultResource.loadDefault();
     
     assert !Utils.hasGLErrors();
-  }
-  
-  @Override
-  protected String getBasePath() {
-    return basePath;
-  }
-
-  @Override
-  protected ArrayList<String> getExtensionsPriorized() {
-    return extensionsPriorized;
   }
 
   @Override

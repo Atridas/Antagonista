@@ -12,28 +12,16 @@ import cat.atridas.antagonista.graphics.gl3.MeshGL3;
 
 public class MeshManager extends ResourceManager<Mesh> {
 
-  private final ArrayList<String> extensionsPriorized = new ArrayList<>();
-  private String basePath;
   private Mesh defaultResource;
   
   public void init(ArrayList<String> _extensionsPriorized, String _basePath) {
-    extensionsPriorized.addAll(_extensionsPriorized);
-    basePath = _basePath;
+    setExtensions(_extensionsPriorized);
+    setBasePath(_basePath);
     
     defaultResource = createNewResource(Utils.DEFAULT);
     defaultResource.loadDefault();
     
     assert !Utils.hasGLErrors();
-  }
-
-  @Override
-  protected String getBasePath() {
-    return basePath;
-  }
-
-  @Override
-  protected ArrayList<String> getExtensionsPriorized() {
-    return extensionsPriorized;
   }
 
   @Override

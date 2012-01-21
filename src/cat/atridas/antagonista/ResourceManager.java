@@ -14,7 +14,28 @@ public abstract class ResourceManager<T extends Resource> {
   
   private final HashMap<HashedString, AReference<T>> resources = new HashMap<>();
   private final ReferenceQueue<? super T> refQueue = new ReferenceQueue<>();
+
   
+  private String basePath;
+  private ArrayList<String> extensions;
+  
+  protected ResourceManager() {
+    basePath = "";
+    extensions = new ArrayList<>();
+  }
+  
+  protected ResourceManager(String _basePath, ArrayList<String> _extensions) {
+    basePath = _basePath;
+    extensions = new ArrayList<>(_extensions);
+  }
+  
+  protected final void setBasePath(String _basePath) {
+    basePath = _basePath;
+  }
+  
+  protected final void setExtensions(ArrayList<String> _extensions) {
+    extensions = new ArrayList<>(_extensions);
+  }
   
   public final T getResource(HashedString resourceName) {
     //cleanUnusedReferences();
@@ -36,13 +57,13 @@ public abstract class ResourceManager<T extends Resource> {
         } else {
           resource = createNewResource(resourceName);
           
-          ArrayList<String> extensions = getExtensionsPriorized();
+          //ArrayList<String> extensions = getExtensionsPriorized();
           InputStream is = null;
           
           String extension = null;
           for(int i = 0; i < extensions.size(); ++i) {
             extension = extensions.get(i);
-            String path = getBasePath() + resourceName + "." + extension;
+            String path = basePath + resourceName + "." + extension;
             try { //TODO fer aix� d'una manera m�s decent
               is = Utils.findInputStream(path);
               break;
@@ -78,8 +99,6 @@ public abstract class ResourceManager<T extends Resource> {
     }
   }
   
-  protected abstract String getBasePath();
-  protected abstract ArrayList<String> getExtensionsPriorized();
   protected abstract T createNewResource(HashedString name);
   public abstract T getDefaultResource();
   

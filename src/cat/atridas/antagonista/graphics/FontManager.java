@@ -1,53 +1,33 @@
 package cat.atridas.antagonista.graphics;
 
-import java.io.IOException;
-import java.lang.ref.SoftReference;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
+import java.util.ArrayList;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Tuple3f;
 
+import cat.atridas.antagonista.HashedString;
+import cat.atridas.antagonista.ResourceManager;
+
 //TODO optimitzar tot lo relacionat amb això.
-public abstract class FontManager {
-  private static Logger logger = Logger.getLogger(FontManager.class.getCanonicalName());
-  
-  private Map<String, SoftReference<Font>> fonts = new HashMap<String, SoftReference<Font>>();
+public abstract class FontManager extends ResourceManager<Font> {
+  //private static Logger logger = Logger.getLogger(FontManager.class.getCanonicalName());
   private Font defaultFont = new Font.NullFont();
   
-  public Font getFont(String file) {
-    Font font = null;
-    SoftReference<Font> fo = fonts.get(file);
-    if(fo != null) {
-      font = fo.get();
-      if(font != null) {
-        return font;
-      }
-    }
-    
-    
-    try {
-      font = new Font(file);
-    } catch (IOException e) {
-      font = defaultFont;
-      logger.warning(e.toString());
-    } catch (Exception e) {
-      font = defaultFont;
-      logger.warning("Returning default font");
-    }
-    fonts.put(file, new SoftReference<Font>(font));
-    return font;
+
+  
+  public void init(ArrayList<String> _extensionsPriorized, String _basePath) {
+    setExtensions(_extensionsPriorized);
+    setBasePath(_basePath);
   }
   
-  public final void printString(String font, String text, Tuple3f color, Matrix4f WVPmatrix, RenderManager rm) {
-    printString(getFont(font), text, color, WVPmatrix, false, rm);
+  public final void printString(HashedString font, String text, Tuple3f color, Matrix4f WVPmatrix, RenderManager rm) {
+    printString(getResource(font), text, color, WVPmatrix, false, rm);
   }
   
-  public final void printString(String font, String text, Tuple3f color, Matrix4f WVPmatrix, boolean centered, RenderManager rm) {
-    printString(getFont(font), text, color, WVPmatrix, centered, rm);
+  public final void printString(HashedString font, String text, Tuple3f color, Matrix4f WVPmatrix, boolean centered, RenderManager rm) {
+    printString(getResource(font), text, color, WVPmatrix, centered, rm);
   }
   
   public abstract void printString(
@@ -83,6 +63,16 @@ public abstract class FontManager {
     }
     bb.rewind();
     ib.rewind();
+  }
+
+  @Override
+  protected Font createNewResource(HashedString name) {
+    return new Font(name);
+  }
+
+  @Override
+  public Font getDefaultResource() {
+    return defaultFont;
   }
   
 }

@@ -1,13 +1,11 @@
 package cat.atridas.antagonista.graphics;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -18,6 +16,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import cat.atridas.antagonista.HashedString;
+import cat.atridas.antagonista.Resource;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 
@@ -31,25 +30,40 @@ import cat.atridas.antagonista.core.Core;
  * @author Isaac 'Atridas' Serrano Guasch
  *
  */
-public class Font {
+public class Font extends Resource {
   private static Logger logger = Logger.getLogger(Font.class.getCanonicalName());
   
-  public final int width, height, lineHeight, highestChar;
+
+  public static final int VERTEX_STRIDE = 3 * Utils.INTEGER_SIZE  // x, y .. textureId
+                                        + 2 * Utils.FLOAT_SIZE    // s, t
+                                        + 4 * Utils.BYTE_SIZE;    // channel
+
+  public static final int POSITION_OFFSET  = 0;
+  public static final int PAGE_OFFSET      = POSITION_OFFSET  + 2 * Utils.INTEGER_SIZE;
+  public static final int TEXCOORDS_OFFSET = PAGE_OFFSET      + 1 * Utils.INTEGER_SIZE;
+  public static final int CHANNEL_OFFSET   = TEXCOORDS_OFFSET + 2 * Utils.FLOAT_SIZE;
+  
+  
+  public static int getVertexSize() {
+    return 3 * Integer.SIZE / 8  // x, y .. textureId
+         + 2 * Float.SIZE   / 8  // s, t
+         + 4 * Byte.SIZE    / 8; // channel
+  }
+  
+  
+  public int width, height, lineHeight, highestChar;
   
   private final Map<Integer, Texture> pages = new HashMap<Integer, Texture>();
   private final Map<Character, Char> chars = new HashMap<Character, Char>();
   private final Map<Kerning, Integer> kernings = new HashMap<Kerning, Integer>();
+
   
-  protected Font(String path) throws IOException {
-    //File f = null;
-	  InputStream is;
-	  if(logger.isLoggable(Level.INFO))
-	    logger.info("Parsing " + path);
-    
-    //f = Utils.findFile(path);
-    is = Utils.findInputStream(path);
-    
-    
+  public Font(HashedString name) {
+    super(name);
+  }
+
+  @Override
+  public boolean load(InputStream is, String extension) {
     DocumentBuilder db;
     try {
       db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -140,15 +154,13 @@ public class Font {
         }
       }
     } catch (Exception e) {
-      logger.severe("Problem loading font " + e.toString());
-      throw new IllegalArgumentException(e);
+      
+      logger.severe("Problem loading font ");
+      logger.severe(Utils.logExceptionStringAndStack(e));
+      
+      return false;
     }
-  }
-  
-  public static int getVertexSize() {
-    return 3 * Integer.SIZE / 8  // x, y .. textureId
-         + 2 * Float.SIZE   / 8  // s, t
-         + 4 * Byte.SIZE    / 8; // channel
+    return true;
   }
   
   public final int numTextures() {
@@ -156,6 +168,7 @@ public class Font {
   }
   
   public int fillBuffers(CharSequence characters, ByteBuffer vertexBuffer, IntBuffer indexBuffer, Texture[] textures) {
+    assert !cleaned;
     
     for(Entry<Integer, Texture> page : pages.entrySet()) {
       textures[page.getKey()] = page.getValue();
@@ -301,12 +314,28 @@ public class Font {
     }
   }
   
-  protected Font() {width = height = lineHeight = highestChar = 0;}
-  
   static final class NullFont extends Font {
 
-    public NullFont() {super();}
+    public NullFont() {super(Utils.NULL_FONT);}
     public int fillBuffers(CharSequence characters, ByteBuffer vertexBuffer, IntBuffer indexBuffer, Texture[] textures) {return 0;}
     
+  }
+
+  @Override
+  public int getRAMBytesEstimation() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public int getVRAMBytesEstimation() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public void cleanUp() {
+    assert !cleaned;
+    cleaned = true;
   }
 }

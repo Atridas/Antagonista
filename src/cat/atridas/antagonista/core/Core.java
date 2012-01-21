@@ -13,11 +13,11 @@ import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.RenderableObjectManager;
 import cat.atridas.antagonista.graphics.TextureManager;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
-import cat.atridas.antagonista.graphics.gl.FontManagerGL;
 import cat.atridas.antagonista.graphics.gl.RenderManagerGL;
 import cat.atridas.antagonista.graphics.gl2.DebugRenderGL2;
 import cat.atridas.antagonista.graphics.gl2.RenderableObjectManagerGL2;
 import cat.atridas.antagonista.graphics.gl3.DebugRenderGL3;
+import cat.atridas.antagonista.graphics.gl3.FontManagerGL3;
 import cat.atridas.antagonista.graphics.gl3.RenderableObjectManagerGL3;
 import cat.atridas.antagonista.input.InputManager;
 
@@ -26,7 +26,7 @@ public final class Core {
 	private RenderManager           rm  = new RenderManagerGL();//TODO
 	private InputManager            im  = new InputManager();
 	private TextureManager          tm  = new TextureManager();
-	private FontManager             fm  = new FontManagerGL();//TODO
+	private FontManager             fm;
   private EffectManager           em  = new EffectManager(); //TODO
   private MaterialManager         mm  = new MaterialManager();
   private DebugRender             dr;
@@ -93,6 +93,17 @@ public final class Core {
 		al.clear();
     al.add("mat");
     mm.init(al, "data/materials/");
+    
+    
+    if(Utils.supports(Profile.GL3))
+      fm = new FontManagerGL3();
+    else
+      //TODO
+      throw new RuntimeException("Not implemented");
+
+    al.clear();
+    al.add("fnt");
+    fm.init(al, "data/fonts/");
     
     if(Utils.supports(Profile.GL3)) {
       dr = new DebugRenderGL3();
