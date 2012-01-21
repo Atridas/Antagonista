@@ -88,6 +88,9 @@ public abstract class Utils {
     String pathToAdd = "";
     if(isWindows()) {
       pathToAdd = "./native/windows";
+      return; 
+      // en windows això no xuta. Al menys al meu
+      // ho deixem com si res i fem que el windows sigui el "per defecte"
     } else if(isMac()) {
       pathToAdd = "./native/macosx";
     } else if(isUnix()) {
@@ -101,7 +104,8 @@ public abstract class Utils {
     System.setProperty("java.library.path", System.getProperty("java.library.path") + ":" + pathToAdd);
     
     try {
-      Field fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths" );
+      Class<ClassLoader> clazz = ClassLoader.class; 
+      Field fieldSysPath = clazz.getDeclaredField( "sys_paths" );
       fieldSysPath.setAccessible( true );
       fieldSysPath.set( null, null );
     } catch (Exception e) {
