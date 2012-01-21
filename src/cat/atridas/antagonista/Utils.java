@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.HashSet;
@@ -62,6 +63,51 @@ public abstract class Utils {
     }
   }
   */
+  
+  public static boolean isWindows() {
+    String os = System.getProperty("os.name").toLowerCase();
+    return (os.indexOf("win") >= 0);
+  }
+  
+  public static boolean isMac() {
+    String os = System.getProperty("os.name").toLowerCase();
+    return (os.indexOf("mac") >= 0);
+  }
+  
+  public static boolean isUnix() {
+    String os = System.getProperty("os.name").toLowerCase();
+    return (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0);
+  }
+  
+  public static boolean isSolaris() {
+    String os = System.getProperty("os.name").toLowerCase();
+    return (os.indexOf("sunos") >= 0);
+  }
+  
+  public static void loadNativeLibs() {
+    String pathToAdd = "";
+    if(isWindows()) {
+      pathToAdd = "./native/windows";
+    } else if(isMac()) {
+      pathToAdd = "./native/macosx";
+    } else if(isUnix()) {
+      pathToAdd = "./native/linux";
+    } else if(isSolaris()) {
+      pathToAdd = "./native/solaris";
+    } else {
+      throw new RuntimeException("Unrecognized SO: " + System.getProperty("os.name"));
+    }
+    
+    System.setProperty("java.library.path", System.getProperty("java.library.path") + ":" + pathToAdd);
+    
+    try {
+      Field fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths" );
+      fieldSysPath.setAccessible( true );
+      fieldSysPath.set( null, null );
+    } catch (Exception e) {
+      // fail silently
+    }
+  }
   
   public static InputStream findInputStream(String name) throws FileNotFoundException {
 	  /*

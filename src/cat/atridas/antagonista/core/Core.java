@@ -80,6 +80,8 @@ public final class Core {
   }
 	
 	public void init(int w, int h, String title, Canvas displayParent) {
+	  Utils.loadNativeLibs(); //TODO nomes si no estem en un applet, potser. Provar-ho
+	  
 		rm.initDisplay(w, h, title, displayParent);
 		im.init();
 		

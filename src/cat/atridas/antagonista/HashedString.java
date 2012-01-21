@@ -34,7 +34,7 @@ public final class HashedString implements Comparable<HashedString> {
   
   @Override
   public int compareTo(HashedString o) {
-    return Long.compare(value, o.value);
+    return Long.signum(value - o.value);
   }
 
   @Override
