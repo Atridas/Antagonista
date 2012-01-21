@@ -103,8 +103,14 @@ public abstract class TechniquePass {
   public static final String FONT_PAGE_ATTRIBUTE_NAME = "a_page";
   public static final String FONT_COLOR_ATTRIBUTE_NAME = "a_color";
 
-  public static final String FONT_TEXTURE_UNIFORM = "u_page0";
-  public static final int    FONT_TEXTURE_UNIT =    0;
+  public static final String FONT_TEXTURE_0_UNIFORM = "u_page0";
+  public static final int    FONT_TEXTURE_0_UNIT =    0;
+  public static final String FONT_TEXTURE_1_UNIFORM = "u_page1";
+  public static final int    FONT_TEXTURE_1_UNIT =    1;
+  public static final String FONT_TEXTURE_2_UNIFORM = "u_page2";
+  public static final int    FONT_TEXTURE_2_UNIT =    2;
+  public static final String FONT_TEXTURE_3_UNIFORM = "u_page3";
+  public static final int    FONT_TEXTURE_3_UNIT =    3;
 
   public static final String FONT_WVP_MATRIX_UNIFORM = "u_WorldViewProj";
   

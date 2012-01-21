@@ -18,7 +18,9 @@ import cat.atridas.antagonista.graphics.Shader.ShaderType;
 public abstract class TechniquePassGL extends TechniquePass {
   private static Logger LOGGER = Logger.getLogger(TechniquePassGL.class.getCanonicalName());
 
-  private int albedoTextureUniform, normalTextureUniform, heightTextureUniform, fontTextureUniform;
+  private int albedoTextureUniform, normalTextureUniform, heightTextureUniform;
+  
+  private int fontTexture0Uniform, fontTexture1Uniform, fontTexture2Uniform, fontTexture3Uniform;
   
   
   private static int defaultVertexShader   = -1,
@@ -192,12 +194,37 @@ public abstract class TechniquePassGL extends TechniquePass {
       }
     }
     if(fontTechnique) {
-      fontTextureUniform = glGetUniformLocation(program, FONT_TEXTURE_UNIFORM);
-      if(fontTextureUniform < 0) {
-        LOGGER.warning("Font texture requested but not active!");
+      fontTexture0Uniform = glGetUniformLocation(program, FONT_TEXTURE_0_UNIFORM);
+      fontTexture1Uniform = glGetUniformLocation(program, FONT_TEXTURE_1_UNIFORM);
+      fontTexture2Uniform = glGetUniformLocation(program, FONT_TEXTURE_2_UNIFORM);
+      fontTexture3Uniform = glGetUniformLocation(program, FONT_TEXTURE_3_UNIFORM);
+      
+      if(fontTexture0Uniform < 0) {
+        LOGGER.warning("Font texture 0 requested but not active!");
         //throw new AntagonistException();
       } else {
-        glUniform1i(fontTextureUniform, FONT_TEXTURE_UNIT);
+        glUniform1i(fontTexture0Uniform, FONT_TEXTURE_0_UNIT);
+      }
+      
+      if(fontTexture1Uniform < 0) {
+        LOGGER.warning("Font texture 1 requested but not active!");
+        //throw new AntagonistException();
+      } else {
+        glUniform1i(fontTexture1Uniform, FONT_TEXTURE_1_UNIT);
+      }
+      
+      if(fontTexture2Uniform < 0) {
+        LOGGER.warning("Font texture 2 requested but not active!");
+        //throw new AntagonistException();
+      } else {
+        glUniform1i(fontTexture2Uniform, FONT_TEXTURE_2_UNIT);
+      }
+      
+      if(fontTexture3Uniform < 0) {
+        LOGGER.warning("Font texture 3 requested but not active!");
+        //throw new AntagonistException();
+      } else {
+        glUniform1i(fontTexture3Uniform, FONT_TEXTURE_3_UNIT);
       }
     }
     assert !Utils.hasGLErrors();

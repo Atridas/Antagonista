@@ -204,6 +204,11 @@ public class Font extends Resource {
       float t0 = charObj.y;
       float s1 = charObj.x + charObj.fwidth;
       float t1 = charObj.y - charObj.fheight;
+
+      byte channel0 = ((charObj.chanel & 8) != 0) ? Byte.MAX_VALUE : 0;
+      byte channel1 = ((charObj.chanel & 4) != 0) ? Byte.MAX_VALUE : 0;
+      byte channel2 = ((charObj.chanel & 2) != 0) ? Byte.MAX_VALUE : 0;
+      byte channel3 = ((charObj.chanel & 1) != 0) ? Byte.MAX_VALUE : 0;
       
       //vertex 00
       vertexBuffer.putInt(x0Coord); //x
@@ -214,10 +219,10 @@ public class Font extends Resource {
       vertexBuffer.putFloat(s0);
       vertexBuffer.putFloat(t0);
 
-      vertexBuffer.put((byte)(charObj.chanel & 8)); //channel
-      vertexBuffer.put((byte)(charObj.chanel & 4)); //channel
-      vertexBuffer.put((byte)(charObj.chanel & 2)); //channel
-      vertexBuffer.put((byte)(charObj.chanel & 1)); //channel
+      vertexBuffer.put(channel0); //channel
+      vertexBuffer.put(channel1); //channel
+      vertexBuffer.put(channel2); //channel
+      vertexBuffer.put(channel3); //channel
       
       //vertex 10
       vertexBuffer.putInt(x1Coord); //x
@@ -228,10 +233,10 @@ public class Font extends Resource {
       vertexBuffer.putFloat(s1);
       vertexBuffer.putFloat(t0);
 
-      vertexBuffer.put((byte)(charObj.chanel & 8)); //channel
-      vertexBuffer.put((byte)(charObj.chanel & 4)); //channel
-      vertexBuffer.put((byte)(charObj.chanel & 2)); //channel
-      vertexBuffer.put((byte)(charObj.chanel & 1)); //channel
+      vertexBuffer.put(channel0); //channel
+      vertexBuffer.put(channel1); //channel
+      vertexBuffer.put(channel2); //channel
+      vertexBuffer.put(channel3); //channel
       
       //vertex 11
       vertexBuffer.putInt(x1Coord); //x
@@ -242,10 +247,10 @@ public class Font extends Resource {
       vertexBuffer.putFloat(s1);
       vertexBuffer.putFloat(t1);
 
-      vertexBuffer.put((byte)(charObj.chanel & 8)); //channel
-      vertexBuffer.put((byte)(charObj.chanel & 4)); //channel
-      vertexBuffer.put((byte)(charObj.chanel & 2)); //channel
-      vertexBuffer.put((byte)(charObj.chanel & 1)); //channel
+      vertexBuffer.put(channel0); //channel
+      vertexBuffer.put(channel1); //channel
+      vertexBuffer.put(channel2); //channel
+      vertexBuffer.put(channel3); //channel
       
       //vertex 01
       vertexBuffer.putInt(x0Coord); //x
@@ -256,10 +261,10 @@ public class Font extends Resource {
       vertexBuffer.putFloat(s0);
       vertexBuffer.putFloat(t1);
 
-      vertexBuffer.put((byte)(charObj.chanel & 8)); //channel
-      vertexBuffer.put((byte)(charObj.chanel & 4)); //channel
-      vertexBuffer.put((byte)(charObj.chanel & 2)); //channel
-      vertexBuffer.put((byte)(charObj.chanel & 1)); //channel
+      vertexBuffer.put(channel0); //channel
+      vertexBuffer.put(channel1); //channel
+      vertexBuffer.put(channel2); //channel
+      vertexBuffer.put(channel3); //channel
       
       
       //triangles

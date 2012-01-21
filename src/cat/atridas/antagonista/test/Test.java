@@ -142,11 +142,11 @@ public class Test {
         camera.addDistance( -.01f * im.getActionValue(camDist) );
       }
       
-      /*
       dr.addLine(new Point3f(0,0,0), new Point3f(0,0,25), new Color3f(0,0,1));
-      dr.addLine(new Point3f(0,0,0), new Point3f(0,25,0), new Color3f(0,1,0),false);
+      dr.addLine(new Point3f(0,0,0), new Point3f(0,25,0), new Color3f(0,1,0));
       dr.addLine(new Point3f(0,0,0), new Point3f(25,0,0), new Color3f(1,0,0));
 
+      /*
       dr.addCross(new Point3f(0,10,10), new Color3f(0,0,0), 1);
       dr.addCross(new Point3f(10,10,0), new Color3f(0,0,1), 2);
       dr.addCross(new Point3f(-10,-10,0), new Color3f(1,0,0), 1,false);
@@ -204,7 +204,6 @@ public class Test {
       
       rm.present();
       
-      //render(rm);
       Core.getCore().getInputManager().update(dt);
     }
     
@@ -213,87 +212,4 @@ public class Test {
     
     Core.getCore().close();
   }
-
-  /*
-  static void render(RenderManager rm) {
-    
-    rm.initFrame();
-
-    HashedString hs7 = new HashedString("Habitacio");
-    MeshManager mem  = Core.getCore().getMeshManager();
-    //Mesh mesh = mem.getResource(hs7);
-    Mesh mesh = mem.getResource(hs7);
-
-    SceneData sceneData = rm.getSceneData();
-
-    mesh.preRender();
-    sceneData.setUniforms();
-
-    assert !Utils.hasGLErrors();
-    
-    FloatBuffer fb = BufferUtils.createFloatBuffer(8*4);
-    Matrix4f mvp = new Matrix4f();
-    Matrix4f mv  = new Matrix4f();
-    mvp.setIdentity();
-    mv .setIdentity();
-    
-    sceneData.setPerspective(45, 1, 100);
-    sceneData.setCamera(new Point3f(30, 30, 30), new Point3f(0, 0, 0), new Vector3f(0, 0, 1));
-    
-    sceneData.getViewMatrix(mv);
-    sceneData.getViewProjectionMatrix(mvp);
-    
-    int matrixBuffer = -1;
-    if(Utils.supports(Profile.GL3) || GLContext.getCapabilities().GL_ARB_uniform_buffer_object) {
-      fb.rewind();
-      Utils.matrixToBuffer(mvp, fb);
-      Utils.matrixToBuffer(mv, fb);
-      fb.rewind();
-      
-      matrixBuffer = GL15.glGenBuffers();
-      GL15.glBindBuffer(GL31.GL_UNIFORM_BUFFER, matrixBuffer);
-      GL15.glBufferData(GL31.GL_UNIFORM_BUFFER, fb, GL15.GL_STATIC_DRAW);
-      
-      GL30.glBindBufferRange(
-          GL31.GL_UNIFORM_BUFFER, 
-          TechniquePass.BASIC_INSTANCE_UNIFORMS_BINDING, 
-          matrixBuffer, 
-          0, 
-          4 * 8 * Utils.FLOAT_SIZE);
-      
-    }
-    
-    int numSubmeshes = mesh.getNumSubmeshes();
-    for(int submesh = 0; submesh < numSubmeshes; ++submesh) {
-      Material material = mesh.getMaterial(submesh);
-      material.setUpUniforms(rm);
-      
-      Technique technique = material.getEffect().getTechnique(TechniqueType.FORWARD, Quality.MID);
-      for(TechniquePass pass: technique.passes) {
-        pass.activate(rm);
-        material.setUpUniforms(pass, rm);
-        sceneData.setUniforms(pass);
-
-        if(matrixBuffer < 0) {
-          fb.rewind();
-          Utils.matrixToBuffer(mv, fb);
-          fb.rewind();
-          GL20.glUniformMatrix4(pass.getModelViewUniform(), false, fb);
-          fb.rewind();
-          Utils.matrixToBuffer(mvp, fb);
-          fb.rewind();
-          GL20.glUniformMatrix4(pass.getModelViewProjectionUniform(), false, fb);
-        }
-        
-        mesh.render(submesh, rm);
-      }
-    }
-    
-    rm.present();
-    
-    if(matrixBuffer >= 0) {
-      GL15.glDeleteBuffers(matrixBuffer);
-    }
-  }
-  */
 }

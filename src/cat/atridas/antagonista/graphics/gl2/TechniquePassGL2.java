@@ -247,15 +247,15 @@ public class TechniquePassGL2 extends TechniquePassGL {
   }
   
   public static final String textVertexShader = 
-      "attribute vec2  a_position;\n" +
-      "attribute vec2  a_texCoord;\n" +
-      "attribute vec4  a_channel;\n" +
-      "attribute float a_page;\n" +
-      "attribute vec3  a_color;\n" +
+      "attribute vec2   a_position;\n" +
+      "attribute vec2   a_texCoord;\n" +
+      "attribute vec4   a_channel;\n" +
+      "attribute float  a_page;\n" +
+      "attribute vec3   a_color;\n" +
     
     
       "varying vec4  v_channel;\n" +
-      "varying float v_page;\n" +
+      "varying vec4  v_page;\n" +
       "varying vec3  v_color;\n" +
       "varying vec2  v_texCoord;\n" +
     
@@ -264,7 +264,14 @@ public class TechniquePassGL2 extends TechniquePassGL {
       "void main() {  gl_Position = u_WorldViewProj * vec4(a_position, 0, 1);\n" +
         "v_texCoord  = a_texCoord;\n" +
         "v_channel   = a_channel;\n" +
-        "v_page      = a_page;\n" +
+        "if(a_page < 0.5)\n" +
+        "  v_page = vec4(1,0,0,0);\n" +
+        "else if(a_page < 0.5)\n" +
+        "  v_page = vec4(0,1,0,0);\n" +
+        "else if(a_page < 0.5)\n" +
+        "  v_page = vec4(0,0,1,0);\n" +
+        "else\n" +
+        "  v_page = vec4(0,0,0,1);\n" +
         "v_color     = a_color;\n" +
       "}\n";
   
@@ -272,30 +279,27 @@ public class TechniquePassGL2 extends TechniquePassGL {
       "varying vec2  v_texCoord;\n" +
       "varying vec4  v_channel;\n" +
       "varying vec3  v_color;\n" +
-      "varying float v_page;\n" +
-    
+      "varying vec4  v_page;\n" +
+
       "uniform sampler2D u_page0;\n" +
+      "uniform sampler2D u_page1;\n" +
+      "uniform sampler2D u_page2;\n" +
+      "uniform sampler2D u_page3;\n" +
     
       "void main() {  \n" +
-        "vec4 pixel = texture2D(u_page0, v_texCoord);\n" +
-        "float val = pixel.x;\n" +
-        "gl_FragColor = vec4(v_color,val);\n" +
-      "}\n";
-  /*
-      "varying vec2  v_texCoord;\n" +
-      "varying vec4  v_channel;\n" +
-      "varying vec3  v_color;\n" +
-      "varying float v_page;\n" +
-    
-      "uniform sampler2D u_page0;\n" +
-    
-      "void main() {  \n" +
-        "vec4 pixel = texture2D(u_page0, v_texCoord);\n" +
-        "float val  = dot(v_channel, pixel);\n" +
-        "if(val == 0.0) {\n" +
-          "val = pixel.x;\n" +
+        "vec4 pixel0 = texture2D(u_page0, v_texCoord);\n" +
+        "vec4 pixel1 = texture2D(u_page1, v_texCoord);\n" +
+        "vec4 pixel2 = texture2D(u_page2, v_texCoord);\n" +
+        "vec4 pixel3 = texture2D(u_page3, v_texCoord);\n" +
+        "vec4 pixel = pixel0 * v_page.x + pixel1 * v_page.y + pixel2 * v_page.z + pixel3 * v_page.w;\n" +
+        "float divisor = dot(v_channel, vec4(1.0,1.0,1.0,1.0));\n" +
+        "float val;\n" +
+        "if(divisor == 0.0)\n" +
+        "{\n" +
+        "  val = pixel.x;\n" +
+        "} else {\n" +
+        "  val = dot(v_channel, pixel) / divisor;\n" +
         "}\n" +
         "gl_FragColor = vec4(v_color,val);\n" +
       "}\n";
-*/
 }

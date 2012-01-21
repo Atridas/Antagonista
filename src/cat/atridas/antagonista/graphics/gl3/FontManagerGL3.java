@@ -37,8 +37,8 @@ public class FontManagerGL3 extends FontManagerGL {
       glVertexAttribPointer(TechniquePass.FONT_TEX_ATTRIBUTE, 2, 
           GL_FLOAT, false, Font.VERTEX_STRIDE, Font.TEXCOORDS_OFFSET);
       
-      glVertexAttribPointer(TechniquePass.FONT_CHANNEL_ATTRIBUTE, 2, 
-          GL_FLOAT, false, Font.VERTEX_STRIDE, Font.CHANNEL_OFFSET);
+      glVertexAttribPointer(TechniquePass.FONT_CHANNEL_ATTRIBUTE, 4, 
+          GL_BYTE, true, Font.VERTEX_STRIDE, Font.CHANNEL_OFFSET);
       
     } else {
       glBindVertexArray(vao);
