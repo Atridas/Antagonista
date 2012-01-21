@@ -294,7 +294,7 @@ public class TechniquePassGL2 extends TechniquePassGL {
         "vec4 pixel = pixel0 * v_page.x + pixel1 * v_page.y + pixel2 * v_page.z + pixel3 * v_page.w;\n" +
         "float divisor = dot(v_channel, vec4(1.0,1.0,1.0,1.0));\n" +
         "float val;\n" +
-        "if(divisor == 0.0)\n" +
+        "if(divisor < 0.1)\n" +
         "{\n" +
         "  val = pixel.x;\n" +
         "} else {\n" +

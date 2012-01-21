@@ -15,6 +15,7 @@ import cat.atridas.antagonista.graphics.TextureManager;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
 import cat.atridas.antagonista.graphics.gl.RenderManagerGL;
 import cat.atridas.antagonista.graphics.gl2.DebugRenderGL2;
+import cat.atridas.antagonista.graphics.gl2.FontManagerGL2;
 import cat.atridas.antagonista.graphics.gl2.RenderableObjectManagerGL2;
 import cat.atridas.antagonista.graphics.gl3.DebugRenderGL3;
 import cat.atridas.antagonista.graphics.gl3.FontManagerGL3;
@@ -97,9 +98,10 @@ public final class Core {
     
     if(Utils.supports(Profile.GL3))
       fm = new FontManagerGL3();
+    else if(Utils.supports(Profile.GL2))
+      fm = new FontManagerGL2();
     else
-      //TODO
-      throw new RuntimeException("Not implemented");
+      throw new RuntimeException("Not implemented"); //TODO
 
     al.clear();
     al.add("fnt");
