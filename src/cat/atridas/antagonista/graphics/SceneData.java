@@ -108,7 +108,7 @@ public abstract class SceneData {
       float top,  float bottom,
       float near, float far)
   {
-    setOrtho(left, right,  top,  bottom, near,  far, projectionMatrix);
+    getOrtho(left, right,  top,  bottom, near,  far, projectionMatrix);
   }
   
   public final void setOrtho(float near, float far)
@@ -118,10 +118,10 @@ public abstract class SceneData {
   
   public final void setOrtho(float near, float far, Matrix4f matrix)
   {
-    setOrtho(0, rm.getWidth(),  0, rm.getHeight(), near,  far, matrix);
+    getOrtho(0, rm.getWidth(),  0, rm.getHeight(), near,  far, matrix);
   }
   
-  public final void setOrtho(
+  public static final void getOrtho(
       float left, float right, 
       float top,  float bottom,
       float near, float far,

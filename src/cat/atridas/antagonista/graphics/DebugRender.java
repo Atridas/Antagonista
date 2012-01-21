@@ -7,6 +7,7 @@ import java.util.Collections;
 
 import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Tuple3f;
@@ -154,7 +155,7 @@ public abstract class DebugRender {
   }
   
   public void addString2D( 
-      Point3f position,
+      Point2f position,
       Font font,
       String text,
       float desiredHeight,
@@ -162,7 +163,7 @@ public abstract class DebugRender {
       Color3f color, 
       float duration) {
     if(active)
-      strings.add(new DebugString(position, font, text, desiredHeight, true, aligment, duration, false, color));
+      strings.add(new DebugString(new Point3f(position.x, position.y, 0), font, text, desiredHeight, true, aligment, duration, false, color));
   }
   
   
@@ -405,7 +406,7 @@ public abstract class DebugRender {
   }
 
   public void addString2D( 
-      Point3f position,
+      Point2f position,
       Font font,
       String text,
       float desiredHeight,
@@ -414,7 +415,7 @@ public abstract class DebugRender {
     addString2D(position, font, text, desiredHeight, aligment, color, 0);
   }
   public void addString2D( 
-      Point3f position,
+      Point2f position,
       Font font,
       String text,
       float desiredHeight,
@@ -423,35 +424,12 @@ public abstract class DebugRender {
     addString2D(position, font, text, desiredHeight, TextAligment.TOP_LEFT, color, duration);
   }
   public void addString2D( 
-      Point3f position,
+      Point2f position,
       Font font,
       String text,
       float desiredHeight,
       Color3f color) {
     addString2D(position, font, text, desiredHeight, TextAligment.TOP_LEFT, color, 0);
-  }
-  public void addString2D( 
-      Point3f position,
-      Font font,
-      String text,
-      TextAligment aligment,
-      Color3f color) {
-    addString2D(position, font, text, font.getLineHeight(), aligment, color, 0);
-  }
-  public void addString2D( 
-      Point3f position,
-      Font font,
-      String text,
-      Color3f color, 
-      float duration) {
-    addString2D(position, font, text, font.getLineHeight(), TextAligment.TOP_LEFT, color, duration);
-  }
-  public void addString2D( 
-      Point3f position,
-      Font font,
-      String text,
-      Color3f color) {
-    addString2D(position, font, text, font.getLineHeight(), TextAligment.TOP_LEFT, color, 0);
   }
   
 
@@ -530,14 +508,18 @@ public abstract class DebugRender {
     Point3f  p3CameraPos = new Point3f();
     Quat4f   qAux  = new Quat4f();
 
+    Matrix4f orthoProj          = new Matrix4f();
     Matrix4f viewProj           = new Matrix4f();
     Matrix4f model              = new Matrix4f();
     Matrix4f modelViewProj      = new Matrix4f();
+    orthoProj.setIdentity();
     viewProj.setIdentity();
     
     //rm.getSceneData().getViewMatrix(view);
     rm.getSceneData().getViewProjectionMatrix(viewProj);
     rm.getSceneData().getCameraPosition(p3CameraPos);
+    float normalizedWidth = rm.getAspectRatio();
+    SceneData.getOrtho(0, normalizedWidth, 0, 1, -1, 1, orthoProj);
     ///////////////////////////////////////////////
 
     assert Utils.V3_MINUS_Z.x == 0 && Utils.V3_MINUS_Z.y == 0 && Utils.V3_MINUS_Z.z == -1;
@@ -545,22 +527,31 @@ public abstract class DebugRender {
     
     for(DebugString text : strings) {
 
-      model.setIdentity();
-      v3Aux.set(text.position);
-      model.setTranslation(v3Aux);
-      model.setScale(text.desiredHeight / text.font.getLineHeight());
-
-      v3Aux.sub(p3CameraPos, text.position);
-      v3Aux.normalize();
-      Transformation.getClosestRotation(Utils.V3_MINUS_Z, Utils.V3_MINUS_Y, v3Aux, Utils.V3_Z, qAux);
-      model.setRotation(qAux);
-
-      //modelView.mul(view, model);
-      modelViewProj.mul(viewProj, model);
+      if(text.on2D) {
+        model.setIdentity();
+        v3Aux.x = (Utils.isNegative(text.position.x))? normalizedWidth + text.position.x : text.position.x;
+        v3Aux.y = (Utils.isNegative(text.position.y))? 1.f             + text.position.y : text.position.y;
+        v3Aux.z = 0;
+        model.setTranslation(v3Aux);
+        model.setScale(text.desiredHeight / text.font.getLineHeight());
+        
+        
+        modelViewProj.mul(orthoProj, model);
+      } else {
+        model.setIdentity();
+        v3Aux.set(text.position);
+        model.setTranslation(v3Aux);
+        model.setScale(text.desiredHeight / text.font.getLineHeight());
+        
+        v3Aux.sub(p3CameraPos, text.position);
+        v3Aux.normalize();
+        Transformation.getClosestRotation(Utils.V3_MINUS_Z, Utils.V3_MINUS_Y, v3Aux, Utils.V3_Z, qAux);
+        model.setRotation(qAux);
+  
+        
+        modelViewProj.mul(viewProj, model);
+      }
       
-      //modelViewInvTransp.invert(modelView);
-      //modelViewInvTransp.transpose();
-
       fm.printString(text.font, text.text, text.color, modelViewProj, text.aligment, rm);
     }
   }

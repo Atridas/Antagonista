@@ -227,4 +227,9 @@ public abstract class Utils {
     matrixToBuffer(in, fb);
     out.position(pos + (16 * FLOAT_SIZE));
   }
+  
+  
+  public static boolean isNegative(float f) {
+    return ( Float.floatToIntBits(f) & 0x80000000 ) != 0;
+  }
 }

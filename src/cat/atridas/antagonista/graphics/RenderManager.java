@@ -13,7 +13,6 @@ public abstract class RenderManager {
   private static Logger LOGGER = Logger.getLogger(RenderManager.class.getCanonicalName());
 	
 	protected int width;
-
   protected int height;
   
   private boolean forwardCompatible = true;
@@ -23,6 +22,9 @@ public abstract class RenderManager {
 	}
 	public final int getHeight() {
 		return height;
+	}
+	public final float getAspectRatio() {
+	  return (float) width / (float) height;
 	}
 	public final boolean isForwardCompatible() {
 	  return forwardCompatible;

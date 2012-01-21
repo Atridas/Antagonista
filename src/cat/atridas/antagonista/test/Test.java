@@ -4,6 +4,7 @@ import java.util.logging.Level;
 
 import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -208,6 +209,10 @@ public class Test {
       dr.addCross(new Point3f(0,0,14), new Color3f(0,0,1), 1);
       dr.addString(new Point3f(0,0,14), font, "Hola mundu", 1, TextAligment.MID_CENTER, new Color3f(1,0,0));
       
+      int fps = (int)  (1./ dt);
+
+      dr.addString2D(new Point2f(.0f,.0f), font, "FPS: " + fps, .05f, new Color3f(0,0,0));
+      dr.addString2D(new Point2f(-.0f,-.0f), font, "FPS: " + fps, .05f, TextAligment.BOTTOM_RIGHT, new Color3f(0,0,0));
       //sceneData.setCamera(camera);
       
       rm.initFrame();
