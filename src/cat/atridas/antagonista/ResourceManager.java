@@ -9,6 +9,29 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+/**
+ * <p>
+ * Base ResourceManager. It has capabilities to cache all resources. To use this class, extend it
+ * and implement its methods.
+ * </p>
+ * <p>
+ * This class saves the loaded resources with a SoftReference, witch means it will not delete any of
+ * if it is still referenced from anywhere. Still, if it is not referred, won't be deleted until the
+ * JVM runs out of memory. Still, this class knows nothing about Video Memory, so provides a 
+ * <code>weakify</code> method that turns all Soft References to Weak References, witch means that all
+ * unused references will be cleaned in the next garbage collection.
+ * </p>
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch
+ * @version 1.1 22/1/2012
+ * @since 0.1
+ *
+ * @see java.lang.ref.SoftReference
+ * @see java.lang.ref.WeakReference
+ * @see #weakify()
+ *
+ * @param <T> Class of the resources this manager will have.
+ */
 public abstract class ResourceManager<T extends Resource> {
   private static Logger LOGGER = Logger.getLogger(ResourceManager.class.getCanonicalName());
   
@@ -19,26 +42,75 @@ public abstract class ResourceManager<T extends Resource> {
   private String basePath;
   private ArrayList<HashedString> extensions;
   
+  /**
+   * Creates a ResourceManager. If you use this Constructor, you must call both 
+   * <code>setBasePath</code> and <code>setExtensions</code> before loading any resource.
+   * 
+   * @since 0.1
+   */
   protected ResourceManager() {
     basePath = "";
     extensions = new ArrayList<>();
   }
   
+  /**
+   * <p>
+   * Creates a ResourceManager, with the basic fields initialized.
+   * </p>
+   * <p>
+   * All resources will be searched chaining the base path with the resource name and a
+   * extension (preceded with a dot), starting the search with the first extension in the list.
+   * </p>
+   * 
+   * @param _basePath Path where the resources will be searched.
+   * @param _extensions Extensions of the resources to be loaded.
+   * @since 0.1
+   */
   protected ResourceManager(String _basePath, ArrayList<HashedString> _extensions) {
     basePath = _basePath;
     extensions = new ArrayList<>(_extensions);
   }
   
+  /**
+   * Sets the base path where the resources will be searched.
+   * 
+   * @param _basePath Path where the resources will be searched.
+   * @since 0.1
+   */
   protected final void setBasePath(String _basePath) {
     basePath = _basePath;
   }
   
+  /**
+   * Sets the extensions that the files containing the resources will have, ordered with the one with
+   * the highest priority first.
+   * 
+   * @param _extensionss Extensions of the resources to be loaded.
+   * @since 0.1
+   */
   protected final void setExtensions(ArrayList<HashedString> _extensions) {
     extensions = new ArrayList<>(_extensions);
   }
   
+  /**
+   * <p>
+   * Gets a resource on the manager. If the resource is not cached, the manager will load, using
+   * the base path and the extensions setted.
+   * </p>
+   * <p>
+   * On an error loading all possible files a default resource will be loaded. All resources will be
+   * cached, even those loaded with the default resource, and the manager will never try to load them
+   * again. 
+   * </p>
+   * 
+   * @param resourceName name of the resource to be loaded or getted.
+   * @return the resource found.
+   * @since 0.1
+   */
   public final T getResource(HashedString resourceName) {
     //cleanUnusedReferences();
+    assert basePath.compareTo("") != 0;
+    assert extensions.size() > 0;
     
     AReference<T> resourceRef = resources.get(resourceName);
     T resource = null;
@@ -84,6 +156,11 @@ public abstract class ResourceManager<T extends Resource> {
     return resource;
   }
   
+  /**
+   * This method must be called from time to time in order to clean unused references.
+   * 
+   * @since 0.1
+   */
   @SuppressWarnings("unchecked")
   public final synchronized void cleanUnusedReferences() {
     AReference<T> ref;
@@ -92,16 +169,43 @@ public abstract class ResourceManager<T extends Resource> {
     }
   }
   
-  
+  /**
+   * Turns all soft references into weak references. This references will be cleaned if are not used
+   * anywhere else in the engine in the next garbage collection. When used again, references will turn
+   * into soft references again.
+   * 
+   * @since 0.1
+   */
   public final synchronized void weakify() {
     for(Entry<HashedString, AReference<T>> entry : resources.entrySet() ) {
       new AWeakReference(entry.getValue());
     }
   }
   
+  /**
+   * Implementations will overwrite this class to create new resources before loading them.
+   * 
+   * @param name name of the resource to be loaded. Just set it in the Resource Constructor.
+   * @return a new, unitialized, resource.
+   * @since 0.1
+   */
   protected abstract T createNewResource(HashedString name);
+  
+  /**
+   * Gets a default resource, that must not fail ever.
+   * 
+   * @return the default resource.
+   * @since 0.1
+   */
   public abstract T getDefaultResource();
   
+  /**
+   * Gets the added RAM Bytes estimation of all resources.
+   * 
+   * @return The memory used by all resources of this manager.
+   * @see Resource#getRAMBytesEstimation() 
+   * @since 0.1
+   */
   public final int getRAMBytesEstimation() {
     cleanUnusedReferences();
     
@@ -114,6 +218,13 @@ public abstract class ResourceManager<T extends Resource> {
     return cont;
   }
   
+  /**
+   * Gets the added VRAM Bytes estimation of all resources.
+   * 
+   * @return The memory used by all resources of this manager.
+   * @see Resource#getVRAMBytesEstimation()
+   * @since 0.1
+   */
   public final int getVRAMBytesEstimation() {
     cleanUnusedReferences();
     

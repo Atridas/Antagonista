@@ -15,7 +15,6 @@ import javax.vecmath.Vector3f;
 import org.lwjgl.BufferUtils;
 
 import cat.atridas.antagonista.Quality;
-import cat.atridas.antagonista.Transformation;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.graphics.RenderManager;
@@ -437,7 +436,7 @@ public class DebugRenderGL2 extends DebugRender {
         model.setScale(circle.radius);
 
         v3Aux.set(0,0,1);
-        Transformation.getClosestRotation(v3Aux, circle.planeNormal, qAux);
+        Utils.getClosestRotation(v3Aux, circle.planeNormal, qAux);
         model.setRotation(qAux);
 
         

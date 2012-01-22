@@ -8,17 +8,20 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 /**
+ * <p>
  * This class encapsulates information about the front, up, left and right vectors in the engine.
  * Use the vectors here created and never change them. Also, whenever you need to compute the Euler
  * angles, use the functions in this class so everything works consistently.
- * 
+ * </p>
+ * <p>
  * We will do a Yaw -> Pitch -> Roll rotation (in that order) and Yaw will be arround the
  * Z vector (a positive Yaw means turning to the left), Pitch arround the -X vector (a 
  * positive angle means to turn your head up) and Roll arround the -Y angle (a positive 
  * Roll means to do a barrell roll to your right).
- * 
- * 
+ * </p>
+ * <p>
  * In the Blender exporter we should take the ZXY rotation and negate both Pitch and Roll.
+ * </p>
  * 
  * @author Isaac 'Atridas' Serrano Guasch
  * @version 1.1 22/1/2012
@@ -28,22 +31,22 @@ import javax.vecmath.Vector3f;
 public class Conventions {
 
   /**
-   * Front vector, taken from Blender.
+   * Front vector, taken from Blender (0,-1,0).
    * @since 0.1
    */
   public static final Vector3f FRONT_VECTOR = new Vector3f(0, -1, 0);
   /**
-   * Up vector, taken from Blender.
+   * Up vector, taken from Blender (0,0,1).
    * @since 0.1
    */
   public static final Vector3f UP_VECTOR = new Vector3f(0, 0, 1);
   /**
-   * Right vector, taken from Blender.
+   * Right vector, taken from Blender (-1,0,0).
    * @since 0.1
    */
   public static final Vector3f RIGHT_VECTOR = new Vector3f(-1, 0, 0); 
   /**
-   * Left vector, taken from Blender.
+   * Left vector, taken from Blender (1,0,0).
    * @since 0.1
    */
   public static final Vector3f LEFT_VECTOR = new Vector3f(1, 0, 0); 
@@ -199,5 +202,93 @@ public class Conventions {
     Quat4f q = quaternion.get();
     quaternionToEulerAngles(q, _euler);
     aa_.set(q);
+  }
+  
+  private static final Vector3f g_v3aux1 = new Vector3f();
+  public static void getClosestRotation(Vector3f _originalDir, Vector3f _finalDir, Quat4f rotation_) {
+    assert Math.abs(_originalDir.lengthSquared() - 1.0) < Utils.EPSILON;
+    assert Math.abs(_finalDir.lengthSquared() - 1.0) < Utils.EPSILON;
+    
+
+    float angle = _originalDir.angle(_finalDir);
+    if(angle > Math.PI - Utils.EPSILON) { //mitja volta
+      rotation_.x = 1;
+      rotation_.y = 0;
+      rotation_.z = 0;
+      rotation_.w = 0;
+      return;
+    } else if(angle < Utils.EPSILON) { //no rotem
+      rotation_.x = 0;
+      rotation_.y = 0;
+      rotation_.z = 0;
+      rotation_.w = 1;
+      return;
+    }
+    
+    g_v3aux1.cross(_originalDir, _finalDir);
+    g_v3aux1.normalize();
+
+    float sin = (float)Math.sin(angle / 2);
+    float cos = (float)Math.cos(angle / 2);
+
+    rotation_.x = g_v3aux1.x * sin;
+    rotation_.y = g_v3aux1.y * sin;
+    rotation_.z = g_v3aux1.z * sin;
+    rotation_.w = cos;
+  }
+
+  private static final Vector3f g_v3aux2 = new Vector3f();
+  private static final Vector3f g_v3aux3 = new Vector3f();
+  private static final Vector3f g_v3aux4 = new Vector3f();
+  private static final Quat4f   g_qaux  = new Quat4f();
+  private static final Quat4f   g_qaux2 = new Quat4f();
+  public static void getClosestRotation(
+      Vector3f _originalDir, Vector3f _originalUp, 
+      Vector3f _finalDir, Vector3f _finalUp, Quat4f rotation_) {
+    assert Math.abs(_originalUp.lengthSquared() - 1.0) < Utils.EPSILON;
+    assert Math.abs(_finalUp.lengthSquared() - 1.0) < Utils.EPSILON;
+    
+    getClosestRotation(_originalDir, _finalDir, rotation_);
+
+    Vector3f upRotat     = g_v3aux2;
+    Vector3f left        = g_v3aux3;
+    Vector3f realFinalUp = g_v3aux4;
+    
+    //rotem el vector original up segon la rotació donada.
+    g_qaux.set(_originalUp.x, _originalUp.y, _originalUp.z, 0);
+    g_qaux2.mul(rotation_, g_qaux);
+    g_qaux.mulInverse(g_qaux2, rotation_);
+    upRotat.set(g_qaux.x, g_qaux.y, g_qaux.z); // vector up original rotat
+    
+    left.cross(upRotat, _finalDir);
+    upRotat.cross(_finalDir, left);
+    upRotat.normalize();
+    
+    left.cross(_finalUp, _finalDir);
+    realFinalUp.cross(_finalDir, left);
+    realFinalUp.normalize();
+
+    /*
+    Vector3f aux        = g_v3aux3; //això abans era el left, que ja no fem servir més
+    
+    aux.sub(upRotat, realFinalUp);
+    if(aux.lengthSquared() < Utils.EPSILON)
+      return; //el vector up ja està més o menys on el volem.
+    */
+    
+    getClosestRotation(upRotat, realFinalUp, g_qaux);
+    
+    /*
+    double angle = Math.acos( upRotat.dot(realFinalUp) );
+    float cos = (float) Math.cos(angle / 2.);
+    float sin = (float) Math.sin(angle / 2.);
+
+    g_qaux.x = _finalDir.x * sin;
+    g_qaux.y = _finalDir.y * sin;
+    g_qaux.z = _finalDir.z * sin;
+    g_qaux.w = -cos;
+    */
+    
+    rotation_.mul(g_qaux, rotation_);
   }
 }

@@ -15,7 +15,6 @@ import javax.vecmath.Vector3f;
 
 import org.lwjgl.BufferUtils;
 
-import cat.atridas.antagonista.Transformation;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.core.Core;
@@ -546,7 +545,7 @@ public abstract class DebugRender {
         
         v3Aux.sub(p3CameraPos, text.position);
         v3Aux.normalize();
-        Transformation.getClosestRotation(Utils.V3_MINUS_Z, Utils.V3_MINUS_Y, v3Aux, Utils.V3_Z, qAux);
+        Utils.getClosestRotation(Utils.V3_MINUS_Z, Utils.V3_MINUS_Y, v3Aux, Utils.V3_Z, qAux);
         model.setRotation(qAux);
   
         
