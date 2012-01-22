@@ -3,6 +3,7 @@ package cat.atridas.antagonista.core;
 import java.awt.Canvas;
 import java.util.ArrayList;
 
+import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.graphics.EffectManager;
@@ -88,13 +89,13 @@ public final class Core {
 		rm.initGL();
 		
 		em.init("data/xml/effects.xml", rm);
-		ArrayList<String> al = new ArrayList<>();
-		al.add("dds");
-		al.add("png");
+		ArrayList<HashedString> al = new ArrayList<>();
+		al.add(new HashedString("dds"));
+		al.add(new HashedString("png"));
 		tm.init(al, "data/textures/");
 
 		al.clear();
-    al.add("mat");
+    al.add(new HashedString("mat"));
     mm.init(al, "data/materials/");
     
     
@@ -106,7 +107,7 @@ public final class Core {
       throw new RuntimeException("Not implemented"); //TODO
 
     al.clear();
-    al.add("fnt");
+    al.add(new HashedString("fnt"));
     fm.init(al, "data/fonts/");
     
     if(Utils.supports(Profile.GL3)) {
@@ -119,7 +120,7 @@ public final class Core {
     }
     
     al.clear();
-    al.add("mesh");
+    al.add(new HashedString("mesh"));
     mem.init(al, "data/meshes/");
     
 

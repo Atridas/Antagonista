@@ -63,7 +63,7 @@ public class Font extends Resource {
   }
 
   @Override
-  public boolean load(InputStream is, String extension) {
+  public boolean load(InputStream is, HashedString extension) {
     DocumentBuilder db;
     try {
       db = DocumentBuilderFactory.newInstance().newDocumentBuilder();

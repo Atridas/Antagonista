@@ -36,11 +36,11 @@ public final class TextureGL extends Texture {
     minFilter = magFilter = GL_NEAREST;
   }
   
-  public boolean load(InputStream is, String extension) {
+  public boolean load(InputStream is, HashedString extension) {
     if(LOGGER.isLoggable(Level.CONFIG))
       LOGGER.config("Loading texture '" + resourceName + "'");
     
-    LoadableImageData loader = ImageDataFactory.getImageDataFor(extension.toUpperCase());
+    LoadableImageData loader = ImageDataFactory.getImageDataFor(extension.toString().toUpperCase());
     ByteBuffer bb;
     try {
       bb = loader.loadImage(is);

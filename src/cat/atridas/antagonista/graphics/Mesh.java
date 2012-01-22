@@ -23,6 +23,8 @@ public abstract class Mesh extends Resource {
   public static final int NUM_ELEMENTS_PER_VERTEX_ANIMATED_MESH = 14 + (2 + 4); //4 indexos (shorts) + 4 pesos 
 
   
+  private static final HashedString HS_MESH = new HashedString("mesh");
+  
   protected int numVerts, numSubMeshes, numFaces[];
   protected Material materials[];
   
@@ -31,11 +33,11 @@ public abstract class Mesh extends Resource {
   }
 
   @Override
-  public boolean load(InputStream is, String extension) {
+  public boolean load(InputStream is, HashedString extension) {
     if(LOGGER.isLoggable(Level.CONFIG))
       LOGGER.config("Loading mesh " + resourceName);
     
-    assert "mesh".compareToIgnoreCase(extension) == 0;
+    assert HS_MESH.equals(extension);
 
     try {
       MeshFileTypes mft = Utils.readHeader(is, FILE_TYPES, MeshFileTypes.ERROR);

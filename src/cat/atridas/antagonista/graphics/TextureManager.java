@@ -12,7 +12,7 @@ public class TextureManager extends ResourceManager<Texture> {
 
   private Texture defaultResource;
   
-  public void init(ArrayList<String> _extensionsPriorized, String _basePath) {
+  public void init(ArrayList<HashedString> _extensionsPriorized, String _basePath) {
     setExtensions(_extensionsPriorized);
     setBasePath(_basePath);
     

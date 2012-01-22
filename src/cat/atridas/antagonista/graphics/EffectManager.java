@@ -59,11 +59,11 @@ public class EffectManager extends ResourceManager<Effect> {
       
       setBasePath( effectsXML.getAttribute("path") );
       
-      ArrayList<String> extensions = new ArrayList<>();
+      ArrayList<HashedString> extensions = new ArrayList<>();
       
       String[] extensionsArray = effectsXML.getAttribute("extensions").split(",");
       for(String extension : extensionsArray) {
-        extensions.add(extension);
+        extensions.add(new HashedString(extension));
       }
       
       setExtensions(extensions);
@@ -83,11 +83,11 @@ public class EffectManager extends ResourceManager<Effect> {
         Element shaderConfigXML = (Element)n;
         
         String path = shaderConfigXML.getAttribute("path");
-        ArrayList<String> shaderExtensions = new ArrayList<>();
+        ArrayList<HashedString> shaderExtensions = new ArrayList<>();
         
         String[] extensionsArray1 = shaderConfigXML.getAttribute("extensions").split(",");
         for(String extension : extensionsArray1) {
-          shaderExtensions.add(extension);
+          shaderExtensions.add(new HashedString(extension));
         }
         
         switch(shaderConfigXML.getTagName()) {
@@ -217,7 +217,7 @@ public class EffectManager extends ResourceManager<Effect> {
     private final ShaderType type;
     private final Shader defaultShader;
     
-    ShaderManager(String _basePath, ArrayList<String> _extensionsPriorized, ShaderType _type) {
+    ShaderManager(String _basePath, ArrayList<HashedString> _extensionsPriorized, ShaderType _type) {
       super( _basePath, _extensionsPriorized );
       type = _type;
       defaultShader = new Shader(Utils.DEFAULT, type);
@@ -236,31 +236,31 @@ public class EffectManager extends ResourceManager<Effect> {
     
 
     static class Vertex extends ShaderManager {
-      Vertex(String _basePath, ArrayList<String> _extensionsPriorized) {
+      Vertex(String _basePath, ArrayList<HashedString> _extensionsPriorized) {
         super(_basePath, _extensionsPriorized, ShaderType.VERTEX);
       }
     }
     
     static class Fragment extends ShaderManager {
-      Fragment(String _basePath, ArrayList<String> _extensionsPriorized) {
+      Fragment(String _basePath, ArrayList<HashedString> _extensionsPriorized) {
         super(_basePath, _extensionsPriorized, ShaderType.FRAGMENT);
       }
     }
     
     static class Geometry extends ShaderManager {
-      Geometry(String _basePath, ArrayList<String> _extensionsPriorized) {
+      Geometry(String _basePath, ArrayList<HashedString> _extensionsPriorized) {
         super(_basePath, _extensionsPriorized, ShaderType.GEOMETRY);
       }
     }
     
     static class TessEval extends ShaderManager {
-      TessEval(String _basePath, ArrayList<String> _extensionsPriorized) {
+      TessEval(String _basePath, ArrayList<HashedString> _extensionsPriorized) {
         super(_basePath, _extensionsPriorized, ShaderType.TESS_EVALUATION);
       }
     }
     
     static class TessControl extends ShaderManager {
-      TessControl(String _basePath, ArrayList<String> _extensionsPriorized) {
+      TessControl(String _basePath, ArrayList<HashedString> _extensionsPriorized) {
         super(_basePath, _extensionsPriorized, ShaderType.TESS_CONTROL);
       }
     }

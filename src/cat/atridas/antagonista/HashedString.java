@@ -6,6 +6,8 @@ import java.util.HashMap;
  * This class represents a string in a hashed form. Used to speed maps with a string key.
  * 
  * @author Isaac 'Atridas' Serrano Guasch
+ * @version 1.1 22/1/2012
+ * @since 0.1
  *
  */
 public final class HashedString implements Comparable<HashedString> {
@@ -18,6 +20,7 @@ public final class HashedString implements Comparable<HashedString> {
    * Creates a new Hashed String. This constructor is SLOW, it is better to declare any HashedString
    * you must use as a static field than to call this constructor every frame.
    * 
+   * @since 0.1
    * @param str string to transform.
    * @throws RuntimeException if the string created has an alias (other string with the same hash value).
    */
@@ -34,6 +37,7 @@ public final class HashedString implements Comparable<HashedString> {
   
   /**
    * Translates this hash value to the original string.
+   * @since 0.1
    */
   @Override
   public String toString() {
@@ -60,6 +64,8 @@ public final class HashedString implements Comparable<HashedString> {
   
   /**
    * Computes the hash value of a string.
+   * 
+   * @since 0.1
    * @param val String to hash.
    * @return Hash value of input.
    */

@@ -21,24 +21,30 @@ import javax.vecmath.Vector3f;
  * In the Blender exporter we should take the ZXY rotation and negate both Pitch and Roll.
  * 
  * @author Isaac 'Atridas' Serrano Guasch
+ * @version 1.1 22/1/2012
+ * @since 0.1
  *
  */
 public class Conventions {
 
   /**
    * Front vector, taken from Blender.
+   * @since 0.1
    */
   public static final Vector3f FRONT_VECTOR = new Vector3f(0, -1, 0);
   /**
    * Up vector, taken from Blender.
+   * @since 0.1
    */
   public static final Vector3f UP_VECTOR = new Vector3f(0, 0, 1);
   /**
    * Right vector, taken from Blender.
+   * @since 0.1
    */
   public static final Vector3f RIGHT_VECTOR = new Vector3f(-1, 0, 0); 
   /**
    * Left vector, taken from Blender.
+   * @since 0.1
    */
   public static final Vector3f LEFT_VECTOR = new Vector3f(1, 0, 0); 
   
@@ -49,6 +55,7 @@ public class Conventions {
   /**
    * Transforms a Quaternion into Euler Angles.
    * 
+   * @since 0.1
    * @param _quaternion Rotation entered as a unit quaternion.
    * @param euler_ returns the angles in Yaw (x) Pitch (y) Roll (z) convention.
    */
@@ -86,6 +93,7 @@ public class Conventions {
   /**
    * Transform a rotation matrix into Euler Angles.
    * 
+   * @since 0.1
    * @param _matrix Rotation Matrix.
    * @param euler_ returns the angles in Yaw (x) Pitch (y) Roll (z) convention.
    */
@@ -99,6 +107,7 @@ public class Conventions {
   /**
    * Transform a rotation matrix into Euler Angles.
    * 
+   * @since 0.1
    * @param _matrix Rotation Matrix.
    * @param euler_ returns the angles in Yaw (x) Pitch (y) Roll (z) convention.
    */
@@ -112,6 +121,7 @@ public class Conventions {
   /**
    * Transform an axis angle rotation into Euler Angles.
    * 
+   * @since 0.1
    * @param _aa Axis angle rotation.
    * @param euler_ returns the angles in Yaw (x) Pitch (y) Roll (z) convention.
    */
@@ -125,6 +135,7 @@ public class Conventions {
   /**
    * Transforms an Euler rotation to Quaternion anotation.
    * 
+   * @since 0.1
    * @param _euler Euler rotation to translate, in Yaw (x) Pitch (y) Roll (z) convention.
    * @param quaternion_ output.
    */
@@ -152,6 +163,7 @@ public class Conventions {
   /**
    * Transforms an Euler rotation to Matrix anotation.
    * 
+   * @since 0.1
    * @param _euler Euler rotation to translate, in Yaw (x) Pitch (y) Roll (z) convention.
    * @param matrix_ output.
    */
@@ -165,6 +177,7 @@ public class Conventions {
   /**
    * Transforms an Euler rotation to Matrix anotation.
    * 
+   * @since 0.1
    * @param _euler Euler rotation to translate, in Yaw (x) Pitch (y) Roll (z) convention.
    * @param matrix_ output.
    */
@@ -178,6 +191,7 @@ public class Conventions {
   /**
    * Transforms an Euler rotation to Axis angle anotation.
    * 
+   * @since 0.1
    * @param _euler Euler rotation to translate, in Yaw (x) Pitch (y) Roll (z) convention.
    * @param aa_ output.
    */

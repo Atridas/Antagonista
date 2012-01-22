@@ -17,14 +17,14 @@ public abstract class ResourceManager<T extends Resource> {
 
   
   private String basePath;
-  private ArrayList<String> extensions;
+  private ArrayList<HashedString> extensions;
   
   protected ResourceManager() {
     basePath = "";
     extensions = new ArrayList<>();
   }
   
-  protected ResourceManager(String _basePath, ArrayList<String> _extensions) {
+  protected ResourceManager(String _basePath, ArrayList<HashedString> _extensions) {
     basePath = _basePath;
     extensions = new ArrayList<>(_extensions);
   }
@@ -33,7 +33,7 @@ public abstract class ResourceManager<T extends Resource> {
     basePath = _basePath;
   }
   
-  protected final void setExtensions(ArrayList<String> _extensions) {
+  protected final void setExtensions(ArrayList<HashedString> _extensions) {
     extensions = new ArrayList<>(_extensions);
   }
   
@@ -60,10 +60,10 @@ public abstract class ResourceManager<T extends Resource> {
           //ArrayList<String> extensions = getExtensionsPriorized();
           InputStream is = null;
           
-          String extension = null;
+          HashedString extension = null;
           for(int i = 0; i < extensions.size(); ++i) {
             extension = extensions.get(i);
-            String path = basePath + resourceName + "." + extension;
+            String path = basePath + resourceName + "." + extension.toString();
             try { //TODO fer aix� d'una manera m�s decent
               is = Utils.findInputStream(path);
               break;

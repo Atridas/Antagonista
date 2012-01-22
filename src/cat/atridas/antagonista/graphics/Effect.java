@@ -21,6 +21,7 @@ import cat.atridas.antagonista.graphics.RenderManager.Profile;
 public class Effect extends Resource {
   private static Logger LOGGER = Logger.getLogger(EffectManager.class.getCanonicalName());
 
+  private static final HashedString HS_XML = new HashedString("xml");
   
   private HashMap<TechniqueType, HashMap<Quality, Technique>> techniques = new HashMap<>();
 
@@ -29,8 +30,8 @@ public class Effect extends Resource {
   }
   
   @Override
-  public boolean load(InputStream is, String extension) {
-    assert "xml".compareTo(extension) == 0;
+  public boolean load(InputStream is, HashedString extension) {
+    assert HS_XML.equals(extension);
     
     LOGGER.config("Loading effect [" + resourceName + "]");
     

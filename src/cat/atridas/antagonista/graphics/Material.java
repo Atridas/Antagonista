@@ -21,6 +21,8 @@ public abstract class Material extends Resource {
   
   public static final Map<byte[], MaterialFileTypes> FILE_TYPES;
   
+  private static final HashedString HS_MAT = new HashedString("mat");
+  
   protected float specularFactor, specularPower, height;
   private boolean alphaBlend;
   
@@ -33,11 +35,11 @@ public abstract class Material extends Resource {
   }
   
   @Override
-  public final boolean load(InputStream is, String extension) {
+  public final boolean load(InputStream is, HashedString extension) {
     if(LOGGER.isLoggable(Level.CONFIG))
       LOGGER.config("Loading material " + resourceName);
     
-    assert "mat".compareToIgnoreCase(extension) == 0;
+    assert HS_MAT.equals(extension);
 
     try {
       MaterialFileTypes mft = Utils.readHeader(is, FILE_TYPES, MaterialFileTypes.ERROR);

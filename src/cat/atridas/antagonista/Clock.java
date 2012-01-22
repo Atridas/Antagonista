@@ -6,7 +6,9 @@ import org.lwjgl.Sys;
  * Clock class to control times in the engine.
  * 
  * @author Isaac 'Atridas' Serrano Guasch
- *
+ * @version 1.1 22/1/2012
+ * @since 0.1
+ * 
  */
 public class Clock {
 	public static final int WINDOW_LENGTH = 60;
@@ -18,6 +20,7 @@ public class Clock {
 	
 	/**
 	 * Creates a new clock.
+	 * @since 0.1
 	 */
 	public Clock() {
 		lastTime = Sys.getTime();
@@ -26,6 +29,7 @@ public class Clock {
 	/**
 	 * Updates the time and returns the time lapsed since last call.
 	 * 
+   * @since 0.1
 	 * @return a DeltaTime object witch includes info of the time lapsed
 	 *         since last call.
 	 */
@@ -58,26 +62,32 @@ public class Clock {
 	/**
 	 * Class that encapsulates information avout the time lapsed in every frame.
 	 * 
-	 * @author Isaac 'Atridas' Serrano Guasch
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @version 1.1 22/1/2012
+   * @since 0.1
 	 *
 	 */
 	public class DeltaTime {
 	  /**
 	   * Approximation, in seconds, of the time lapsed this frame.
+	   * @since 0.1
 	   */
 	  public final float dt;
 	  /**
 	   * Approximation of the number of frames produced every second according to calls to this
 	   * clock.
+     * @since 0.1
 	   */
 	  public final int fps;
 	  /**
 	   * Exact time in miliseconds since the creation of this clock.
+     * @since 0.1
 	   */
     public final long  timeMilisSinceStart;
     /**
      * Frame numer. This variable contains the number of times wich the <code>update</code> function
      * of the corresponding clock has been called.
+     * @since 0.1
      */
     public final long  frame;
     

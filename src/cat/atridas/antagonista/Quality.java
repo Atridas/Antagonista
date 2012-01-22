@@ -4,6 +4,8 @@ package cat.atridas.antagonista;
  * Used to designated the quality of various parameters, for example, Shader Techniques.
  * 
  * @author Isaac 'Atridas' Serrano Guasch
+ * @version 1.1 22/1/2012
+ * @since 0.1
  *
  */
 public enum Quality {
@@ -11,7 +13,8 @@ public enum Quality {
   
   /**
    * Gets the quality directly bellow. In case of the lowest quality (NONE), returns itself.
-   * @return
+   * @since 0.1
+   * @return the next lower Quality
    */
   public Quality previousQuality() {
     switch(this) {
@@ -33,6 +36,7 @@ public enum Quality {
   /**
    * Creates a quality from a string.
    * 
+   * @since 0.1
    * @param str String to parse.
    * @return a quality.
    * @throws IllegalArgumentException if the input does not map to any enum value.
