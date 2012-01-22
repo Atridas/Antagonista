@@ -141,7 +141,7 @@ public abstract class RenderManager {
     public void supportOrException(Profile other, String functionality) {
       if(!supports(other)) {
         LOGGER.severe("Functionality " + functionality + " needs a context of " + other.toString() + " or greater.");
-        throw new IllegalStateException();
+        throw new RuntimeException();
       }
     }
     

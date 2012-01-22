@@ -23,6 +23,14 @@ import cat.atridas.antagonista.graphics.gl3.FontManagerGL3;
 import cat.atridas.antagonista.graphics.gl3.RenderableObjectManagerGL3;
 import cat.atridas.antagonista.input.InputManager;
 
+/**
+ * Core singleton class. Contains all Engine managers.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch
+ * @version 1.1 22/1/2012
+ * @since 0.1
+ *
+ */
 public final class Core {
 	
 	private RenderManager           rm  = new RenderManagerGL();//TODO
@@ -35,51 +43,114 @@ public final class Core {
   private MeshManager             mem = new MeshManager();
   private RenderableObjectManager rom;
 
+  /**
+   * Gets the RenderManager.
+   * 
+   * @return the RenderManager.
+   * @since 0.1
+   */
 	public RenderManager getRenderManager()
 	{
 		return rm;
 	}
-	
+
+  /**
+   * Gets the InputManager.
+   * 
+   * @return the InputManager.
+   * @since 0.1
+   */
 	public InputManager getInputManager()
 	{
 		return im;
 	}
-	
+
+  /**
+   * Gets the TextureManager.
+   * 
+   * @return the TextureManager.
+   * @since 0.1
+   */
 	public TextureManager getTextureManager()
 	{
 		return tm;
 	}
-  
+
+  /**
+   * Gets the FontManager.
+   * 
+   * @return the FontManager.
+   * @since 0.1
+   */
   public FontManager getFontManager()
   {
     return fm;
   }
-  
+
+  /**
+   * Gets the EffectManager.
+   * 
+   * @return the EffectManager.
+   * @since 0.1
+   */
   public EffectManager getEffectManager()
   {
     return em;
   }
-  
+
+  /**
+   * Gets the MaterialManager.
+   * 
+   * @return the MaterialManager.
+   * @since 0.1
+   */
   public MaterialManager getMaterialManager()
   {
     return mm;
   }
-  
+
+  /**
+   * Gets the DebugRender.
+   * 
+   * @return the DebugRender.
+   * @since 0.1
+   */
   public DebugRender getDebugRender()
   {
     return dr;
   }
-  
+
+  /**
+   * Gets the MeshManager.
+   * 
+   * @return the MeshManager.
+   * @since 0.1
+   */
   public MeshManager getMeshManager()
   {
     return mem;
   }
-  
+
+  /**
+   * Gets the RenderableObjectManager.
+   * 
+   * @return the RenderableObjectManager.
+   * @since 0.1
+   */
   public RenderableObjectManager getRenderableObjectManager()
   {
     return rom;
   }
 	
+  /**
+   * Initializes the engine.
+   * 
+   * @param w width of the screen.
+   * @param h height of the screen.
+   * @param title title of the screen.
+   * @param displayParent Use in Applets. Null on standallone applications.
+   * @since 0.1
+   */
 	public void init(int w, int h, String title, Canvas displayParent) {
 	  Utils.loadNativeLibs(); //TODO nomes si no estem en un applet, potser. Provar-ho
 	  
@@ -134,12 +205,18 @@ public final class Core {
     rom.init();
 	}
 	
+	/**
+	 * Cleans all unused resources.
+	 * 
+	 * @param weakify if the managers should be weakified.
+	 * @since 0.1
+	 */
 	public void cleanUnusedResources(boolean weakify) {
 	  if(weakify) {
 	    tm.weakify();
 	    em.weakify();
 	    mm.weakify();
-	    mem.weakify();
+	    mem.weakify();//TODO més managers.
 	  }
 
     System.gc();
@@ -152,6 +229,9 @@ public final class Core {
     System.runFinalization();
 	}
 	
+	/**
+	 * Closes all managers.
+	 */
 	public void close() {
 		
 		//sm.cleanUp();
@@ -189,6 +269,11 @@ public final class Core {
 		}
 	}
 	
+	/**
+	 * Gets the singleton instance.
+	 * 
+	 * @return the singleton object.
+	 */
 	public static Core getCore()
 	{
 		if(instance == null) {

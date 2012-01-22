@@ -20,46 +20,146 @@ import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.FontManager.TextAligment;
 
+/**
+ * Class that enqueues debug information to be rendered on the scene during renderization.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch
+ * @version 1.1 22/1/2012
+ * @since 0.1
+ *
+ */
 public abstract class DebugRender {
   
-  public final static int SPHERE_STACKS = 15;
-  public final static int SPHERE_SUBDIV = 15;
+  /**
+   * Number of stacks on a sphere.
+   * 
+   * @since 0.1
+   */
+  protected final static int SPHERE_STACKS = 15;
+  /**
+   * Number of longitudinal aristes in a sphere or circle.
+   * 
+   * @since 0.1
+   */
+  protected final static int SPHERE_SUBDIV = 15;
   
   private boolean active;
 
+  /**
+   * Lines to be rendered.
+   * 
+   * @since 0.1
+   */
   protected final ArrayList<Line>        lines = new ArrayList<>();
+  /**
+   * Crosses to be rendered.
+   * 
+   * @since 0.1
+   */
   protected final ArrayList<Cross>       crosses = new ArrayList<>();
+  /**
+   * Spheres to be rendered.
+   * 
+   * @since 0.1
+   */
   protected final ArrayList<Sphere>      spheres = new ArrayList<>();
+  /**
+   * Circles to be rendered.
+   * 
+   * @since 0.1
+   */
   protected final ArrayList<Circle>      circles = new ArrayList<>();
+  /**
+   * Axes to be rendered.
+   * 
+   * @since 0.1
+   */
   protected final ArrayList<Axes>        axes = new ArrayList<>();
+  /**
+   * Triangles to be rendered.
+   * 
+   * @since 0.1
+   */
   protected final ArrayList<Triangle>    triangles = new ArrayList<>();
+  /**
+   * Axis Aligned Bounding Boxes to be rendered.
+   * 
+   * @since 0.1
+   */
   protected final ArrayList<AABB>        aabbs = new ArrayList<>();
+  /**
+   * Oriented Bounding Boxes to be rendered.
+   * 
+   * @since 0.1
+   */
   protected final ArrayList<OBB>         obbs = new ArrayList<>();
+  /**
+   * Text to be rendered.
+   * 
+   * @since 0.1
+   */
   protected final ArrayList<DebugString> strings = new ArrayList<>();
-
+  
+  /**
+   * Material object used to render all debug information but the text. 
+   * 
+   * @since 0.1
+   */
   protected Material debugMaterial;
   
   {
     debugMaterial = Core.getCore().getMaterialManager().getResource(Utils.DEBUG_MATERIAL_NAME);
   }
 
-  
+  /**
+   * Activates or deactivates the renderer.
+   * 
+   * @param _active if this debug render should continue to register new debug information.
+   * @since 0.1
+   */
   public void activate(boolean _active) {
     active = _active;
   }
   
+  /**
+   * Checks if the renderer is active.
+   * 
+   * @return <code>true</code> if the renderer is active, <code>false</code> otherwise.
+   * @since 0.1
+   */
   public boolean isActive() {
     return active;
   }
   
+  /**
+   * Activates the renderer. This renderer will begin to register debug information to be rendered.
+   * 
+   * @since 0.1
+   */
   public void activate() {
     active = true;
   }
   
+  /**
+   * Deactivates the renderer. No more debug information will be registered.
+   * 
+   * @since 0.1
+   */
   public void deactivate() {
     active = false;
   }
   
+  /**
+   * Adds a line.
+   * 
+   * @param origin origin of the line.
+   * @param destination final point of the line.
+   * @param color color of the primitive.
+   * @param duration time, in seconds, this information will be rendered.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   */
   public void addLine( 
       Point3f origin, 
       Point3f destination, 
@@ -70,6 +170,17 @@ public abstract class DebugRender {
       lines.add(new Line(origin, destination, duration, depthEnabled, color));
   }
   
+  /**
+   * Adds a Cross, that represents a point in 3D space.
+   * 
+   * @param center point.
+   * @param color color of the primitive.
+   * @param size radi of the lines exiting from the center point.
+   * @param duration time, in seconds, this information will be rendered.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   */
   public void addCross( 
       Point3f center,
       Color3f color, 
@@ -80,6 +191,17 @@ public abstract class DebugRender {
       crosses.add(new Cross(center, size, duration, depthEnabled, color));
   }
   
+  /**
+   * Adds a Sphere.
+   * 
+   * @param center point.
+   * @param radius of the sphere.
+   * @param color color of the primitive.
+   * @param duration time, in seconds, this information will be rendered.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   */
   public void addSphere( 
       Point3f center,
       float radius,
@@ -90,6 +212,18 @@ public abstract class DebugRender {
       spheres.add( new Sphere(center, radius, duration, depthEnabled, color));
   }
   
+  /**
+   * Adds a circle.
+   * 
+   * @param center point.
+   * @param planeNormal normal to the circle.
+   * @param radius of the circle.
+   * @param color color of the primitive.
+   * @param duration time, in seconds, this information will be rendered.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   */
   public void addCircle( 
       Point3f center, 
       Vector3f planeNormal,
@@ -101,6 +235,17 @@ public abstract class DebugRender {
       circles.add( new Circle(center, radius, planeNormal, duration, depthEnabled, color));
   }
   
+  /**
+   * Displais a transformation, using a transformed axe. Positive X axe will be red, 
+   * Positive Y green and Z will be blue.
+   * 
+   * @param transformation transformation to display.
+   * @param size of the lines exiting from the center point.
+   * @param duration time, in seconds, this information will be rendered.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   */
   public void addAxes( 
       Matrix4f transformation,
       float size,
@@ -110,6 +255,18 @@ public abstract class DebugRender {
       axes.add(new Axes(transformation, size, duration, depthEnabled));
   }
   
+  /**
+   * Adds the edges of a triangle to the scene.
+   * 
+   * @param v0 first point.
+   * @param v1 second point.
+   * @param v2 third point.
+   * @param color color of the primitive.
+   * @param duration time, in seconds, this information will be rendered.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   */
   public void addTriangle( 
       Point3f v0, 
       Point3f v1, 
@@ -121,6 +278,17 @@ public abstract class DebugRender {
       triangles.add(new Triangle(v0, v1, v2, duration, depthEnabled, color));
   }
   
+  /**
+   * Displays an aligned bounding box.
+   * 
+   * @param minCoords minimum coordinates
+   * @param maxCoords maximim coordinates.
+   * @param color color of the primitive.
+   * @param duration time, in seconds, this information will be rendered.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   */
   public void addAABB( 
       Point3f minCoords, 
       Point3f maxCoords, 
@@ -131,6 +299,17 @@ public abstract class DebugRender {
       aabbs.add(new AABB(minCoords, maxCoords, duration, depthEnabled, color));
   }
   
+  /**
+   * Displays an oriented Bounding Box.
+   * 
+   * @param centerTransformation transformation to the center of the box.
+   * @param scaleXYZ size of the box.
+   * @param color color of the primitive.
+   * @param duration time, in seconds, this information will be rendered.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   */
   public void addOBB( 
       Matrix4f centerTransformation,
       Tuple3f scaleXYZ, 
@@ -141,6 +320,20 @@ public abstract class DebugRender {
       obbs.add(new OBB(centerTransformation, scaleXYZ, duration, depthEnabled, color));
   }
   
+  /**
+   * Adds a text to a 3D point in space.
+   * 
+   * @param position of the text in 3D space.
+   * @param font used in the text.
+   * @param text to display.
+   * @param desiredHeight height in engine units of the text.
+   * @param aligment aligment of the text respect the point passed.
+   * @param color color of the primitive.
+   * @param duration time, in seconds, this information will be rendered.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   */
   public void addString( 
       Point3f position,
       Font font,
@@ -154,6 +347,19 @@ public abstract class DebugRender {
       strings.add(new DebugString(position, font, text, desiredHeight, false, aligment, duration, depthEnabled, color));
   }
   
+  /**
+   * Adds a text in 2D respect the screen.
+   * 
+   * @param position Normalized (1 means the entire screen height) position. Positive coordinates 
+   *        are taken respect the upper left screen corner and negative from the bottom right.
+   * @param font used in the text.
+   * @param text to display.
+   * @param desiredHeight height in normalized units (1 means the entire screen height).
+   * @param aligment aligment of the text respect the point passed.
+   * @param color color of the primitive.
+   * @param duration time, in seconds, this information will be rendered.
+   * @since 0.1
+   */
   public void addString2D( 
       Point2f position,
       Font font,
@@ -169,7 +375,16 @@ public abstract class DebugRender {
   
   
   
-
+  /**
+   * Same as <code>addLine(origin, destination, color, duration, <strong>true</strong>)</code>
+   * 
+   * @param origin origin of the line.
+   * @param destination final point of the line.
+   * @param color color of the primitive.
+   * @param duration time, in seconds, this information will be rendered.
+   * @since 0.1
+   * @see #addLine(Point3f, Point3f, Color3f, float, boolean)
+   */
   public void addLine( 
       Point3f origin, 
       Point3f destination, 
@@ -178,6 +393,17 @@ public abstract class DebugRender {
       ) {
     addLine(origin,destination,color,duration,true);
   }
+  /**
+   * Same as <code>addLine(origin, destination, color, <strong>0</strong>, depthEnabled)</code>
+   * 
+   * @param origin origin of the line.
+   * @param destination final point of the line.
+   * @param color color of the primitive.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   * @see #addLine(Point3f, Point3f, Color3f, float, boolean)
+   */
   public void addLine( 
       Point3f origin, 
       Point3f destination, 
@@ -186,6 +412,15 @@ public abstract class DebugRender {
       ) {
     addLine(origin,destination,color,0,depthEnabled);
   }
+  /**
+   * Same as <code>addLine(origin, destination, color, <strong>0, true</strong>)</code>
+   * 
+   * @param origin origin of the line.
+   * @param destination final point of the line.
+   * @param color color of the primitive.
+   * @since 0.1
+   * @see #addLine(Point3f, Point3f, Color3f, float, boolean)
+   */
   public void addLine( 
       Point3f origin, 
       Point3f destination, 
@@ -194,6 +429,16 @@ public abstract class DebugRender {
   }
   
 
+  /**
+   * Same as <code>addCross(center, color, size, duration, <strong>true</strong>)</code>
+   * 
+   * @param center point.
+   * @param color color of the primitive.
+   * @param size radi of the lines exiting from the center point.
+   * @param duration time, in seconds, this information will be rendered.
+   * @since 0.1
+   * @see #addCross(Point3f, Color3f, float, float, boolean)
+   */
   public void addCross( 
       Point3f center,
       Color3f color, 
@@ -201,6 +446,17 @@ public abstract class DebugRender {
       float duration) {
     addCross(center,color,size,duration,true);
   }
+  /**
+   * Same as <code>addCross(center, color, size, <strong>0</strong>, depthEnabled)</code>
+   * 
+   * @param center point.
+   * @param color color of the primitive.
+   * @param size radi of the lines exiting from the center point.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   * @see #addCross(Point3f, Color3f, float, float, boolean)
+   */
   public void addCross( 
       Point3f center,
       Color3f color, 
@@ -208,6 +464,15 @@ public abstract class DebugRender {
       boolean depthEnabled) {
     addCross(center,color,size,0,depthEnabled);
   }
+  /**
+   * Same as <code>addCross(center, color, size, <strong>0, true</strong>)</code>
+   * 
+   * @param center point.
+   * @param color color of the primitive.
+   * @param size radi of the lines exiting from the center point.
+   * @since 0.1
+   * @see #addCross(Point3f, Color3f, float, float, boolean)
+   */
   public void addCross( 
       Point3f center,
       Color3f color, 
@@ -216,6 +481,16 @@ public abstract class DebugRender {
   }
   
 
+  /**
+   * Same as <code>addSphere(center, radius, color, duration, <strong>true</strong>)</code>
+   * 
+   * @param center point.
+   * @param radius of the sphere.
+   * @param color color of the primitive.
+   * @param duration time, in seconds, this information will be rendered.
+   * @since 0.1
+   * @see #addSphere(Point3f, float, Color3f, float, boolean)
+   */
   public void addSphere( 
       Point3f center,
       float radius,
@@ -223,6 +498,17 @@ public abstract class DebugRender {
       float duration) {
     addSphere(center,radius,color,duration,true);
   }
+  /**
+   * Same as <code>addSphere(center, radius, color, <strong>0</strong>, depthEnabled)</code>
+   * 
+   * @param center point.
+   * @param radius of the sphere.
+   * @param color color of the primitive.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   * @see #addSphere(Point3f, float, Color3f, float, boolean)
+   */
   public void addSphere( 
       Point3f center,
       float radius,
@@ -230,6 +516,15 @@ public abstract class DebugRender {
       boolean depthEnabled) {
     addSphere(center,radius,color,0,depthEnabled);
   }
+  /**
+   * Same as <code>addSphere(center, radius, color, <strong>0, true</strong>)</code>
+   * 
+   * @param center point.
+   * @param radius of the sphere.
+   * @param color color of the primitive.
+   * @since 0.1
+   * @see #addSphere(Point3f, float, Color3f, float, boolean)
+   */
   public void addSphere( 
       Point3f center,
       float radius,
@@ -237,6 +532,17 @@ public abstract class DebugRender {
     addSphere(center,radius,color,0,true);
   }
 
+  /**
+   * Same as <code>addCircle(center, planeNormal, radius, color, duration, <strong>true</strong>)</code>
+   * 
+   * @param center point.
+   * @param planeNormal normal to the circle.
+   * @param radius of the circle.
+   * @param color color of the primitive.
+   * @param duration time, in seconds, this information will be rendered.
+   * @since 0.1
+   * @see #addCircle(Point3f, Vector3f, float, Color3f, float, boolean)
+   */
   public void addCircle( 
       Point3f center, 
       Vector3f planeNormal,
@@ -245,6 +551,18 @@ public abstract class DebugRender {
       float duration) {
     addCircle(center, planeNormal, radius, color, duration, true);
   }
+  /**
+   * Same as <code>addCircle(center, planeNormal, radius, color, <strong>0</strong>, depthEnabled)</code>
+   * 
+   * @param center point.
+   * @param planeNormal normal to the circle.
+   * @param radius of the circle.
+   * @param color color of the primitive.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   * @see #addCircle(Point3f, Vector3f, float, Color3f, float, boolean)
+   */
   public void addCircle( 
       Point3f center, 
       Vector3f planeNormal,
@@ -253,6 +571,16 @@ public abstract class DebugRender {
       boolean depthEnabled) {
     addCircle(center, planeNormal, radius, color, 0, depthEnabled);
   }
+  /**
+   * Same as <code>addCircle(center, planeNormal, radius, color, <strong>0, true</strong>)</code>
+   * 
+   * @param center point.
+   * @param planeNormal normal to the circle.
+   * @param radius of the circle.
+   * @param color color of the primitive.
+   * @since 0.1
+   * @see #addCircle(Point3f, Vector3f, float, Color3f, float, boolean)
+   */
   public void addCircle( 
       Point3f center, 
       Vector3f planeNormal,
@@ -261,7 +589,7 @@ public abstract class DebugRender {
     addCircle(center, planeNormal, radius, color, 0, true);
   }
   
-
+  //TODO
   public void addAxes( 
       Matrix4f transformation,
       float size,
@@ -440,7 +768,13 @@ public abstract class DebugRender {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
   
-  
+  /**
+   * Renders all debug information. After rendering them, cleans those whose time has finished, so
+   * every primitive is rendered for at least one frame.
+   * 
+   * @param rm Render Manager.
+   * @param dt time elapsed since the last call.
+   */
   public void render(RenderManager rm, DeltaTime dt) {
     beginRender(rm);
     renderLines(rm);
