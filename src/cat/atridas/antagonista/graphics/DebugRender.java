@@ -17,6 +17,7 @@ import org.lwjgl.BufferUtils;
 
 import cat.atridas.antagonista.Transformation;
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.FontManager.TextAligment;
 
@@ -441,7 +442,7 @@ public abstract class DebugRender {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
   
   
-  public void render(RenderManager rm, float dt) {
+  public void render(RenderManager rm, DeltaTime dt) {
     beginRender(rm);
     renderLines(rm);
     renderCrosses(rm);
@@ -453,15 +454,15 @@ public abstract class DebugRender {
     renderStrings(rm);
     endRender();
 
-    cleanList(lines, dt);
-    cleanList(crosses, dt);
-    cleanList(spheres, dt);
-    cleanList(circles, dt);
-    cleanList(axes, dt);
-    cleanList(triangles, dt);
-    cleanList(aabbs, dt);
-    cleanList(obbs, dt);
-    cleanList(strings, dt);
+    cleanList(lines, dt.dt);
+    cleanList(crosses, dt.dt);
+    cleanList(spheres, dt.dt);
+    cleanList(circles, dt.dt);
+    cleanList(axes, dt.dt);
+    cleanList(triangles, dt.dt);
+    cleanList(aabbs, dt.dt);
+    cleanList(obbs, dt.dt);
+    cleanList(strings, dt.dt);
   }
   
   private static <T> void cleanList(ArrayList<? extends DebugObject> list, float dt) {

@@ -7,23 +7,50 @@ import javax.vecmath.Quat4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
+/**
+ * This class encapsulates information about the front, up, left and right vectors in the engine.
+ * Use the vectors here created and never change them. Also, whenever you need to compute the Euler
+ * angles, use the functions in this class so everything works consistently.
+ * 
+ * We will do a Yaw -> Pitch -> Roll rotation (in that order) and Yaw will be arround the
+ * Z vector (a positive Yaw means turning to the left), Pitch arround the -X vector (a 
+ * positive angle means to turn your head up) and Roll arround the -Y angle (a positive 
+ * Roll means to do a barrell roll to your right).
+ * 
+ * 
+ * In the Blender exporter we should take the ZXY rotation and negate both Pitch and Roll.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch
+ *
+ */
 public class Conventions {
 
-  public static final Vector3f FRONT_VECTOR = new Vector3f(0, -1, 0); 
-  public static final Vector3f UP_VECTOR = new Vector3f(0, 0, 1); 
+  /**
+   * Front vector, taken from Blender.
+   */
+  public static final Vector3f FRONT_VECTOR = new Vector3f(0, -1, 0);
+  /**
+   * Up vector, taken from Blender.
+   */
+  public static final Vector3f UP_VECTOR = new Vector3f(0, 0, 1);
+  /**
+   * Right vector, taken from Blender.
+   */
   public static final Vector3f RIGHT_VECTOR = new Vector3f(-1, 0, 0); 
+  /**
+   * Left vector, taken from Blender.
+   */
   public static final Vector3f LEFT_VECTOR = new Vector3f(1, 0, 0); 
   
 
   private static final ThreadLocal<Quat4f> quaternion = new ThreadLocal<>();
 
+  
   /**
-   * Suposem que fem yaw -> pitch -> roll (en aquest ordre).
-   * Yaw és al voltant de Z,
-   * Pitch al voltant de -X,
-   * Roll al voltant de -Y.
+   * Transforms a Quaternion into Euler Angles.
    * 
-   * La rotació per tant l'hauríem d'agafar en ZXY i el pitch i el roll en "negatiu".
+   * @param _quaternion Rotation entered as a unit quaternion.
+   * @param euler_ returns the angles in Yaw (x) Pitch (y) Roll (z) convention.
    */
   public static void quaternionToEulerAngles(Quat4f _quaternion, Tuple3f euler_) {
        
@@ -57,12 +84,10 @@ public class Conventions {
   
   
   /**
-   * Suposem que fem yaw -> pitch -> roll (en aquest ordre).
-   * Yaw és al voltant de Z,
-   * Pitch al voltant de -X,
-   * Roll al voltant de -Y.
+   * Transform a rotation matrix into Euler Angles.
    * 
-   * La rotació per tant l'hauríem d'agafar en ZXY i el pitch i el roll en "negatiu".
+   * @param _matrix Rotation Matrix.
+   * @param euler_ returns the angles in Yaw (x) Pitch (y) Roll (z) convention.
    */
   public static void matrixToEulerAngles(Matrix3f _matrix, Tuple3f euler_) {
     Quat4f q = quaternion.get();
@@ -70,14 +95,12 @@ public class Conventions {
     quaternionToEulerAngles(q, euler_);
   }
   
-  
+
   /**
-   * Suposem que fem yaw -> pitch -> roll (en aquest ordre).
-   * Yaw és al voltant de Z,
-   * Pitch al voltant de -X,
-   * Roll al voltant de -Y.
+   * Transform a rotation matrix into Euler Angles.
    * 
-   * La rotació per tant l'hauríem d'agafar en ZXY i el pitch i el roll en "negatiu".
+   * @param _matrix Rotation Matrix.
+   * @param euler_ returns the angles in Yaw (x) Pitch (y) Roll (z) convention.
    */
   public static void matrixToEulerAngles(Matrix4f _matrix, Tuple3f euler_) {
     Quat4f q = quaternion.get();
@@ -85,14 +108,12 @@ public class Conventions {
     quaternionToEulerAngles(q, euler_);
   }
   
-  
+
   /**
-   * Suposem que fem yaw -> pitch -> roll (en aquest ordre).
-   * Yaw és al voltant de Z,
-   * Pitch al voltant de -X,
-   * Roll al voltant de -Y.
+   * Transform an axis angle rotation into Euler Angles.
    * 
-   * La rotació per tant l'hauríem d'agafar en ZXY i el pitch i el roll en "negatiu".
+   * @param _aa Axis angle rotation.
+   * @param euler_ returns the angles in Yaw (x) Pitch (y) Roll (z) convention.
    */
   public static void axisAngleToEulerAngles(AxisAngle4f _aa, Tuple3f euler_) {
     Quat4f q = quaternion.get();
@@ -102,12 +123,10 @@ public class Conventions {
   
 
   /**
-   * Suposem que fem yaw -> pitch -> roll (en aquest ordre).
-   * Yaw és al voltant de Z,
-   * Pitch al voltant de -X,
-   * Roll al voltant de -Y.
+   * Transforms an Euler rotation to Quaternion anotation.
    * 
-   * La rotació per tant l'hauríem d'agafar en ZXY i el pitch i el roll en "negatiu".
+   * @param _euler Euler rotation to translate, in Yaw (x) Pitch (y) Roll (z) convention.
+   * @param quaternion_ output.
    */
   public static void eulerAnglesToQuaternion(Tuple3f _euler, Quat4f quaternion_) {
     
@@ -129,14 +148,12 @@ public class Conventions {
     quaternion_.z = + (sinY * cosP * cosR) - (cosY * sinP * sinR);
   }
   
-  
+
   /**
-   * Suposem que fem yaw -> pitch -> roll (en aquest ordre).
-   * Yaw és al voltant de Z,
-   * Pitch al voltant de -X,
-   * Roll al voltant de -Y.
+   * Transforms an Euler rotation to Matrix anotation.
    * 
-   * La rotació per tant l'hauríem d'agafar en ZXY i el pitch i el roll en "negatiu".
+   * @param _euler Euler rotation to translate, in Yaw (x) Pitch (y) Roll (z) convention.
+   * @param matrix_ output.
    */
   public static void eulerAnglesToMatrix(Tuple3f _euler, Matrix3f matrix_) {
     Quat4f q = quaternion.get();
@@ -144,14 +161,12 @@ public class Conventions {
     matrix_.set(q);
   }
   
-  
+
   /**
-   * Suposem que fem yaw -> pitch -> roll (en aquest ordre).
-   * Yaw és al voltant de Z,
-   * Pitch al voltant de -X,
-   * Roll al voltant de -Y.
+   * Transforms an Euler rotation to Matrix anotation.
    * 
-   * La rotació per tant l'hauríem d'agafar en ZXY i el pitch i el roll en "negatiu".
+   * @param _euler Euler rotation to translate, in Yaw (x) Pitch (y) Roll (z) convention.
+   * @param matrix_ output.
    */
   public static void eulerAnglesToMatrix(Tuple3f _euler, Matrix4f matrix_) {
     Quat4f q = quaternion.get();
@@ -159,14 +174,12 @@ public class Conventions {
     matrix_.setRotation(q);
   }
   
-  
+
   /**
-   * Suposem que fem yaw -> pitch -> roll (en aquest ordre).
-   * Yaw és al voltant de Z,
-   * Pitch al voltant de -X,
-   * Roll al voltant de -Y.
+   * Transforms an Euler rotation to Axis angle anotation.
    * 
-   * La rotació per tant l'hauríem d'agafar en ZXY i el pitch i el roll en "negatiu".
+   * @param _euler Euler rotation to translate, in Yaw (x) Pitch (y) Roll (z) convention.
+   * @param aa_ output.
    */
   public static void eulerAnglesToAxisAngle(Tuple3f _euler, AxisAngle4f aa_) {
     Quat4f q = quaternion.get();

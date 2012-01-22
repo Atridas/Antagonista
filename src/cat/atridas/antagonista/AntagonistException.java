@@ -1,5 +1,11 @@
 package cat.atridas.antagonista;
 
+/**
+ * Exception used when necessary in the Engine.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch
+ *
+ */
 public class AntagonistException extends Exception {
 
   /**

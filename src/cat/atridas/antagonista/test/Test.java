@@ -11,6 +11,7 @@ import javax.vecmath.Vector3f;
 import cat.atridas.antagonista.Clock;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.graphics.Font;
@@ -125,19 +126,19 @@ public class Test {
     Clock clock = new Clock();
     while(!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
 
-      float dt = clock.update();
+      DeltaTime dt = clock.update();
       
       if(im.isActionActive(camUp)) {
-        camera.moveUp(2f * dt);
+        camera.moveUp(2f * dt.dt);
       }
       if(im.isActionActive(camDown)) {
-        camera.moveUp(-2f * dt);
+        camera.moveUp(-2f * dt.dt);
       }
       if(im.isActionActive(camRight)) {
-        camera.moveRight(2f * dt);
+        camera.moveRight(2f * dt.dt);
       }
       if(im.isActionActive(camLeft)) {
-        camera.moveRight(-2f * dt);
+        camera.moveRight(-2f * dt.dt);
       }
       if(im.isActionActive(camDist)) {
         camera.addDistance( -.01f * im.getActionValue(camDist) );
@@ -208,11 +209,10 @@ public class Test {
       
       dr.addCross(new Point3f(0,0,14), new Color3f(0,0,1), 1);
       dr.addString(new Point3f(0,0,14), font, "Hola mundu", 1, TextAligment.MID_CENTER, new Color3f(1,0,0));
-      
-      int fps = (int)  (1./ dt);
 
-      dr.addString2D(new Point2f(.0f,.0f), font, "FPS: " + fps, .05f, new Color3f(0,0,0));
-      dr.addString2D(new Point2f(-.0f,-.0f), font, "FPS: " + fps, .05f, TextAligment.BOTTOM_RIGHT, new Color3f(0,0,0));
+
+      dr.addString2D(new Point2f(.0f,.0f), font, "FPS: " + dt.fps, .05f, new Color3f(0,0,0));
+      dr.addString2D(new Point2f(-.0f,-.0f), font, "FPS: " + dt.fps, .05f, TextAligment.BOTTOM_RIGHT, new Color3f(0,0,0));
       //sceneData.setCamera(camera);
       
       rm.initFrame();

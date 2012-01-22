@@ -28,6 +28,7 @@ import cat.atridas.antagonista.Clock;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Quality;
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.Effect.TechniqueType;
 import cat.atridas.antagonista.graphics.Material;
@@ -283,7 +284,7 @@ public class Test0 {
     Clock clock = new Clock();
     
     while(!Core.getCore().getInputManager().isCloseRequested()) {
-      float dt = clock.update();
+      DeltaTime dt = clock.update();
       
       rm.initFrame();
     

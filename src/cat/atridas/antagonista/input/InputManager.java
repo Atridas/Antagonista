@@ -20,6 +20,7 @@ import org.w3c.dom.NodeList;
 
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.Clock.DeltaTime;
 
 public final class InputManager {
   private static final Logger LOGGER = Logger.getLogger(InputManager.class.getCanonicalName());
@@ -157,7 +158,7 @@ public final class InputManager {
     return activeActions.get(action);
   }
 	
-	public void update(float dt)
+	public void update(DeltaTime dt)
 	{
 		if(Display.isCloseRequested())
 		{
@@ -176,7 +177,7 @@ public final class InputManager {
       default:
         Float f = activeActions.get(action.getValue());
         if(f != null) {
-          activeActions.put(action.getValue(), f + dt);
+          activeActions.put(action.getValue(), f + dt.dt);
         }
 			}
 		}
@@ -291,7 +292,7 @@ public final class InputManager {
 					activeActions.put(action, 1.f);
 				}
 				if(actionPermanent != null) {
-					activeActions.put(actionPermanent, dt);
+					activeActions.put(actionPermanent, dt.dt);
 				}
 				if(actionPermanentToRemove != null) {
 					activeActions.remove(actionPermanentToRemove);
@@ -349,7 +350,7 @@ public final class InputManager {
 				activeActions.put(action, 1.f);
 			}
 			if(actionPermanent != null) {
-				activeActions.put(actionPermanent, dt);
+				activeActions.put(actionPermanent, dt.dt);
 			}
 			if(actionPermanentToRemove != null) {
 				activeActions.remove(actionPermanentToRemove);

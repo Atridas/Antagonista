@@ -2,12 +2,25 @@ package cat.atridas.antagonista;
 
 import java.util.HashMap;
 
+/**
+ * This class represents a string in a hashed form. Used to speed maps with a string key.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch
+ *
+ */
 public final class HashedString implements Comparable<HashedString> {
   
   private static final HashMap<Long, String> strings = new HashMap<>();
   
   public final long value;
   
+  /**
+   * Creates a new Hashed String. This constructor is SLOW, it is better to declare any HashedString
+   * you must use as a static field than to call this constructor every frame.
+   * 
+   * @param str string to transform.
+   * @throws RuntimeException if the string created has an alias (other string with the same hash value).
+   */
   public HashedString(final String str) {
     value = computeCRC(str);
 
@@ -19,6 +32,9 @@ public final class HashedString implements Comparable<HashedString> {
   	}
   }
   
+  /**
+   * Translates this hash value to the original string.
+   */
   @Override
   public String toString() {
     return strings.get(value);
@@ -42,6 +58,11 @@ public final class HashedString implements Comparable<HashedString> {
     return (int) ((value & 0xFFFFFFFF0000l) >> 16);
   }
   
+  /**
+   * Computes the hash value of a string.
+   * @param val String to hash.
+   * @return Hash value of input.
+   */
   public static long computeCRC(final String val) {
     long crc = 0;
     long x = 0;
