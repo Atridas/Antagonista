@@ -23,7 +23,6 @@ import java.util.logging.Logger;
  * </p>
  * 
  * @author Isaac 'Atridas' Serrano Guasch
- * @version 1.1 22/1/2012
  * @since 0.1
  *
  * @see java.lang.ref.SoftReference
@@ -117,6 +116,7 @@ public abstract class ResourceManager<T extends Resource> {
     if(resourceRef != null)
     {
       if(resourceRef instanceof ResourceManager.AWeakReference) {
+        //if the reference had been weakified, transform it into a soft reference.
         new ASoftReference((ResourceManager<T>.AWeakReference)resourceRef);
       }
       resource = resourceRef.get();
@@ -237,22 +237,60 @@ public abstract class ResourceManager<T extends Resource> {
     return cont;
   }
   
+  /**
+   * Used in the map to contain a resource. Can either be a weak or soft reference. It also
+   * contains a reference to its key, to easy map cleaning.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @since 0.1
+   *
+   * @param <K> will be the same as {@link ResourceManager}'s &lt;T&gt;
+   */
   private static interface AReference<K> {
+    /**
+     * Returns the resource identifier.
+     * @return resource identifier.
+     * @since 0.1
+     */
     HashedString getResourceName();
     
+    /**
+     * Returns the resource referenced, or <code>null</code> if it has been garbage collected.
+     * 
+     * @return <code>null</code> if the resource has been garbage collected.
+     * @since 0.1
+     */
     K get();
   }
   
+  /**
+   * Encapsulates a soft reference with the map key.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @since 0.1
+   *
+   */
   private final class ASoftReference extends SoftReference<T> implements AReference<T> {
     HashedString resourceName;
 
-
+    /**
+     * Creates the reference and inserts it into the map.
+     * 
+     * @param referent
+     * @param _resourceName
+     * @since 0.1
+     */
     public ASoftReference(T referent, HashedString _resourceName) {
       super(referent, refQueue);
       resourceName = _resourceName;
       resources.put(resourceName, this);
     }
 
+    /**
+     * Transforms a weak reference into a soft reference.
+     * @param _ref
+     * @since 0.1
+     */
     public ASoftReference(AWeakReference _ref) {
       super(_ref.get(), refQueue);
       resourceName = _ref.getResourceName();
@@ -265,12 +303,24 @@ public abstract class ResourceManager<T extends Resource> {
     }
     
   }
-  
+
+  /**
+   * Encapsulates a weak reference with the map key.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @since 0.1
+   *
+   */
   private final class AWeakReference extends WeakReference<T> implements AReference<T> {
     HashedString resourceName;
     
 
-
+    /**
+     * Transforms a soft reference into a weak reference.
+     * 
+     * @param _ref
+     * @since 0.1
+     */
     public AWeakReference(AReference<T> _ref) {
       super(_ref.get(), refQueue);
       resourceName = _ref.getResourceName();

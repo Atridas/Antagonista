@@ -4,7 +4,6 @@ package cat.atridas.antagonista;
  * Exception used when necessary in the Engine.
  * 
  * @author Isaac 'Atridas' Serrano Guasch
- * @version 1.1 22/1/2012
  * @since 0.1
  *
  */

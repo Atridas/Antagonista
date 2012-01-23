@@ -4,7 +4,6 @@ package cat.atridas.antagonista;
  * Used to designated the quality of various parameters, for example, Shader Techniques.
  * 
  * @author Isaac 'Atridas' Serrano Guasch
- * @version 1.1 22/1/2012
  * @since 0.1
  *
  */

@@ -7,7 +7,6 @@ import javax.vecmath.Vector3f;
  * Encapsulates a Camera.
  * 
  * @author Isaac 'Atridas' Serrano Guasch
- * @version 1.1 22/1/2012
  * @since 0.1
  *
  */

@@ -6,7 +6,6 @@ import org.lwjgl.Sys;
  * Clock class to control times in the engine.
  * 
  * @author Isaac 'Atridas' Serrano Guasch
- * @version 1.1 22/1/2012
  * @since 0.1
  * 
  */
@@ -63,7 +62,6 @@ public class Clock {
 	 * Class that encapsulates information avout the time lapsed in every frame.
 	 * 
    * @author Isaac 'Atridas' Serrano Guasch
-   * @version 1.1 22/1/2012
    * @since 0.1
 	 *
 	 */

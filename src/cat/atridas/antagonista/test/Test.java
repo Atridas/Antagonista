@@ -21,7 +21,7 @@ import cat.atridas.antagonista.graphics.RTSCamera;
 import cat.atridas.antagonista.graphics.RenderableObject;
 import cat.atridas.antagonista.graphics.SceneData;
 import cat.atridas.antagonista.graphics.TextureManager;
-import cat.atridas.antagonista.graphics.FontManager.TextAligment;
+import cat.atridas.antagonista.graphics.FontManager.TextAlignment;
 import cat.atridas.antagonista.input.InputManager;
 
 public class Test {
@@ -199,20 +199,20 @@ public class Test {
       dr.addString(new Point3f(0,0,2), font, "Hola mundu", 1, new Color3f(1,0,0));
       
       dr.addCross(new Point3f(0,0,5), new Color3f(0,0,1), 1);
-      dr.addString(new Point3f(0,0,5), font, "Hola mundu", 1, TextAligment.MID_LEFT, new Color3f(1,0,0));
+      dr.addString(new Point3f(0,0,5), font, "Hola mundu", 1, TextAlignment.MID_LEFT, new Color3f(1,0,0));
       
       dr.addCross(new Point3f(0,0,8), new Color3f(0,0,1), 1);
-      dr.addString(new Point3f(0,0,8), font, "Hola mundu", 1, TextAligment.BOTTOM_LEFT, new Color3f(1,0,0));
+      dr.addString(new Point3f(0,0,8), font, "Hola mundu", 1, TextAlignment.BOTTOM_LEFT, new Color3f(1,0,0));
       
       dr.addCross(new Point3f(0,0,11), new Color3f(0,0,1), 1);
-      dr.addString(new Point3f(0,0,11), font, "Hola mundu", 1, TextAligment.BOTTOM_CENTER, new Color3f(1,0,0));
+      dr.addString(new Point3f(0,0,11), font, "Hola mundu", 1, TextAlignment.BOTTOM_CENTER, new Color3f(1,0,0));
       
       dr.addCross(new Point3f(0,0,14), new Color3f(0,0,1), 1);
-      dr.addString(new Point3f(0,0,14), font, "Hola mundu", 1, TextAligment.MID_CENTER, new Color3f(1,0,0));
+      dr.addString(new Point3f(0,0,14), font, "Hola mundu", 1, TextAlignment.MID_CENTER, new Color3f(1,0,0));
 
 
       dr.addString2D(new Point2f(.0f,.0f), font, "FPS: " + dt.fps, .05f, new Color3f(0,0,0));
-      dr.addString2D(new Point2f(-.0f,-.0f), font, "FPS: " + dt.fps, .05f, TextAligment.BOTTOM_RIGHT, new Color3f(0,0,0));
+      dr.addString2D(new Point2f(-.0f,-.0f), font, "FPS: " + dt.fps, .05f, TextAlignment.BOTTOM_RIGHT, new Color3f(0,0,0));
       //sceneData.setCamera(camera);
       
       rm.initFrame();

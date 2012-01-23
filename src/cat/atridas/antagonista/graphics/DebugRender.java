@@ -18,13 +18,12 @@ import org.lwjgl.BufferUtils;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.core.Core;
-import cat.atridas.antagonista.graphics.FontManager.TextAligment;
+import cat.atridas.antagonista.graphics.FontManager.TextAlignment;
 
 /**
  * Class that enqueues debug information to be rendered on the scene during renderization.
  * 
  * @author Isaac 'Atridas' Serrano Guasch
- * @version 1.1 22/1/2012
  * @since 0.1
  *
  */
@@ -327,7 +326,7 @@ public abstract class DebugRender {
    * @param font used in the text.
    * @param text to display.
    * @param desiredHeight height in engine units of the text.
-   * @param aligment aligment of the text respect the point passed.
+   * @param alignment of the text respect the point passed.
    * @param color color of the primitive.
    * @param duration time, in seconds, this information will be rendered.
    * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
@@ -339,12 +338,12 @@ public abstract class DebugRender {
       Font font,
       String text,
       float desiredHeight,
-      TextAligment aligment,
+      TextAlignment alignment,
       Color3f color, 
       float duration, 
       boolean depthEnabled) {
     if(active)
-      strings.add(new DebugString(position, font, text, desiredHeight, false, aligment, duration, depthEnabled, color));
+      strings.add(new DebugString(position, font, text, desiredHeight, false, alignment, duration, depthEnabled, color));
   }
   
   /**
@@ -355,7 +354,7 @@ public abstract class DebugRender {
    * @param font used in the text.
    * @param text to display.
    * @param desiredHeight height in normalized units (1 means the entire screen height).
-   * @param aligment aligment of the text respect the point passed.
+   * @param alignment of the text respect the point passed.
    * @param color color of the primitive.
    * @param duration time, in seconds, this information will be rendered.
    * @since 0.1
@@ -365,11 +364,11 @@ public abstract class DebugRender {
       Font font,
       String text,
       float desiredHeight,
-      TextAligment aligment,
+      TextAlignment alignment,
       Color3f color, 
       float duration) {
     if(active)
-      strings.add(new DebugString(new Point3f(position.x, position.y, 0), font, text, desiredHeight, true, aligment, duration, false, color));
+      strings.add(new DebugString(new Point3f(position.x, position.y, 0), font, text, desiredHeight, true, alignment, duration, false, color));
   }
   
   
@@ -589,19 +588,46 @@ public abstract class DebugRender {
     addCircle(center, planeNormal, radius, color, 0, true);
   }
   
-  //TODO
+
+  /**
+   * Same as <code>addAxes(transformation, size, duration, <strong>true</strong>)</code>
+   * 
+   * @param transformation transformation to display.
+   * @param size of the lines exiting from the center point.
+   * @param duration time, in seconds, this information will be rendered.
+   * @since 0.1
+   * @see #addAxes(Matrix4f, float, float, boolean)
+   */
   public void addAxes( 
       Matrix4f transformation,
       float size,
       float duration) {
     addAxes(transformation, size, duration, true);
   }
+  /**
+   * Same as <code>addAxes(transformation, size, <strong>0</strong>, depthEnabled)</code>
+   * 
+   * @param transformation transformation to display.
+   * @param size of the lines exiting from the center point.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   * @see #addAxes(Matrix4f, float, float, boolean)
+   */
   public void addAxes( 
       Matrix4f transformation,
       float size,
       boolean depthEnabled) {
     addAxes(transformation, size, 0, depthEnabled);
   }
+  /**
+   * Same as <code>addAxes(transformation, size, <strong>0, true</strong>)</code>
+   * 
+   * @param transformation transformation to display.
+   * @param size of the lines exiting from the center point.
+   * @since 0.1
+   * @see #addAxes(Matrix4f, float, float, boolean)
+   */
   public void addAxes( 
       Matrix4f transformation,
       float size) {
@@ -609,6 +635,17 @@ public abstract class DebugRender {
   }
   
 
+  /**
+   * Same as <code>addTriangle(v0, v1, v2, color, duration, <strong>true</strong>)</code>
+   * 
+   * @param v0 first point.
+   * @param v1 second point.
+   * @param v2 third point.
+   * @param color color of the primitive.
+   * @param duration time, in seconds, this information will be rendered.
+   * @since 0.1
+   * @see #addTriangle(Point3f, Point3f, Point3f, Color3f, float, boolean)
+   */
   public void addTriangle( 
       Point3f v0, 
       Point3f v1, 
@@ -617,6 +654,18 @@ public abstract class DebugRender {
       float duration) {
     addTriangle(v0, v1, v2, color, duration, true);
   }
+  /**
+   * Same as <code>addTriangle(v0, v1, v2, color, <strong>0</strong>, depthEnabled)</code>
+   * 
+   * @param v0 first point.
+   * @param v1 second point.
+   * @param v2 third point.
+   * @param color color of the primitive.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   * @see #addTriangle(Point3f, Point3f, Point3f, Color3f, float, boolean)
+   */
   public void addTriangle( 
       Point3f v0, 
       Point3f v1, 
@@ -625,6 +674,16 @@ public abstract class DebugRender {
       boolean depthEnabled) {
     addTriangle(v0, v1, v2, color, 0, depthEnabled);
   }
+  /**
+   * Same as <code>addTriangle(v0, v1, v2, color, <strong>0, true</strong>)</code>
+   * 
+   * @param v0 first point.
+   * @param v1 second point.
+   * @param v2 third point.
+   * @param color color of the primitive.
+   * @since 0.1
+   * @see #addTriangle(Point3f, Point3f, Point3f, Color3f, float, boolean)
+   */
   public void addTriangle( 
       Point3f v0, 
       Point3f v1, 
@@ -634,6 +693,16 @@ public abstract class DebugRender {
   }
   
 
+  /**
+   * Same as <code>addAABB(minCoords, maxCoords, color, duration, <strong>true</strong>)</code>
+   * 
+   * @param minCoords minimum coordinates
+   * @param maxCoords maximim coordinates.
+   * @param color color of the primitive.
+   * @param duration time, in seconds, this information will be rendered.
+   * @since 0.1
+   * @see #addAABB(Point3f, Point3f, Color3f, float, boolean)
+   */
   public void addAABB( 
       Point3f minCoords, 
       Point3f maxCoords, 
@@ -641,6 +710,17 @@ public abstract class DebugRender {
       float duration) {
     addAABB(minCoords, maxCoords, color, duration, true);
   }
+  /**
+   * Same as <code>addAABB(minCoords, maxCoords, color, <strong>0</strong>, depthEnabled)</code>
+   * 
+   * @param minCoords minimum coordinates
+   * @param maxCoords maximim coordinates.
+   * @param color color of the primitive.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   * @see #addAABB(Point3f, Point3f, Color3f, float, boolean)
+   */
   public void addAABB( 
       Point3f minCoords, 
       Point3f maxCoords, 
@@ -648,6 +728,15 @@ public abstract class DebugRender {
       boolean depthEnabled) {
     addAABB(minCoords, maxCoords, color, 0, depthEnabled);
   }
+  /**
+   * Same as <code>addAABB(minCoords, maxCoords, color, <strong>0, true</strong>)</code>
+   * 
+   * @param minCoords minimum coordinates
+   * @param maxCoords maximim coordinates.
+   * @param color color of the primitive.
+   * @since 0.1
+   * @see #addAABB(Point3f, Point3f, Color3f, float, boolean)
+   */
   public void addAABB( 
       Point3f minCoords, 
       Point3f maxCoords, 
@@ -656,6 +745,16 @@ public abstract class DebugRender {
   }
   
 
+  /**
+   * Same as <code>addOBB( centerTransformation, scaleXYZ, color, duration, <strong>true</strong>)</code>
+   * 
+   * @param centerTransformation transformation to the center of the box.
+   * @param scaleXYZ size of the box.
+   * @param color color of the primitive.
+   * @param duration time, in seconds, this information will be rendered.
+   * @since 0.1
+   * @see #addOBB(Matrix4f, Tuple3f, Color3f, float, boolean)
+   */
   public void addOBB( 
       Matrix4f centerTransformation,
       Tuple3f scaleXYZ, 
@@ -663,6 +762,17 @@ public abstract class DebugRender {
       float duration) {
     addOBB( centerTransformation, scaleXYZ, color, duration, true);
   }
+  /**
+   * Same as <code>addOBB( centerTransformation, scaleXYZ, color, <strong>0</strong>, depthEnabled)</code>
+   * 
+   * @param centerTransformation transformation to the center of the box.
+   * @param scaleXYZ size of the box.
+   * @param color color of the primitive.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   * @see #addOBB(Matrix4f, Tuple3f, Color3f, float, boolean)
+   */
   public void addOBB( 
       Matrix4f centerTransformation,
       Tuple3f scaleXYZ, 
@@ -670,6 +780,15 @@ public abstract class DebugRender {
       boolean depthEnabled) {
     addOBB( centerTransformation, scaleXYZ, color, 0, depthEnabled);
   }
+  /**
+   * Same as <code>addOBB( centerTransformation, scaleXYZ, color, <strong>0, true</strong>)</code>
+   * 
+   * @param centerTransformation transformation to the center of the box.
+   * @param scaleXYZ size of the box.
+   * @param color color of the primitive.
+   * @since 0.1
+   * @see #addOBB(Matrix4f, Tuple3f, Color3f, float, boolean)
+   */
   public void addOBB( 
       Matrix4f centerTransformation,
       Tuple3f scaleXYZ, 
@@ -677,35 +796,110 @@ public abstract class DebugRender {
     addOBB( centerTransformation, scaleXYZ, color, 0, true);
   }
 
+  /**
+   * Same as <code>addString(position, font, text, desiredHeight, alignment, color, duration, <strong>true</strong>)</code>
+   * 
+   * @param position of the text in 3D space.
+   * @param font used in the text.
+   * @param text to display.
+   * @param desiredHeight height in engine units of the text.
+   * @param alignment of the text respect the point passed.
+   * @param color color of the primitive.
+   * @param duration time, in seconds, this information will be rendered.
+   * @since 0.1
+   * @see #addString(Point3f, Font, String, float, TextAlignment, Color3f, float, boolean)
+   */
   public void addString( 
       Point3f position,
       Font font,
       String text,
       float desiredHeight,
-      TextAligment aligment,
+      TextAlignment alignment,
       Color3f color, 
       float duration) {
-    addString(position, font, text, desiredHeight, aligment, color, duration, true);
+    addString(position, font, text, desiredHeight, alignment, color, duration, true);
   }
+  /**
+   * Same as <code>addString(position, font, text, desiredHeight, alignment, color, <strong>0</strong>, depthEnabled)</code>
+   * 
+   * @param position of the text in 3D space.
+   * @param font used in the text.
+   * @param text to display.
+   * @param desiredHeight height in engine units of the text.
+   * @param alignment of the text respect the point passed.
+   * @param color color of the primitive.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   * @see #addString(Point3f, Font, String, float, TextAlignment, Color3f, float, boolean)
+   */
   public void addString( 
       Point3f position,
       Font font,
       String text,
       float desiredHeight,
-      TextAligment aligment,
+      TextAlignment alignment,
       Color3f color, 
       boolean depthEnabled) {
-    addString(position, font, text, desiredHeight, aligment, color, 0, depthEnabled);
+    addString(position, font, text, desiredHeight, alignment, color, 0, depthEnabled);
   }
+  /**
+   * Same as <code>addString(position, font, text, desiredHeight, alignment, color, <strong>0, true</strong>)</code>
+   * 
+   * @param position of the text in 3D space.
+   * @param font used in the text.
+   * @param text to display.
+   * @param desiredHeight height in engine units of the text.
+   * @param alignment of the text respect the point passed.
+   * @param color color of the primitive.
+   * @since 0.1
+   * @see #addString(Point3f, Font, String, float, TextAlignment, Color3f, float, boolean)
+   */
   public void addString( 
       Point3f position,
       Font font,
       String text,
       float desiredHeight,
-      TextAligment aligment,
+      TextAlignment alignment,
       Color3f color) {
-    addString(position, font, text, desiredHeight, aligment, color, 0, true);
+    addString(position, font, text, desiredHeight, alignment, color, 0, true);
   }
+  /**
+   * Same as <code>addString(position, font, text, desiredHeight, <strong>MID_CENTER</strong>, color, duration, depthEnabled)</code>
+   * 
+   * @param position of the text in 3D space.
+   * @param font used in the text.
+   * @param text to display.
+   * @param desiredHeight height in engine units of the text.
+   * @param color color of the primitive.
+   * @param duration time, in seconds, this information will be rendered.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   * @see #addString(Point3f, Font, String, float, TextAlignment, Color3f, float, boolean)
+   */
+  public void addString( 
+      Point3f position,
+      Font font,
+      String text,
+      float desiredHeight,
+      Color3f color, 
+      float duration, 
+      boolean depthEnabled) {
+    addString(position, font, text, desiredHeight, TextAlignment.MID_CENTER, color, duration, depthEnabled);
+  }
+  /**
+   * Same as <code>addString(position, font, text, desiredHeight, <strong>MID_CENTER</strong>, color, duration, <strong>true</strong>)</code>
+   * 
+   * @param position of the text in 3D space.
+   * @param font used in the text.
+   * @param text to display.
+   * @param desiredHeight height in engine units of the text.
+   * @param color color of the primitive.
+   * @param duration time, in seconds, this information will be rendered.
+   * @since 0.1
+   * @see #addString(Point3f, Font, String, float, TextAlignment, Color3f, float, boolean)
+   */
   public void addString( 
       Point3f position,
       Font font,
@@ -713,8 +907,21 @@ public abstract class DebugRender {
       float desiredHeight,
       Color3f color, 
       float duration) {
-    addString(position, font, text, desiredHeight, TextAligment.MID_CENTER, color, duration, true);
+    addString(position, font, text, desiredHeight, TextAlignment.MID_CENTER, color, duration, true);
   }
+  /**
+   * Same as <code>addString(position, font, text, desiredHeight, <strong>MID_CENTER</strong>, color, <strong>0</strong>, depthEnabled)</code>
+   * 
+   * @param position of the text in 3D space.
+   * @param font used in the text.
+   * @param text to display.
+   * @param desiredHeight height in engine units of the text.
+   * @param color color of the primitive.
+   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
+   *        <code>false</code> otherwise.
+   * @since 0.1
+   * @see #addString(Point3f, Font, String, float, TextAlignment, Color3f, float, boolean)
+   */
   public void addString( 
       Point3f position,
       Font font,
@@ -722,26 +929,63 @@ public abstract class DebugRender {
       float desiredHeight,
       Color3f color, 
       boolean depthEnabled) {
-    addString(position, font, text, desiredHeight, TextAligment.MID_CENTER, color, 0, depthEnabled);
+    addString(position, font, text, desiredHeight, TextAlignment.MID_CENTER, color, 0, depthEnabled);
   }
+  /**
+   * Same as <code>addString(position, font, text, desiredHeight, <strong>MID_CENTER</strong>, color, <strong>0, true</strong>)</code>
+   * 
+   * @param position of the text in 3D space.
+   * @param font used in the text.
+   * @param text to display.
+   * @param desiredHeight height in engine units of the text.
+   * @param color color of the primitive.
+   * @since 0.1
+   * @see #addString(Point3f, Font, String, float, TextAlignment, Color3f, float, boolean)
+   */
   public void addString( 
       Point3f position,
       Font font,
       String text,
       float desiredHeight,
       Color3f color) {
-    addString(position, font, text, desiredHeight, TextAligment.MID_CENTER, color, 0, true);
+    addString(position, font, text, desiredHeight, TextAlignment.MID_CENTER, color, 0, true);
   }
 
+  /**
+   * Same as <code>addString2D(position, font, text, desiredHeight, alignment, color, <strong>0</strong>)</code>
+   * 
+   * @param position Normalized (1 means the entire screen height) position. Positive coordinates 
+   *        are taken respect the upper left screen corner and negative from the bottom right.
+   * @param font used in the text.
+   * @param text to display.
+   * @param desiredHeight height in normalized units (1 means the entire screen height).
+   * @param alignment of the text respect the point passed.
+   * @param color color of the primitive.
+   * @since 0.1
+   * @see #addString2D(Point2f, Font, String, float, TextAlignment, Color3f, float)
+   */
   public void addString2D( 
       Point2f position,
       Font font,
       String text,
       float desiredHeight,
-      TextAligment aligment,
+      TextAlignment alignment,
       Color3f color) {
-    addString2D(position, font, text, desiredHeight, aligment, color, 0);
+    addString2D(position, font, text, desiredHeight, alignment, color, 0);
   }
+  /**
+   * Same as <code>addString2D(position, font, text, desiredHeight, <strong>TOP_LEFT</strong>, color, duration)</code>
+   * 
+   * @param position Normalized (1 means the entire screen height) position. Positive coordinates 
+   *        are taken respect the upper left screen corner and negative from the bottom right.
+   * @param font used in the text.
+   * @param text to display.
+   * @param desiredHeight height in normalized units (1 means the entire screen height).
+   * @param color color of the primitive.
+   * @param duration time, in seconds, this information will be rendered.
+   * @since 0.1
+   * @see #addString2D(Point2f, Font, String, float, TextAlignment, Color3f, float)
+   */
   public void addString2D( 
       Point2f position,
       Font font,
@@ -749,15 +993,27 @@ public abstract class DebugRender {
       float desiredHeight,
       Color3f color, 
       float duration) {
-    addString2D(position, font, text, desiredHeight, TextAligment.TOP_LEFT, color, duration);
+    addString2D(position, font, text, desiredHeight, TextAlignment.TOP_LEFT, color, duration);
   }
+  /**
+   * Same as <code>addString2D(position, font, text, desiredHeight, <strong>TOP_LEFT</strong>, color, <strong>0</strong>)</code>
+   * 
+   * @param position Normalized (1 means the entire screen height) position. Positive coordinates 
+   *        are taken respect the upper left screen corner and negative from the bottom right.
+   * @param font used in the text.
+   * @param text to display.
+   * @param desiredHeight height in normalized units (1 means the entire screen height).
+   * @param color color of the primitive.
+   * @since 0.1
+   * @see #addString2D(Point2f, Font, String, float, TextAlignment, Color3f, float)
+   */
   public void addString2D( 
       Point2f position,
       Font font,
       String text,
       float desiredHeight,
       Color3f color) {
-    addString2D(position, font, text, desiredHeight, TextAligment.TOP_LEFT, color, 0);
+    addString2D(position, font, text, desiredHeight, TextAlignment.TOP_LEFT, color, 0);
   }
   
 
@@ -798,6 +1054,12 @@ public abstract class DebugRender {
     cleanList(strings, dt.dt);
   }
   
+  /**
+   * From a list of DebugObjects, cleans all whose time has explired.
+   * 
+   * @param list
+   * @param dt
+   */
   private static <T> void cleanList(ArrayList<? extends DebugObject> list, float dt) {
     int size = list.size();
     for(int i = 0; i < size; ++i) {
@@ -815,21 +1077,125 @@ public abstract class DebugRender {
     }
   }
 
+  /**
+   * Called before any other render method.
+   * 
+   * @param rm Render Manager
+   * @since 0.1
+   * 
+   * @see #renderLines(RenderManager)
+   * @see #renderCrosses(RenderManager)
+   * @see #renderSpheres(RenderManager)
+   * @see #renderSpheres(RenderManager)
+   * @see #renderCircles(RenderManager)
+   * @see #renderAxes(RenderManager)
+   * @see #renderTriangles(RenderManager)
+   * @see #renderBBs(RenderManager)
+   */
   protected abstract void beginRender(RenderManager rm);
+
+  /**
+   * Called after any other render method.
+   * 
+   * @since 0.1
+   * 
+   * @see #renderLines(RenderManager)
+   * @see #renderCrosses(RenderManager)
+   * @see #renderSpheres(RenderManager)
+   * @see #renderSpheres(RenderManager)
+   * @see #renderCircles(RenderManager)
+   * @see #renderAxes(RenderManager)
+   * @see #renderTriangles(RenderManager)
+   * @see #renderBBs(RenderManager)
+   */
   protected abstract void endRender();
 
+  /**
+   * Overwrite and implement how to render all lines.
+   * 
+   * @param rm Render Manager
+   * 
+   * @since 0.1
+   * 
+   * @see #lines
+   */
   protected abstract void renderLines(RenderManager rm);
+  /**
+   * Overwrite and implement how to render all crosses.
+   * 
+   * @param rm Render Manager
+   * 
+   * @since 0.1
+   * 
+   * @see #crosses
+   */
   protected abstract void renderCrosses(RenderManager rm);
+  /**
+   * Overwrite and implement how to render all spheres.
+   * 
+   * @param rm Render Manager
+   * 
+   * @since 0.1
+   * 
+   * @see #spheres
+   */
   protected abstract void renderSpheres(RenderManager rm);
+  /**
+   * Overwrite and implement how to render all circles.
+   * 
+   * @param rm Render Manager
+   * 
+   * @since 0.1
+   * 
+   * @see #circles
+   */
   protected abstract void renderCircles(RenderManager rm);
+  /**
+   * Overwrite and implement how to render all axes.
+   * 
+   * @param rm Render Manager
+   * 
+   * @since 0.1
+   * 
+   * @see #axes
+   */
   protected abstract void renderAxes(RenderManager rm);
+  /**
+   * Overwrite and implement how to render all triangles.
+   * 
+   * @param rm Render Manager
+   * 
+   * @since 0.1
+   * 
+   * @see #triangles
+   */
   protected abstract void renderTriangles(RenderManager rm);
+  /**
+   * Overwrite and implement how to render all bounding boxes.
+   * 
+   * @param rm Render Manager
+   * 
+   * @since 0.1
+   * 
+   * @see #aabb
+   * @see #obb
+   */
   protected abstract void renderBBs(RenderManager rm);
   
   
   
 
-  
+
+  /**
+   * Renders all bounding strings, using the Font Manager.
+   * 
+   * @param rm Render Manager
+   * 
+   * @since 0.1
+   * 
+   * @see #strings
+   * @see FontManager
+   */
   private final void renderStrings(RenderManager rm) {
     
     if(strings.size() == 0)
@@ -860,6 +1226,8 @@ public abstract class DebugRender {
     assert Utils.V3_Z.x == 0 && Utils.V3_Z.y == 0 && Utils.V3_Z.z == 1;
     
     for(DebugString text : strings) {
+      
+      rm.setDepthTest(text.depthEnabled);
 
       if(text.on2D) {
         model.setIdentity();
@@ -886,7 +1254,7 @@ public abstract class DebugRender {
         modelViewProj.mul(viewProj, model);
       }
       
-      fm.printString(text.font, text.text, text.color, modelViewProj, text.aligment, rm);
+      fm.printString(text.font, text.text, text.color, modelViewProj, text.alignment, rm);
     }
   }
   
@@ -898,30 +1266,95 @@ public abstract class DebugRender {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+  /**
+   * Base class of all debug objects.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @since 0.1
+   *
+   */
   protected static class DebugObject {
+    /**
+     * Time left until this object will be erased.
+     * @since 0.1
+     */
     public float duration;
+    /**
+     * If this object should or should not be depth culled.
+     * @since 0.1
+     */
     public final boolean depthEnabled;
 
+    /**
+     * Default constructor.
+     * 
+     * @param _duration
+     * @param _depthEnabled
+     * @since 0.1
+     */
     DebugObject(final float _duration, final boolean _depthEnabled) {
       duration = _duration;
       depthEnabled = _depthEnabled;
     }
   }
 
+  /**
+   * Specialization with a color.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @since 0.1
+   *
+   */
   protected static class DebugObjectWithColor extends DebugObject {
+    /**
+     * Color this debug object will be rendered.
+     * @since 0.1
+     */
     public final Color3f color;
 
+    /**
+     * Default constructor.
+     * 
+     * @param _duration
+     * @param _depthEnabled
+     * @param _color
+     * @since 0.1
+     */
     DebugObjectWithColor(final float _duration, final boolean _depthEnabled, final Color3f _color) {
       super(_duration, _depthEnabled);
       color = new Color3f(_color);
     }
   }
   
+  /**
+   * Represents a line that goes from one point to another.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @since 0.1
+   *
+   */
   protected static final class Line extends DebugObjectWithColor {
+    /**
+     * First point of the line.
+     * @since 0.1
+     */
     public final Point3f origin;
+    /**
+     * Last point of the line.
+     * @since 0.1
+     */
     public final Point3f destination;
     
+    /**
+     * Default constructor.
+     * 
+     * @param _origin
+     * @param _destination
+     * @param duration
+     * @param depthEnabled
+     * @param color
+     * @since 0.1
+     */
     Line(Point3f _origin, Point3f _destination,
         final float duration, final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
@@ -930,10 +1363,35 @@ public abstract class DebugRender {
     }
   }
   
+  /**
+   * Represents a cross around one point.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @since 0.1
+   *
+   */
   protected static final class Cross extends DebugObjectWithColor {
+    /**
+     * Center point of that cross.
+     * @since 0.1
+     */
     public final Point3f center;
+    /**
+     * Size from the center to the end of the cross.
+     * @since 0.1
+     */
     public final float size;
     
+    /**
+     * Default constructor.
+     * 
+     * @param _center
+     * @param _size
+     * @param duration
+     * @param depthEnabled
+     * @param color
+     * @since 0.1
+     */
     Cross(Point3f _center, float _size,
         final float duration, final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
@@ -942,10 +1400,35 @@ public abstract class DebugRender {
     }
   }
   
+  /**
+   * Represents a sphere.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @since 0.1
+   *
+   */
   protected static final class Sphere extends DebugObjectWithColor {
+    /**
+     * Center of the sphere.
+     * @since 0.1
+     */
     public final Point3f center;
+    /**
+     * Radius of the sphere.
+     * @since 0.1
+     */
     public final float radius;
     
+    /**
+     * Default constructor.
+     * 
+     * @param _center
+     * @param _radius
+     * @param duration
+     * @param depthEnabled
+     * @param color
+     * @since 0.1
+     */
     Sphere(Point3f _center, float _radius,
         final float duration, final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
@@ -954,11 +1437,41 @@ public abstract class DebugRender {
     }
   }
   
+  /**
+   * Represents a circle.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @since 0.1
+   *
+   */
   protected static final class Circle extends DebugObjectWithColor {
+    /**
+     * Center of the circle.
+     * @since 0.1
+     */
     public final Point3f center;
+    /**
+     * Normal of the plane where the circle will be rendered.
+     * @since 0.1
+     */
     public final Vector3f planeNormal;
+    /**
+     * Radius of the circle.
+     * @since 0.1
+     */
     public final float radius;
     
+    /**
+     * Default constructor.
+     * 
+     * @param _center
+     * @param _radius
+     * @param _planeNormal
+     * @param duration
+     * @param depthEnabled
+     * @param color
+     * @since 0.1
+     */
     Circle(Point3f _center, float _radius, Vector3f _planeNormal,
         final float duration, final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
@@ -972,10 +1485,34 @@ public abstract class DebugRender {
     }
   }
   
+  /**
+   * Represent a set of transformed axes.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @since 0.1
+   *
+   */
   protected static final class Axes extends DebugObject {
+    /**
+     * Transformation aplied to said axes.
+     * @since 0.1
+     */
     public final Matrix4f transformation;
+    /**
+     * Size of each axe.
+     * @since 0.1
+     */
     public final float size;
     
+    /**
+     * Default Constructor.
+     * 
+     * @param _transformation
+     * @param _size
+     * @param duration
+     * @param depthEnabled
+     * @since 0.1
+     */
     Axes(Matrix4f _transformation, float _size,
         final float duration, final boolean depthEnabled) {
       super(duration, depthEnabled);      
@@ -984,11 +1521,41 @@ public abstract class DebugRender {
     }
   }
   
+  /**
+   * Represents a wireframe triangle.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @since 0.1
+   *
+   */
   protected static final class Triangle extends DebugObjectWithColor {
+    /**
+     * Point of the triangle.
+     * @since 0.1
+     */
     public final Point3f v0;
+    /**
+     * Point of the triangle.
+     * @since 0.1
+     */
     public final Point3f v1;
+    /**
+     * Point of the triangle.
+     * @since 0.1
+     */
     public final Point3f v2;
     
+    /**
+     * Default Constructor.
+     * 
+     * @param _v0
+     * @param _v1
+     * @param _v2
+     * @param duration
+     * @param depthEnabled
+     * @param color
+     * @since 0.1
+     */
     Triangle(Point3f _v0, Point3f _v1, Point3f _v2,
         final float duration, final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
@@ -998,10 +1565,34 @@ public abstract class DebugRender {
     }
   }
   
+  /**
+   * Represents an axis aligned bounding box.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @since 0.1
+   */
   protected static final class AABB extends DebugObjectWithColor {
+    /**
+     * Coordinates to the lower left close corner.
+     * @since 0.1
+     */
     public final Point3f minCoords;
+    /**
+     * Coordinates of the upper right far corner.
+     * @since 0.1
+     */
     public final Point3f maxCoords;
     
+    /**
+     * Default constructor.
+     * 
+     * @param _minCoords
+     * @param _maxCoords
+     * @param duration
+     * @param depthEnabled
+     * @param color
+     * @since 0.1
+     */
     AABB(Point3f _minCoords, Point3f _maxCoords,
         final float duration, final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
@@ -1010,10 +1601,35 @@ public abstract class DebugRender {
     }
   }
   
+  /**
+   * Represents an oriented bounding box.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @since 0.1
+   *
+   */
   protected static final class OBB extends DebugObjectWithColor {
+    /**
+     * Transformation from the center of the scene to the center of the box.
+     * @since 0.1
+     */
     public final Matrix4f centerTransformation;
+    /**
+     * Size of each box side.
+     * @since 0.1
+     */
     public final Tuple3f scaleXYZ;
     
+    /**
+     * Default Constructor.
+     * 
+     * @param _centerTransformation
+     * @param _scaleXYZ
+     * @param duration
+     * @param depthEnabled
+     * @param color
+     * @since 0.1
+     */
     OBB(final Matrix4f _centerTransformation, final Tuple3f _scaleXYZ,
         final float duration, final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
@@ -1022,16 +1638,62 @@ public abstract class DebugRender {
     }
   }
   
+  /**
+   * Represents a text rendered to the scene or the screen.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @since 0.1
+   *
+   */
   protected static final class DebugString extends DebugObjectWithColor {
+    /**
+     * Position of the text. With 3D coordinates if it is a 3D text, and 2D normalized
+     * coordinates if it is a screen text.
+     * @since 0.1
+     */
     public final Point3f position;
+    /**
+     * Font used to render the text.
+     * @since 0.1
+     */
     public final Font font;
+    /**
+     * Text to render.
+     * @since 0.1
+     */
     public final String text;
+    /**
+     * If this text is on the 3D scene (<code>false</code>) or on the screen (<code>true</code>)
+     * @since 0.1
+     */
     public final boolean on2D;
-    public final TextAligment aligment;
+    /**
+     * Alignment of the text.
+     * @since 0.1
+     */
+    public final TextAlignment alignment;
+    /**
+     * Height of the text. In engine units if 3D, in normalized units if 2D.
+     * @since 0.1
+     */
     public final float desiredHeight;
     
+    /**
+     * Default Constructor.
+     * 
+     * @param _position
+     * @param _font
+     * @param _text
+     * @param _desiredHeight
+     * @param _on2D
+     * @param _aligment
+     * @param duration
+     * @param depthEnabled
+     * @param color
+     * @since 0.1
+     */
     DebugString(final Point3f _position, final Font _font, final String _text, final float _desiredHeight,
-        final boolean _on2D, final TextAligment _aligment,
+        final boolean _on2D, final TextAlignment _aligment,
         final float duration, final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
       position = new Point3f( _position );
@@ -1039,7 +1701,7 @@ public abstract class DebugRender {
       text = _text;
       desiredHeight = _desiredHeight;
       on2D = _on2D;
-      aligment = _aligment;
+      alignment = _aligment;
     }
   }
 

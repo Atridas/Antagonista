@@ -6,7 +6,6 @@ import java.util.HashMap;
  * This class represents a string in a hashed form. Used to speed maps with a string key.
  * 
  * @author Isaac 'Atridas' Serrano Guasch
- * @version 1.1 22/1/2012
  * @since 0.1
  *
  */

@@ -27,7 +27,6 @@ import cat.atridas.antagonista.input.InputManager;
  * Core singleton class. Contains all Engine managers.
  * 
  * @author Isaac 'Atridas' Serrano Guasch
- * @version 1.1 22/1/2012
  * @since 0.1
  *
  */

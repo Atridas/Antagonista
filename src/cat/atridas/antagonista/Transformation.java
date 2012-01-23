@@ -12,7 +12,6 @@ import javax.vecmath.Vector3f;
  * 
  * 
  * @author Isaac 'Atridas' Serrano Guasch
- * @version 1.1 22/1/2012
  * @since 0.1
  *
  */

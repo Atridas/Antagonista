@@ -35,7 +35,7 @@ public abstract class FontManagerGL extends FontManager {
   private Vector3f    translation    = new Vector3f();
   
   @Override
-  public final void printString(Font font, String text, Tuple3f color, Matrix4f WVPmatrix, TextAligment aligment, RenderManager rm) {
+  public final void printString(Font font, String text, Tuple3f color, Matrix4f WVPmatrix, TextAlignment aligment, RenderManager rm) {
     int len = text.length();
     int buffer1Size = Font.getVertexSize() * len * 4;
     ByteBuffer buffer1 = BufferUtils.createByteBuffer(buffer1Size);
