@@ -1705,10 +1705,43 @@ public abstract class DebugRender {
     }
   }
 
-  protected int sphereNumIndices, circlesNumVertexs, bbNumIndices;
+  /**
+   * Num indices a LINE_STRIPE sphere will have.
+   * 
+   * @since 0.1
+   */
+  protected int sphereNumIndices;
+  /**
+   * Num vertexes a LINE_LOOP circle will have.
+   * 
+   * @since 0.1
+   */
+  protected int circlesNumVertexs;
+  /**
+   * Num indices a LINE bounding box will have.
+   * 
+   * @since 0.1
+   */
+  protected int bbNumIndices;
+  /**
+   * Num vertexes a LINE crosses will have.
+   * 
+   * @since 0.1
+   */
   protected static final int crossesNumVertexs = 6;
+  /**
+   * Num vertexes a LINE axe will have.
+   * 
+   * @since 0.1
+   */
   protected static final int axesNumVertexs = 6;
   
+  /**
+   * Creates the vertex buffer to render a cross.
+   * 
+   * @return that vertex buffer.
+   * @since 0.1
+   */
   protected final FloatBuffer createCrossVertexBuffer() {
     ArrayList<Float> vertices = new ArrayList<>();
 
@@ -1755,7 +1788,12 @@ public abstract class DebugRender {
     return vertexBuffer;
   }
   
-
+  /**
+   * Creates a vertex buffer for a sphere.
+   * 
+   * @return the vertex buffer.
+   * @since 0.1
+   */
   protected final FloatBuffer createSphereVertexBuffer() {
     ArrayList<Float> vertices = new ArrayList<>();
 
@@ -1797,6 +1835,12 @@ public abstract class DebugRender {
     return vertexBuffer;
   }
 
+  /**
+   * Creates a index buffer of a sphere.
+   * 
+   * @return the index buffer.
+   * @since 0.1
+   */
   protected final ShortBuffer createSphereIndexBuffer() {
 
     ArrayList<Short> indexes = new ArrayList<>();
@@ -1869,6 +1913,12 @@ public abstract class DebugRender {
     return indexBuffer;
   }
 
+  /**
+   * Creates a vertex buffer to render a circle.
+   * 
+   * @return the vertex buffer.
+   * @since 0.1
+   */
   protected final FloatBuffer createCircleVertexBuffer() {
     ArrayList<Float> vertices = new ArrayList<>();
 
@@ -1899,6 +1949,12 @@ public abstract class DebugRender {
     return vertexBuffer;
   }
 
+  /**
+   * Creates a vertex buffer to render an axe.
+   * 
+   * @return the vertex buffer.
+   * @since 0.1
+   */
   protected final FloatBuffer createAxesVertexBuffer() {
 
     ArrayList<Float> vertices = new ArrayList<>();
@@ -1969,7 +2025,12 @@ public abstract class DebugRender {
     return vertexBuffer;
   }
   
-
+  /**
+   * Creates a vertex buffer to render a bounding box.
+   * 
+   * @return the vertex buffer.
+   * @since 0.1
+   */
   protected final FloatBuffer createBBVertexBuffer() {
     ArrayList<Float> vertices = new ArrayList<>();
 
@@ -2022,6 +2083,11 @@ public abstract class DebugRender {
     return vertexBuffer;
   }
 
+  /**
+   * Creates a index buffer to render a bounding box.
+   * 
+   * @return the index buffer.
+   */
   protected final ShortBuffer createBBIndexBuffer() {
     ArrayList<Short> indexes = new ArrayList<>();
 
