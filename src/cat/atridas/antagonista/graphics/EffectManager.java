@@ -20,6 +20,14 @@ import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.graphics.Shader.ShaderType;
 import cat.atridas.antagonista.graphics.gl2.TechniquePassGL2;
 
+/**
+ * Class that manages all effects and shaders.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch
+ * @since 0.1
+ * @see Effect
+ *
+ */
 public class EffectManager extends ResourceManager<Effect> {
   private static Logger LOGGER = Logger.getLogger(EffectManager.class.getCanonicalName());
   
