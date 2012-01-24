@@ -8,9 +8,9 @@
     <fragment_shaders path="data/shaders/" extensions="fs"/>
   </shaders>
   
-  <effect name="BasicEffect"></effect>
-  <effect name="WhiteEffect"></effect>
-  <effect name="ColorEffect"></effect>
+  <effect name="BasicEffect"/>
+  <effect name="WhiteEffect"/>
+  <effect name="ColorEffect"/>
   
   
   

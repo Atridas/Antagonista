@@ -37,7 +37,7 @@
     
     </pass>
   </technique>
-  <technique type="forward" quality="low" min_version="GL2">
+  <technique type="forward" quality="none" min_version="GL2">
     <pass>
         
       <render_states>
@@ -74,7 +74,8 @@
     
     </pass>
   </technique>
-  <technique type="shadow" min_version="GL3">
+  <!--
+  <technique type="shadow" min_version="GL2">
     <pass>
       <render_states>
         <depth_test>true</depth_test>
@@ -104,4 +105,5 @@
       </fragment_shader>
     </pass>
   </technique>
+  -->
 </effect>
