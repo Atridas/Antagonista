@@ -3,6 +3,7 @@ package cat.atridas.antagonista.graphics;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -28,91 +29,93 @@ import cat.atridas.antagonista.graphics.RenderManager.Profile;
  * The format of the effect file is a xml file with the next structure:
  * </p>
  * <p>
- * <code>
- * &lt;technique type="" quality=""&gt;</br>
- *  types:</br>
- *  -&gt; "forward"</br>
- *  -&gt; "shadow"</br>
- *  -&gt; "particle"</br>
- *  -&gt; "deferred"</br>
- *  </br>
- *  qualities. Si es demana una inexistent, es cau cap avall. Per defecte és "none"</br>
- *  -&gt; "none"</br>
- *  -&gt; "low"</br>
- *  -&gt; "mid"</br>
- *  -&gt; "hight"</br>
- *  -&gt; "ultra"</br>
- *      </br>
- *  &lt;min_version&gt;GL2&lt;/min_version&gt;       -&gt; GL2, GL3, GL4, GLSL2</br>
- *  &lt;pass&gt;</br>
- *    &lt;render_states&gt;</br>
- *      &lt;depth_test&gt;true&lt;/depth_test&gt;</br>
- *      &lt;depth_function&gt;LESS&lt;/depth_function&gt; -&gt; LESS, GREATER, EQUAL, NOTEQUAL, LEQUAL, GEQUAL, ALWAYS, NEVER</br>
- *      &lt;z_write&gt;true&lt;/z_write&gt;</br>
- *      </br>
- *      &lt;alpha_blending render_target=""&gt;false&lt;/alpha_blending&gt; -&gt; render_target o bé res, o bé 0, 1, 2, ...</br>
- *      &lt;blend_func render_target=""&gt;</br>
- *        &lt;source&gt;SRC_ALPHA&lt;/source&gt;</br>
- *        &lt;destination&gt;ONE_MINUS_SRC_ALPHA&lt;/destination&gt;</br>
- *        </br>
- *        - -</br>
- *        &lt;source_color&gt;SRC_ALPHA&lt;/source_color&gt;</br>
- *        &lt;destination_color&gt;ONE_MINUS_SRC_ALPHA&lt;/destination_color&gt;</br>
- *        &lt;source_alpha&gt;ONE&lt;/source_alpha&gt;</br>
- *        &lt;destination_alpha&gt;ZERO&lt;/destination_alpha&gt;</br>
- *        </br>
- *        </br>
- *      &lt;/blend_func&gt;  -&gt; ZERO, ONE, </br>
- *                        SRC_COLOR, SRC_ALPHA, DST_ALPHA, DST_COLOR, </br>
- *                        SRC_ALPHA_SATURATE, CONSTANT_COLOR, CONSTANT_ALPHA,</br>
- *                        ONE_MINUS_SRC_COLOR, ONE_MINUS_SRC_ALPHA,</br>
- *                        ONE_MINUS_DST_COLOR, ONE_MINUS_DST_ALPHA, </br>
- *                        //ONE_MINUS_CONSTANT_COLOR, ONE_MINUS_CONSTANT_ALPHA,</br>
- *                        SRC1_ALPHA, ONE_MINUS_SRC1_ALPHA;</br>
- *                        </br>
- *        color_final.rgb = color_fragment.rgb * source_color + color_anterior.rgb * destination_color;</br>
- *        color_final.a   = color_fragment.a   * source_alpha + color_anterior.a   * destination_alpha;     </br>           
- *        </br>
- *    &lt;/render_states&gt;</br>
- *    </br>
- *    &lt;attributes&gt;</br>
- *      &lt;position/&gt; -&gt; vec3 a_v3Position               (0)</br>
- *      &lt;normal/&gt;   -&gt; vec3 a_v3Normal                 (1)</br>
- *      &lt;tangents/&gt; -&gt; vec3 a_v3Tangent, a_v3Bitangent (2/3)</br>
- *      &lt;uv/&gt;       -&gt; vec2 a_v2UV                     (4)</br>
- *      &lt;bones/&gt;    -&gt; ivec4 a_i4BlendIndexs           (5)</br>
- *                      vec4 a_v4BlendWeights          (6)</br>
- *      &lt;color/&gt;    -&gt; vec4 a_v4Color                  (7) </br>
- *    &lt;/attributes&gt;</br>
- *    </br>
- *    &lt;uniforms&gt;</br>
- *      &lt;albedo_texture/&gt;          -&gt; sampler2D u_s2Albedo </br>
- *      &lt;normal_texture/&gt;          -&gt; sampler2D u_s2Normalmap </br>
- *      &lt;height_texture/&gt;          -&gt; sampler2D u_s2Heightmap </br>
- *      &lt;basic_instance_uniforms/&gt; -&gt; UniformInstances { m44ModelViewProjection, m44ModelView  } u_InstanceInfo[instances] </br>
- *      &lt;special_colors/&gt;          -&gt; SpecialColors { u_v4SpecialColor0, u_v4SpecialColor1, u_v4SpecialColor2, u_v4SpecialColor3 } u_ColorInfo[instances] </br>
- *      </br>
- *      &lt;basic_light/&gt;             -&gt; UniformLight { u_v3AmbientLight, u_v3DirectionalLightDirection, u_v3DirectionalLightColor } </br>
- *      &lt;basic_material/&gt;          -&gt; UniformMaterials { u_fSpecularFactor, u_fGlossiness, u_fHeight } </br>
- *    &lt;/uniforms&gt;</br>
- *    </br>
- *    &lt;results&gt;</br>
- *      &lt;color/&gt; &lt;!- - vec4 f_v4Color - -&gt;</br>
- *      &lt;depth/&gt; &lt;!- - vec4 f_v4Depth - -&gt;</br>
- *    &lt;/results&gt;</br>
- *    </br>
- *        </br>
- *    &lt;vertex_shader&gt;</br>
- *      &lt;resource&gt;vertex_shader&lt;/resource&gt; -&gt; ./data/shaders/vertex_shader.vs</br>
- *      &lt;define&gt;ANIMATED&lt;/define&gt; -&gt; afegeix "#define ANIMATED" al principi del shader</br>
- *      &lt;define&gt;TANGENTS&lt;/define&gt;</br>
- *      &lt;define&gt;PARALLAX&lt;/define&gt;</br>
- *    &lt;/vertex_shader&gt;</br>
- *    &lt;fragment_shader&gt;</br>
- *      &lt;resource&gt;fragment_shader&lt;/resource&gt; -&gt; ./data/shaders/fragment_shader.vs</br>
- *    &lt;/fragment_shader&gt;</br>
- *  &lt;/pass&gt;</br>
- *&lt;/technique&gt;</br>
+ * </code>
+ * <pre>
+ * &lt;technique type="" quality=""&gt;
+ *  types:
+ *  -&gt; "forward"
+ *  -&gt; "shadow"
+ *  -&gt; "particle"
+ *  -&gt; "deferred"
+ *  
+ *  qualities. Si es demana una inexistent, es cau cap avall. Per defecte és "none"
+ *  -&gt; "none"
+ *  -&gt; "low"
+ *  -&gt; "mid"
+ *  -&gt; "hight"
+ *  -&gt; "ultra"
+ *      
+ *  &lt;min_version&gt;GL2&lt;/min_version&gt;       -&gt; GL2, GL3, GL4, GLSL2
+ *  &lt;pass&gt;
+ *    &lt;render_states&gt;
+ *      &lt;depth_test&gt;true&lt;/depth_test&gt;
+ *      &lt;depth_function&gt;LESS&lt;/depth_function&gt; -&gt; LESS, GREATER, EQUAL, NOTEQUAL, LEQUAL, GEQUAL, ALWAYS, NEVER
+ *      &lt;z_write&gt;true&lt;/z_write&gt;
+ *      
+ *      &lt;alpha_blending render_target=""&gt;false&lt;/alpha_blending&gt; -&gt; render_target o bé res, o bé 0, 1, 2, ...
+ *      &lt;blend_func render_target=""&gt;
+ *        &lt;source&gt;SRC_ALPHA&lt;/source&gt;
+ *        &lt;destination&gt;ONE_MINUS_SRC_ALPHA&lt;/destination&gt;
+ *        
+ *        - -
+ *        &lt;source_color&gt;SRC_ALPHA&lt;/source_color&gt;
+ *        &lt;destination_color&gt;ONE_MINUS_SRC_ALPHA&lt;/destination_color&gt;
+ *        &lt;source_alpha&gt;ONE&lt;/source_alpha&gt;
+ *        &lt;destination_alpha&gt;ZERO&lt;/destination_alpha&gt;
+ *        
+ *        
+ *      &lt;/blend_func&gt;  -&gt; ZERO, ONE,
+ *                        SRC_COLOR, SRC_ALPHA, DST_ALPHA, DST_COLOR,
+ *                        SRC_ALPHA_SATURATE, CONSTANT_COLOR, CONSTANT_ALPHA,
+ *                        ONE_MINUS_SRC_COLOR, ONE_MINUS_SRC_ALPHA,
+ *                        ONE_MINUS_DST_COLOR, ONE_MINUS_DST_ALPHA,
+ *                        //ONE_MINUS_CONSTANT_COLOR, ONE_MINUS_CONSTANT_ALPHA,
+ *                        SRC1_ALPHA, ONE_MINUS_SRC1_ALPHA;
+ *                        
+ *        color_final.rgb = color_fragment.rgb * source_color + color_anterior.rgb * destination_color;
+ *        color_final.a   = color_fragment.a   * source_alpha + color_anterior.a   * destination_alpha;           
+ *        
+ *    &lt;/render_states&gt;
+ *    
+ *    &lt;attributes&gt;
+ *      &lt;position/&gt; -&gt; vec3 a_v3Position               (0)
+ *      &lt;normal/&gt;   -&gt; vec3 a_v3Normal                 (1)
+ *      &lt;tangents/&gt; -&gt; vec3 a_v3Tangent, a_v3Bitangent (2/3)
+ *      &lt;uv/&gt;       -&gt; vec2 a_v2UV                     (4)
+ *      &lt;bones/&gt;    -&gt; ivec4 a_i4BlendIndexs           (5)
+ *                      vec4 a_v4BlendWeights          (6)
+ *      &lt;color/&gt;    -&gt; vec4 a_v4Color                  (7)
+ *    &lt;/attributes&gt;
+ *    
+ *    &lt;uniforms&gt;
+ *      &lt;albedo_texture/&gt;          -&gt; sampler2D u_s2Albedo
+ *      &lt;normal_texture/&gt;          -&gt; sampler2D u_s2Normalmap
+ *      &lt;height_texture/&gt;          -&gt; sampler2D u_s2Heightmap
+ *      &lt;basic_instance_uniforms/&gt; -&gt; UniformInstances { m44ModelViewProjection, m44ModelView  } u_InstanceInfo[instances]
+ *      &lt;special_colors/&gt;          -&gt; SpecialColors { u_v4SpecialColor0, u_v4SpecialColor1, u_v4SpecialColor2, u_v4SpecialColor3 } u_ColorInfo[instances]
+ *      
+ *      &lt;basic_light/&gt;             -&gt; UniformLight { u_v3AmbientLight, u_v3DirectionalLightDirection, u_v3DirectionalLightColor }
+ *      &lt;basic_material/&gt;          -&gt; UniformMaterials { u_fSpecularFactor, u_fGlossiness, u_fHeight }
+ *    &lt;/uniforms&gt;
+ *    
+ *    &lt;results&gt;
+ *      &lt;color/&gt; &lt;!- - vec4 f_v4Color - -&gt;
+ *      &lt;depth/&gt; &lt;!- - vec4 f_v4Depth - -&gt;
+ *    &lt;/results&gt;
+ *    
+ *        
+ *    &lt;vertex_shader&gt;
+ *      &lt;resource&gt;vertex_shader&lt;/resource&gt; -&gt; ./data/shaders/vertex_shader.vs
+ *      &lt;define&gt;ANIMATED&lt;/define&gt; -&gt; afegeix "#define ANIMATED" al principi del shader
+ *      &lt;define&gt;TANGENTS&lt;/define&gt;
+ *      &lt;define&gt;PARALLAX&lt;/define&gt;
+ *    &lt;/vertex_shader&gt;
+ *    &lt;fragment_shader&gt;
+ *      &lt;resource&gt;fragment_shader&lt;/resource&gt; -&gt; ./data/shaders/fragment_shader.vs
+ *    &lt;/fragment_shader&gt;
+ *  &lt;/pass&gt;
+ * &lt;/technique&gt;
+ * </pre>
  * </code>
  * </p>
  * 
@@ -226,11 +229,27 @@ public class Effect extends Resource {
       return false;
     }
     
-    for(Entry<TechniqueType, HashMap<Quality, Technique>> qToTech : techniques.entrySet()) {
-      if(!qToTech.getValue().containsKey(Quality.NONE)) {
-        LOGGER.warning("Technique type " + qToTech.getKey() + " has no NONE quality technique.");
-        return false;
+    for(Entry<TechniqueType, HashMap<Quality, Technique>> qToTechEntry : techniques.entrySet()) {
+      HashMap<Quality, Technique> qToTech = qToTechEntry.getValue();
+      if(!qToTech.containsKey(Quality.NONE)) {
+        LOGGER.warning("Technique type " + qToTechEntry.getKey() + " has no NONE quality technique.");
+
+        assert qToTech.size() > 0;
+        Set<Quality> qToTechSet = qToTech.keySet();
+        Quality lowestQuality = qToTechSet.iterator().next();
+        Quality qualityCont = lowestQuality;
+        
+        while(qualityCont != Quality.NONE) {
+          qualityCont = qualityCont.previousQuality();
+          if(qToTechSet.contains(qualityCont)) {
+            lowestQuality = qualityCont;
+          }
+        }
+        
+        qToTech.put(Quality.NONE, qToTech.get(lowestQuality));
       }
+      
+      assert qToTech.containsKey(Quality.NONE);
     }
     
     return true;

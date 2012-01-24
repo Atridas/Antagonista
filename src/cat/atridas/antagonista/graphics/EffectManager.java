@@ -41,8 +41,39 @@ public class EffectManager extends ResourceManager<Effect> {
   private Effect defaultResource;
   private TechniquePass fontPass;
   
-  boolean isInit;
+  private boolean isInit;
   
+  /**
+   * Reads a file, in a xml format, to configure and initialize the manager.
+   * 
+   * The format of the file is similar to:
+   *  
+   * <code>
+   * <pre>
+   * &lt;effects path="data/effects/" extensions="xml"&gt;
+   *          // base path
+   *                               // coma separated list of possible extensions.
+   *   &lt;shaders&gt;
+   *     // list of all shader types
+   *     &lt;vertex_shaders path="data/shaders/" extensions="vs"/&gt;
+   *     &lt;tesselation_control_shaders path="data/shaders/" extensions="tc"/&gt;
+   *     &lt;tesselation_evaluation_shaders path="data/shaders/" extensions="te"/&gt;
+   *     &lt;geometry_shaders path="data/shaders/" extensions="gs"/&gt;
+   *     &lt;fragment_shaders path="data/shaders/" extensions="fs"/&gt;
+   *   &lt;/shaders&gt;
+   *   
+   *   //preload shaders
+   *   &lt;effect name="BasicEffect"/&gt;
+   *   &lt;effect name="WhiteEffect"/&gt;
+   *   &lt;effect name="ColorEffect"/&gt;
+   * &lt;/effects&gt;
+   * </pre>
+   * </code>
+   * 
+   * @param configFile a path to the file lo be loaded.
+   * @param rm the Render Manager
+   * @since 0.1
+   */
   public void init(String configFile, RenderManager rm) {
     assert !isInit;
     isInit = true;
@@ -132,6 +163,10 @@ public class EffectManager extends ResourceManager<Effect> {
              fragmentShaderManager    != null;
 
       assert !Utils.hasGLErrors();
+
+
+      defaultResource = new Effect(Utils.DEFAULT);
+      defaultResource.loadDefault();
       
       nl = effectsXML.getElementsByTagName("effect");
       for(int i = 0; i < nl.getLength(); ++i) {
@@ -152,8 +187,6 @@ public class EffectManager extends ResourceManager<Effect> {
       throw new IllegalArgumentException(e);
     }
     
-    defaultResource = new Effect(Utils.DEFAULT);
-    defaultResource.loadDefault();
     
     //TODO millor
     fontPass = new TechniquePassGL2(true);
@@ -161,10 +194,24 @@ public class EffectManager extends ResourceManager<Effect> {
     assert !Utils.hasGLErrors();
   }
   
+  /**
+   * Fetches the technique that is used to render text.
+   * 
+   * @return The unique path of the technique used to render text.
+   * @since 0.1
+   */
   public TechniquePass getFontPass() {
     return fontPass;
   }
   
+  /**
+   * Gets the source from a specified file.
+   * 
+   * @param shader Shader name.
+   * @param st Shader type.
+   * @return the source of the shader.
+   * @since 0.1
+   */
   public String getShaderSource(HashedString shader, ShaderType st) {
     assert isInit;
     switch(st) {
@@ -183,7 +230,13 @@ public class EffectManager extends ResourceManager<Effect> {
     }
   }
   
-  
+  /**
+   * Fetches the default source of each shader type.
+   * 
+   * @param st Shader type to fetch.
+   * @return the default shader source.
+   * @since 0.1
+   */
   public String getDefaultShaderSource(ShaderType st) {
     assert isInit;
     switch(st) {
@@ -215,11 +268,24 @@ public class EffectManager extends ResourceManager<Effect> {
     return defaultResource;
   }
 
+  /**
+   * Gets the default technique.
+   * 
+   * @return the default technique
+   * @since 0.1
+   */
   public TechniquePass getDefaultTechnique() {
     // TODO
     return null;
   }
   
+  /**
+   * Manages shader sources.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @since 0.1
+   *
+   */
   private static abstract class ShaderManager extends ResourceManager<Shader> {
 
     private final ShaderType type;
@@ -242,31 +308,65 @@ public class EffectManager extends ResourceManager<Effect> {
       return defaultShader;
     }
     
-
+    /**
+     * Manages Vertex shaders.
+     * 
+     * @author Isaac 'Atridas' Serrano Guasch
+     * @since 0.1
+     *
+     */
     static class Vertex extends ShaderManager {
       Vertex(String _basePath, ArrayList<HashedString> _extensionsPriorized) {
         super(_basePath, _extensionsPriorized, ShaderType.VERTEX);
       }
     }
-    
+
+    /**
+     * Manages Fragment shaders.
+     * 
+     * @author Isaac 'Atridas' Serrano Guasch
+     * @since 0.1
+     *
+     */
     static class Fragment extends ShaderManager {
       Fragment(String _basePath, ArrayList<HashedString> _extensionsPriorized) {
         super(_basePath, _extensionsPriorized, ShaderType.FRAGMENT);
       }
     }
-    
+
+    /**
+     * Manages Geometry shaders.
+     * 
+     * @author Isaac 'Atridas' Serrano Guasch
+     * @since 0.1
+     *
+     */
     static class Geometry extends ShaderManager {
       Geometry(String _basePath, ArrayList<HashedString> _extensionsPriorized) {
         super(_basePath, _extensionsPriorized, ShaderType.GEOMETRY);
       }
     }
-    
+
+    /**
+     * Manages Tesselation Evaluation shaders.
+     * 
+     * @author Isaac 'Atridas' Serrano Guasch
+     * @since 0.1
+     *
+     */
     static class TessEval extends ShaderManager {
       TessEval(String _basePath, ArrayList<HashedString> _extensionsPriorized) {
         super(_basePath, _extensionsPriorized, ShaderType.TESS_EVALUATION);
       }
     }
-    
+
+    /**
+     * Manages Tesselation Controll shaders.
+     * 
+     * @author Isaac 'Atridas' Serrano Guasch
+     * @since 0.1
+     *
+     */
     static class TessControl extends ShaderManager {
       TessControl(String _basePath, ArrayList<HashedString> _extensionsPriorized) {
         super(_basePath, _extensionsPriorized, ShaderType.TESS_CONTROL);

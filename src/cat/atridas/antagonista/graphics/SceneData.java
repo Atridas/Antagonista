@@ -12,7 +12,9 @@ public abstract class SceneData {
   protected final RenderManager rm;
   private final Matrix4f viewMatrix = new Matrix4f();
   private final Matrix4f projectionMatrix = new Matrix4f();
-  private final Vector3f cameraPosition = new Vector3f();
+  private final Point3f cameraPosition  = new Point3f();
+  private final Vector3f cameraUpVector  = new Vector3f();
+  private final Vector3f cameraDirection = new Vector3f();
 
   protected final Tuple3f  ambientLightColor         = new Point3f();
   protected final Tuple3f  directionalLightColor     = new Point3f();
@@ -163,6 +165,9 @@ public abstract class SceneData {
     ydir.normalize();
     zdir.normalize();
 
+    cameraUpVector.set(ydir);
+    cameraDirection.set(zdir);
+
     viewMatrix.setColumn(0, xdir.x, xdir.y, xdir.z, 0.0f);
     viewMatrix.setColumn(1, ydir.x, ydir.y, ydir.z, 0.0f);
     viewMatrix.setColumn(2, zdir.x, zdir.y, zdir.z, 0.0f);
@@ -184,6 +189,14 @@ public abstract class SceneData {
   
   public final void getCameraPosition(Point3f position) {
     position.set(cameraPosition);
+  }
+  
+  public final void getCameraUpVector(Vector3f upVector) {
+    upVector.set(cameraUpVector);
+  }
+  
+  public final void getCameraPositionDirection(Vector3f direction) {
+    direction.set(cameraDirection);
   }
   
   public final void getViewProjectionMatrix(Matrix4f viewProjection_) {

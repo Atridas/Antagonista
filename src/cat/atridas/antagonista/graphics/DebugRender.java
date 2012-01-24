@@ -1225,6 +1225,9 @@ public abstract class DebugRender {
     assert Utils.V3_MINUS_Z.x == 0 && Utils.V3_MINUS_Z.y == 0 && Utils.V3_MINUS_Z.z == -1;
     assert Utils.V3_Z.x == 0 && Utils.V3_Z.y == 0 && Utils.V3_Z.z == 1;
     
+    Vector3f cameraUpVector = new Vector3f();
+    rm.getSceneData().getCameraUpVector(cameraUpVector);
+    
     for(DebugString text : strings) {
       
       rm.setDepthTest(text.depthEnabled);
@@ -1247,7 +1250,7 @@ public abstract class DebugRender {
         
         v3Aux.sub(p3CameraPos, text.position);
         v3Aux.normalize();
-        Utils.getClosestRotation(Utils.V3_MINUS_Z, Utils.V3_MINUS_Y, v3Aux, Utils.V3_Z, qAux);
+        Utils.getClosestRotation(Utils.V3_MINUS_Z, Utils.V3_MINUS_Y, v3Aux, cameraUpVector, qAux);
         model.setRotation(qAux);
   
         
