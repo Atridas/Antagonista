@@ -21,35 +21,48 @@ import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 
 /**
- * Classe que representa una font creada amb el <b>Bitmap Font Generator</b>
- * d'AngelCode.
- * 
- * 'http://www.angelcode.com/products/bmfont/'
- * 
+ * <p>
+ * Classe that encapsulates a Font created by the <b>Bitmap Font Generator</b> of AngelCode.
+ * </p>
+ * <p>
+ * {@link http://www.angelcode.com/products/bmfont/}
+ * </p>
  * 
  * @author Isaac 'Atridas' Serrano Guasch
+ * @since 0.1
  *
  */
 public class Font extends Resource {
   private static Logger logger = Logger.getLogger(Font.class.getCanonicalName());
   
-
+  /**
+   * In a text Vertex Buffer, the size of the vertex.
+   * @since 0.1
+   */
   public static final int VERTEX_STRIDE = 3 * Utils.INTEGER_SIZE  // x, y .. textureId
                                         + 2 * Utils.FLOAT_SIZE    // s, t
                                         + 4 * Utils.BYTE_SIZE;    // channel
 
+  /**
+   * In the text Vertex Buffer, the offset to the position attribute.
+   * @since 0.1
+   */
   public static final int POSITION_OFFSET  = 0;
+  /**
+   * In the text Vertex Buffer, the offset to the page attribute.
+   * @since 0.1
+   */
   public static final int PAGE_OFFSET      = POSITION_OFFSET  + 2 * Utils.INTEGER_SIZE;
+  /**
+   * In the text Vertex Buffer, the offset to the texture coordinates attribute.
+   * @since 0.1
+   */
   public static final int TEXCOORDS_OFFSET = PAGE_OFFSET      + 1 * Utils.INTEGER_SIZE;
+  /**
+   * In the text Vertex Buffer, the offset to the channel attribute.
+   * @since 0.1
+   */
   public static final int CHANNEL_OFFSET   = TEXCOORDS_OFFSET + 2 * Utils.FLOAT_SIZE;
-  
-  
-  public static int getVertexSize() {
-    return 3 * Integer.SIZE / 8  // x, y .. textureId
-         + 2 * Float.SIZE   / 8  // s, t
-         + 4 * Byte.SIZE    / 8; // channel
-  }
-  
   
   private int width, height, lineHeight, highestChar;
   
@@ -57,7 +70,12 @@ public class Font extends Resource {
   private final Map<Character, Char> chars = new HashMap<Character, Char>();
   private final Map<Kerning, Integer> kernings = new HashMap<Kerning, Integer>();
 
-  
+  /**
+   * Creates a resource.
+   * 
+   * @param name of the resource.
+   * @since 0.1
+   */
   public Font(HashedString name) {
     super(name);
   }
@@ -163,22 +181,39 @@ public class Font extends Resource {
     return true;
   }
   
+  /**
+   * Number of textures this font needs to be rendered.
+   * 
+   * @return the number of textures.
+   * @since 0.1
+   */
   public final int numTextures() {
     return pages.size();
   }
   
-  public int fillBuffers(CharSequence characters, ByteBuffer vertexBuffer, IntBuffer indexBuffer, Texture[] textures) {
+  /**
+   * Fills a Vertex Buffer and a Index Buffer with the needed information to render a text.
+   * 
+   * @param _characters text to be rendered.
+   * @param vertexBuffer_ output parameter. Buffer where the vertex information is saved. 
+   * @param indexBuffer_ output parameter. Buffer where the indexes of the primitive are saved.
+   * @param textures_ textures needed to be activated prior renderization.
+   * @return width size (in pixels) of the text rendered.
+   * 
+   * @since 0.1
+   */
+  public int fillBuffers(CharSequence _characters, ByteBuffer vertexBuffer_, IntBuffer indexBuffer_, Texture[] textures_) {
     assert !cleaned;
     
     for(Entry<Integer, Texture> page : pages.entrySet()) {
-      textures[page.getKey()] = page.getValue();
+      textures_[page.getKey()] = page.getValue();
     }
     
     int maxX = 0;
     int x = 0, y = 0;
     char lastChar = 0;
-    for(int i = 0; i < characters.length(); ++i) {
-      char c = characters.charAt(i);
+    for(int i = 0; i < _characters.length(); ++i) {
+      char c = _characters.charAt(i);
       Char charObj = chars.get(c);
       
       if(c == '\n') {
@@ -211,70 +246,70 @@ public class Font extends Resource {
       byte channel3 = ((charObj.chanel & 1) != 0) ? Byte.MAX_VALUE : 0;
       
       //vertex 00
-      vertexBuffer.putInt(x0Coord); //x
-      vertexBuffer.putInt(y0Coord); //y
+      vertexBuffer_.putInt(x0Coord); //x
+      vertexBuffer_.putInt(y0Coord); //y
       
-      vertexBuffer.putInt(charObj.page);   //page
+      vertexBuffer_.putInt(charObj.page);   //page
 
-      vertexBuffer.putFloat(s0);
-      vertexBuffer.putFloat(t0);
+      vertexBuffer_.putFloat(s0);
+      vertexBuffer_.putFloat(t0);
 
-      vertexBuffer.put(channel0); //channel
-      vertexBuffer.put(channel1); //channel
-      vertexBuffer.put(channel2); //channel
-      vertexBuffer.put(channel3); //channel
+      vertexBuffer_.put(channel0); //channel
+      vertexBuffer_.put(channel1); //channel
+      vertexBuffer_.put(channel2); //channel
+      vertexBuffer_.put(channel3); //channel
       
       //vertex 10
-      vertexBuffer.putInt(x1Coord); //x
-      vertexBuffer.putInt(y0Coord); //y
+      vertexBuffer_.putInt(x1Coord); //x
+      vertexBuffer_.putInt(y0Coord); //y
 
-      vertexBuffer.putInt(charObj.page);   //page
+      vertexBuffer_.putInt(charObj.page);   //page
 
-      vertexBuffer.putFloat(s1);
-      vertexBuffer.putFloat(t0);
+      vertexBuffer_.putFloat(s1);
+      vertexBuffer_.putFloat(t0);
 
-      vertexBuffer.put(channel0); //channel
-      vertexBuffer.put(channel1); //channel
-      vertexBuffer.put(channel2); //channel
-      vertexBuffer.put(channel3); //channel
+      vertexBuffer_.put(channel0); //channel
+      vertexBuffer_.put(channel1); //channel
+      vertexBuffer_.put(channel2); //channel
+      vertexBuffer_.put(channel3); //channel
       
       //vertex 11
-      vertexBuffer.putInt(x1Coord); //x
-      vertexBuffer.putInt(y1Coord); //y
+      vertexBuffer_.putInt(x1Coord); //x
+      vertexBuffer_.putInt(y1Coord); //y
 
-      vertexBuffer.putInt(charObj.page);   //page
+      vertexBuffer_.putInt(charObj.page);   //page
 
-      vertexBuffer.putFloat(s1);
-      vertexBuffer.putFloat(t1);
+      vertexBuffer_.putFloat(s1);
+      vertexBuffer_.putFloat(t1);
 
-      vertexBuffer.put(channel0); //channel
-      vertexBuffer.put(channel1); //channel
-      vertexBuffer.put(channel2); //channel
-      vertexBuffer.put(channel3); //channel
+      vertexBuffer_.put(channel0); //channel
+      vertexBuffer_.put(channel1); //channel
+      vertexBuffer_.put(channel2); //channel
+      vertexBuffer_.put(channel3); //channel
       
       //vertex 01
-      vertexBuffer.putInt(x0Coord); //x
-      vertexBuffer.putInt(y1Coord); //y
+      vertexBuffer_.putInt(x0Coord); //x
+      vertexBuffer_.putInt(y1Coord); //y
 
-      vertexBuffer.putInt(charObj.page);   //page
+      vertexBuffer_.putInt(charObj.page);   //page
 
-      vertexBuffer.putFloat(s0);
-      vertexBuffer.putFloat(t1);
+      vertexBuffer_.putFloat(s0);
+      vertexBuffer_.putFloat(t1);
 
-      vertexBuffer.put(channel0); //channel
-      vertexBuffer.put(channel1); //channel
-      vertexBuffer.put(channel2); //channel
-      vertexBuffer.put(channel3); //channel
+      vertexBuffer_.put(channel0); //channel
+      vertexBuffer_.put(channel1); //channel
+      vertexBuffer_.put(channel2); //channel
+      vertexBuffer_.put(channel3); //channel
       
       
       //triangles
-      indexBuffer.put(i*4 + 0);
-      indexBuffer.put(i*4 + 3);
-      indexBuffer.put(i*4 + 1);
+      indexBuffer_.put(i*4 + 0);
+      indexBuffer_.put(i*4 + 3);
+      indexBuffer_.put(i*4 + 1);
 
-      indexBuffer.put(i*4 + 1);
-      indexBuffer.put(i*4 + 3);
-      indexBuffer.put(i*4 + 2);
+      indexBuffer_.put(i*4 + 1);
+      indexBuffer_.put(i*4 + 3);
+      indexBuffer_.put(i*4 + 2);
       
       x += charObj.xadvance;
       lastChar = c;
@@ -319,6 +354,12 @@ public class Font extends Resource {
     }
   }
   
+  /**
+   * Default font, that renders nothing.
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @since 0.1
+   *
+   */
   static final class NullFont extends Font {
 
     public NullFont() {super(Utils.NULL_FONT);}
@@ -338,18 +379,42 @@ public class Font extends Resource {
     return 0;
   }
 
+  /**
+   * Texture width.
+   * 
+   * @return texture width.
+   * @since 0.1
+   */
   public int getWidth() {
     return width;
   }
 
+  /**
+   * Texture height.
+   * 
+   * @return texture height.
+   * @since 0.1
+   */
   public int getHeight() {
     return height;
   }
 
+  /**
+   * Height of one text line.
+   * 
+   * @return height of one text line.
+   * @since 0.1
+   */
   public int getLineHeight() {
     return lineHeight;
   }
 
+  /**
+   * Highest Unicode number rendered by this font.
+   *  
+   * @return highest Unicode number rendered by this font.
+   * @since 0.1
+   */
   public int getHighestChar() {
     return highestChar;
   }
