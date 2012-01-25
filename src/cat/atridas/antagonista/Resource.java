@@ -15,7 +15,7 @@ public abstract class Resource {
    * Name of the resource. Must be unique for every resource type.
    * @since 0.1
    */
-  protected final HashedString resourceName;
+  public final HashedString resourceName;
   
   /**
    * Constructor that sets the constant field resourceName.

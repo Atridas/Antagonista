@@ -226,6 +226,8 @@ public class Test {
       
       rm.present();
       
+      Core.getCore().getFontManager().cleanTextCache();
+      
       Core.getCore().getInputManager().update(dt);
     }
     

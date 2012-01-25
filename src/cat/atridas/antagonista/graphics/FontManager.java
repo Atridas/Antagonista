@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4f;
@@ -19,7 +21,8 @@ public abstract class FontManager extends ResourceManager<Font> {
   //private static Logger logger = Logger.getLogger(FontManager.class.getCanonicalName());
   private Font defaultFont = new Font.NullFont();
   
-
+  private final HashMap<CachedTextIndex, CachedTextInfo> cachedTexts = new HashMap<>();
+  private final HashSet<CachedTextIndex> unusedTexts = new HashSet<>();
   
   public void init(ArrayList<HashedString> _extensionsPriorized, String _basePath) {
     setExtensions(_extensionsPriorized);
@@ -44,14 +47,33 @@ public abstract class FontManager extends ResourceManager<Font> {
       Matrix4f WVPmatrix,
       TextAlignment textAlignment,
       RenderManager rm) {
-    int len = text.length();
-    int buffer1Size = Font.VERTEX_STRIDE * len * 4;
-    ByteBuffer buffer1 = BufferUtils.createByteBuffer(buffer1Size);
-    ShortBuffer  buffer2 = BufferUtils.createShortBuffer(len * 6);
     
-    Texture tex[] = new Texture[font.numTextures()];
+    CachedTextIndex cti = new CachedTextIndex(text, font);
+    CachedTextInfo cachedText = cachedTexts.get(cti);
     
-    int x = font.fillBuffers(text, buffer1, buffer2, tex);
+    ByteBuffer  buffer1 = null;
+    ShortBuffer buffer2 = null;
+    int textlen = 0;
+    Texture tex[] = null;
+    if(cachedText == null) {
+      cachedText = new CachedTextInfo();
+
+      textlen = text.length();
+      int buffer1Size = Font.VERTEX_STRIDE * textlen * 4;
+      buffer1 = BufferUtils.createByteBuffer(buffer1Size);
+      buffer2 = BufferUtils.createShortBuffer(textlen * 6);
+      
+      tex = new Texture[font.numTextures()];
+      
+      cachedText.width = font.fillBuffers(text, buffer1, buffer2, tex);
+
+      buffer1.flip();
+      buffer2.flip();
+    } else {
+      unusedTexts.remove(cti);
+    }
+    
+    
 
     translation.z = 0;
     
@@ -82,12 +104,12 @@ public abstract class FontManager extends ResourceManager<Font> {
     case TOP_RIGHT:
     case MID_RIGHT:
     case BOTTOM_RIGHT:
-      translation.x = -x;
+      translation.x = -cachedText.width;
       break;
     case TOP_CENTER:
     case BOTTOM_CENTER:
     case MID_CENTER:
-      translation.x = -x / 2.f;
+      translation.x = -cachedText.width / 2.f;
       break;
     }
 
@@ -97,21 +119,44 @@ public abstract class FontManager extends ResourceManager<Font> {
     
     finalWVP.mul(WVPmatrix, aligmentMatrix);
     
-    buffer1.flip();
-    buffer2.flip();
     
-    printString(
-        buffer1, buffer2,
-        tex, len * 6,
-        finalWVP, color,
-        rm);
+    if(cachedText.id < 0) {
+      
+      cachedText.id = printString(
+                        buffer1, buffer2,
+                        tex, textlen * 6,
+                        finalWVP, color,
+                        rm);
+      cachedTexts.put(cti, cachedText);
+    } else {
+      printString(
+          cachedText.id,
+          finalWVP, color,
+          rm);
+    }
   }
   
-  protected abstract void printString(
+  public final void cleanTextCache() {
+    for(CachedTextIndex ctIndex : unusedTexts) {
+      CachedTextInfo ctInfo = cachedTexts.remove(ctIndex);
+      freeText(ctInfo.id);
+    }
+    unusedTexts.clear();
+    unusedTexts.addAll( cachedTexts.keySet() );
+  }
+  
+  protected abstract int printString(
       ByteBuffer _vertexBuffer, ShortBuffer _indexBuffer,
       Texture[] _tex, int indexLen,
       Matrix4f WVPMatrix, Color3f color,
       RenderManager rm);
+  
+  protected abstract void printString(
+      int textID,
+      Matrix4f WVPMatrix, Color3f color,
+      RenderManager rm);
+  
+  protected abstract void freeText(int textID);
   
   static void printBuffers(ByteBuffer bb, IntBuffer ib) {
     bb.rewind();
@@ -149,7 +194,56 @@ public abstract class FontManager extends ResourceManager<Font> {
     return defaultFont;
   }
   
-
+  private static final class CachedTextInfo {
+    int width, id = -1;
+    
+    @Override
+    public String toString() {
+      return "id: " + id + ", width: " + width;
+    }
+  }
+  
+  private static final class CachedTextIndex {
+    final String text;
+    final HashedString font;
+    public CachedTextIndex(String _text, Font _font) {
+      text = _text;
+      font = _font.resourceName;
+    }
+    @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((font == null) ? 0 : font.hashCode());
+      result = prime * result + ((text == null) ? 0 : text.hashCode());
+      return result;
+    }
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj)
+        return true;
+      if (obj == null)
+        return false;
+      if (getClass() != obj.getClass())
+        return false;
+      CachedTextIndex other = (CachedTextIndex) obj;
+      if (font == null) {
+        if (other.font != null)
+          return false;
+      } else if (!font.equals(other.font))
+        return false;
+      if (text == null) {
+        if (other.text != null)
+          return false;
+      } else if (!text.equals(other.text))
+        return false;
+      return true;
+    }
+    @Override
+    public String toString() {
+      return "'" + text + "' [" + font + "]";
+    }
+  }
   
   public static enum TextAlignment {
     TOP_LEFT, TOP_RIGHT, TOP_CENTER,
