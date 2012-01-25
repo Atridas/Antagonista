@@ -2,7 +2,7 @@ package cat.atridas.antagonista.graphics;
 
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -202,7 +202,7 @@ public class Font extends Resource {
    * 
    * @since 0.1
    */
-  public int fillBuffers(CharSequence _characters, ByteBuffer vertexBuffer_, IntBuffer indexBuffer_, Texture[] textures_) {
+  public int fillBuffers(CharSequence _characters, ByteBuffer vertexBuffer_, ShortBuffer indexBuffer_, Texture[] textures_) {
     assert !cleaned;
     
     for(Entry<Integer, Texture> page : pages.entrySet()) {
@@ -303,13 +303,13 @@ public class Font extends Resource {
       
       
       //triangles
-      indexBuffer_.put(i*4 + 0);
-      indexBuffer_.put(i*4 + 3);
-      indexBuffer_.put(i*4 + 1);
+      indexBuffer_.put((short)(i*4 + 0));
+      indexBuffer_.put((short)(i*4 + 3));
+      indexBuffer_.put((short)(i*4 + 1));
 
-      indexBuffer_.put(i*4 + 1);
-      indexBuffer_.put(i*4 + 3);
-      indexBuffer_.put(i*4 + 2);
+      indexBuffer_.put((short)(i*4 + 1));
+      indexBuffer_.put((short)(i*4 + 3));
+      indexBuffer_.put((short)(i*4 + 2));
       
       x += charObj.xadvance;
       lastChar = c;
@@ -363,7 +363,8 @@ public class Font extends Resource {
   static final class NullFont extends Font {
 
     public NullFont() {super(Utils.NULL_FONT);}
-    public int fillBuffers(CharSequence characters, ByteBuffer vertexBuffer, IntBuffer indexBuffer, Texture[] textures) {return 0;}
+    @Override
+    public int fillBuffers(CharSequence characters, ByteBuffer vertexBuffer, ShortBuffer indexBuffer, Texture[] textures) {return 0;}
     
   }
 

@@ -2,11 +2,10 @@ package cat.atridas.antagonista.graphics.gl;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
+import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4f;
-import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
 
 import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.GL11.*;
@@ -30,97 +29,44 @@ public abstract class FontManagerGL extends FontManager {
   private TechniquePass pass;
   
   private FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
-  private Matrix4f    aligmentMatrix = new Matrix4f();
-  private Matrix4f    finalWVP       = new Matrix4f();
-  private Vector3f    translation    = new Vector3f();
   
   @Override
-  public final void printString(Font font, String text, Tuple3f color, Matrix4f WVPmatrix, TextAlignment aligment, RenderManager rm) {
-    int len = text.length();
-    int buffer1Size = Font.VERTEX_STRIDE * len * 4;
-    ByteBuffer buffer1 = BufferUtils.createByteBuffer(buffer1Size);
-    IntBuffer  buffer2 = BufferUtils.createIntBuffer(len * 6);
+  protected final void printString(
+      ByteBuffer _vertexBuffer, ShortBuffer _indexBuffer,
+      Texture[] _tex, int indexLen,
+      Matrix4f WVPMatrix, Color3f color,
+      RenderManager rm) {
     
-    Texture tex[] = new Texture[font.numTextures()];
-    
-    int x = font.fillBuffers(text, buffer1, buffer2, tex);
-
-    translation.z = 0;
-    
-    switch(aligment) {
-    case TOP_LEFT:
-    case TOP_RIGHT:
-    case TOP_CENTER:
-      translation.y = 0;
-      break;
-    case BOTTOM_LEFT:
-    case BOTTOM_RIGHT:
-    case BOTTOM_CENTER:
-      translation.y = -font.getLineHeight();
-      break;
-    case MID_LEFT:
-    case MID_RIGHT:
-    case MID_CENTER:
-      translation.y = -font.getLineHeight() / 2.f;
-      break;
-    }
-    
-    switch(aligment) {
-    case TOP_LEFT:
-    case MID_LEFT:
-    case BOTTOM_LEFT:
-      translation.x = 0;
-      break;
-    case TOP_RIGHT:
-    case MID_RIGHT:
-    case BOTTOM_RIGHT:
-      translation.x = -x;
-      break;
-    case TOP_CENTER:
-    case BOTTOM_CENTER:
-    case MID_CENTER:
-      translation.x = -x / 2.f;
-      break;
-    }
-
-    aligmentMatrix.setIdentity();
-    aligmentMatrix.setTranslation(translation);
-    
-    
-    finalWVP.mul(WVPmatrix, aligmentMatrix);
-    
-    buffer1.rewind();
-    buffer2.rewind();
     
     rm.noVertexArray();
     
     //Actualitzar el buffer de vertexos
-    if(vbLen < buffer1Size) {
+    if(vbLen < _vertexBuffer.capacity()) {
       if(vertexBuffer == -1) {
         vertexBuffer = glGenBuffers();
       }
-      vbLen = buffer1Size;
+      vbLen = _vertexBuffer.capacity();
       glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-      glBufferData(GL_ARRAY_BUFFER, buffer1, GL_DYNAMIC_DRAW);
+      glBufferData(GL_ARRAY_BUFFER, _vertexBuffer, GL_DYNAMIC_DRAW);
       
     } else {
       glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-      glBufferSubData(GL_ARRAY_BUFFER, 0, buffer1);
+      glBufferSubData(GL_ARRAY_BUFFER, 0, _vertexBuffer);
     }
     
     //Actualitzar el buffer de indexos
-    if(ibLen < len * 6) {
+    if(ibLen < _indexBuffer.capacity()) {
       if(indexBuffer == -1) {
         indexBuffer = glGenBuffers();
       }
-      ibLen = len * 6;
+      ibLen = _indexBuffer.capacity();
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer2, GL_DYNAMIC_DRAW);
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer, GL_DYNAMIC_DRAW);
       
       //printBuffers(buffer1, buffer2);
     } else {
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-      glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, buffer2);
+      glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, _indexBuffer);
     }
     
     
@@ -129,8 +75,8 @@ public abstract class FontManagerGL extends FontManager {
       pass = Core.getCore().getEffectManager().getFontPass();
     }
     
-    for(int i = 0; i < tex.length; ++i) {
-      tex[i].activate(i);
+    for(int i = 0; i < _tex.length; ++i) {
+      _tex[i].activate(i);
     }
     
     //shader.activate();
@@ -146,13 +92,13 @@ public abstract class FontManagerGL extends FontManager {
     pass.activate(rm);
     
     matrixBuffer.clear();
-    Utils.matrixToBuffer(finalWVP, matrixBuffer);
+    Utils.matrixToBuffer(WVPMatrix, matrixBuffer);
     matrixBuffer.flip();
     
     glUniformMatrix4(pass.getModelViewProjectionUniform(), false, matrixBuffer);
     glVertexAttrib3f(TechniquePass.FONT_COLOR_ATTRIBUTE, color.x, color.y, color.z);
     
-    glDrawElements(GL_TRIANGLES, len * 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, indexLen, GL_UNSIGNED_SHORT, 0);
   }
   
   protected abstract void activateVAO();
