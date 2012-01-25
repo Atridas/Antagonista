@@ -23,7 +23,7 @@ public abstract class Resource {
    * @since 0.1
    * @param _resourceName name of the resource.
    */
-  protected Resource(HashedString _resourceName) {
+  public Resource(HashedString _resourceName) {
     resourceName = _resourceName;
   }
   

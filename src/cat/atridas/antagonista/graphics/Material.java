@@ -13,23 +13,64 @@ import cat.atridas.antagonista.Resource;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 
+/**
+ * Controls a material used in a mesh or other renderable object.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch
+ * @since 0.1
+ *
+ */
 public abstract class Material extends Resource {
   private static Logger LOGGER = Logger.getLogger(Material.class.getCanonicalName());
 
+  /**
+   * Header of a text file. "antagonist text"
+   * @since 0.1
+   */
   public static final byte[] TEXT_HEADER = "antagonist text".getBytes();
+  /**
+   * Text of a binary file. "antagonist binary"
+   * @since 0.1
+   */
   public static final byte[] BINARY_HEADER = "antagonist binary".getBytes();
   
+  /**
+   * Map headers -> types of files.
+   * @since 0.1
+   */
   public static final Map<byte[], MaterialFileTypes> FILE_TYPES;
   
+  /**
+   * "mat"
+   * @since 0.1
+   */
   private static final HashedString HS_MAT = new HashedString("mat");
   
+  /**
+   * Material parameters.
+   */
   protected float specularFactor, specularPower, height;
+  /**
+   * Is the material translucid?
+   */
   private boolean alphaBlend;
   
+  /**
+   * Texture parameters.
+   */
   protected Texture albedo, normalmap, heightmap;
   
+  /**
+   * Effect used in the material renderization.
+   */
   protected Effect effect;
   
+  /**
+   * Builds a blank, unitialized material.
+   * @param _resourceName name of the material.
+   * @since 0.1
+   * @see Resource#Resource(HashedString)
+   */
   public Material(HashedString _resourceName) {
     super(_resourceName);
   }
@@ -61,6 +102,10 @@ public abstract class Material extends Resource {
     }
   }
   
+  /**
+   * Initializes this material with the default parameters.
+   * @since 0.1
+   */
   final void loadDefault() {
     specularFactor = .4f;
     specularPower  = 50.f;
@@ -70,6 +115,12 @@ public abstract class Material extends Resource {
     effect = Core.getCore().getEffectManager().getDefaultResource();
   }
 
+  /**
+   * Loads a text file.
+   * @param is file
+   * @return if the resource was correctly loaded.
+   * @since 0.1
+   */
   private boolean loadText(InputStream is) {
     try {
       String str = Utils.readInputStream(is);
@@ -115,6 +166,12 @@ public abstract class Material extends Resource {
     }
   }
 
+  /**
+   * Loads a binary file.
+   * @param is file
+   * @return if the resource was correctly loaded.
+   * @since 0.1
+   */
   private boolean loadBinary(InputStream is) {
     throw new IllegalStateException("Not yet implemented");
   }
@@ -129,15 +186,42 @@ public abstract class Material extends Resource {
     return 0;
   }
 
+  /**
+   * Checks if the material is translucid.
+   * 
+   * @return <code>true</code> if this material needs alpha blending.
+   * @since 0.1
+   */
   public final boolean isAlphaBlended() {
     return alphaBlend;
   }
   
+  /**
+   * Finds the effect needed to render this material.
+   * 
+   * @return the effect.
+   * @since 0.1
+   */
   public final Effect getEffect() {
     return effect;
   }
 
+  /**
+   * Sets the uniforms that need the shader to be binded to be passed to the OpenGL (usually only
+   * needed in OpenGL 2.0).
+   * 
+   * @param pass Shader Program used.
+   * @param rm RenderManager
+   * @since 0.1
+   */
   public abstract void setUpUniforms(TechniquePass pass, RenderManager rm);
+  /**
+   * Sets the uniforms that don't need the shader to be binded to be passed to the OpenGL 
+   * (used usually in OpenGL 3.0 and later).
+   * 
+   * @param rm RenderManager
+   * @since 0.1
+   */
   public abstract void setUpUniforms(RenderManager rm);
   
   static {
@@ -148,6 +232,13 @@ public abstract class Material extends Resource {
     FILE_TYPES = Collections.unmodifiableMap(fileTypes);
   }
   
+  /**
+   * Enumeration of file formats.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch.
+   * @since 0.1
+   *
+   */
   private static enum MaterialFileTypes {
     TEXT, BINARY, ERROR
   }

@@ -16,18 +16,61 @@ import cat.atridas.antagonista.Resource;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 
+/**
+ * Class that encapsulates an indexed vertex array to be rendered.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch.
+ * @since 0.1
+ *
+ */
 public abstract class Mesh extends Resource {
   private static Logger LOGGER = Logger.getLogger(Mesh.class.getCanonicalName());
 
+  /**
+   * Number of (float) elements in a vertex not animated.
+   * @since 0.1
+   */
   public static final int NUM_ELEMENTS_PER_VERTEX_STATIC_MESH = 14;
+  /**
+   * Number of elements in a vertex animated. Short indices count as half element.
+   * @since 0.1
+   */
   public static final int NUM_ELEMENTS_PER_VERTEX_ANIMATED_MESH = 14 + (2 + 4); //4 indexos (shorts) + 4 pesos 
 
-  
+  /**
+   * "mesh"
+   * @since 0.1
+   */
   private static final HashedString HS_MESH = new HashedString("mesh");
   
-  protected int numVerts, numSubMeshes, numFaces[];
+  /**
+   * Number of vertexs in the vertex array.
+   * @since 0.1
+   */
+  protected int numVerts;
+  /**
+   * Number of submeshes this mesh has. Each submesh has an index buffer and a different material.
+   * @since 0.1
+   */
+  protected int numSubMeshes;
+  /**
+   * Number of incides for each submesh.
+   * @since 0.1
+   */
+  protected int numFaces[];
+  /**
+   * Material for each submesh.
+   * @since 0.1
+   */
   protected Material materials[];
   
+  /**
+   * Constructs an unitialized mesh.
+   * 
+   * @param _resourceName name of the mesh.
+   * @since 0.1
+   * @see Resource#Resource(HashedString)
+   */
   protected Mesh(HashedString _resourceName) {
     super(_resourceName);
   }
@@ -59,7 +102,13 @@ public abstract class Mesh extends Resource {
     }
   }
   
-  
+  /**
+   * Loads the mesh file in a text format.
+   * 
+   * @param is
+   * @return
+   * @since 0.1
+   */
   private boolean loadText(InputStream is) {
     final int firstVertexLine = 3;
     String str = Utils.readInputStream(is);
@@ -143,27 +192,81 @@ public abstract class Mesh extends Resource {
     return loadBuffers(vertexBuffer, faces, animated); 
   }
 
+  /**
+   * Loads the mesh file in a binary format.
+   * 
+   * @param is
+   * @return
+   * @since 0.1
+   */
   private boolean loadBinary(InputStream is) {
     throw new IllegalStateException("Not yet implemented");
   }
   
+  /**
+   * Creates the OpenGL buffers. This method must create the ARRAY_BUFFER, the ELEMENT_ARRAY_BUFFER
+   * and the vertex array object if possible (OpenGL 3.0 and greater).
+   * 
+   * @param vertexBuffer vertex buffer.
+   * @param faces index buffer.
+   * @param animated indicates if the mesh is animated or not.
+   * @return success of the method.
+   * @since 0.1
+   */
   protected abstract boolean loadBuffers(ByteBuffer vertexBuffer, ByteBuffer faces, boolean animated);
+  /**
+   * Loads a default mesh.
+   * @since 0.1
+   */
   protected abstract void loadDefault();
 
-  
+  /**
+   * Returns the number of submeshes. Each submesh has a different material.
+   * 
+   * @return the number of submeshes.
+   * @since 0.1
+   */
   public final int getNumSubmeshes() {
     assert !cleaned;
     return numSubMeshes;
   }
   
+  /**
+   * Gets the material of a specific submesh.
+   * 
+   * @param _submesh identifier.
+   * @return the material fetched.
+   * @throws ArrayIndexOutOfBoundsException if the <code>_submesh</code> parameter is not a valid
+   * index.
+   * @since 0.1
+   */
   public final Material getMaterial(int _submesh) {
     assert !cleaned;
     assert _submesh < numSubMeshes;
     return materials[_submesh];
   }
   
-  public abstract void preRender(); 
-  public abstract void render(int _submesh, RenderManager rm); 
+  /**
+   * Initializes the buffer states to render the mesh.
+   * @since 0.1
+   */
+  public abstract void preRender();
+  /**
+   * Renders a single instance of the mesh.
+   * 
+   * @param _submesh submesh to render.
+   * @param rm RenderManager.
+   * @since 0.1
+   */
+  public abstract void render(int _submesh, RenderManager rm);
+  /**
+   * Renders a number of instances of this mesh.
+   * 
+   * @param _submesh submesh to render.
+   * @param instances number of instances to render.
+   * @param rm RenderManager.
+   * @since 0.1
+   */
   public abstract void render(int _submesh, int instances, RenderManager rm); 
   
   @Override
@@ -178,10 +281,20 @@ public abstract class Mesh extends Resource {
     return 0;
   }
 
-  
+  /**
+   * Header of a text file. "antagonist text"
+   * @since 0.1
+   */
   public static final byte[] TEXT_HEADER = "antagonist text".getBytes();
+  /**
+   * Header of a binary file. "antagonist binary"
+   * @since 0.1
+   */
   public static final byte[] BINARY_HEADER = "antagonist binary".getBytes();
   
+  /**
+   * Map header -> file type
+   */
   public static final Map<byte[], MeshFileTypes> FILE_TYPES;
   static {
     Map<byte[], MeshFileTypes> fileTypes = new HashMap<>();
@@ -191,6 +304,12 @@ public abstract class Mesh extends Resource {
     FILE_TYPES = Collections.unmodifiableMap(fileTypes);
   }
   
+  /**
+   * Different file types.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch
+   *
+   */
   private static enum MeshFileTypes {
     TEXT, BINARY, ERROR
   }

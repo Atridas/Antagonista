@@ -10,10 +10,28 @@ import cat.atridas.antagonista.graphics.RenderManager.Profile;
 import cat.atridas.antagonista.graphics.gl2.MaterialGL2;
 import cat.atridas.antagonista.graphics.gl3.MaterialGL3;
 
+/**
+ * Material Manager.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch
+ * @since 0.1
+ *
+ */
 public class MaterialManager extends ResourceManager<Material> {
-
+  
+  /**
+   * Default material.
+   * @since 0.1
+   */
   private Material defaultResource;
   
+  /**
+   * Initializes the manager.
+   * 
+   * @param _extensionsPriorized Extensions of the material files to be loaded.
+   * @param _basePath Path where the material files will be searched.
+   * @see ResourceManager#ResourceManager(String, ArrayList)
+   */
   public void init(ArrayList<HashedString> _extensionsPriorized, String _basePath) {
     setExtensions(_extensionsPriorized);
     setBasePath(_basePath);

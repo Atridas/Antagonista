@@ -10,10 +10,26 @@ import cat.atridas.antagonista.graphics.RenderManager.Profile;
 import cat.atridas.antagonista.graphics.gl2.MeshGL2;
 import cat.atridas.antagonista.graphics.gl3.MeshGL3;
 
+/**
+ * Manages all mesh cores.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch
+ * @since 0.1
+ *
+ */
 public class MeshManager extends ResourceManager<Mesh> {
-
+  /**
+   * Default mesh.
+   */
   private Mesh defaultResource;
   
+  /**
+   * Initializes the manager.
+   * 
+   * @param _extensionsPriorized Extensions of the mesh files to be loaded.
+   * @param _basePath Path where the mesh files will be searched.
+   * @see ResourceManager#ResourceManager(String, ArrayList)
+   */
   public void init(ArrayList<HashedString> _extensionsPriorized, String _basePath) {
     setExtensions(_extensionsPriorized);
     setBasePath(_basePath);
