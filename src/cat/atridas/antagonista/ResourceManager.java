@@ -65,7 +65,7 @@ public abstract class ResourceManager<T extends Resource> {
    * @param _extensions Extensions of the resources to be loaded.
    * @since 0.1
    */
-  protected ResourceManager(String _basePath, ArrayList<HashedString> _extensions) {
+  public ResourceManager(String _basePath, ArrayList<HashedString> _extensions) {
     basePath = _basePath;
     extensions = new ArrayList<>(_extensions);
   }
@@ -84,7 +84,7 @@ public abstract class ResourceManager<T extends Resource> {
    * Sets the extensions that the files containing the resources will have, ordered with the one with
    * the highest priority first.
    * 
-   * @param _extensionss Extensions of the resources to be loaded.
+   * @param _extensions Extensions of the resources to be loaded.
    * @since 0.1
    */
   protected final void setExtensions(ArrayList<HashedString> _extensions) {

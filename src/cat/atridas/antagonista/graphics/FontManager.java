@@ -16,23 +16,70 @@ import org.lwjgl.BufferUtils;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.ResourceManager;
 
-//TODO optimitzar tot lo relacionat amb això.
+/**
+ * This class manages all fonts and is capable of rendering them during the render phase.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch
+ * @since 0.1
+ *
+ */
 public abstract class FontManager extends ResourceManager<Font> {
   //private static Logger logger = Logger.getLogger(FontManager.class.getCanonicalName());
   private Font defaultFont = new Font.NullFont();
   
+  /**
+   * Cache of texts recently used.
+   * @since 0.1 
+   * @see #cleanTextCache()
+   */
   private final HashMap<CachedTextIndex, CachedTextInfo> cachedTexts = new HashMap<>();
+  /**
+   * Texts that hadn't been used since the last call to <code>cleanTextCache()</code>.
+   * @since 0.1
+   * @see #cleanTextCache()
+   */
   private final HashSet<CachedTextIndex> unusedTexts = new HashSet<>();
   
+  /**
+   * Initializes the manager.
+   * 
+   * @param _extensions Extensions of the resources to be loaded.
+   * @param _basePath Path where the resources will be searched.
+   * @since 0.1
+   * @see ResourceManager#ResourceManager(String, ArrayList)
+   */
   public void init(ArrayList<HashedString> _extensionsPriorized, String _basePath) {
     setExtensions(_extensionsPriorized);
     setBasePath(_basePath);
   }
   
+  /**
+   * Same as <code>printString(<strong>getResource(font)</strong>, text, color, WVPmatrix, <strong>TOP_LEFT</strong>, rm);</code>
+   * 
+   * @param font used to render the text.
+   * @param text to write.
+   * @param color used in the text.
+   * @param WVPmatrix 3D (or 2D orthogonal) transformation.
+   * @param rm RenderManager
+   * @since 0.1
+   * @see #printString(Font, String, Color3f, Matrix4f, TextAlignment, RenderManager)
+   */
   public final void printString(HashedString font, String text, Color3f color, Matrix4f WVPmatrix, RenderManager rm) {
     printString(getResource(font), text, color, WVPmatrix, TextAlignment.TOP_LEFT, rm);
   }
   
+  /**
+   * Same as <code>printString(<strong>getResource(font)</strong>, text, color, WVPmatrix, textAlignment, rm);</code>
+   * 
+   * @param font used to render the text.
+   * @param text to write.
+   * @param color used in the text.
+   * @param WVPmatrix 3D (or 2D orthogonal) transformation.
+   * @param textAlignment alignment of the text respect the transformation.
+   * @param rm RenderManager
+   * @since 0.1
+   * @see #printString(Font, String, Color3f, Matrix4f, TextAlignment, RenderManager)
+   */
   public final void printString(HashedString font, String text, Color3f color, Matrix4f WVPmatrix, TextAlignment textAlignment, RenderManager rm) {
     printString(getResource(font), text, color, WVPmatrix, textAlignment, rm);
   }
@@ -40,6 +87,17 @@ public abstract class FontManager extends ResourceManager<Font> {
   private Matrix4f    aligmentMatrix = new Matrix4f();
   private Matrix4f    finalWVP       = new Matrix4f();
   private Vector3f    translation    = new Vector3f();
+  /**
+   * Prints a text using the transformation and color specified.
+   * 
+   * @param font used to render the text.
+   * @param text to write.
+   * @param color used in the text.
+   * @param WVPmatrix 3D (or 2D orthogonal) transformation.
+   * @param textAlignment alignment of the text respect the transformation.
+   * @param rm RenderManager
+   * @since 0.1
+   */
   public final void printString(
       Font font,
       String text,
@@ -136,6 +194,11 @@ public abstract class FontManager extends ResourceManager<Font> {
     }
   }
   
+  /**
+   * Clears all cached text information not used since the last call to this method.
+   * 
+   * @since 0.1
+   */
   public final void cleanTextCache() {
     for(CachedTextIndex ctIndex : unusedTexts) {
       CachedTextInfo ctInfo = cachedTexts.remove(ctIndex);
@@ -145,19 +208,59 @@ public abstract class FontManager extends ResourceManager<Font> {
     unusedTexts.addAll( cachedTexts.keySet() );
   }
   
+  /**
+   * Prints a String.
+   * 
+   * @param _vertexBuffer vertex buffer to use.
+   * @param _indexBuffer index buffer to use.
+   * @param _tex list of textures to activate.
+   * @param indexLen number of indices.
+   * @param WVPMatrix transformation to use.
+   * @param color color to use.
+   * @param rm RenderManager.
+   * @return an index to the cache this text-font combination has been saved.
+   * 
+   * @since 0.1
+   * @see #printString(int, Matrix4f, Color3f, RenderManager)
+   */
   protected abstract int printString(
       ByteBuffer _vertexBuffer, ShortBuffer _indexBuffer,
       Texture[] _tex, int indexLen,
       Matrix4f WVPMatrix, Color3f color,
       RenderManager rm);
   
+  /**
+   * Prints a text saved in the cache.
+   * 
+   * @param textID cache index.
+   * @param WVPMatrix transformation to use.
+   * @param color color to use.
+   * @param rm RenderManager
+   * 
+   * @since 0.1
+   * @see #printString(ByteBuffer, ShortBuffer, Texture[], int, Matrix4f, Color3f, RenderManager)
+   */
   protected abstract void printString(
       int textID,
       Matrix4f WVPMatrix, Color3f color,
       RenderManager rm);
   
+  /**
+   * Marks a index of the cache where text-font combinations are saved to be freed.
+   * 
+   * @param textID index to be freed.
+   * 
+   * @since 0.1
+   * @see #cleanTextCache()
+   */
   protected abstract void freeText(int textID);
   
+  /**
+   * Debug method.
+   * 
+   * @param bb
+   * @param ib
+   */
   static void printBuffers(ByteBuffer bb, IntBuffer ib) {
     bb.rewind();
     ib.rewind();
@@ -194,8 +297,24 @@ public abstract class FontManager extends ResourceManager<Font> {
     return defaultFont;
   }
   
+  /**
+   * Information saved in the local cache.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch.
+   * @since 0.1
+   *
+   */
   private static final class CachedTextInfo {
-    int width, id = -1;
+    /**
+     * Width of the text.
+     * @since 0.1
+     */
+    int width; 
+    /**
+     * Id in the cache.
+     * @since 0.1
+     */
+    int id = -1;
     
     @Override
     public String toString() {
@@ -203,9 +322,30 @@ public abstract class FontManager extends ResourceManager<Font> {
     }
   }
   
+  /**
+   * Information used to index the cache.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch.
+   * @since 0.1
+   *
+   */
   private static final class CachedTextIndex {
+    /**
+     * Text rendered.
+     * @since 0.1
+     */
     final String text;
+    /**
+     * Font used.
+     * @since 0.1
+     */
     final HashedString font;
+    /**
+     * Creates the index.
+     * 
+     * @param _text
+     * @param _font
+     */
     public CachedTextIndex(String _text, Font _font) {
       text = _text;
       font = _font.resourceName;
@@ -245,6 +385,13 @@ public abstract class FontManager extends ResourceManager<Font> {
     }
   }
   
+  /**
+   * Enumeration used to indicate witch point, of 9 possibles, is the origin of a text.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch.
+   * @since 0.1
+   *
+   */
   public static enum TextAlignment {
     TOP_LEFT, TOP_RIGHT, TOP_CENTER,
     MID_LEFT, MID_RIGHT, MID_CENTER,
