@@ -1,8 +1,8 @@
 package cat.atridas.antagonista.graphics;
 
+import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
-import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import cat.atridas.antagonista.Utils;
@@ -16,30 +16,68 @@ import cat.atridas.antagonista.Utils;
  */
 public abstract class SceneData {
 
+  /**
+   * Quick access to the Render Manager.
+   * @since 0.1
+   */
   protected final RenderManager rm;
+  /**
+   * Matrix transformation from world space to camera space.
+   * @since 0.1
+   */
   private final Matrix4f viewMatrix = new Matrix4f();
+  /**
+   * Matrix transformation from view space to homogeneous space.
+   * @since 0.1
+   */
   private final Matrix4f projectionMatrix = new Matrix4f();
   private final Point3f cameraPosition  = new Point3f();
   private final Vector3f cameraUpVector  = new Vector3f();
   private final Vector3f cameraDirection = new Vector3f();
 
-  protected final Tuple3f  ambientLightColor         = new Point3f();
-  protected final Tuple3f  directionalLightColor     = new Point3f();
+  protected final Color3f  ambientLightColor         = new Color3f();
+  protected final Color3f  directionalLightColor     = new Color3f();
   protected final Vector3f directionalLightDirection = new Vector3f();
 
-
+  /**
+   * Sets the current scene uniforms.
+   * @since 0.1
+   */
   public abstract void setUniforms();
+
+  /**
+   * Sets the current scene uniforms.
+   * @since 0.1
+   */
   public abstract void setUniforms(TechniquePass pass);
   
+  /**
+   * Default constructor.
+   * 
+   * @param _rm
+   * @since 0.1
+   */
   protected SceneData(RenderManager _rm) {
     rm = _rm;
   }
   
-  public final void setAmbientLight(Tuple3f _color) {
+  /**
+   * Sets the current ambient light color.
+   * @param _color
+   * @since 0.1
+   */
+  public final void setAmbientLight(Color3f _color) {
     ambientLightColor.set(_color);
   }
   
-  public final void setDirectionalLight(Vector3f _direction, Tuple3f _color) {
+  /**
+   * Sets a unique directional light parameters.
+   * 
+   * @param _direction of the light.
+   * @param _color of the light
+   * @since 0.1
+   */
+  public final void setDirectionalLight(Vector3f _direction, Color3f _color) {
     directionalLightColor.set(_color);
     directionalLightDirection.set(_direction);
     if(Math.abs(directionalLightDirection.lengthSquared() - 1.f) > Utils.EPSILON ) {
@@ -47,19 +85,50 @@ public abstract class SceneData {
     }
   }
 
-  public final void getAmbientLight(Tuple3f color_) {
+  /**
+   * Gets the ambient light color.
+   * @param color_ output paramenter
+   * @since 0.1
+   */
+  public final void getAmbientLight(Color3f color_) {
     color_.set(ambientLightColor);
   }
   
-  public final void getDirectionalLight(Vector3f direction_, Tuple3f color_) {
+  /**
+   * Gets the unique directional light parameters.
+   * 
+   * @param direction_ output paramenter
+   * @param color_ output paramenter
+   * @since 0.1
+   */
+  public final void getDirectionalLight(Vector3f direction_, Color3f color_) {
     direction_.set(directionalLightColor);
     color_.set(directionalLightDirection);
   }
   
+  /**
+   * Sets a perspective projection.
+   * 
+   * @param fovy angle (in degrees) of the camera in the y plane.
+   * @param zNear depth plane
+   * @param zFar depth plane
+   * @since 0.1
+   * @see #setPerspective(float, float, float, float)
+   */
   public final void setPerspective(float fovy, float zNear, float zFar) {
     setPerspective(fovy, (float)rm.getWidth() / (float)rm.getHeight(), zNear, zFar);
   }
-   
+
+  /**
+   * Sets a perspective projection.
+   * 
+   * @param fovy angle (in degrees) of the camera in the y plane.
+   * @param aspect ratio of width/height pixels.
+   * @param zNear depth plane
+   * @param zFar depth plane
+   * @since 0.1
+   * @see #setPerspective(float, float, float, float)
+   */
   public final void setPerspective(float fovy, float aspect, float zNear, float zFar) {
     float f = (float)(1.0 / Math.tan((fovy/2.) * (Math.PI/180.f)));
     projectionMatrix.setColumn(0, 
@@ -85,6 +154,17 @@ public abstract class SceneData {
         
   }
   
+  /**
+   * Sets a frustum projection.
+   * 
+   * @param left plane
+   * @param right plane
+   * @param bottom plane
+   * @param top plane
+   * @param near plane
+   * @param far plane
+   * @since 0.1
+   */
   public final void setFrustum(
       float left, float right, 
       float bottom, float top, 
@@ -112,6 +192,17 @@ public abstract class SceneData {
         0.0f);
   }
   
+  /**
+   * Orthogonal projection.
+   * 
+   * @param left plane
+   * @param right plane
+   * @param top plane
+   * @param bottom plane
+   * @param near plane
+   * @param far plane
+   * @since 0.1
+   */
   public final void setOrtho(
       float left, float right, 
       float top,  float bottom,
@@ -120,16 +211,47 @@ public abstract class SceneData {
     getOrtho(left, right,  top,  bottom, near,  far, projectionMatrix);
   }
   
+  /**
+   * Set an orthogonal projection going from 0 to the current screen width an heights.
+   * 
+   * @param near plane
+   * @param far plane
+   * @since 0.1
+   * @see #setOrtho(float, float, float, float, float, float)
+   */
   public final void setOrtho(float near, float far)
   {
-    setOrtho(near,  far, projectionMatrix);
+    getOrtho(near,  far, projectionMatrix);
   }
   
-  public final void setOrtho(float near, float far, Matrix4f matrix)
+  /**
+   * Saves an orthogonal projection similar to {@link #setOrtho(float, float)} into a matrix.
+   * 
+   * @param near plane
+   * @param far plane
+   * @param matrix_ output parameter.
+   * @since 0.1
+   * @see #setOrtho(float, float)
+   * @see #getOrtho(float, float, float, float, float, float, Matrix4f)
+   */
+  public final void getOrtho(float near, float far, Matrix4f matrix_)
   {
-    getOrtho(0, rm.getWidth(),  0, rm.getHeight(), near,  far, matrix);
+    getOrtho(0, rm.getWidth(),  0, rm.getHeight(), near,  far, matrix_);
   }
   
+  /**
+   * Saves an orthogonal projection into a matrix.
+   * 
+   * @param left plane
+   * @param right plane
+   * @param top plane
+   * @param bottom plane
+   * @param near plane
+   * @param far plane
+   * @param matrix output parameter.
+   * @since 0.1
+   * @see #setOrtho(float, float, float, float, float, float)
+   */
   public static final void getOrtho(
       float left, float right, 
       float top,  float bottom,
@@ -158,6 +280,14 @@ public abstract class SceneData {
         1);
   }
   
+  /**
+   * Sets the basic camera parameters.
+   * 
+   * @param eye camera position.
+   * @param lookAt Point the camera looks at.
+   * @param up camera up vector.
+   * @since 0.1
+   */
   public final void setCamera(Point3f eye, Point3f lookAt, Vector3f up) {
     cameraPosition.set(eye);
     
@@ -183,6 +313,14 @@ public abstract class SceneData {
     viewMatrix.invert();
   }
   
+  /**
+   * Gets the camera parameters from this camera.
+   * 
+   * @param camera to save.
+   * @since 0.1
+   * @see #setCamera(Point3f, Point3f, Vector3f)
+   * @see #setPerspective(float, float, float)
+   */
   public final void setCamera(Camera camera) {
     Point3f eye    = new Point3f();
     Point3f lookAt = new Point3f();
@@ -194,27 +332,63 @@ public abstract class SceneData {
     setPerspective(camera.getFovY(), camera.getZNear(), camera.getZFar());
   }
   
-  public final void getCameraPosition(Point3f position) {
-    position.set(cameraPosition);
+  /**
+   * Gets the current camera position.
+   * 
+   * @param position_ output parameter
+   * @since 0.1
+   */
+  public final void getCameraPosition(Point3f position_) {
+    position_.set(cameraPosition);
   }
   
-  public final void getCameraUpVector(Vector3f upVector) {
-    upVector.set(cameraUpVector);
+  /**
+   * Gets the current camera up vector.
+   * 
+   * @param upVector_ output parameter
+   * @since 0.1
+   */
+  public final void getCameraUpVector(Vector3f upVector_) {
+    upVector_.set(cameraUpVector);
   }
   
-  public final void getCameraPositionDirection(Vector3f direction) {
-    direction.set(cameraDirection);
+  /**
+   * Gets the current camera direction.
+   * 
+   * @param direction_ output parameter.
+   * @since 0.1
+   */
+  public final void getCameraPositionDirection(Vector3f direction_) {
+    direction_.set(cameraDirection);
   }
   
+  /**
+   * Gets the transformation matrix that transforms from world space to homogeneous space.
+   * 
+   * @param viewProjection_ output parameter.
+   * @since 0.1
+   */
   public final void getViewProjectionMatrix(Matrix4f viewProjection_) {
     viewProjection_.mul( projectionMatrix );
     viewProjection_.mul( viewMatrix   );
   }
   
+  /**
+   * Gets the transformation matrix that transforms from world space to view space.
+   * 
+   * @param view_ output parameter.
+   * @since 0.1
+   */
   public final void getViewMatrix(Matrix4f view_) {
     view_.mul( viewMatrix );
   }
   
+  /**
+   * Gets the transformation matrix that transforms from view space to homogeneous space.
+   * 
+   * @param projection_ output parameter.
+   * @since 0.1
+   */
   public final void getProjectionMatrix(Matrix4f projection_) {
     projection_.mul( projectionMatrix );
   }

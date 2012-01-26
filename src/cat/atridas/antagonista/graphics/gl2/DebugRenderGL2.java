@@ -161,7 +161,7 @@ public class DebugRenderGL2 extends DebugRender {
     debugMaterial.setUpUniforms(rm);
 
     Technique technique = debugMaterial.getEffect().getTechnique(TechniqueType.FORWARD, Quality.MID);
-    for(TechniquePass pass: technique.passes) {
+    for(TechniquePass pass: technique.getPasses()) {
       pass.activate(rm);
       setGlobalMatrixes(pass, model, rm);
       debugMaterial.setUpUniforms(pass, rm);
@@ -175,7 +175,7 @@ public class DebugRenderGL2 extends DebugRender {
     debugMaterial.setUpUniforms(rm);
 
     Technique technique = debugMaterial.getEffect().getTechnique(TechniqueType.FORWARD, Quality.MID);
-    for(TechniquePass pass: technique.passes) {
+    for(TechniquePass pass: technique.getPasses()) {
       pass.activate(rm);
       setGlobalMatrixes(pass, model, rm);
       debugMaterial.setUpUniforms(pass, rm);

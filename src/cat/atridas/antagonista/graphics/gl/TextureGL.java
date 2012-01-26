@@ -12,6 +12,7 @@ import org.newdawn.slick.opengl.ImageDataFactory;
 import org.newdawn.slick.opengl.LoadableImageData;
 
 import cat.atridas.antagonista.HashedString;
+import cat.atridas.antagonista.Quality;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
 import cat.atridas.antagonista.graphics.Texture;
@@ -88,8 +89,8 @@ public final class TextureGL extends Texture {
           bb);
     }
 
-    setMagFilter(FilterQuality.MID);
-    setMinFilter(FilterQuality.MID);
+    setMagFilter(Quality.MID);
+    setMinFilter(Quality.MID);
     noTexture();
     
     assert !Utils.hasGLErrors();
@@ -154,8 +155,8 @@ public final class TextureGL extends Texture {
       assert !Utils.hasGLErrors();
     }
 
-    setMagFilter(FilterQuality.MID);
-    setMinFilter(FilterQuality.MID);
+    setMagFilter(Quality.MID);
+    setMinFilter(Quality.MID);
     
     assert !Utils.hasGLErrors();
     
@@ -186,8 +187,9 @@ public final class TextureGL extends Texture {
     glBindTexture(GL_TEXTURE_2D, 0);
   }
   
-  public int getMinParameter(FilterQuality quality) {
+  public int getMinParameter(Quality quality) {
     switch(quality) {
+    case NONE:
     case LOW:
       if(isMipMapped()) {
         return GL_NEAREST_MIPMAP_NEAREST;
@@ -213,13 +215,15 @@ public final class TextureGL extends Texture {
         return GL_LINEAR;
       }
     default:
-      //logger.warning("Unknown Filter passed: " + quality);
-      return GL_NEAREST;
+      LOGGER.severe("Unknown Filter passed: " + quality);
+      throw new RuntimeException();
+      //return GL_NEAREST;
     }
   }
   
-  public int getMagParameter(FilterQuality quality) {
+  public int getMagParameter(Quality quality) {
     switch(quality) {
+    case NONE:
     case LOW:
     case MID:
       return GL_NEAREST;
@@ -227,8 +231,9 @@ public final class TextureGL extends Texture {
     case ULTRA:
       return GL_LINEAR;
     default:
-      //logger.warning("Unknown Filter passed: " + quality);
-      return GL_NEAREST;
+      LOGGER.severe("Unknown Filter passed: " + quality);
+      throw new RuntimeException();
+      //return GL_NEAREST;
     }
   }
 

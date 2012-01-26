@@ -15,11 +15,29 @@ import cat.atridas.antagonista.graphics.RenderManager.Profile;
 import cat.atridas.antagonista.graphics.gl2.TechniquePassGL2;
 import cat.atridas.antagonista.graphics.gl3.TechniquePassGL3;
 
+/**
+ * Rendering technique, a.k.a a compilation of shading phases.
+ * 
+ * @author Isaac 'Atridas' Serrano Guash
+ * @since 0.1
+ *
+ */
 public final class Technique {
   //private static Logger LOGGER = Logger.getLogger(TechniquePass.class.getCanonicalName());
 
-  public final List<TechniquePass> passes;
+  /**
+   * Phases that this technique needs to draw.
+   * @since 0.1
+   */
+  private final List<TechniquePass> passes;
   
+  /**
+   * Builds a technique.
+   * 
+   * @param techniqueXML xml configuration element.
+   * @throws AntagonistException if there was an error building the technique.
+   * @since 0.1
+   */
   public Technique(Element techniqueXML) throws AntagonistException {
     assert techniqueXML.getTagName().equals("technique");
     
@@ -49,6 +67,10 @@ public final class Technique {
     passes = Collections.unmodifiableList(_passes);
   }
   
+  /**
+   * Builds the default technique.
+   * @since 0.1
+   */
   protected Technique() {
     ArrayList<TechniquePass> _passes = new ArrayList<>();
     
@@ -64,5 +86,13 @@ public final class Technique {
     }
 
     passes = Collections.unmodifiableList(_passes);
+  }
+  
+  /**
+   * Returns the phases that this technique needs to draw.
+   * @return the phases that this technique needs to draw.
+   */
+  public List<TechniquePass> getPasses() {
+    return passes;
   }
 }

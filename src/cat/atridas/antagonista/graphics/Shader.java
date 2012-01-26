@@ -7,21 +7,54 @@ import cat.atridas.antagonista.Resource;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
 
+/**
+ * Encapsulates a shader source.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch
+ * @since 0.1
+ *
+ */
 public final class Shader extends Resource {
-
+  /**
+   * Source.
+   * @since 0.1
+   */
   private String source = "";
+  /**
+   * Shader phase.
+   * @since 0.1
+   */
   private final ShaderType type;
 
+  /**
+   * Builds the uninitialized shader.
+   * 
+   * @param _resourceName
+   * @param _type
+   * @since 0.1
+   */
   public Shader(HashedString _resourceName, ShaderType _type) {
     super(_resourceName);
     type = _type;
   }
   
+  /**
+   * Gets the shading phase of this shader.
+   * 
+   * @return the shading phase.
+   * @since 0.1
+   */
   public ShaderType getType() {
     assert !cleaned;
     return type;
   }
   
+  /**
+   * Gets the source of this shader.
+   * 
+   * @return the source of this shader.
+   * @since 0.1
+   */
   public String getSource() {
     assert !cleaned;
     return source;
@@ -39,11 +72,38 @@ public final class Shader extends Resource {
     return 0;
   }
 
+  /**
+   * Enumeration of the different shader phases.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @since 0.1
+   *
+   */
   public static enum ShaderType {
+    /**
+     * Vertex Shader.
+     * @since 0.1
+     */
     VERTEX,
+    /**
+     * Tesselation Control Shader. Only available at OpenGL 4.0 or later.
+     * @since 0.1
+     */
     TESS_CONTROL,
+    /**
+     * Tesselation Evaluation Shader. Only available at OpenGL 4.0 or later.
+     * @since 0.1
+     */
     TESS_EVALUATION,
+    /**
+     * Geometry Shader. Only available at OpenGL 3.0 or later.
+     * @since 0.1
+     */
     GEOMETRY,
+    /**
+     * Fragment Shader.
+     * @since 0.1
+     */
     FRAGMENT
   }
 
@@ -63,7 +123,10 @@ public final class Shader extends Resource {
     cleaned = true;
   }
   
-  
+  /**
+   * Loads the default, hardcoded, source.
+   * @since 0.1
+   */
   void loadDefault() {
     switch(type) {
     case VERTEX: //TODO

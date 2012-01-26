@@ -5,6 +5,7 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.logging.Level;
 
+import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -232,8 +233,8 @@ public class Test0 {
     rm.getSceneData().setPerspective(30, 1.f, 100);
     rm.getSceneData().setCamera(new Point3f(20,20,10), new Point3f(0,0,0), new Vector3f(0,0,1));
 
-    rm.getSceneData().setAmbientLight(new Point3f(.2f, .2f, .2f));
-    rm.getSceneData().setDirectionalLight(new Vector3f(1,0,-1), new Point3f(.8f, .8f, .8f) );
+    rm.getSceneData().setAmbientLight(new Color3f(.2f, .2f, .2f));
+    rm.getSceneData().setDirectionalLight(new Vector3f(1,0,-1), new Color3f(.8f, .8f, .8f) );
     
     Matrix4f mvp = new Matrix4f();
     mvp.setIdentity();
@@ -304,7 +305,7 @@ public class Test0 {
         Material material = mesh.getMaterial(i1);
         material.setUpUniforms(rm);
         Technique technique = material.getEffect().getTechnique(TechniqueType.FORWARD, Quality.MID);
-        TechniquePass pass = technique.passes.get(0);
+        TechniquePass pass = technique.getPasses().get(0);
         pass.activate(rm);
         rm.getSceneData().setUniforms(pass);
         

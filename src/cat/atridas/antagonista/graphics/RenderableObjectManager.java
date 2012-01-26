@@ -148,7 +148,7 @@ public abstract class RenderableObjectManager {
           material.setUpUniforms(rm);
           
           Technique technique = material.getEffect().getTechnique(TechniqueType.FORWARD, Quality.MID);
-          for(TechniquePass pass: technique.passes) {
+          for(TechniquePass pass: technique.getPasses()) {
             pass.activate(rm);
             material.setUpUniforms(pass, rm);
             sceneData.setUniforms(pass);

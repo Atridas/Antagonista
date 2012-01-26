@@ -84,8 +84,8 @@ public class Test {
 
     sceneData.setPerspective(45, 1, 100);
     sceneData.setCamera(new Point3f(30, -30, 30), new Point3f(0, 0, 0), new Vector3f(0, 0, 1));
-    sceneData.setAmbientLight(new Point3f(0.3f, 0.3f, 0.3f));
-    sceneData.setDirectionalLight(new Vector3f(0,1,1), new Point3f(0.3f, 0.3f, 0.3f));
+    sceneData.setAmbientLight(new Color3f(0.3f, 0.3f, 0.3f));
+    sceneData.setDirectionalLight(new Vector3f(0,1,1), new Color3f(0.3f, 0.3f, 0.3f));
 
     RenderableObject ro1 = core.getRenderableObjectManager().addRenderableObject(hs7,  hs7);
     RenderableObject ro2 = core.getRenderableObjectManager().addRenderableObject(hs8,  hs7);

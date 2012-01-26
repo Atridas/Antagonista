@@ -19,65 +19,138 @@ import cat.atridas.antagonista.graphics.RenderManager.BlendOperator;
 import cat.atridas.antagonista.graphics.RenderManager.DepthFunction;
 import cat.atridas.antagonista.graphics.Shader.ShaderType;
 
+/**
+ * A shader program technique phase.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch
+ * @since 0.1
+ *
+ */
 public abstract class TechniquePass {
   private static Logger LOGGER = Logger.getLogger(TechniquePass.class.getCanonicalName());
   
-
+  /**
+   * Maximum number of bones. Engine constrain.
+   */
   public static final int MAX_BONES = 30;
   
   //Attributes --------------------------------------------------------------------------
-  public static final int POSITION_ATTRIBUTE     = 0;
-  public static final int NORMAL_ATTRIBUTE       = 1;
-  public static final int TANGENT_ATTRIBUTE      = 2;
-  public static final int BITANGENT_ATTRIBUTE    = 3;
-  public static final int UV_ATTRIBUTE           = 4;
-  public static final int BLEND_INDEX_ATTRIBUTE  = 5;
-  public static final int BLEND_WEIGHT_ATTRIBUTE = 6;
-  public static final int COLOR_ATTRIBUTE        = 7;
+  /**
+   * Attribute layout positions.
+   * @since 0.1
+   */
+  public static final int POSITION_ATTRIBUTE     = 0,
+                          NORMAL_ATTRIBUTE       = 1,
+                          TANGENT_ATTRIBUTE      = 2,
+                          BITANGENT_ATTRIBUTE    = 3,
+                          UV_ATTRIBUTE           = 4,
+                          BLEND_INDEX_ATTRIBUTE  = 5,
+                          BLEND_WEIGHT_ATTRIBUTE = 6,
+                          COLOR_ATTRIBUTE        = 7;
   
-  public static final String POSITION_ATTRIBUTE_NAME     = "a_v3Position";
-  public static final String NORMAL_ATTRIBUTE_NAME       = "a_v3Normal";
-  public static final String TANGENT_ATTRIBUTE_NAME      = "a_v3Tangent";
-  public static final String BITANGENT_ATTRIBUTE_NAME    = "a_v3Bitangent";
-  public static final String UV_ATTRIBUTE_NAME           = "a_v2UV";
-  public static final String BLEND_INDEX_ATTRIBUTE_NAME  = "a_i4BlendIndexs";
-  public static final String BLEND_WEIGHT_ATTRIBUTE_NAME = "a_v4BlendWeights";
-  public static final String COLOR_ATTRIBUTE_NAME        = "a_v4Color";
+  /**
+   * Name of the attribute parameters in the shader source.
+   * @since 0.1
+   */
+  public static final String POSITION_ATTRIBUTE_NAME     = "a_v3Position",
+                             NORMAL_ATTRIBUTE_NAME       = "a_v3Normal",
+                             TANGENT_ATTRIBUTE_NAME      = "a_v3Tangent",
+                             BITANGENT_ATTRIBUTE_NAME    = "a_v3Bitangent",
+                             UV_ATTRIBUTE_NAME           = "a_v2UV",
+                             BLEND_INDEX_ATTRIBUTE_NAME  = "a_i4BlendIndexs",
+                             BLEND_WEIGHT_ATTRIBUTE_NAME = "a_v4BlendWeights",
+                             COLOR_ATTRIBUTE_NAME        = "a_v4Color";
 
 
   //Fragment data ----------------------------------------------------------------------
-  
+  /**
+   * Render target layout positions.
+   * @since 0.1
+   */
   public static final int COLOR_FRAGMENT_DATA_LOCATION = 0;
   
+  /**
+   * Name of fragment output variables.
+   * @since 0.1
+   */
   public static final String COLOR_FRAGMENT_DATA_NAME = "f_v4Color";
   
   //Uniforms ----------------------------------------------------------------------------
-  public static final String ALBEDO_TEXTURE_UNIFORM = "u_s2Albedo";
-  public static final int    ALBEDO_TEXTURE_UNIT =    0;
-  public static final String NORMALMAP_TEXTURE_UNIFORM = "u_s2Normalmap";
-  public static final int    NORMALMAP_TEXTURE_UNIT =    1;
-  public static final String HEIGHTMAP_TEXTURE_UNIFORM = "u_s2Heightmap";
-  public static final int    HEIGHTMAP_TEXTURE_UNIT =    2;
+  /**
+   * Texture units for each texture type.
+   * @since 0.1
+   */
+  public static final int    ALBEDO_TEXTURE_UNIT =    0,
+                             NORMALMAP_TEXTURE_UNIT =    1,
+                             HEIGHTMAP_TEXTURE_UNIT =    2;
   
-
+  /**
+   * Texture uniform shader names.
+   * @since 0.1
+   */
+  public static final String ALBEDO_TEXTURE_UNIFORM    = "u_s2Albedo",
+                             NORMALMAP_TEXTURE_UNIFORM = "u_s2Normalmap",
+                             HEIGHTMAP_TEXTURE_UNIFORM = "u_s2Heightmap";
+  
+  /**
+   * Uniform block binding point of the basic instance uniforms.
+   * @since 0.1
+   */
   public static final int    BASIC_INSTANCE_UNIFORMS_BINDING    = 0;
+  /**
+   * Uniform block name of the basic instance uniforms.
+   * @since 0.1
+   */
   public static final String BASIC_INSTANCE_UNIFORMS_BLOCK      = "UniformInstances";
+  /**
+   * Uniform block size of the basic instance uniforms.
+   * @since 0.1
+   */
   public static final int    BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE = Utils.FLOAT_SIZE * (4*4) * 3; 
-  public static final String BASIC_INSTANCE_UNIFORMS_STRUCT     = "u_InstanceInfo";
+  //public static final String BASIC_INSTANCE_UNIFORMS_STRUCT     = "u_InstanceInfo";
+  /**
+   * Uniform name of the Model View Projection Matrix.
+   * @since 0.1
+   */
   public static final String MODEL_VIEW_PROJECTION_UNIFORM      = "u_m4ModelViewProjection";
+  /**
+   * Uniform name of the Model View Matrix.
+   * @since 0.1
+   */
   public static final String MODEL_VIEW_UNIFORM                 = "u_m4ModelView";
+  /**
+   * Uniform name of the Inverted-Transposed Model View Matrix.
+   * @since 0.1
+   */
   public static final String MODEL_VIEW_IT_UNIFORM              = "u_m4ModelViewIT";
   //public static final String BONES_UNIFORMS                 = "u_m34Bones";
 
-  public static final int    SPECIAL_COLORS_UNIFORMS_BINDING    = 1;
-  public static final String SPECIAL_COLORS_UNIFORMS_BLOCK      = "SpecialColors";
-  public static final int    SPECIAL_COLORS_UNIFORMS_BLOCK_SIZE = Utils.FLOAT_SIZE * 4 * 4; 
-  public static final String SPECIAL_COLOR_0_UNIFORM            = "u_v4SpecialColor0";
-  public static final String SPECIAL_COLOR_1_UNIFORM            = "u_v4SpecialColor1";
-  public static final String SPECIAL_COLOR_2_UNIFORM            = "u_v4SpecialColor2";
-  public static final String SPECIAL_COLOR_3_UNIFORM            = "u_v4SpecialColor3";
-  
 
+  /**
+   * Uniform block binding point of the special colors uniforms.
+   * @since 0.1
+   */
+  public static final int    SPECIAL_COLORS_UNIFORMS_BINDING    = 1;
+  /**
+   * Uniform block name of the special colors uniforms.
+   * @since 0.1
+   */
+  public static final String SPECIAL_COLORS_UNIFORMS_BLOCK      = "SpecialColors";
+  /**
+   * Uniform block size of the special colors uniforms.
+   * @since 0.1
+   */
+  public static final int    SPECIAL_COLORS_UNIFORMS_BLOCK_SIZE = Utils.FLOAT_SIZE * 4 * 4; 
+  /**
+   * Uniform name of the special colors.
+   * @since 0.1
+   */
+  public static final String SPECIAL_COLOR_0_UNIFORM            = "u_v4SpecialColor0",
+                             SPECIAL_COLOR_1_UNIFORM            = "u_v4SpecialColor1",
+                             SPECIAL_COLOR_2_UNIFORM            = "u_v4SpecialColor2",
+                             SPECIAL_COLOR_3_UNIFORM            = "u_v4SpecialColor3";
+  
+  //TODO un colló de mico de codumentació
   public static final int    BASIC_LIGHT_UNIFORMS_BINDING = 2;
   public static final String BASIC_LIGHT_UNIFORMS_BLOCK = "UniformLight";
   public static final String AMBIENT_LIGHT_UNIFORM = "u_v3AmbientLight";
