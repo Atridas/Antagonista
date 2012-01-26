@@ -2,8 +2,12 @@ package cat.atridas.antagonista.graphics.gl;
 
 import java.util.logging.Logger;
 
+import org.lwjgl.opengl.ARBImaging;
 import org.lwjgl.opengl.ContextCapabilities;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL31;
+import org.lwjgl.opengl.GL33;
+import org.lwjgl.opengl.GL40;
 import org.lwjgl.opengl.GLContext;
 
 import cat.atridas.antagonista.graphics.RenderManager;
@@ -12,9 +16,6 @@ import cat.atridas.antagonista.graphics.TechniquePass;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL14.*;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.opengl.GL33.*;
-import static org.lwjgl.opengl.GL40.*;
 
 public final class RenderManagerGL extends RenderManager {
   private static Logger LOGGER = Logger.getLogger(RenderManagerGL.class.getCanonicalName());
@@ -57,7 +58,7 @@ public final class RenderManagerGL extends RenderManager {
       throw new IllegalStateException("Can not load an opengl 2.1 or greater context.");
     }
     
-    glViewport(0, 0, width, height);
+    glViewport(0, 0, getWidth(), getHeight());
     
     glClearColor(1,0,1,0);
     
@@ -150,15 +151,15 @@ public final class RenderManagerGL extends RenderManager {
 
   @Override
   public void setAlphaBlend(BlendOperation operation) {
-    glBlendFunc(getAlphaOperator(operation.src), getAlphaOperator(operation.dst));
+    glBlendFunc(getAlphaOperator(operation.src_operator), getAlphaOperator(operation.dst_operator));
   }
 
 
   @Override
   public void setAlphaBlend(BlendOperationSeparate operation) {
     glBlendFuncSeparate(
-        getAlphaOperator(operation.color.src), getAlphaOperator(operation.color.dst),
-        getAlphaOperator(operation.alpha.src), getAlphaOperator(operation.alpha.dst)
+        getAlphaOperator(operation.color.src_operator), getAlphaOperator(operation.color.dst_operator),
+        getAlphaOperator(operation.alpha.src_operator), getAlphaOperator(operation.alpha.dst_operator)
         );
   }
 
@@ -172,9 +173,9 @@ public final class RenderManagerGL extends RenderManager {
       throw new IllegalStateException();
     }
     if(enable)
-      glEnablei(GL_BLEND, renderTarget);
+      GL30.glEnablei(GL_BLEND, renderTarget);
     else
-      glDisablei(GL_BLEND, renderTarget);
+      GL30.glDisablei(GL_BLEND, renderTarget);
   }
 
 
@@ -186,7 +187,7 @@ public final class RenderManagerGL extends RenderManager {
           " profile compatible with OpenGL 4.0");
       throw new IllegalStateException();
     }
-    glBlendFunci(getAlphaOperator(operation.src), getAlphaOperator(operation.dst), renderTarget);
+    GL40.glBlendFunci(getAlphaOperator(operation.src_operator), getAlphaOperator(operation.dst_operator), renderTarget);
   }
 
 
@@ -198,9 +199,9 @@ public final class RenderManagerGL extends RenderManager {
           " profile compatible with OpenGL 4.0");
       throw new IllegalStateException();
     }
-    glBlendFuncSeparatei(
-        getAlphaOperator(operation.color.src), getAlphaOperator(operation.color.dst),
-        getAlphaOperator(operation.alpha.src), getAlphaOperator(operation.alpha.dst),
+    GL40.glBlendFuncSeparatei(
+        getAlphaOperator(operation.color.src_operator), getAlphaOperator(operation.color.dst_operator),
+        getAlphaOperator(operation.alpha.src_operator), getAlphaOperator(operation.alpha.dst_operator),
         renderTarget
         );
   }
@@ -244,7 +245,7 @@ public final class RenderManagerGL extends RenderManager {
             " profile compatible with OpenGL 3.3");
         throw new IllegalStateException();
       }
-      return GL_ONE_MINUS_SRC1_ALPHA;
+      return GL33.GL_ONE_MINUS_SRC1_ALPHA;
     case SRC1_ALPHA:
       if(!profile.supports(Profile.GL3)) {
         //TODO mirar si hi ha alguna extensió que s'ho tragui
@@ -252,7 +253,7 @@ public final class RenderManagerGL extends RenderManager {
             " profile compatible with OpenGL 3.3");
         throw new IllegalStateException();
       }
-      return GL_SRC1_ALPHA;
+      return GL33.GL_SRC1_ALPHA;
     default:
       throw new IllegalArgumentException();  
     }
@@ -261,7 +262,7 @@ public final class RenderManagerGL extends RenderManager {
   @Override
   public void noVertexArray() {
     if(profile.supports(Profile.GL3)) {
-      glBindVertexArray(0);
+      GL30.glBindVertexArray(0);
     }
   }
 
@@ -280,17 +281,29 @@ public final class RenderManagerGL extends RenderManager {
       case GL_INVALID_ENUM:
         errorStr += "GL_INVALID_ENUM";
         break;
-      case GL_INVALID_FRAMEBUFFER_OPERATION:
-        errorStr += "GL_INVALID_FRAMEBUFFER_OPERATION";
+      case GL_INVALID_VALUE:
+        errorStr += "GL_INVALID_VALUE";
         break;
       case GL_INVALID_OPERATION:
         errorStr += "GL_INVALID_OPERATION";
         break;
-      case GL_INVALID_VALUE:
-        errorStr += "GL_INVALID_VALUE";
+        
+      case GL_STACK_OVERFLOW:
+        errorStr += "GL_STACK_OVERFLOW"; //shouldn't happen ever, in compability mode
         break;
+      case GL_STACK_UNDERFLOW:
+        errorStr += "GL_STACK_UNDERFLOW"; //shouldn't happen ever, in compability mode
+        break;
+        
       case GL_OUT_OF_MEMORY:
         errorStr += "GL_OUT_OF_MEMORY";
+        break;
+      case GL30.GL_INVALID_FRAMEBUFFER_OPERATION:
+        errorStr += "GL_INVALID_FRAMEBUFFER_OPERATION";
+        break;
+        
+      case ARBImaging.GL_TABLE_TOO_LARGE:
+        errorStr += "ARBImaging - GL_TABLE_TOO_LARGE"; //aquest error també ha de ser extremadament xungo
         break;
       default:
         throw new IllegalStateException("Unrecognized error code: " + error);

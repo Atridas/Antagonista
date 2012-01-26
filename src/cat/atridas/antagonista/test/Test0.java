@@ -51,7 +51,7 @@ public class Test0 {
     
     //Utils.setConsoleLogLevel(Level.CONFIG);
     
-    Core.getCore().init(800, 600, Test0.class.getName(), null);
+    Core.getCore().init(800, 600, Test0.class.getName(), true, null);
     
     RenderManager rm = Core.getCore().getRenderManager();
     

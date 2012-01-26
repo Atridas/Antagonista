@@ -7,6 +7,13 @@ import javax.vecmath.Vector3f;
 
 import cat.atridas.antagonista.Utils;
 
+/**
+ * Encapsulates all global scene information.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch
+ * @since 0.1
+ *
+ */
 public abstract class SceneData {
 
   protected final RenderManager rm;

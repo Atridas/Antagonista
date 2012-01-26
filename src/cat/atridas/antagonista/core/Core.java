@@ -147,13 +147,14 @@ public final class Core {
    * @param w width of the screen.
    * @param h height of the screen.
    * @param title title of the screen.
-   * @param displayParent Use in Applets. Null on standallone applications.
+   * @param _forwardCompatible if a forward compatible context must be created.
+   * @param displayParent Use in Applets. Null on stand-alone applications.
    * @since 0.1
    */
-	public void init(int w, int h, String title, Canvas displayParent) {
+	public void init(int w, int h, String title, boolean forwardCompatible, Canvas displayParent) {
 	  Utils.loadNativeLibs(); //TODO nomes si no estem en un applet, potser. Provar-ho
 	  
-		rm.initDisplay(w, h, title, displayParent);
+		rm.initDisplay(w, h, title, forwardCompatible, displayParent);
 		im.init();
 		
 		rm.initGL();

@@ -25,6 +25,7 @@ import org.newdawn.slick.util.ResourceLoader;
 import org.w3c.dom.Element;
 
 import cat.atridas.antagonista.core.Core;
+import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
 
 /**
@@ -363,11 +364,13 @@ public abstract class Utils {
   }
   
   /**
+   * Checks if there are any OpenGL errors.
    * 
    * @return if there is any OpenGL Error. Those errors are logged in the RenderManager logger,
    * with a <code>severe</code> level.
    * 
    * @since 0.1
+   * @see RenderManager#hasGLErrors()
    */
   public static boolean hasGLErrors() {
     return Core.getCore().getRenderManager().hasGLErrors();
@@ -376,6 +379,7 @@ public abstract class Utils {
    * Clears all OpenGL errors without logging them.
    * 
    * @since 0.1
+   * @see RenderManager#clearSilentlyGLErrors()
    */
   public static void clearSilentlyGLErrors() {
     Core.getCore().getRenderManager().clearSilentlyGLErrors();

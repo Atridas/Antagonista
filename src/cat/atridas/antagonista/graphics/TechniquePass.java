@@ -250,8 +250,8 @@ public abstract class TechniquePass {
     zWrite = false;
     
     alphaOperation = new BlendOperation();
-    alphaOperation.src = BlendOperator.SRC_ALPHA;
-    alphaOperation.dst = BlendOperator.ONE_MINUS_SRC_ALPHA;
+    alphaOperation.src_operator = BlendOperator.SRC_ALPHA;
+    alphaOperation.dst_operator = BlendOperator.ONE_MINUS_SRC_ALPHA;
     
     try {
       shaderProgram = completeShaderProgram(vs, tc, te, gs, fs, rm);
@@ -411,8 +411,8 @@ public abstract class TechniquePass {
           String dst = Utils.getStringContentFromXMLSubElement(element, "destination");
           
           op = new BlendOperation();
-          op.src = BlendOperator.getFromString(src);
-          op.dst = BlendOperator.getFromString(dst);
+          op.src_operator = BlendOperator.getFromString(src);
+          op.dst_operator = BlendOperator.getFromString(dst);
           
         } else {
           //Separem alpha i color
@@ -425,11 +425,11 @@ public abstract class TechniquePass {
           ops = new BlendOperationSeparate();
           
           ops.color = new BlendOperation();
-          ops.color.src = BlendOperator.getFromString(srcColor);
-          ops.color.dst = BlendOperator.getFromString(dstColor);
+          ops.color.src_operator = BlendOperator.getFromString(srcColor);
+          ops.color.dst_operator = BlendOperator.getFromString(dstColor);
           ops.alpha = new BlendOperation();
-          ops.alpha.src = BlendOperator.getFromString(srcAlpha);
-          ops.alpha.dst = BlendOperator.getFromString(dstAlpha);
+          ops.alpha.src_operator = BlendOperator.getFromString(srcAlpha);
+          ops.alpha.dst_operator = BlendOperator.getFromString(dstAlpha);
           
         }
         
