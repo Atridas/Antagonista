@@ -101,6 +101,7 @@ public abstract class RenderManager {
 		//TODO
 		PixelFormat pf = new PixelFormat().withDepthBits(24).withBitsPerPixel(32).withAlphaBits(8);
 		ContextAttribs ca = new ContextAttribs(4, 2).withForwardCompatible(forwardCompatible);//.withDebug(true);
+		//ContextAttribs ca = new ContextAttribs(2, 1).withForwardCompatible(false);//.withDebug(true);
 		
 		// ? ca.withDebug(true);
 		

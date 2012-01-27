@@ -214,8 +214,8 @@ public class Test {
       dr.addString2D(new Point2f(.0f,.0f), font, "FPS: " + dt.fps, .05f, new Color3f(0,0,0));
       dr.addString2D(new Point2f(-.0f,-.0f), font, "FPS: " + dt.fps, .05f, TextAlignment.BOTTOM_RIGHT, new Color3f(0,0,0));
       
-      
-      
+
+      dr.addString2D(new Point2f(.0f,.05f), font, "Mouse: " + im.getMouseX() + ", " + im.getMouseY(), .03f, new Color3f(0,0,0));
       
       sceneData.setCamera(camera);
       
