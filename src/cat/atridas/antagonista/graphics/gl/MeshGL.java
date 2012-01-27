@@ -14,25 +14,43 @@ import cat.atridas.antagonista.graphics.Material;
 import cat.atridas.antagonista.graphics.Mesh;
 import cat.atridas.antagonista.graphics.RenderManager;
 
+/**
+ * Desktop OpenGL implementation of the Mesh class.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch.
+ * @since 0.1
+ *
+ */
 public abstract class MeshGL extends Mesh {
   private static Logger LOGGER = Logger.getLogger(MeshGL.class.getCanonicalName());
   
+  /**
+   * OpenGL Buffer identifiers.
+   * @since 0.1
+   */
   protected int   vertexBuffer, indexBuffer;
   
+  /**
+   * Saves if this mesh is animated.
+   * @since 0.1
+   */
   protected boolean animated;
 
-  protected static final int STATIC_MESH_STRIDE   = NUM_ELEMENTS_PER_VERTEX_STATIC_MESH   * Utils.FLOAT_SIZE;
-  protected static final int ANIMATED_MESH_STRIDE = NUM_ELEMENTS_PER_VERTEX_ANIMATED_MESH * Utils.FLOAT_SIZE;
-
-  
-
+  /**
+   * 
+   * Constructs an uninitialized mesh.
+   * 
+   * @param _resourceName name of the mesh.
+   * @since 0.1
+   * @see Mesh#Mesh(HashedString)
+   */
   public MeshGL(HashedString _resourceName) {
     super(_resourceName);
   }
 
   
   @Override
-  protected boolean loadBuffers(ByteBuffer _vertexBuffer, ByteBuffer _faces, boolean _animated) {
+  protected final boolean loadBuffers(ByteBuffer _vertexBuffer, ByteBuffer _faces, boolean _animated) {
     animated = _animated;
 
     _vertexBuffer.rewind();
@@ -53,16 +71,25 @@ public abstract class MeshGL extends Mesh {
     
     assert !Utils.hasGLErrors();
     
-    createArrayBuffer();
+    createVertexArrayObject();
     
     return !Utils.hasGLErrors();
   }
 
-  protected abstract void createArrayBuffer();
-  protected abstract void deleteArrayBuffer();
+  /**
+   * Creates a new vertex array object for this mesh, if the OpenGL implementation supports this
+   * capability.
+   * @since 0.1 
+   */
+  protected abstract void createVertexArrayObject();
+  /**
+   * Deletes the vertex array object for this mesh, if it exist.
+   * @since 0.1 
+   */
+  protected abstract void deleteVertexArrayObject();
 
   @Override
-  protected void loadDefault() {
+  protected final void loadDefault() {
     LOGGER.config("Loading default mesh [GL]");
     animated = false;
     
@@ -167,7 +194,7 @@ public abstract class MeshGL extends Mesh {
   }
   
   @Override
-  public void render(int _submesh, RenderManager rm) {
+  public final void render(int _submesh, RenderManager rm) {
     assert !cleaned;
     assert _submesh < numSubMeshes;
     int stride = 0;
@@ -180,18 +207,24 @@ public abstract class MeshGL extends Mesh {
     assert !Utils.hasGLErrors();
   }
 
+  /**
+   * Returns if this mesh is ready to be rendered.
+   * 
+   * @return if this mesh is ready to be rendered.
+   * @since 0.1
+   */
   protected boolean assertReadyToRender() {
     return true;
   }
 
   @Override
-  public void cleanUp() {
+  public final void cleanUp() {
     assert !cleaned;
     
     glDeleteBuffers(vertexBuffer);
     glDeleteBuffers(indexBuffer);
     
-    deleteArrayBuffer();
+    deleteVertexArrayObject();
     cleaned = true;
   }
 }

@@ -400,7 +400,7 @@ public abstract class TechniquePass {
    * @since 0.1
    * @see Technique#Technique(Element)
    */
-  protected TechniquePass(Element techniquePassXML) throws AntagonistException {
+  public TechniquePass(Element techniquePassXML) throws AntagonistException {
     assert techniquePassXML.getTagName().equals("pass");
     
     //setupCapabilities();

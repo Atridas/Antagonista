@@ -22,15 +22,36 @@ import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.TechniquePass;
 import cat.atridas.antagonista.graphics.Texture;
 
+/**
+ * Implementation for the desktop OpenGL of the font manager.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch.
+ *
+ */
 public abstract class FontManagerGL extends FontManager {
 
+  /**
+   * Map that contains the references from VAO identifiers to needed rendering information.
+   * @since 0.1
+   */
   private final HashMap<Integer, CachedTextInfo> cachedBuffers = new HashMap<>();
   
+  /**
+   * Set of free VAO identifiers usefull to render new texts.
+   * @since 0.1
+   */
   private final HashSet<Integer> freeCachedBuffers = new HashSet<>();
   
-  //private ShaderObject shader = null;
+  /**
+   * Technique pass used to render text.
+   * @since 0.1
+   */
   private TechniquePass pass;
   
+  /**
+   * Matrix buffer to store the MVP transformation.
+   * @since 0.1
+   */
   private FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
   
   @Override
@@ -146,10 +167,30 @@ public abstract class FontManagerGL extends FontManager {
     freeCachedBuffers.add(textID);
   }
   
+  /**
+   * Activates a VAO. If the OpenGL implementation does not support VAOs, this method
+   * emulates them.
+   * 
+   * @param vao identifier.
+   * @param cachedBuffers rendering information.
+   * @since 0.1
+   */
   protected abstract void activateVAO(int vao, CachedTextInfo cachedBuffers);
+  /**
+   * Creates a new VAO identifier. If the OpenGL implementation does not support VAOs, this method
+   * emulates them.
+   * 
+   * @return a new VAO identifier.
+   * @since 0.1
+   */
   protected abstract int createVAO();
   
-  
+  /**
+   * Binds the vertex attributes and buffers to render the text.
+   * 
+   * @param cachedBuffers buffer information.
+   * @since 0.1
+   */
   protected final void bindVertexAttribs(CachedTextInfo cachedBuffers) {
 
 
@@ -175,10 +216,33 @@ public abstract class FontManagerGL extends FontManager {
         GL_BYTE, true, Font.VERTEX_STRIDE, Font.CHANNEL_OFFSET);
   }
 
+  /**
+   * Cached information needed to render a given text with a given font.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @since 0.1
+   *
+   */
   protected static final class CachedTextInfo {
+    /**
+     * Buffer identifiers.
+     * @since 0.1
+     */
     private int vertexBuffer = -1, indexBuffer = -1;
+    /**
+     * Length of each buffer.
+     * @since 0.1
+     */
     private int vbLen = 0, ibLen = 0;
+    /**
+     * Number of indexes in the index buffer to render.
+     * @since 0.1
+     */
     private int indexLen;
+    /**
+     * Textures used to render the text.
+     * @since 0.1
+     */
     private Texture[] textures;
   }
 }

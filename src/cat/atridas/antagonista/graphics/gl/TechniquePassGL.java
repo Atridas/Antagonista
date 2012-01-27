@@ -15,51 +15,60 @@ import cat.atridas.antagonista.graphics.RenderManager.Profile;
 import cat.atridas.antagonista.graphics.TechniquePass;
 import cat.atridas.antagonista.graphics.Shader.ShaderType;
 
+/**
+ * Desktop OpenGL implementation of the TechniquePass class.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch.
+ * @since 0.1
+ *
+ */
 public abstract class TechniquePassGL extends TechniquePass {
   private static Logger LOGGER = Logger.getLogger(TechniquePassGL.class.getCanonicalName());
 
-  private int albedoTextureUniform, normalTextureUniform, heightTextureUniform;
+  /**
+   * Texture uniform binding points.
+   * @since 0.1
+   */
+  private int albedoTextureUniform, normalTextureUniform, heightTextureUniform,
   
-  private int fontTexture0Uniform, fontTexture1Uniform, fontTexture2Uniform, fontTexture3Uniform;
+              fontTexture0Uniform, fontTexture1Uniform, fontTexture2Uniform, fontTexture3Uniform;
   
-  
+  /**
+   * Default precompiled shaders.
+   * @since 0.1
+   */
   private static int defaultVertexShader   = -1,
                      defaultFragmentShader = -1,
                      defaultGeometryShader = -1,
                      defaultTessControl   = -1,
                      defaultTessEval       = -1;
   
+  /**
+   * Builds a new program pass, from an xml configuration element.
+   * 
+   * @param techniquePassXML xml configuration element.
+   * @throws AntagonistException if there was an error building the program.
+   * @since 0.1
+   * @see TechniquePass#TechniquePass(Element)
+   */
   public TechniquePassGL(Element techniquePassXML) throws AntagonistException {
     super(techniquePassXML);
   }
   
+  /**
+   * Uninitialized constructor.
+   * @since 0.1
+   */
   public TechniquePassGL() {}
 
+  /**
+   * Builds a text technique pass.
+   * @param fontPass <code>true</code>
+   * @since 0.1
+   */
   public TechniquePassGL(boolean fontPass) {
     super(fontPass);
   }
-  /*
-  @Override
-  protected int generateShaderObject(ShaderType st, RenderManager rm) {
-    switch(st) {
-    case VERTEX:
-      return glCreateShader(GL_VERTEX_SHADER);
-    case FRAGMENT:
-      return glCreateShader(GL_FRAGMENT_SHADER);
-    case GEOMETRY:
-      rm.getProfile().supportOrException(Profile.GL3, "geometry shaders");
-      return glCreateShader(GL_GEOMETRY_SHADER);
-    case TESS_CONTROL:
-      rm.getProfile().supportOrException(Profile.GL4, "tesselation shaders");
-      return glCreateShader(GL_TESS_CONTROL_SHADER);
-    case TESS_EVALUATION:
-      rm.getProfile().supportOrException(Profile.GL4, "tesselation shaders");
-      return glCreateShader(GL_TESS_EVALUATION_SHADER);
-    default:
-      throw new IllegalArgumentException();
-    }
-  }
-  */
 
   @Override
   protected void deleteShader(int shaderID) {
@@ -293,13 +302,53 @@ public abstract class TechniquePassGL extends TechniquePass {
     return program;
   }
   
-
+  /**
+   * Binds the attributes to the correct positions.
+   * 
+   * @param program OpenGL program shader identifier.
+   * @since 0.1
+   */
   protected abstract void bindAttributes(int program);
-  protected abstract void loadBasicInstanceUniforms(int program) throws AntagonistException;
-  protected abstract void loadSpecialColorsUniforms(int program) throws AntagonistException;
-  protected abstract void loadBasicLightUniforms(int program) throws AntagonistException;
-  protected abstract void loadBasicMaterialUniforms(int program) throws AntagonistException;
-  protected abstract void loadFontUniforms(int program) throws AntagonistException;
+  /**
+   * Loads the basic instance uniforms binding points or sets the correct uniform buffer
+   * binding point, depending on the current OpenGL profile.
+   * 
+   * @param program OpenGL program shader identifier.
+   * @since 0.1
+   */
+  protected abstract void loadBasicInstanceUniforms(int program);
+  /**
+   * Loads the special colors uniforms binding points or sets the correct uniform buffer
+   * binding point, depending on the current OpenGL profile.
+   * 
+   * @param program OpenGL program shader identifier.
+   * @since 0.1
+   */
+  protected abstract void loadSpecialColorsUniforms(int program);
+  /**
+   * Loads the basic light uniforms binding points or sets the correct uniform buffer
+   * binding point, depending on the current OpenGL profile.
+   * 
+   * @param program OpenGL program shader identifier.
+   * @since 0.1
+   */
+  protected abstract void loadBasicLightUniforms(int program);
+  /**
+   * Loads the basic material uniforms binding points or sets the correct uniform buffer
+   * binding point, depending on the current OpenGL profile.
+   * 
+   * @param program OpenGL program shader identifier.
+   * @since 0.1
+   */
+  protected abstract void loadBasicMaterialUniforms(int program);
+  /**
+   * Loads the font uniforms binding points or sets the correct uniform buffer
+   * binding point, depending on the current OpenGL profile.
+   * 
+   * @param program OpenGL program shader identifier.
+   * @since 0.1
+   */
+  protected abstract void loadFontUniforms(int program);
   
   @Override
   protected void deleteShaderProgram(int shaderProgramID) {
@@ -343,17 +392,5 @@ public abstract class TechniquePassGL extends TechniquePass {
       throw new IllegalStateException("Oops " + st);
     }
   }
-
-  /*
-  @Override
-  protected long getMaxUniformBufferSize() {
-    if(GL3)
-      return glGetInteger64(GL31.GL_MAX_UNIFORM_BLOCK_SIZE);
-    else if(GL_ARB_uniform_buffer_object)
-      return glGetInteger(ARBUniformBufferObject.GL_MAX_UNIFORM_BLOCK_SIZE);
-    else
-      return 0;
-  }
-  */
 
 }

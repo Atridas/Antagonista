@@ -21,7 +21,7 @@ public final class MeshGL3 extends MeshGL {
   }
   
   @Override
-  protected void createArrayBuffer() {
+  protected void createVertexArrayObject() {
     assert !cleaned;
     int stride;
     if(animated) {
@@ -76,7 +76,7 @@ public final class MeshGL3 extends MeshGL {
   }
 
   @Override
-  protected void deleteArrayBuffer() {
+  protected void deleteVertexArrayObject() {
     assert !cleaned;
     glDeleteVertexArrays(vertexArrayObject);
     assert !Utils.hasGLErrors();

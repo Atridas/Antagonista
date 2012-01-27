@@ -84,8 +84,7 @@ public class TechniquePassGL2 extends TechniquePassGL {
   }
 
   @Override
-  protected void loadBasicInstanceUniforms(int program)
-      throws AntagonistException {
+  protected void loadBasicInstanceUniforms(int program) {
     modelViewProjectionUniform = glGetUniformLocation(program, MODEL_VIEW_PROJECTION_UNIFORM);
     modelViewUniform = glGetUniformLocation(program, MODEL_VIEW_UNIFORM);
     modelViewITUniform = glGetUniformLocation(program, MODEL_VIEW_IT_UNIFORM);
@@ -101,8 +100,7 @@ public class TechniquePassGL2 extends TechniquePassGL {
   }
   
   @Override
-  protected void loadSpecialColorsUniforms(int program)
-      throws AntagonistException {
+  protected void loadSpecialColorsUniforms(int program) {
     specialColor0 = glGetUniformLocation(program, SPECIAL_COLOR_0_UNIFORM);
     specialColor1 = glGetUniformLocation(program, SPECIAL_COLOR_1_UNIFORM);
     specialColor2 = glGetUniformLocation(program, SPECIAL_COLOR_2_UNIFORM);
@@ -110,54 +108,52 @@ public class TechniquePassGL2 extends TechniquePassGL {
 
     if(specialColor0 < 0) {
       LOGGER.severe("Special colors uniforms requested but SpecialColor0 is not active!");
-      throw new AntagonistException();
+      //throw new AntagonistException();
     }
     
   }
 
   @Override
-  protected void loadBasicLightUniforms(int program) throws AntagonistException {
+  protected void loadBasicLightUniforms(int program) {
     ambientUniform = glGetUniformLocation(program, AMBIENT_LIGHT_UNIFORM);
     directionalDirUniform = glGetUniformLocation(program, DIRECTIONAL_LIGHT_DIR_UNIFORM);
     directionalColorUniform = glGetUniformLocation(program, DIRECTIONAL_LIGHT_COLOR_UNIFORMS);
     if(ambientUniform < 0) {
       LOGGER.severe("Basic light uniforms requested but ambient uniform not active!");
-      throw new AntagonistException();
+      //throw new AntagonistException();
     }
     if(directionalDirUniform < 0) {
       LOGGER.severe("Basic light uniforms requested but directional dir uniform not active!");
-      throw new AntagonistException();
+      //throw new AntagonistException();
     }
     if(directionalColorUniform < 0) {
       LOGGER.severe("Basic light uniforms requested but directional color uniform not active!");
-      throw new AntagonistException();
+      //throw new AntagonistException();
     }
     assert !Utils.hasGLErrors();
   }
 
   @Override
-  protected void loadBasicMaterialUniforms(int program)
-      throws AntagonistException {
+  protected void loadBasicMaterialUniforms(int program) {
     specularFactorUniform     = glGetUniformLocation(program, SPECULAR_FACTOR_UNIFORM);
     specularGlossinessUniform = glGetUniformLocation(program, SPECULAR_GLOSS_UNIFORM);
     heightUniform             = glGetUniformLocation(program, HEIGHT_UNIFORM);
     if(specularFactorUniform < 0) {
       LOGGER.severe("Basic material uniforms requested but specular factor not active!");
-      throw new AntagonistException();
+      //throw new AntagonistException();
     }
     if(specularGlossinessUniform < 0) {
       LOGGER.severe("Basic material uniforms requested but specular glossiness uniform not active!");
-      throw new AntagonistException();
+      //throw new AntagonistException();
     }
   }
 
   @Override
-  protected void loadFontUniforms(int program)
-      throws AntagonistException {
+  protected void loadFontUniforms(int program) {
     modelViewProjectionUniform   = glGetUniformLocation(program, FONT_WVP_MATRIX_UNIFORM);
     if(modelViewProjectionUniform < 0) {
       LOGGER.severe("Font uniforms requested but worldviewprojection uniform not active!");
-      throw new AntagonistException();
+      //throw new AntagonistException();
     }
   }
   

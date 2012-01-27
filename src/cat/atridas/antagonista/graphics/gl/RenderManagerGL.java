@@ -11,28 +11,52 @@ import org.lwjgl.opengl.GL40;
 import org.lwjgl.opengl.GLContext;
 
 import cat.atridas.antagonista.graphics.RenderManager;
+import cat.atridas.antagonista.graphics.SceneData;
 import cat.atridas.antagonista.graphics.TechniquePass;
+
+import cat.atridas.antagonista.graphics.gl2.SceneDataGL2;
+import cat.atridas.antagonista.graphics.gl3.SceneDataGL3;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL14.*;
 import static org.lwjgl.opengl.GL20.*;
 
+/**
+ * Desktop OpenGL implementation of the RenderManager class.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch.
+ * @since 0.1
+ *
+ */
 public final class RenderManagerGL extends RenderManager {
   private static Logger LOGGER = Logger.getLogger(RenderManagerGL.class.getCanonicalName());
 
+  /**
+   * OpenGL profile.
+   * @since 0.1
+   */
   private Profile profile;
   
-  private SceneDataGL sceneData;
+  /**
+   * Scene data information.
+   * @since 0.1
+   */
+  private SceneData sceneData;
   
+  /**
+   * Cached maximum number of instances given each memory requirement.
+   * @since 0.1
+   */
   private int maxInstancesBasic, maxInstancesColors;//, maxInstancesBones;
   
+  /**
+   * Caches the maximum number of instances given each memory requirement.
+   * @since 0.1
+   */
   private void initInstances() {
     int maxUniformSize = 0;
-    switch(profile) {
-    case GL3:
-    case GL4:
+    if (profile.supports(Profile.GL3)) {
       maxUniformSize = glGetInteger(GL31.GL_MAX_UNIFORM_BLOCK_SIZE);
-      break;
     }
 
     if(maxUniformSize > 0) {
@@ -50,10 +74,13 @@ public final class RenderManagerGL extends RenderManager {
     ContextCapabilities cc = GLContext.getCapabilities();
     if(cc.OpenGL42) {
       profile = Profile.GL4;
+      sceneData = new SceneDataGL3(this);
     } else if(cc.OpenGL33) {
       profile = Profile.GL3;
+      sceneData = new SceneDataGL3(this);
     } else if(cc.OpenGL21) {
       profile = Profile.GL2;
+      sceneData = new SceneDataGL2(this);
     } else {
       throw new IllegalStateException("Can not load an opengl 2.1 or greater context.");
     }
@@ -71,7 +98,6 @@ public final class RenderManagerGL extends RenderManager {
     
     initInstances();
     
-    sceneData = new SceneDataGL(this);
     
     assert !hasGLErrors();
   }
@@ -206,6 +232,12 @@ public final class RenderManagerGL extends RenderManager {
         );
   }
   
+  /**
+   * Translates the blend operator enumeration into OpenGL identifiers.
+   * 
+   * @param op BendOperator enumeration.
+   * @return an OpenGL identifier.
+   */
   private int getAlphaOperator(BlendOperator op) {
     switch(op) {
     case CONSTANT_ALPHA:
@@ -267,7 +299,7 @@ public final class RenderManagerGL extends RenderManager {
   }
 
   @Override
-  public SceneDataGL getSceneData() {
+  public SceneData getSceneData() {
     return sceneData;
   }
 

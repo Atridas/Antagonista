@@ -17,12 +17,12 @@ public class MeshGL2 extends MeshGL {
   }
 
   @Override
-  protected void createArrayBuffer() {
+  protected void createVertexArrayObject() {
     // --
   }
 
   @Override
-  protected void deleteArrayBuffer() {
+  protected void deleteVertexArrayObject() {
     // --
   }
 

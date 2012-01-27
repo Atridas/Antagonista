@@ -52,11 +52,11 @@ public final class TechniquePassGL3 extends TechniquePassGL {
 
 
   @Override
-  protected void loadBasicInstanceUniforms(int program) throws AntagonistException {
+  protected void loadBasicInstanceUniforms(int program) {
     int basicInstanceBlock = glGetUniformBlockIndex(program, BASIC_INSTANCE_UNIFORMS_BLOCK);
     if(basicInstanceBlock < 0) {
       LOGGER.severe("Basic instance uniforms requested but not active!");
-      throw new AntagonistException();
+      //throw new AntagonistException();
     }
     
     glUniformBlockBinding(program, basicInstanceBlock, BASIC_INSTANCE_UNIFORMS_BINDING);
@@ -64,12 +64,11 @@ public final class TechniquePassGL3 extends TechniquePassGL {
   }
 
   @Override
-  protected void loadSpecialColorsUniforms(int program)
-      throws AntagonistException {
+  protected void loadSpecialColorsUniforms(int program) {
     int specialColorsBlock = glGetUniformBlockIndex(program, SPECIAL_COLORS_UNIFORMS_BLOCK);
     if(specialColorsBlock < 0) {
       LOGGER.severe("Special Colors requested but not active!");
-      throw new AntagonistException();
+      //throw new AntagonistException();
     }
     
     glUniformBlockBinding(program, specialColorsBlock, SPECIAL_COLORS_UNIFORMS_BINDING);
@@ -78,11 +77,11 @@ public final class TechniquePassGL3 extends TechniquePassGL {
 
 
   @Override
-  protected void loadBasicLightUniforms(int program) throws AntagonistException {
+  protected void loadBasicLightUniforms(int program) {
     int basicLightBlock = glGetUniformBlockIndex(program, BASIC_LIGHT_UNIFORMS_BLOCK);
     if(basicLightBlock < 0) {
       LOGGER.severe("Basic light uniforms requested but not active!");
-      throw new AntagonistException();
+      //throw new AntagonistException();
     }
     
     glUniformBlockBinding(program, basicLightBlock, BASIC_LIGHT_UNIFORMS_BINDING);
@@ -91,12 +90,11 @@ public final class TechniquePassGL3 extends TechniquePassGL {
 
 
   @Override
-  protected void loadBasicMaterialUniforms(int program)
-      throws AntagonistException {
+  protected void loadBasicMaterialUniforms(int program) {
     int basicMaterialBlock = glGetUniformBlockIndex(program, BASIC_MATERIAL_UNIFORMS_BLOCK);
     if(basicMaterialBlock < 0) {
       LOGGER.severe("Basic material uniforms requested but not active!");
-      throw new AntagonistException();
+      //throw new AntagonistException();
     }
 
     glUniformBlockBinding(program, basicMaterialBlock, BASIC_MATERIAL_UNIFORMS_BINDING);
@@ -160,14 +158,8 @@ public final class TechniquePassGL3 extends TechniquePassGL {
     throw new IllegalStateException("Trying to fetch a uniform. Use uniform blocks instead.");
   }
 
-
-  //@Override
-  //protected long getMaxUniformBufferSize() {
-  //  return glGetInteger64(GL_MAX_UNIFORM_BLOCK_SIZE);
-  //}
-
   @Override
-  protected void loadFontUniforms(int program) throws AntagonistException {
+  protected void loadFontUniforms(int program) {
     // TODO Auto-generated method stub
     throw new RuntimeException("not implemented");
   }

@@ -22,6 +22,13 @@ import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.util.glu.GLU.gluBuild2DMipmaps;
 
+/**
+ * Desktop OpenGL implementation of the Texture class.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch.
+ * @since 0.1
+ *
+ */
 public final class TextureGL extends Texture {
   private static Logger LOGGER = Logger.getLogger(TextureGL.class.getCanonicalName());
   
@@ -31,12 +38,20 @@ public final class TextureGL extends Texture {
   
   private boolean hasAlpha;
 
+  /**
+   * Builds an uninitialized texture.
+   * 
+   * @param resourceName
+   * @see Texture#Texture(HashedString)
+   * @since 0.1
+   */
   public TextureGL(HashedString resourceName) {
     super(resourceName);
     
     minFilter = magFilter = GL_NEAREST;
   }
   
+  @Override
   public boolean load(InputStream is, HashedString extension) {
     if(LOGGER.isLoggable(Level.CONFIG))
       LOGGER.config("Loading texture '" + resourceName + "'");

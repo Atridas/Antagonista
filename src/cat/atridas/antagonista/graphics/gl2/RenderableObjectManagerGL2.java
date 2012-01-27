@@ -16,9 +16,9 @@ import cat.atridas.antagonista.graphics.TechniquePass;
 
 public final class RenderableObjectManagerGL2 extends RenderableObjectManager {
 
-  private static final int BUFFER_SIZE = 16; // 3 matrius de 16 floats
+  private static final int BASIC_INSTANCE_BUFFER_SIZE = 16; // 3 matrius de 16 floats
   
-  private FloatBuffer buffer = BufferUtils.createFloatBuffer(BUFFER_SIZE);
+  private FloatBuffer buffer = BufferUtils.createFloatBuffer(BASIC_INSTANCE_BUFFER_SIZE);
 
   @Override
   public boolean init() {

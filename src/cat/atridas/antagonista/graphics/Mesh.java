@@ -38,6 +38,13 @@ public abstract class Mesh extends Resource {
   public static final int NUM_ELEMENTS_PER_VERTEX_ANIMATED_MESH = 14 + (2 + 4); //4 indexos (shorts) + 4 pesos 
 
   /**
+   * Stride in bytes from one vertex to the next.
+   * @since 0.1
+   */
+  protected static final int STATIC_MESH_STRIDE   = NUM_ELEMENTS_PER_VERTEX_STATIC_MESH   * Utils.FLOAT_SIZE,
+                             ANIMATED_MESH_STRIDE = NUM_ELEMENTS_PER_VERTEX_ANIMATED_MESH * Utils.FLOAT_SIZE;
+  
+  /**
    * "mesh"
    * @since 0.1
    */
@@ -65,13 +72,13 @@ public abstract class Mesh extends Resource {
   protected Material materials[];
   
   /**
-   * Constructs an unitialized mesh.
+   * Constructs an uninitialized mesh.
    * 
    * @param _resourceName name of the mesh.
    * @since 0.1
    * @see Resource#Resource(HashedString)
    */
-  protected Mesh(HashedString _resourceName) {
+  public Mesh(HashedString _resourceName) {
     super(_resourceName);
   }
 
