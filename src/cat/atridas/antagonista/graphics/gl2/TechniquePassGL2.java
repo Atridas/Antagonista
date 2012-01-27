@@ -218,10 +218,10 @@ public class TechniquePassGL2 extends TechniquePassGL {
     return specialColor3;
   }
 
-  @Override
-  protected long getMaxUniformBufferSize() {
-    return 0; //throw new IllegalStateException("Uniform Buffers not supported with " + Utils.getProfile());
-  }
+  //@Override
+  //protected long getMaxUniformBufferSize() {
+  //  return 0; //throw new IllegalStateException("Uniform Buffers not supported with " + Utils.getProfile());
+  //}
   
   private static int textVertexShaderID = -1,
                      textFragmentShaderID = -1;

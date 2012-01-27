@@ -229,6 +229,15 @@ public class Test {
       Core.getCore().getFontManager().cleanTextCache();
       
       Core.getCore().getInputManager().update(dt);
+      
+      synchronized (Test.class) {
+        try {
+          Test.class.wait(1);
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
     }
     
     Core.getCore().cleanUnusedResources(false);

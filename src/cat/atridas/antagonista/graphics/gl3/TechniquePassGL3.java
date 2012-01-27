@@ -13,7 +13,6 @@ import cat.atridas.antagonista.graphics.gl.TechniquePassGL;
 import static org.lwjgl.opengl.ARBUniformBufferObject.glGetUniformBlockIndex;
 import static org.lwjgl.opengl.ARBUniformBufferObject.glUniformBlockBinding;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL31.*;
 import static org.lwjgl.opengl.GL32.*;
 
 public final class TechniquePassGL3 extends TechniquePassGL {
@@ -162,10 +161,10 @@ public final class TechniquePassGL3 extends TechniquePassGL {
   }
 
 
-  @Override
-  protected long getMaxUniformBufferSize() {
-    return glGetInteger64(GL_MAX_UNIFORM_BLOCK_SIZE);
-  }
+  //@Override
+  //protected long getMaxUniformBufferSize() {
+  //  return glGetInteger64(GL_MAX_UNIFORM_BLOCK_SIZE);
+  //}
 
   @Override
   protected void loadFontUniforms(int program) throws AntagonistException {

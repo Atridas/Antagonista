@@ -150,80 +150,256 @@ public abstract class TechniquePass {
                              SPECIAL_COLOR_2_UNIFORM            = "u_v4SpecialColor2",
                              SPECIAL_COLOR_3_UNIFORM            = "u_v4SpecialColor3";
   
-  //TODO un colló de mico de codumentació
+
+  /**
+   * Uniform block binding point of the basic light uniforms.
+   * @since 0.1
+   */
   public static final int    BASIC_LIGHT_UNIFORMS_BINDING = 2;
+  /**
+   * Uniform block name of the basic light uniforms.
+   * @since 0.1
+   */
   public static final String BASIC_LIGHT_UNIFORMS_BLOCK = "UniformLight";
-  public static final String AMBIENT_LIGHT_UNIFORM = "u_v3AmbientLight";
-  public static final String DIRECTIONAL_LIGHT_DIR_UNIFORM = "u_v3DirectionalLightDirection";
-  public static final String DIRECTIONAL_LIGHT_COLOR_UNIFORMS = "u_v3DirectionalLightColor";
+  /**
+   * Uniform name of the light parameters.
+   * @since 0.1
+   */
+  public static final String AMBIENT_LIGHT_UNIFORM = "u_v3AmbientLight",
+                             DIRECTIONAL_LIGHT_DIR_UNIFORM = "u_v3DirectionalLightDirection",
+                             DIRECTIONAL_LIGHT_COLOR_UNIFORMS = "u_v3DirectionalLightColor";
 
+  /**
+   * Uniform block binding point of the basic material uniforms.
+   * @since 0.1
+   */
   public static final int    BASIC_MATERIAL_UNIFORMS_BINDING = 3;
+  /**
+   * Uniform block name of the basic material uniforms.
+   * @since 0.1
+   */
   public static final String BASIC_MATERIAL_UNIFORMS_BLOCK = "UniformMaterials";
-  public static final String SPECULAR_FACTOR_UNIFORM = "u_fSpecularFactor";
-  public static final String SPECULAR_GLOSS_UNIFORM = "u_fGlossiness";
-  public static final String HEIGHT_UNIFORM = "u_fHeight";
+  /**
+   * Uniform name of the basic material uniforms.
+   * @since 0.1
+   */
+  public static final String SPECULAR_FACTOR_UNIFORM = "u_fSpecularFactor",
+                             SPECULAR_GLOSS_UNIFORM = "u_fGlossiness",
+                             HEIGHT_UNIFORM = "u_fHeight";
   
-  // Font atributes & uniforms
-  public static final int FONT_POSITION_ATTRIBUTE = 0;
-  public static final int FONT_TEX_ATTRIBUTE = 1;
-  public static final int FONT_CHANNEL_ATTRIBUTE = 2;
-  public static final int FONT_PAGE_ATTRIBUTE = 3;
-  public static final int FONT_COLOR_ATTRIBUTE = 4;
+  /**
+   * Attribute layout for text rendering.
+   * @since 0.1
+   */
+  public static final int FONT_POSITION_ATTRIBUTE = 0,
+                          FONT_TEX_ATTRIBUTE = 1,
+                          FONT_CHANNEL_ATTRIBUTE = 2,
+                          FONT_PAGE_ATTRIBUTE = 3,
+                          FONT_COLOR_ATTRIBUTE = 4;
 
-  public static final String FONT_POSITION_ATTRIBUTE_NAME = "a_position";
-  public static final String FONT_TEX_ATTRIBUTE_NAME = "a_texCoord";
-  public static final String FONT_CHANNEL_ATTRIBUTE_NAME = "a_channel";
-  public static final String FONT_PAGE_ATTRIBUTE_NAME = "a_page";
-  public static final String FONT_COLOR_ATTRIBUTE_NAME = "a_color";
+  /**
+   * Attribute names for text rendering.
+   * @since 0.1
+   */
+  public static final String FONT_POSITION_ATTRIBUTE_NAME = "a_position",
+                             FONT_TEX_ATTRIBUTE_NAME = "a_texCoord",
+                             FONT_CHANNEL_ATTRIBUTE_NAME = "a_channel",
+                             FONT_PAGE_ATTRIBUTE_NAME = "a_page",
+                             FONT_COLOR_ATTRIBUTE_NAME = "a_color";
 
-  public static final String FONT_TEXTURE_0_UNIFORM = "u_page0";
-  public static final int    FONT_TEXTURE_0_UNIT =    0;
-  public static final String FONT_TEXTURE_1_UNIFORM = "u_page1";
-  public static final int    FONT_TEXTURE_1_UNIT =    1;
-  public static final String FONT_TEXTURE_2_UNIFORM = "u_page2";
-  public static final int    FONT_TEXTURE_2_UNIT =    2;
-  public static final String FONT_TEXTURE_3_UNIFORM = "u_page3";
-  public static final int    FONT_TEXTURE_3_UNIT =    3;
+  /**
+   * Text rendering texture units.
+   * @since 0.1
+   */
+  public static final int FONT_TEXTURE_0_UNIT =    0,
+                          FONT_TEXTURE_1_UNIT =    1,
+                          FONT_TEXTURE_2_UNIT =    2,
+                          FONT_TEXTURE_3_UNIT =    3;
 
+  /**
+   * Text rendering texture names.
+   * @since 0.1
+   */
+  public static final String FONT_TEXTURE_0_UNIFORM = "u_page0",
+                             FONT_TEXTURE_1_UNIFORM = "u_page1",
+                             FONT_TEXTURE_2_UNIFORM = "u_page2",
+                             FONT_TEXTURE_3_UNIFORM = "u_page3";
+
+  /**
+   * Text rendering uniform names.
+   * @since 0.1
+   */
   public static final String FONT_WVP_MATRIX_UNIFORM = "u_WorldViewProj";
   
+  /**
+   * OpenGL shader program identifier.
+   * @since 0.1
+   */
   private int shaderProgram;
-  private int vs, tc, te, gs, fs;
   
+  /**
+   * OpenGL identifier for vertex stage.
+   * @since 0.1
+   */
+  private int vs;
+  /**
+   * OpenGL identifier for tesselation control stage.
+   * @since 0.1
+   */
+  private int tc;
+  /**
+   * OpenGL identifier for tesselation evaluation stage.
+   * @since 0.1
+   */
+  private int te;
+  /**
+   * OpenGL identifier for geometry stage.
+   * @since 0.1
+   */
+  private int gs;
+  /**
+   * OpenGL identifier for fragment stage.
+   * @since 0.1
+   */
+  private int fs;
+  
+  /**
+   * Maximum number of instances that the current memory limitations allow to draw in a single call.
+   * @since 0.1
+   */
   private int maxInstances = 1;
   
-  //is font technique (atributs + uniforms)
+  /**
+   * Tells if this technique is used to render text.
+   * @since 0.1
+   */
   protected boolean fontTechnique;
   
-  //attributes
+  /**
+   * Tells if this program uses this attributes.
+   * @since 0.1
+   */
   protected boolean position, normal, tangents, uv, bones, colorAttr;
   
-  //uniforms
-  protected boolean albedoTexture, normalTexture, heightTexture;
-  protected boolean basicInstanceUniforms;
-  protected boolean specialColorsUniforms;
-  protected boolean basicLight;
-  protected boolean basicMaterial;
-  
-  //results
+  /**
+   * Tells if this program uses this uniforms.
+   * @since 0.1
+   */
+  protected boolean albedoTexture, normalTexture, heightTexture,
+                    basicInstanceUniforms,
+                    specialColorsUniforms,
+                    basicLight,
+                    basicMaterial;
+
+  /**
+   * Tells if this program uses this outputs.
+   * @since 0.1
+   */
   protected boolean colorResult, depthResult;
   
-  //Render states
+  /**
+   * <code>true</code> if this program should change the depth test status when activated.
+   * @since 0.1
+   * @see #depthTestStatus
+   * @see RenderManager#setDepthTest(boolean)
+   */
   private boolean changeDepthTest = false;
+  /**
+   * New depth test status when this program is activated.
+   * @since 0.1
+   * @see #changeDepthTest
+   * @see RenderManager#setDepthTest(boolean)
+   */
   private boolean depthTestStatus;
+  /**
+   * <code>true</code> if this program should change the depth writing status when activated.
+   * @since 0.1
+   * @see #zWrite
+   * @see RenderManager#setZWrite(boolean)
+   */
   private boolean changeZWrite = false;
+  /**
+   * New depth writing status when this program is activated.
+   * @since 0.1
+   * @see #changeZWrite
+   * @see RenderManager#setZWrite(boolean)
+   */
   private boolean zWrite;
+  /**
+   * New depth function to set when this program is activated. Is this field is null, this program
+   * should not change the depth function.
+   * @since 0.1
+   * @see RenderManager#setDepthTest(DepthFunction)
+   */
   private DepthFunction depthFunction = null;
   
+
+  /**
+   * <code>true</code> if this program should change alpha blending status when activated.
+   * @since 0.1
+   * @see #alphaBlendingActive
+   * @see RenderManager#setAlphaBlend(boolean)
+   */
   private boolean changeAlphaBlending = false;
+  /**
+   * New alpha blending status when this program is activated.
+   * @since 0.1
+   * @see #changeAlphaBlending
+   * @see RenderManager#setAlphaBlend(boolean)
+   */
   private boolean alphaBlendingActive;
+  /**
+   * New alpha blending operation to set when this program is activated. If this field is null, this
+   * program should not change the alpha blending operation.
+   * 
+   * @since 0.1
+   * @see RenderManager#setAlphaBlend(BlendOperation)
+   */
   private BlendOperation alphaOperation = null;
+  /**
+   * New alpha blending operation to set when this program is activated. If this field is null, this
+   * program should not change the alpha blending operation.
+   * 
+   * @since 0.1
+   * @see RenderManager#setAlphaBlend(BlendOperationSeparate)
+   */
   private BlendOperationSeparate alphaOperationSeparate = null;
 
+  /**
+   * New alpha blending status when this program is activated. This variable maps each render target
+   * with each new blending status.
+   * 
+   * @since 0.1
+   * @see RenderManager#setAlphaBlend(boolean, int)
+   */
   private TreeMap<Integer, Boolean> alphaBlendingPerRenderTarget = new TreeMap<>();
+  /**
+   * New alpha blending operation to set when this program is activated. If this field is null, this
+   * program should not change the alpha blending operation. This variable maps each render target
+   * with each new blending operation.
+   * 
+   * @since 0.1
+   * @see RenderManager#setAlphaBlend(BlendOperation, int)
+   */
   private TreeMap<Integer, BlendOperation> alphaBlendingOperationPerRenderTarget = new TreeMap<>();
+  /**
+   * New alpha blending operation to set when this program is activated. If this field is null, this
+   * program should not change the alpha blending operation. This variable maps each render target
+   * with each new blending operation.
+   * 
+   * @since 0.1
+   * @see RenderManager#setAlphaBlend(BlendOperationSeparate, int)
+   */
   private TreeMap<Integer, BlendOperationSeparate> alphaBlendingOperationSeparatePerRenderTarget = new TreeMap<>();
   
+  /**
+   * Builds a new program pass, from an xml configuration element.
+   * 
+   * @param techniquePassXML xml configuration element.
+   * @throws AntagonistException if there was an error building the program.
+   * @since 0.1
+   * @see Technique#Technique(Element)
+   */
   protected TechniquePass(Element techniquePassXML) throws AntagonistException {
     assert techniquePassXML.getTagName().equals("pass");
     
@@ -262,7 +438,7 @@ public abstract class TechniquePass {
         loadAttributes(element);
         break;
       case "uniforms":
-        loadUniforms(element);
+        loadUniforms(element, rm);
         uniformsDefined = true;
         break;
       case "results":
@@ -276,6 +452,10 @@ public abstract class TechniquePass {
     shaderProgram = completeShaderProgram(vs, tc, te, gs, fs, rm);
   }
   
+  /**
+   * Builds the default program pass.
+   * @since 0.1
+   */
   protected TechniquePass() {
     vs = tc = te = gs = fs = 0;
 
@@ -300,8 +480,10 @@ public abstract class TechniquePass {
   }
   
   /**
-   * Crea la technique per renderitzar textos.
-   * @param fontShader
+   * Builds the technique to render texts.
+   * 
+   * @param fontShader <code>true</code>
+   * @since 0.1
    */
   protected TechniquePass(boolean fontShader) {
     assert fontShader = true;
@@ -334,8 +516,26 @@ public abstract class TechniquePass {
     }
   }
   
+  /**
+   * Gets the OpenGL identifier of the font shader stage requested.
+   * 
+   * @param shaderType shader stage.
+   * @return an OpenGL shader identifier.
+   * @since 0.1
+   */
   protected abstract int getFontShader(ShaderType shaderType);
   
+  /**
+   * Compiles a shader source. If there are any errors, this method logs them and returns a
+   * default shader.
+   * 
+   * @param shaderXML element containing the resource name of the desired shader.
+   * @param st shader stage.
+   * @param em Effect Manager reference.
+   * @param rm Render Manager reference.
+   * @return an OpenGL identifier of the compiled shader stage.
+   * @since 0.1
+   */
   private int loadShader(Element shaderXML, ShaderType st, EffectManager em, RenderManager rm) {
     int shaderID = generateShaderObject(st, rm);
     String resourceName  = Utils.getStringContentFromXMLSubElement(shaderXML, "resource");
@@ -373,6 +573,24 @@ public abstract class TechniquePass {
     }
   }
   
+  /**
+   * Loads the render states.
+   * 
+   * @param renderStatesXML configuration xml element.
+   * @since 0.1
+   * @see #changeAlphaBlending
+   * @see #changeDepthTest
+   * @see #changeZWrite
+   * @see #depthFunction
+   * @see #depthTestStatus
+   * @see #zWrite
+   * @see #alphaBlendingActive
+   * @see #alphaBlendingOperationPerRenderTarget
+   * @see #alphaBlendingOperationSeparatePerRenderTarget
+   * @see #alphaBlendingPerRenderTarget
+   * @see #alphaOperation
+   * @see #alphaOperationSeparate
+   */
   private void loadRenderStates(Element renderStatesXML) {
     if(LOGGER.isLoggable(Level.CONFIG))
       LOGGER.config("Loading render states");
@@ -546,6 +764,18 @@ public abstract class TechniquePass {
     }
   }
   
+  /**
+   * Loads what attributes are active in this program.
+   * 
+   * @param attributesXML configuration xml element.
+   * @since 0.1
+   * @see #position
+   * @see #normal
+   * @see #tangents
+   * @see #uv
+   * @see #bones
+   * @see #colorAttr
+   */
   private void loadAttributes(Element attributesXML) {
     if(LOGGER.isLoggable(Level.CONFIG))
       LOGGER.config("Loading attributes");
@@ -588,11 +818,24 @@ public abstract class TechniquePass {
     }
   }
   
-  private void loadUniforms(Element uniformsXML) {
+  /**
+   * Loads what uniforms are active in this program.
+   * 
+   * @param uniformsXML configuration xml element.
+   * @param rm Render Manager reference.
+   * @since 0.1
+   * @see #albedoTexture
+   * @see #normalTexture
+   * @see #heightTexture
+   * @see #basicInstanceUniforms
+   * @see #specialColorsUniforms
+   * @see #basicMaterial
+   */
+  private void loadUniforms(Element uniformsXML, RenderManager rm) {
     if(LOGGER.isLoggable(Level.CONFIG))
       LOGGER.config("Loading uniforms");
 
-    long maxUniformBufferSize = getMaxUniformBufferSize();
+    //long maxUniformBufferSize = getMaxUniformBufferSize();
     
     NodeList nl = uniformsXML.getChildNodes();
     for(int i = 0; i < nl.getLength(); ++i) {
@@ -617,24 +860,34 @@ public abstract class TechniquePass {
       case "basic_instance_uniforms":
         assert !basicInstanceUniforms;
         basicInstanceUniforms = true;
-        
+        int newMaxInstances = rm.getMaxInstancesBasic();
+        if(maxInstances == 1 || newMaxInstances < maxInstances) {
+          maxInstances = newMaxInstances;
+        }
+        /*
         if(maxUniformBufferSize > 0) {
           int newMaxInstances = (int) (maxUniformBufferSize / BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE);
           if(maxInstances == 1 || newMaxInstances < maxInstances) {
             maxInstances = newMaxInstances;
           }
         }
+        */
         break;
       case "special_colors":
         assert !specialColorsUniforms;
         specialColorsUniforms = true;
-        
+        newMaxInstances = rm.getMaxInstancesWithColors();
+        if(maxInstances == 1 || newMaxInstances < maxInstances) {
+          maxInstances = newMaxInstances;
+        }
+        /*
         if(maxUniformBufferSize > 0) {
           int newMaxInstances = (int) (maxUniformBufferSize / SPECIAL_COLORS_UNIFORMS_BLOCK_SIZE);
           if(maxInstances == 1 || newMaxInstances < maxInstances) {
             maxInstances = newMaxInstances;
           }
         }
+        */
         break;
       case "basic_light":
         assert !basicLight;
@@ -649,7 +902,15 @@ public abstract class TechniquePass {
       }
     }
   }
-  
+
+  /**
+   * Loads what results are active in this program.
+   * 
+   * @param resultsXML configuration xml element.
+   * @since 0.1
+   * @see #colorResult
+   * @see #depthResult
+   */
   private void loadResults(Element resultsXML) {
     if(LOGGER.isLoggable(Level.CONFIG))
       LOGGER.config("Loading uniforms");
@@ -677,49 +938,209 @@ public abstract class TechniquePass {
   }
 
   //protected abstract void setupCapabilities();
+  /**
+   * Generates a new OpenGL shader stage identifier.
+   * @param st shader stage.
+   * @param rm Render Manager reference.
+   * @return a new OpenGL shader stage identifier.
+   * @since 0.1
+   */
   protected abstract int generateShaderObject(ShaderType st, RenderManager rm);
+  /**
+   * Deletes a shader stage object.
+   * 
+   * @param shaderID OpenGL shader stage identifier.
+   * @since 0.1
+   */
   protected abstract void deleteShader(int shaderID);
 
+  /**
+   * Gets the shader source GLSL version declaration.
+   * @param rm Render Manager reference.
+   * @return "#version ???" current GLSL version.
+   * @since 0.1
+   */
   protected abstract String getVersionDeclaration(RenderManager rm);
+  /**
+   * Compiles a shader.
+   * 
+   * @param shaderID OpenGL shader stage identifier.
+   * @param source of the shader.
+   * @return if the shader was successfully compiled.
+   * @since 0.1
+   */
   protected abstract boolean compileShader(int shaderID, String source);
   
+  /**
+   * Links all shader stages.
+   * 
+   * @param vs vertex shader OpenGL identifier.
+   * @param tc tesselation control shader OpenGL identifier.
+   * @param te tesselation evaulation shader OpenGL identifier.
+   * @param gs geometry shader OpenGL identifier.
+   * @param fs fragment shader OpenGL identifier.
+   * @param rm Render Manager reference.
+   * @return the successfully linked shader program OpenGL identifier.
+   * @throws AntagonistException if the linking operation fails.
+   * @since 0.1
+   */
   protected abstract int completeShaderProgram(int vs, int tc, int te, int gs, int fs, RenderManager rm) throws AntagonistException;
+  /**
+   * Deletes a shader program.
+   * 
+   * @param shaderProgramID shader program OpenGL identifier.
+   * @since 0.1
+   */
   protected abstract void deleteShaderProgram(int shaderProgramID);
   
+  /**
+   * Gets the default shader for a specified stage.
+   * 
+   * @param st shader stage.
+   * @return a default shader program, precompiled.
+   * @since 0.1
+   */
   protected abstract int getDefaultShader(ShaderType st);
   
-  protected abstract long getMaxUniformBufferSize();
-
+  /**
+   * Fetches the specular factor uniform binding point.
+   * 
+   * @return the uniform binding point.
+   * @since 0.1
+   */
   public abstract int getSpecularFactorUniform();
+  /**
+   * Fetches the specular glossiness uniform binding point.
+   * 
+   * @return the uniform binding point.
+   * @since 0.1
+   */
   public abstract int getSpecularGlossinessUniform();
+  /**
+   * Fetches the height uniform binding point.
+   * 
+   * @return the uniform binding point.
+   * @since 0.1
+   */
   public abstract int getHeightUniform();
-  
+
+  /**
+   * Fetches the ambient light color uniform binding point.
+   * 
+   * @return the uniform binding point.
+   * @since 0.1
+   */
   public abstract int getAmbientLightColorUniform();
+  /**
+   * Fetches the directional light direction uniform binding point.
+   * 
+   * @return the uniform binding point.
+   * @since 0.1
+   */
   public abstract int getDirectionalLightDirectionUniform();
+  /**
+   * Fetches the directional light color uniform binding point.
+   * 
+   * @return the uniform binding point.
+   * @since 0.1
+   */
   public abstract int getDirectionalLightColorUniform();
-  
+
+  /**
+   * Fetches the model view projection matrix uniform binding point.
+   * 
+   * @return the uniform binding point.
+   * @since 0.1
+   */
   public abstract int getModelViewProjectionUniform();
+  /**
+   * Fetches the model view matrix uniform binding point.
+   * 
+   * @return the uniform binding point.
+   * @since 0.1
+   */
   public abstract int getModelViewUniform();
+  /**
+   * Fetches the model view inverse-transposed matrix uniform binding point.
+   * 
+   * @return the uniform binding point.
+   * @since 0.1
+   */
   public abstract int getModelViewITUniform();
-  
+
+  /**
+   * Fetches the special color 0 uniform binding point.
+   * 
+   * @return the uniform binding point.
+   * @since 0.1
+   */
   public abstract int getSpecialColor0Uniform();
+  /**
+   * Fetches the special color 1 uniform binding point.
+   * 
+   * @return the uniform binding point.
+   * @since 0.1
+   */
   public abstract int getSpecialColor1Uniform();
+  /**
+   * Fetches the special color 2 uniform binding point.
+   * 
+   * @return the uniform binding point.
+   * @since 0.1
+   */
   public abstract int getSpecialColor2Uniform();
+  /**
+   * Fetches the special color 3 uniform binding point.
+   * 
+   * @return the uniform binding point.
+   * @since 0.1
+   */
   public abstract int getSpecialColor3Uniform();
 
+  /**
+   * Tells if this program uses basic instance uniforms. 
+   * 
+   * @return if this program uses this uniforms.
+   * @since 0.1
+   */
   public boolean hasBasicInstanceUniforms() {
     return basicInstanceUniforms;
   }
+  /**
+   * Tells if this program uses special colors uniforms. 
+   * 
+   * @return if this program uses this uniforms.
+   * @since 0.1
+   */
   public boolean hasSpecialColorsUniforms() {
     return specialColorsUniforms;
   }
+  /**
+   * Tells if this program uses basic material uniforms. 
+   * 
+   * @return if this program uses this uniforms.
+   * @since 0.1
+   */
   public boolean hasBasicMaterialUniforms() {
     return basicMaterial;
   }
+  /**
+   * Tells if this program uses basic light uniforms. 
+   * 
+   * @return if this program uses this uniforms.
+   * @since 0.1
+   */
   public boolean hasBasicLightUniforms() {
     return basicLight;
   }
   
+  /**
+   * Activates this program pass. This method sets the shader program active and changes some 
+   * render states according to the configuration.
+   * 
+   * @param rm Render Manager reference.
+   * @since 0.1
+   */
   public void activate(RenderManager rm) {
     assert !cleaned;
     rm.activateShader(shaderProgram);
@@ -759,8 +1180,15 @@ public abstract class TechniquePass {
   
   
   
-
+  /**
+   * variable that checks if this object has been cleaned.
+   * @since 0.1
+   */
   protected boolean cleaned = false;
+  /**
+   * Method that cleans up the OpenGL states.
+   * @since 0.1
+   */
   public final void cleanUp() {
     assert !cleaned;
     if(vs != 0)
