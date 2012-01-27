@@ -66,7 +66,7 @@ public abstract class Material extends Resource {
   protected Effect effect;
   
   /**
-   * Builds a blank, unitialized material.
+   * Builds a blank, uninitialized material.
    * @param _resourceName name of the material.
    * @since 0.1
    * @see Resource#Resource(HashedString)

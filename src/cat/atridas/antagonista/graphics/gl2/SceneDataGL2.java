@@ -8,9 +8,22 @@ import cat.atridas.antagonista.graphics.SceneData;
 import cat.atridas.antagonista.graphics.TechniquePass;
 import cat.atridas.antagonista.graphics.gl.RenderManagerGL;
 
+/**
+ * OpenGL 2.1 implementation of the SceneData class.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch.
+ * @since 0.1
+ *
+ */
 public class SceneDataGL2 extends SceneData {
 
-  
+  /**
+   * Default constructor.
+   * 
+   * @param _rm Render Manager reference.
+   * @since 0.1
+   * @see SceneData#SceneData(RenderManager)
+   */
   public SceneDataGL2(RenderManagerGL _rm) {
     super(_rm);
   }

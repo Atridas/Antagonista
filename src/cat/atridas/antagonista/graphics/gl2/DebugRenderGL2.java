@@ -23,30 +23,61 @@ import cat.atridas.antagonista.graphics.Technique;
 import cat.atridas.antagonista.graphics.TechniquePass;
 import cat.atridas.antagonista.graphics.Effect.TechniqueType;
 
+/**
+ * OpenGL 2.1 implementation of the DebugRender class.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch.
+ * @since 0.1
+ *
+ */
 public class DebugRenderGL2 extends DebugRender {
   
-
+  /**
+   * Auxiliar buffers.
+   * @since 0.1
+   */
   private FloatBuffer buffer1, buffer2, bufferAux16;
   
+  /**
+   * OpenGL buffer identifier to render lines & triangles.
+   * @since 0.1
+   */
   private int linesBuffer = -1;
   
-  //esferes
+  /**
+   * OpenGL buffer identifier to render spheres.
+   * @since 0.1
+   */
   private int sphereIndexBuffer = -1, sphereVertexBuffer = -1;
-  
-  //creus
+
+  /**
+   * OpenGL buffer identifier to render crosses.
+   * @since 0.1
+   */
   private int crossesVertexBuffer = -1;
-  
-  //cercles
+
+  /**
+   * OpenGL buffer identifier to render circles.
+   * @since 0.1
+   */
   private int circlesVertexBuffer = -1;
-  
-  //axes
+
+  /**
+   * OpenGL buffer identifier to render axes.
+   * @since 0.1
+   */
   private int axesVertexBuffer = -1;
-  
-  //triangles ho farem com les línees
-  
-  //BBs
+
+  /**
+   * OpenGL buffer identifier to render bounding boxes.
+   * @since 0.1
+   */
   private int bbIndexBuffer = -1, bbVertexBuffer = -1;
-  
+
+  /**
+   * Number of floats in a vertex with position and color information.
+   * @since 0.1
+   */
   private static final int POS_COL_VERTEX_SIZE = (3 + 3); //Floats
   
   {
@@ -56,6 +87,10 @@ public class DebugRenderGL2 extends DebugRender {
     bufferAux16 = BufferUtils.createFloatBuffer(16);
   }
 
+  /**
+   * Initializes the buffers to render crosses.
+   * @since 0.1
+   */
   private void initCrossesBuffers() {
     assert !cleaned;
     
@@ -69,7 +104,11 @@ public class DebugRenderGL2 extends DebugRender {
     
     assert !Utils.hasGLErrors();
   }
-  
+
+  /**
+   * Initializes the buffers to render spheres.
+   * @since 0.1
+   */
   private void initSphereBuffers() {
     assert !cleaned;
     
@@ -89,7 +128,11 @@ public class DebugRenderGL2 extends DebugRender {
     
     assert !Utils.hasGLErrors();
   }
-  
+
+  /**
+   * Initializes the buffers to render circles.
+   * @since 0.1
+   */
   private void initCirclesBuffers() {
     assert !cleaned;
     
@@ -102,7 +145,11 @@ public class DebugRenderGL2 extends DebugRender {
     
     assert !Utils.hasGLErrors();
   }
-  
+
+  /**
+   * Initializes the buffers to render axes.
+   * @since 0.1
+   */
   private void initAxesBuffers() {
     assert !cleaned;
     
@@ -117,7 +164,11 @@ public class DebugRenderGL2 extends DebugRender {
     assert !Utils.hasGLErrors();
   }
 
-  
+
+  /**
+   * Initializes the buffers to render bounding boxes.
+   * @since 0.1
+   */
   private void initBBsBuffers() {
     assert !cleaned;
     
@@ -139,7 +190,11 @@ public class DebugRenderGL2 extends DebugRender {
     assert !Utils.hasGLErrors();
   }
   
-  
+
+  /**
+   * Initializes the buffers to render lines & triangles and calls all other buffer initializers.
+   * @since 0.1
+   */
   private void initBuffers(RenderManager rm) {
     assert !cleaned;
     if(linesBuffer < 0) {
@@ -156,7 +211,16 @@ public class DebugRenderGL2 extends DebugRender {
       initBBsBuffers();
     }
   }
-  
+
+  /**
+   * Renders primitives specified uniquely by a vertex array.
+   * 
+   * @param mode primitive type.
+   * @param numElements number of vertices to render.
+   * @param model model to world matrix transformation.
+   * @param rm Render Manager reference.
+   * @since 0.1
+   */
   private void renderArrays(int mode, int numElements, Matrix4f model, RenderManager rm) {
     debugMaterial.setUpUniforms(rm);
 
@@ -171,6 +235,15 @@ public class DebugRenderGL2 extends DebugRender {
     assert !Utils.hasGLErrors();
   }
   
+  /**
+   * Renders primitives specified by a vertex array and an index array.
+   * 
+   * @param mode primitive type.
+   * @param numIndices number of vertices to render.
+   * @param model model to world matrix transformation.
+   * @param rm Render Manager reference.
+   * @since 0.1
+   */
   private void renderElements(int mode, int numIndices, Matrix4f model, RenderManager rm) {
     debugMaterial.setUpUniforms(rm);
 
@@ -185,6 +258,9 @@ public class DebugRenderGL2 extends DebugRender {
     assert !Utils.hasGLErrors();
   }
   
+  /**
+   * Increases the size of the auxiliar buffers.
+   */
   private void growBuffers() {
     int newCapacity = buffer1.capacity() / Utils.FLOAT_SIZE + POS_COL_VERTEX_SIZE * 50;
     buffer1 = BufferUtils.createFloatBuffer( newCapacity );
@@ -721,6 +797,14 @@ public class DebugRenderGL2 extends DebugRender {
     
   }
   
+  /**
+   * Sends matrix information to the OpenGL driver.
+   * 
+   * @param pass program reference.
+   * @param model model to world matrix.
+   * @param rm RenderManager reference.
+   * @since 0.1
+   */
   private void setGlobalMatrixes(TechniquePass pass, Matrix4f model, RenderManager rm) {
     SceneData sd = rm.getSceneData();
     
@@ -751,6 +835,10 @@ public class DebugRenderGL2 extends DebugRender {
  // fins aqui
   }
 
+  /**
+   * Depth test state prior to starting the rendering phase of this class.
+   * @since 0.1
+   */
   private boolean prevDepthMask;
   
   @Override
@@ -779,7 +867,10 @@ public class DebugRenderGL2 extends DebugRender {
     assert !Utils.hasGLErrors();
   }
 
-
+  /**
+   * Contains information concerning if this object had been cleared.
+   * @since 0.1
+   */
   protected boolean cleaned = false;
   
   @Override

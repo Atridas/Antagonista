@@ -13,20 +13,48 @@ import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.Shader.ShaderType;
 import cat.atridas.antagonista.graphics.gl.TechniquePassGL;
 
+/**
+ * OpenGL 2.1 implementation of the TechniquePass class.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch.
+ * @since 0.1
+ *
+ */
 public class TechniquePassGL2 extends TechniquePassGL {
   private static Logger LOGGER = Logger.getLogger(TechniquePassGL2.class.getCanonicalName());
 
-  private int modelViewProjectionUniform, modelViewUniform, modelViewITUniform;//, bonesUniform;
-  private int specialColor0, specialColor1, specialColor2, specialColor3;
-  private int ambientUniform, directionalDirUniform, directionalColorUniform;
-  private int specularFactorUniform, specularGlossinessUniform, heightUniform;
-  
+  /**
+   * Uniform locations.
+   * @since 0.1
+   */
+  private int modelViewProjectionUniform, modelViewUniform, modelViewITUniform,//, bonesUniform;
+              specialColor0, specialColor1, specialColor2, specialColor3,
+              ambientUniform, directionalDirUniform, directionalColorUniform,
+              specularFactorUniform, specularGlossinessUniform, heightUniform;
+
+  /**
+   * Builds a new program pass, from an xml configuration element.
+   * 
+   * @param techniquePassXML xml configuration element.
+   * @throws AntagonistException if there was an error building the program.
+   * @since 0.1
+   * @see TechniquePassGL#TechniquePassGL(Element)
+   */
   public TechniquePassGL2(Element pass) throws AntagonistException {
     super(pass);
   }
 
+  /**
+   * Uninitialized constructor.
+   * @since 0.1
+   */
   public TechniquePassGL2() {}
-  
+
+  /**
+   * Builds a text technique pass.
+   * @param fontPass <code>true</code>
+   * @since 0.1
+   */
   public TechniquePassGL2(boolean fontPass) {
     super(fontPass);
   }
@@ -214,11 +242,10 @@ public class TechniquePassGL2 extends TechniquePassGL {
     return specialColor3;
   }
 
-  //@Override
-  //protected long getMaxUniformBufferSize() {
-  //  return 0; //throw new IllegalStateException("Uniform Buffers not supported with " + Utils.getProfile());
-  //}
-  
+  /**
+   * Cached shader stages ids to render text.
+   * @since 0.1
+   */
   private static int textVertexShaderID = -1,
                      textFragmentShaderID = -1;
   
@@ -242,6 +269,44 @@ public class TechniquePassGL2 extends TechniquePassGL {
     }
   }
   
+  /**
+   * Code of a vertex shader to render text.
+   * 
+   * <code>
+   * <pre>
+   * attribute vec2   a_position;
+   * attribute vec2   a_texCoord;
+   * attribute vec4   a_channel;
+   * attribute float  a_page;
+   * attribute vec3   a_color;
+   * 
+   * 
+   * varying vec4  v_channel;
+   * varying vec4  v_page;
+   * varying vec3  v_color;
+   * varying vec2  v_texCoord;
+   * 
+   * uniform mat4 u_WorldViewProj;
+   * 
+   * void main() {  
+   *   gl_Position = u_WorldViewProj * vec4(a_position, 0, 1);
+   *   v_texCoord  = a_texCoord;
+   *   v_channel   = a_channel;
+   *   if(a_page < 0.5)
+   *     v_page = vec4(1,0,0,0);
+   *   else if(a_page < 0.5)
+   *     v_page = vec4(0,1,0,0);
+   *   else if(a_page < 0.5)
+   *     v_page = vec4(0,0,1,0);
+   *   else
+   *     v_page = vec4(0,0,0,1);
+   *   v_color     = a_color;
+   * }
+   * </pre>
+   * </code>
+   * 
+   * @since 0.1
+   */
   public static final String textVertexShader = 
       "attribute vec2   a_position;\n" +
       "attribute vec2   a_texCoord;\n" +
@@ -270,7 +335,42 @@ public class TechniquePassGL2 extends TechniquePassGL {
         "  v_page = vec4(0,0,0,1);\n" +
         "v_color     = a_color;\n" +
       "}\n";
+
   
+  /**
+   * Code of a fragment shader to render text.
+   * 
+   * <code><pre>
+   * varying vec2  v_texCoord;
+   * varying vec4  v_channel;
+   * varying vec3  v_color;
+   * varying vec4  v_page;
+   * 
+   * uniform sampler2D u_page0;
+   * uniform sampler2D u_page1;
+   * uniform sampler2D u_page2;
+   * uniform sampler2D u_page3;
+   * 
+   * void main() {
+   *   vec4 pixel0 = texture2D(u_page0, v_texCoord);
+   *   vec4 pixel1 = texture2D(u_page1, v_texCoord);
+   *   vec4 pixel2 = texture2D(u_page2, v_texCoord);
+   *   vec4 pixel3 = texture2D(u_page3, v_texCoord);
+   *   vec4 pixel = pixel0 * v_page.x + pixel1 * v_page.y + pixel2 * v_page.z + pixel3 * v_page.w;
+   *   float divisor = dot(v_channel, vec4(1.0,1.0,1.0,1.0));
+   *   float val;\
+   *   if(divisor < 0.1)
+   *   {
+   *     val = pixel.x;
+   *   } else {
+   *     val = dot(v_channel, pixel) / divisor;
+   *   }
+   *   gl_FragColor = vec4(v_color,val);
+   * }
+   * </pre></code>
+   * 
+   * @since 0.1
+   */
   public static final String textFragmentShader = 
       "varying vec2  v_texCoord;\n" +
       "varying vec4  v_channel;\n" +

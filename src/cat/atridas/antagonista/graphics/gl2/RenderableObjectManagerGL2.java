@@ -14,10 +14,25 @@ import cat.atridas.antagonista.graphics.InstanceData;
 import cat.atridas.antagonista.graphics.RenderableObjectManager;
 import cat.atridas.antagonista.graphics.TechniquePass;
 
+/**
+ * OpenGL 2.1 implementation of the RenderableObjectManager class.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch.
+ * @since 0.1
+ *
+ */
 public final class RenderableObjectManagerGL2 extends RenderableObjectManager {
 
+  /**
+   * Buffer size needed to store one instance.
+   * @since 0.1
+   */
   private static final int BASIC_INSTANCE_BUFFER_SIZE = 16; // 3 matrius de 16 floats
   
+  /**
+   * Auxiliar buffer to pass information to the OpenGL driver.
+   * @since 0.1
+   */
   private FloatBuffer buffer = BufferUtils.createFloatBuffer(BASIC_INSTANCE_BUFFER_SIZE);
 
   @Override

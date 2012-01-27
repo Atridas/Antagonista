@@ -54,7 +54,7 @@ public abstract class SceneData {
   /**
    * Default constructor.
    * 
-   * @param _rm
+   * @param _rm Render Manager reference.
    * @since 0.1
    */
   protected SceneData(RenderManager _rm) {

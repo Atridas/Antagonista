@@ -10,8 +10,21 @@ import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.TechniquePass;
 import cat.atridas.antagonista.graphics.gl.MeshGL;
 
+/**
+ * OpenGL 2.1 implementation of the Mesh class.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch.
+ * @since 0.1
+ *
+ */
 public class MeshGL2 extends MeshGL {
 
+  /**
+   * Builds a blank, uninitialized mesh.
+   * @param _resourceName name of the material.
+   * @since 0.1
+   * @see MeshGL#MeshGL(HashedString)
+   */
   public MeshGL2(HashedString _resourceName) {
     super(_resourceName);
   }

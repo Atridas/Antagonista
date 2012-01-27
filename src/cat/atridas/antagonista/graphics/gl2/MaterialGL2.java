@@ -8,11 +8,25 @@ import cat.atridas.antagonista.graphics.TechniquePass;
 
 import static org.lwjgl.opengl.GL20.*;
 
+/**
+ * OpenGL 2.1 implementation of the Material class.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch.
+ * @since 0.1
+ *
+ */
 public final class MaterialGL2 extends Material {
 
+  /**
+   * Builds a blank, uninitialized material.
+   * @param _resourceName name of the material.
+   * @since 0.1
+   * @see Material#Material(HashedString)
+   */
   public MaterialGL2(HashedString _resourceName) {
     super(_resourceName);
   }
+  
   @Override
   public void setUpUniforms(RenderManager rm) {
     
