@@ -14,7 +14,7 @@ import cat.atridas.antagonista.graphics.TechniquePass;
 import cat.atridas.antagonista.graphics.gl.RenderManagerGL;
 
 /**
- * Desktop OpenGL implementation of the SceneData class.
+ * OpenGL 3.3 implementation of the SceneData class.
  * 
  * @author Isaac 'Atridas' Serrano Guasch.
  * @since 0.1
@@ -23,11 +23,23 @@ import cat.atridas.antagonista.graphics.gl.RenderManagerGL;
 public class SceneDataGL3 extends SceneData {
 
   /**
-   * Buffer to be used in light 
+   * Auxiliar buffer used to pass global scene data information to the OpenGL driver.
+   * @since 0.1 
    */
   private ByteBuffer bb = BufferUtils.createByteBuffer(4 * 3 * Float.SIZE); 
+  /**
+   * Global scene data information buffer OpenGL identifier.
+   * @since 0.1
+   */
   private int bufferId = -1;
-  
+
+  /**
+   * Default constructor.
+   * 
+   * @param _rm Render Manager reference.
+   * @since 0.1
+   * @see SceneData#SceneData(RenderManager)
+   */
   public SceneDataGL3(RenderManagerGL _rm) {
     super(_rm);
   }

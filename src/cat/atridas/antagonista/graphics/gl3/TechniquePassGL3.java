@@ -15,13 +15,32 @@ import static org.lwjgl.opengl.ARBUniformBufferObject.glUniformBlockBinding;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL32.*;
 
+/**
+ * OpenGL 3.3 implementation of the TechniquePass class.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch.
+ * @since 0.1
+ *
+ */
 public final class TechniquePassGL3 extends TechniquePassGL {
   private static Logger LOGGER = Logger.getLogger(TechniquePassGL3.class.getCanonicalName());
 
+  /**
+   * Builds a new program pass, from an xml configuration element.
+   * 
+   * @param techniquePassXML xml configuration element.
+   * @throws AntagonistException if there was an error building the program.
+   * @since 0.1
+   * @see TechniquePassGL#TechniquePassGL(Element)
+   */
   public TechniquePassGL3(Element pass) throws AntagonistException {
     super(pass);
   }
-  
+
+  /**
+   * Uninitialized constructor.
+   * @since 0.1
+   */
   public TechniquePassGL3() {}
 
   @Override

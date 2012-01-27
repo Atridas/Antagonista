@@ -15,9 +15,24 @@ import cat.atridas.antagonista.graphics.InstanceData;
 import cat.atridas.antagonista.graphics.RenderableObjectManager;
 import cat.atridas.antagonista.graphics.TechniquePass;
 
+/**
+ * OpenGL 3.3 implementation of the RenderableObjectManager class.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch.
+ * @since 0.1
+ *
+ */
 public final class RenderableObjectManagerGL3 extends RenderableObjectManager {
   
+  /**
+   * Auxiliar buffer used to pass instance information to the OpenGL driver.
+   * @since 0.1 
+   */
   private FloatBuffer buffer = BufferUtils.createFloatBuffer(InstanceBufferUtils.BUFFER_SIZE);
+  /**
+   * Single instance information buffer OpenGL identifier.
+   * @since 0.1
+   */
   private int bufferID = -1;
 
   @Override

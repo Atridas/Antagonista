@@ -12,10 +12,26 @@ import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.TechniquePass;
 import cat.atridas.antagonista.graphics.gl.MeshGL;
 
+/**
+ * OpenGL 3.3 implementation of the Mesh class.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch.
+ * @since 0.1
+ *
+ */
 public final class MeshGL3 extends MeshGL {
-
+  /**
+   * Vertex Array Object of this mesh.
+   * @since 0.1
+   */
   private int vertexArrayObject;
-  
+
+  /**
+   * Builds a blank, uninitialized mesh.
+   * @param _resourceName name of the material.
+   * @since 0.1
+   * @see MeshGL#MeshGL(HashedString)
+   */
   public MeshGL3(HashedString name) {
     super(name);
   }

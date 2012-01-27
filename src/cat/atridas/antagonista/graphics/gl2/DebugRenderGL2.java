@@ -73,12 +73,6 @@ public class DebugRenderGL2 extends DebugRender {
    * @since 0.1
    */
   private int bbIndexBuffer = -1, bbVertexBuffer = -1;
-
-  /**
-   * Number of floats in a vertex with position and color information.
-   * @since 0.1
-   */
-  private static final int POS_COL_VERTEX_SIZE = (3 + 3); //Floats
   
   {
     buffer1 = BufferUtils.createFloatBuffer(POS_COL_VERTEX_SIZE * 50);
@@ -193,6 +187,8 @@ public class DebugRenderGL2 extends DebugRender {
 
   /**
    * Initializes the buffers to render lines & triangles and calls all other buffer initializers.
+   * 
+   * @param rm Render Manager reference.
    * @since 0.1
    */
   private void initBuffers(RenderManager rm) {

@@ -14,11 +14,31 @@ import cat.atridas.antagonista.graphics.Material;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.TechniquePass;
 
+/**
+ * OpenGL 3.3 implementation of the Material class.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch.
+ * @since 0.1
+ *
+ */
 public final class MaterialGL3 extends Material {
   
-  private ByteBuffer bb = BufferUtils.createByteBuffer(3 * Float.SIZE); 
+  /**
+   * Auxiliar buffer used to pass material information to the OpenGL driver.
+   * @since 0.1 
+   */
+  private ByteBuffer bb = BufferUtils.createByteBuffer(3 * Float.SIZE);
+  /**
+   * Uniform Buffer identifier for this material. 
+   */
   private int bufferId = -1;
 
+  /**
+   * Builds a blank, uninitialized material.
+   * @param _resourceName name of the material.
+   * @since 0.1
+   * @see Material#Material(HashedString)
+   */
   public MaterialGL3(HashedString _resourceName) {
     super(_resourceName);
   }

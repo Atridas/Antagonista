@@ -41,6 +41,12 @@ public abstract class DebugRender {
    * @since 0.1
    */
   protected final static int SPHERE_SUBDIV = 15;
+
+  /**
+   * Number of floats in a vertex with position and color information.
+   * @since 0.1
+   */
+  protected static final int POS_COL_VERTEX_SIZE = (3 + 3); //Floats
   
   private boolean active;
 

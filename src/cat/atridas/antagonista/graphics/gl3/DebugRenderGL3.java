@@ -26,37 +26,73 @@ import cat.atridas.antagonista.graphics.Technique;
 import cat.atridas.antagonista.graphics.TechniquePass;
 import cat.atridas.antagonista.graphics.Effect.TechniqueType;
 
+/**
+ * OpenGL 3.3 implementation of the DebugRender class.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch.
+ * @since 0.1
+ *
+ */
 public class DebugRenderGL3 extends DebugRender {
-  
-  public final static int SPHERE_STACKS = 15;
-  public final static int SPHERE_SUBDIV = 15;
-  
-
+  /**
+   * Auxiliar buffer used to pass global data information.
+   * @since 0.1
+   */
   private FloatBuffer globalDataBuffer = BufferUtils.createFloatBuffer(InstanceBufferUtils.BUFFER_SIZE);
+  /**
+   * Auxiliar buffers.
+   * @since 0.1
+   */
   private FloatBuffer buffer1, buffer2, buffer3, buffer4;
-  private int linesBuffer = -1, linesVAO = -1, singleInstanceGlobalDataBuffer = -1;
   
+  /**
+   * OpenGL identifiers needed to render lines & triangles.
+   * @since 0.1
+   */
+  private int linesBuffer = -1, linesVAO = -1;
+
+  /**
+   * Global data buffer of a single instance.
+   * @since 0.1
+   */
+  private int singleInstanceGlobalDataBuffer = -1;
   
+  /**
+   * Global data buffer for instanced rendering.
+   * @since 0.1
+   */
   private int multipleInstancesGlobalDataBuffer = -1, instancesColorBuffer = -1;
-  
-  //esferes
+
+  /**
+   * OpenGL identifiers needed to render spheres.
+   * @since 0.1
+   */
   private int sphereIndexBuffer = -1, sphereVertexBuffer = -1, sphereVAO = -1;
-  
-  //creus
+
+  /**
+   * OpenGL identifiers needed to render crosses.
+   * @since 0.1
+   */
   private int crossesVertexBuffer = -1, crossesVAO = -1;
-  
-  //cercles
+
+  /**
+   * OpenGL identifiers needed to render circles.
+   * @since 0.1
+   */
   private int circlesVertexBuffer = -1, circlesVAO = -1;
-  
-  //axes
+
+  /**
+   * OpenGL identifiers needed to render axes.
+   * @since 0.1
+   */
   private int axesVertexBuffer = -1, axesVAO = -1;
   
-  //triangles ho farem com les línees
-  
-  //BBs
+
+  /**
+   * OpenGL identifiers needed to render bounding boxes.
+   * @since 0.1
+   */
   private int bbIndexBuffer = -1, bbVertexBuffer = -1, bbVAO = -1;
-  
-  private static final int POS_COL_VERTEX_SIZE = (3 + 3); //Floats
   
   {
     buffer1 = BufferUtils.createFloatBuffer(POS_COL_VERTEX_SIZE * 50);
@@ -64,7 +100,11 @@ public class DebugRenderGL3 extends DebugRender {
     buffer3 = BufferUtils.createFloatBuffer(POS_COL_VERTEX_SIZE * 50);
     buffer4 = BufferUtils.createFloatBuffer(POS_COL_VERTEX_SIZE * 50);
   }
-  
+
+  /**
+   * Initializes the buffers to render spheres.
+   * @since 0.1
+   */
   private void initSphereBuffers() {
     assert !cleaned;
     
@@ -103,7 +143,11 @@ public class DebugRenderGL3 extends DebugRender {
     
     assert !Utils.hasGLErrors();
   }
-  
+
+  /**
+   * Initializes the buffers to render crosses.
+   * @since 0.1
+   */
   private void initCrossesBuffers() {
     assert !cleaned;
     
@@ -138,7 +182,11 @@ public class DebugRenderGL3 extends DebugRender {
     
     assert !Utils.hasGLErrors();
   }
-  
+
+  /**
+   * Initializes the buffers to render bounding boxes.
+   * @since 0.1
+   */
   private void initBBsBuffers() {
     assert !cleaned;
 
@@ -176,7 +224,11 @@ public class DebugRenderGL3 extends DebugRender {
     
     assert !Utils.hasGLErrors();
   }
-  
+
+  /**
+   * Initializes the buffers to render circles.
+   * @since 0.1
+   */
   private void initCirclesBuffers() {
     assert !cleaned;
     
@@ -211,7 +263,11 @@ public class DebugRenderGL3 extends DebugRender {
     
     assert !Utils.hasGLErrors();
   }
-  
+
+  /**
+   * Initializes the buffers to render axes.
+   * @since 0.1
+   */
   private void initAxesBuffers() {
     assert !cleaned;
     
@@ -241,7 +297,13 @@ public class DebugRenderGL3 extends DebugRender {
     
     assert !Utils.hasGLErrors();
   }
-  
+
+  /**
+   * Initializes the buffers to render lines & triangles and calls all other buffer initializers.
+   * 
+   * @param rm Render Manager reference.
+   * @since 0.1
+   */
   private void initBuffers(RenderManager rm) {
     assert !cleaned;
     if(linesBuffer < 0) {
@@ -296,7 +358,15 @@ public class DebugRenderGL3 extends DebugRender {
       initBBsBuffers();
     }
   }
-  
+
+  /**
+   * Renders primitives specified uniquely by a vertex array.
+   * 
+   * @param mode primitive type.
+   * @param numElements number of vertices to render.
+   * @param rm Render Manager reference.
+   * @since 0.1
+   */
   private void renderArrays(int mode, int numElements, RenderManager rm) {
     debugMaterial.setUpUniforms(rm);
 
@@ -309,7 +379,16 @@ public class DebugRenderGL3 extends DebugRender {
     }
     assert !Utils.hasGLErrors();
   }
-  
+
+  /**
+   * Renders instanced primitives specified uniquely by a vertex array.
+   * 
+   * @param mode primitive type.
+   * @param numElements number of vertices to render.
+   * @param numInstances number of different instances to render.
+   * @param rm Render Manager reference.
+   * @since 0.1
+   */
   private void renderArraysInstanced(int mode, int numElements, int numInstances, RenderManager rm) {
     debugMaterial.setUpUniforms(rm);
 
@@ -323,20 +402,16 @@ public class DebugRenderGL3 extends DebugRender {
     assert !Utils.hasGLErrors();
   }
   
-  @SuppressWarnings("unused")
-  private void renderElements(int mode, int numIndices, RenderManager rm) {
-    debugMaterial.setUpUniforms(rm);
 
-    Technique technique = debugMaterial.getEffect().getTechnique(TechniqueType.FORWARD, Quality.MID);
-    for(TechniquePass pass: technique.getPasses()) {
-      pass.activate(rm);
-      debugMaterial.setUpUniforms(pass, rm);
-
-      glDrawElements(mode, numIndices, GL_UNSIGNED_SHORT, 0);
-    }
-    assert !Utils.hasGLErrors();
-  }
-  
+  /**
+   * Renders primitives specified by a vertex array and an index array.
+   * 
+   * @param mode primitive type.
+   * @param numIndices number of vertices to render.
+   * @param numInstances number of different instances to render.
+   * @param rm Render Manager reference.
+   * @since 0.1
+   */
   private void renderElementsInstanced(int mode, int numIndices, int numInstances, RenderManager rm) {
     debugMaterial.setUpUniforms(rm);
 
@@ -349,7 +424,10 @@ public class DebugRenderGL3 extends DebugRender {
     }
     assert !Utils.hasGLErrors();
   }
-  
+
+  /**
+   * Increases the size of the auxiliar buffers.
+   */
   private void growBuffers() {
     int newCapacity = buffer1.capacity() / Utils.FLOAT_SIZE + POS_COL_VERTEX_SIZE * 50;
     buffer1 = BufferUtils.createFloatBuffer( newCapacity );
@@ -1213,7 +1291,15 @@ public class DebugRenderGL3 extends DebugRender {
       renderSpheres(rm);
     }
   }
-  
+
+  /**
+   * Sends matrix information to the OpenGL driver.
+   * 
+   * @param pass program reference.
+   * @param model model to world matrix.
+   * @param rm RenderManager reference.
+   * @since 0.1
+   */
   private void setGlobalMatrixes(RenderManager rm) {
     SceneData sd = rm.getSceneData();
     
@@ -1239,6 +1325,10 @@ public class DebugRenderGL3 extends DebugRender {
                       singleInstanceGlobalDataBuffer);
   }
 
+  /**
+   * Depth test state prior to starting the rendering phase of this class.
+   * @since 0.1
+   */
   private boolean prevDepthMask;
   
   @Override
@@ -1268,6 +1358,10 @@ public class DebugRenderGL3 extends DebugRender {
   }
 
 
+  /**
+   * Contains information concerning if this object had been cleared.
+   * @since 0.1
+   */
   protected boolean cleaned = false;
   
   @Override

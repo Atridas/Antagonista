@@ -6,9 +6,24 @@ import cat.atridas.antagonista.graphics.gl.FontManagerGL;
 
 import static org.lwjgl.opengl.GL30.*;
 
+/**
+ * OpenGL 3.3 implementation of the FontManager class.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch.
+ * @since 0.1
+ *
+ */
 public final class FontManagerGL3 extends FontManagerGL {
 
+  /**
+   * Vertex Array Objects that had been generated and need deletion.
+   * @since 0.1
+   */
   private final HashSet<Integer> generatedVAOs = new HashSet<>();
+  /**
+   * Vertex Array Objects that had been generated not yet initialized.
+   * @since 0.1
+   */
   private final HashSet<Integer> uninitializedVAOs = new HashSet<>();
 
   @Override
@@ -32,6 +47,10 @@ public final class FontManagerGL3 extends FontManagerGL {
     return vao;
   }
 
+  /**
+   * Contains information concerning if this object had been cleared.
+   * @since 0.1
+   */
   boolean cleaned = false;
   
   @Override
