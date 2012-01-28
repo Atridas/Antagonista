@@ -1,4 +1,6 @@
 antagonist text
+Export_Physics
+False
 pos, normal, tangent, bitangent, uv
 8 False
 -0.5 -0.5 0.5 -0.57735 -0.57735 0.57735 1 0 0 0 0 1 0 0

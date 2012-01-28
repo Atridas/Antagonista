@@ -117,86 +117,99 @@ public abstract class Mesh extends Resource {
    * @since 0.1
    */
   private boolean loadText(InputStream is) {
-    final int firstVertexLine = 3;
-    String str = Utils.readInputStream(is);
-    String[] lines = str.split("\n");
-    
-    assert lines.length >= 7;
-    
-    String[] vertsParams = lines[2].split(" ");
-    
-    numVerts = Integer.parseInt(vertsParams[0]);
-    boolean animated = Boolean.parseBoolean(vertsParams[1]);
-    assert !animated;//TODO animats
-    
-    float[] vtxs = new float[ numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH ];
-    
-    assert lines.length >= firstVertexLine + numVerts;
-    
-    for(int i = 0; i < numVerts; ++i) {
-      String elements[] = lines[i + firstVertexLine].split(" ");
-      assert elements.length == NUM_ELEMENTS_PER_VERTEX_STATIC_MESH;
+    try {
+      final int firstVertexLine = 5;
+      String str = Utils.readInputStream(is);
+      String[] lines = str.split("\n");
       
-      for(int j = 0; j < NUM_ELEMENTS_PER_VERTEX_STATIC_MESH; ++j) {
-        float f = Float.parseFloat(elements[j]);
-        //vertexBuffer.putFloat(f);
-        vtxs[i * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH + j] = f;
+      assert lines.length >= 7;
+      
+      String[] meshParams = lines[1].split(" ");
+      String[] meshParamValues = lines[2].split(" ");
+      int k = 0;
+      for(String param : meshParams) {
+        LOGGER.config(param + ": " + meshParamValues[k]);
+        k++;
       }
       
-    }
-    
-    final int firstMaterialsLine = firstVertexLine + numVerts + 1;
-    
-    numSubMeshes = Integer.parseInt(lines[firstMaterialsLine]);
-    
-                          materials = new Material[numSubMeshes];
-                          numFaces  = new int[numSubMeshes];
-                          
-    int aux = firstMaterialsLine + 1;
-    
-    MaterialManager mm = Core.getCore().getMaterialManager();
-    int totalNumFaces = 0;
-    for(int i = 0; i < numSubMeshes; ++i) {
-      Material material = mm.getResource( new HashedString( lines[aux] ) );
-      numFaces[i] = Integer.parseInt(lines[aux + 1]);
-      totalNumFaces += numFaces[i];
-
-      materials[i] = material;
-      aux += 2;
-    }
-    
-    short idxs[] = new short[totalNumFaces * 3];
-    
-    int faceIndex = 0;
-    for(int i = 0; i < numSubMeshes; ++i) {
-
-      for(int face = 0; face < numFaces[i]; face++) {
-        String[] indexes = lines[aux + face].split(" ");
-        assert indexes.length == 3;
-        //for(int j = 0; j < 3; ++j) {
-        //  short index = Short.parseShort(indexes[j]);
-        //  faces.putShort(index);
-        //}
-        idxs[faceIndex * 3 + 0] = Short.parseShort(indexes[0]);
-        idxs[faceIndex * 3 + 1] = Short.parseShort(indexes[1]);
-        idxs[faceIndex * 3 + 2] = Short.parseShort(indexes[2]);
-        faceIndex++;
+      String[] vertsParams = lines[4].split(" ");
+      
+      numVerts = Integer.parseInt(vertsParams[0]);
+      boolean animated = Boolean.parseBoolean(vertsParams[1]);
+      assert !animated;//TODO animats
+      
+      float[] vtxs = new float[ numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH ];
+      
+      assert lines.length >= firstVertexLine + numVerts;
+      
+      for(int i = 0; i < numVerts; ++i) {
+        String elements[] = lines[i + firstVertexLine].split(" ");
+        assert elements.length == NUM_ELEMENTS_PER_VERTEX_STATIC_MESH;
+        
+        for(int j = 0; j < NUM_ELEMENTS_PER_VERTEX_STATIC_MESH; ++j) {
+          float f = Float.parseFloat(elements[j]);
+          //vertexBuffer.putFloat(f);
+          vtxs[i * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH + j] = f;
+        }
+        
       }
-      aux += numFaces[i];
+      
+      final int firstMaterialsLine = firstVertexLine + numVerts + 1;
+      
+      numSubMeshes = Integer.parseInt(lines[firstMaterialsLine]);
+      
+                            materials = new Material[numSubMeshes];
+                            numFaces  = new int[numSubMeshes];
+                            
+      int aux = firstMaterialsLine + 1;
+      
+      MaterialManager mm = Core.getCore().getMaterialManager();
+      int totalNumFaces = 0;
+      for(int i = 0; i < numSubMeshes; ++i) {
+        Material material = mm.getResource( new HashedString( lines[aux] ) );
+        numFaces[i] = Integer.parseInt(lines[aux + 1]);
+        totalNumFaces += numFaces[i];
+  
+        materials[i] = material;
+        aux += 2;
+      }
+      
+      short idxs[] = new short[totalNumFaces * 3];
+      
+      int faceIndex = 0;
+      for(int i = 0; i < numSubMeshes; ++i) {
+  
+        for(int face = 0; face < numFaces[i]; face++) {
+          String[] indexes = lines[aux + face].split(" ");
+          assert indexes.length == 3;
+          //for(int j = 0; j < 3; ++j) {
+          //  short index = Short.parseShort(indexes[j]);
+          //  faces.putShort(index);
+          //}
+          idxs[faceIndex * 3 + 0] = Short.parseShort(indexes[0]);
+          idxs[faceIndex * 3 + 1] = Short.parseShort(indexes[1]);
+          idxs[faceIndex * 3 + 2] = Short.parseShort(indexes[2]);
+          faceIndex++;
+        }
+        aux += numFaces[i];
+      }
+      
+      ByteBuffer vertexBuffer = BufferUtils.createByteBuffer(numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH * Utils.FLOAT_SIZE);
+      ByteBuffer faces = BufferUtils.createByteBuffer(totalNumFaces * 3 * Utils.SHORT_SIZE);
+  
+      vertexBuffer.asFloatBuffer().put(vtxs);
+      faces.asShortBuffer().put(idxs);
+  
+      vertexBuffer.position(0);
+      vertexBuffer.limit(numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH * Utils.FLOAT_SIZE);
+      faces.position(0);
+      faces.limit(totalNumFaces * 3 * Utils.SHORT_SIZE);
+      
+      return loadBuffers(vertexBuffer, faces, animated); 
+    } catch(Exception e) {
+      LOGGER.warning( Utils.logExceptionStringAndStack(e) );
+      return false;
     }
-    
-    ByteBuffer vertexBuffer = BufferUtils.createByteBuffer(numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH * Utils.FLOAT_SIZE);
-    ByteBuffer faces = BufferUtils.createByteBuffer(totalNumFaces * 3 * Utils.SHORT_SIZE);
-
-    vertexBuffer.asFloatBuffer().put(vtxs);
-    faces.asShortBuffer().put(idxs);
-
-    vertexBuffer.position(0);
-    vertexBuffer.limit(numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH * Utils.FLOAT_SIZE);
-    faces.position(0);
-    faces.limit(totalNumFaces * 3 * Utils.SHORT_SIZE);
-    
-    return loadBuffers(vertexBuffer, faces, animated); 
   }
 
   /**
