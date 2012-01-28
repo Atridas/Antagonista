@@ -347,9 +347,14 @@ def createMesh(mesh, consolePrint):
     return AntagonistMesh(materialFaces, verticesArray)  
 
 
-def saveMeshText(mesh, filepath):
+def saveMeshText(mesh, originalMesh, filepath):
     f = open(filepath, 'w')
     f.write("antagonist text")
+    f.write("\nExport_Physics")
+    if originalMesh.export_physics:
+        f.write("\nTrue")
+    else:
+        f.write("\nFalse")
     f.write("\npos, normal, tangent, bitangent, uv")
     f.write("\n%s" % len(mesh.vertices))
     f.write(" "    + str(False)) #Animats
@@ -563,17 +568,12 @@ class OBJECT_PT_export_mesh(bpy.types.Panel):
         row = layout.row()
         row.label(text="The currently selected mesh is: " + obj.data.name, icon='MESH_DATA')
 
-        col = layout.column()
-        #row = col.row()
-        #row.label(text="The currently selected object is: "+obj.name)
-        #row = col.row()
-        #row.label(text="The currently selected mesh is: "+obj.data.name)
-        #row = col.row()
+        row = layout.row()
+        row.prop(obj.data, "export_physics")
         
-        #row.label(text="It is a mesh containing "+str(len(obj.data.vertices))+" vertices.")
+        row = layout.row()
+        row.prop(obj.data, "antagonist_class")
         
-        #row = layout.row()
-        #row.operator("antagonist.print_verts", text="Print Vertices")
         
         row = layout.row()
         row.operator("export.antagonist_mesh", text="Export current Mesh")
@@ -645,9 +645,9 @@ class ExportAntagonistMesh(bpy.types.Operator, AntagonistExportHelper):
         
         if(self.binary_format):
             print("binary not yet implemented, using text format") #TODO
-            saveMeshText(mesh, path)
+            saveMeshText(mesh, context.object.data, path)
         else:
-            saveMeshText(mesh, path)
+            saveMeshText(mesh, context.object.data, path)
             
             
         materials = set()
@@ -840,3 +840,7 @@ def unregister():
 
 if __name__ == "__main__":
     register()
+    
+    #afegim les propietats dels objectes, si cal
+    bpy.types.Mesh.export_physics = bpy.props.BoolProperty(name="export physic mesh")
+    bpy.types.Mesh.antagonist_class = bpy.props.StringProperty(name="antagonist object class")
