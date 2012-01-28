@@ -15,6 +15,7 @@ import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.graphics.Font;
+import cat.atridas.antagonista.graphics.Mesh;
 import cat.atridas.antagonista.graphics.MeshManager;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.RTSCamera;
@@ -71,8 +72,9 @@ public class Test {
     HashedString hs9  = new HashedString("Habitacio 3");
     HashedString hs10 = new HashedString("Habitacio 4");
     MeshManager mem  = core.getMeshManager();
-    mem.getResource(hs7);
+    Mesh habitacio = mem.getResource(hs7);
     
+    core.getPhysicsWorld().createStaticRigidBody(habitacio.getPhysicsMesh());
     
     assert !Utils.hasGLErrors();
     
@@ -115,7 +117,7 @@ public class Test {
     HashedString camRight = new HashedString("move_camera_right");
     HashedString camDist  = new HashedString("move_camera_distance");
 
-    Font font = core.getFontManager().getResource(new HashedString("font14")); 
+    //Font font = core.getFontManager().getResource(new HashedString("font14")); 
     
     DebugRender dr = core.getDebugRender();
     
@@ -143,6 +145,8 @@ public class Test {
       if(im.isActionActive(camDist)) {
         camera.addDistance( -.01f * im.getActionValue(camDist) );
       }
+      
+      core.getPhysicsWorld().update(dt);
       
       /*
       dr.addLine(new Point3f(0,0,0), new Point3f(0,0,25), new Color3f(0,0,1));
@@ -195,6 +199,7 @@ public class Test {
       dr.addOBB(matN, new Vector3f(2,3,3), new Color3f(1,1,1));
       */
       
+      /*
       dr.addCross(new Point3f(0,0,2), new Color3f(0,0,1), 1);
       dr.addString(new Point3f(0,0,2), font, "Hola mundu", 1, new Color3f(1,0,0));
       
@@ -216,8 +221,11 @@ public class Test {
       
 
       dr.addString2D(new Point2f(.0f,.05f), font, "Mouse: " + im.getMouseX() + ", " + im.getMouseY(), .03f, new Color3f(0,0,0));
+      */
       
-      sceneData.setCamera(camera);
+      core.getPhysicsWorld().debugDraw();
+      
+      //sceneData.setCamera(camera);
       
       rm.initFrame();
       

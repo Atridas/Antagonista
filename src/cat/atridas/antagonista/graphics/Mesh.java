@@ -11,10 +11,15 @@ import java.util.logging.Logger;
 
 import org.lwjgl.BufferUtils;
 
+import com.bulletphysics.collision.shapes.IndexedMesh;
+import com.bulletphysics.collision.shapes.ScalarType;
+import com.bulletphysics.collision.shapes.TriangleIndexVertexArray;
+
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Resource;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
+import cat.atridas.antagonista.physics.PhysicsStaticMeshCore;
 
 /**
  * Class that encapsulates an indexed vertex array to be rendered.
@@ -72,6 +77,12 @@ public abstract class Mesh extends Resource {
   protected Material materials[];
   
   /**
+   * PhysicsMesh, for rigid body simulation and collision detection.
+   * @since 0.1
+   */
+  private PhysicsStaticMeshCore physicsMesh;
+  
+  /**
    * Constructs an uninitialized mesh.
    * 
    * @param _resourceName name of the mesh.
@@ -124,12 +135,30 @@ public abstract class Mesh extends Resource {
       
       assert lines.length >= 7;
       
-      String[] meshParams = lines[1].split(" ");
-      String[] meshParamValues = lines[2].split(" ");
-      int k = 0;
-      for(String param : meshParams) {
-        LOGGER.config(param + ": " + meshParamValues[k]);
-        k++;
+      boolean loadPhysicMesh = false;
+      ByteBuffer physicsMeshVertexBuffer = null;
+      
+      try {
+        String[] meshParams = lines[1].split(" ");
+        String[] meshParamValues = lines[2].split(" ");
+        int k = 0;
+        for(String param : meshParams) {
+          String value = meshParamValues[k];
+          LOGGER.config(param + ": " + value);
+          
+          switch(param) {
+          case "Export_Physics":
+            
+            loadPhysicMesh = Boolean.parseBoolean(value);
+            break;
+          }
+          
+          
+          
+          k++;
+        }
+      } catch(Exception e) {
+        LOGGER.warning(Utils.logExceptionStringAndStack(e));
       }
       
       String[] vertsParams = lines[4].split(" ");
@@ -137,6 +166,10 @@ public abstract class Mesh extends Resource {
       numVerts = Integer.parseInt(vertsParams[0]);
       boolean animated = Boolean.parseBoolean(vertsParams[1]);
       assert !animated;//TODO animats
+      
+      if(loadPhysicMesh) {
+        physicsMeshVertexBuffer = BufferUtils.createByteBuffer(numVerts * Utils.FLOAT_SIZE * 3);
+      }
       
       float[] vtxs = new float[ numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH ];
       
@@ -150,7 +183,12 @@ public abstract class Mesh extends Resource {
           float f = Float.parseFloat(elements[j]);
           //vertexBuffer.putFloat(f);
           vtxs[i * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH + j] = f;
+          
+          if(loadPhysicMesh && j < 3) { //només l' x,y,z
+            physicsMeshVertexBuffer.putFloat(f);
+          }
         }
+        
         
       }
       
@@ -205,7 +243,31 @@ public abstract class Mesh extends Resource {
       faces.position(0);
       faces.limit(totalNumFaces * 3 * Utils.SHORT_SIZE);
       
-      return loadBuffers(vertexBuffer, faces, animated); 
+      boolean errors = loadBuffers(vertexBuffer, faces, animated);
+      
+      if(loadPhysicMesh) {
+        physicsMeshVertexBuffer.flip();
+        faces.position(0);
+        faces.limit(totalNumFaces * 3 * Utils.SHORT_SIZE);
+        IndexedMesh indexedMesh = new IndexedMesh();
+        
+        indexedMesh.indexType = ScalarType.SHORT;
+        
+        indexedMesh.numTriangles = totalNumFaces;
+        indexedMesh.triangleIndexBase = faces;
+        indexedMesh.triangleIndexStride = 0;//3 * Utils.SHORT_SIZE;
+        
+        indexedMesh.numVertices = numVerts;
+        indexedMesh.vertexBase = physicsMeshVertexBuffer;
+        indexedMesh.vertexStride = 0;//3 * Utils.FLOAT_SIZE;
+        
+        TriangleIndexVertexArray tiva = new TriangleIndexVertexArray();
+        tiva.addIndexedMesh(indexedMesh);
+        
+        physicsMesh = new PhysicsStaticMeshCore(tiva);
+      }
+      
+      return errors;
     } catch(Exception e) {
       LOGGER.warning( Utils.logExceptionStringAndStack(e) );
       return false;
@@ -264,6 +326,17 @@ public abstract class Mesh extends Resource {
     assert !cleaned;
     assert _submesh < numSubMeshes;
     return materials[_submesh];
+  }
+  
+  /**
+   * Gets the physics mesh of this object. Used to have a reference core to create 
+   * static Rigid Bodies.
+   * 
+   * @return the physics mesh of this object.
+   * @since 0.2
+   */
+  public final PhysicsStaticMeshCore getPhysicsMesh() {
+    return physicsMesh;
   }
   
   /**

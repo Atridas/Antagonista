@@ -23,6 +23,12 @@ import com.bulletphysics.linearmath.IDebugDraw;
 public class PhysicsDebugDrawer extends IDebugDraw {
 
   /**
+   * Marks if debug primitives should be rendered with the zTest activated.
+   * @since 0.2
+   */
+  public boolean zTest = false;
+  
+  /**
    * Height of 3d text.
    * @since 0.2
    */
@@ -51,21 +57,21 @@ public class PhysicsDebugDrawer extends IDebugDraw {
   @Override
   public void draw3dText(Vector3f position, String text) {
     assert font != null;
-    dr.addString(new Point3f(position), font, text, text3DHeight, defaultDebugColor);
+    dr.addString(new Point3f(position), font, text, text3DHeight, defaultDebugColor,zTest);
   }
 
   @Override
   public void drawContactPoint(Vector3f PointOnB, Vector3f normalOnB, float distance,
       int lifeTime, Vector3f color) {
-    dr.addCross(new Point3f(PointOnB), new Color3f(color), 1);
+    dr.addCross(new Point3f(PointOnB), new Color3f(color), 1,lifeTime,zTest);
     Point3f destination = new Point3f(PointOnB);
     destination.add(normalOnB);
-    dr.addLine(new Point3f(PointOnB), destination, new Color3f(color));
+    dr.addLine(new Point3f(PointOnB), destination, new Color3f(color),lifeTime,zTest);
   }
 
   @Override
   public void drawLine(Vector3f from, Vector3f to, Vector3f color) {
-    dr.addLine(new Point3f(from), new Point3f(to), new Color3f(color));
+    dr.addLine(new Point3f(from), new Point3f(to), new Color3f(color),zTest);
   }
 
   @Override
@@ -73,7 +79,7 @@ public class PhysicsDebugDrawer extends IDebugDraw {
     dr.addString2D(new Point2f(0,0), font, text, text2DHeight, defaultDebugColor);
   }
 
-  private int debugMode = DebugDrawModes.DRAW_WIREFRAME;
+  private int debugMode = DebugDrawModes.MAX_DEBUG_DRAW_MODE;
   
   @Override
   public int getDebugMode() {

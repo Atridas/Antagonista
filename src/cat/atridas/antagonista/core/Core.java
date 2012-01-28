@@ -22,6 +22,7 @@ import cat.atridas.antagonista.graphics.gl3.DebugRenderGL3;
 import cat.atridas.antagonista.graphics.gl3.FontManagerGL3;
 import cat.atridas.antagonista.graphics.gl3.RenderableObjectManagerGL3;
 import cat.atridas.antagonista.input.InputManager;
+import cat.atridas.antagonista.physics.PhysicsWorld;
 
 /**
  * Core singleton class. Contains all Engine managers.
@@ -41,6 +42,8 @@ public final class Core {
   private DebugRender             dr;
   private MeshManager             mem = new MeshManager();
   private RenderableObjectManager rom;
+  
+  private PhysicsWorld pw;
 
   /**
    * Gets the RenderManager.
@@ -142,6 +145,16 @@ public final class Core {
   }
 	
   /**
+   * Gets the PhysicsWorld.
+   * 
+   * @return the PhysicsWorld.
+   * @since 0.2
+   */
+  public PhysicsWorld getPhysicsWorld() {
+    return pw;
+  }
+  
+  /**
    * Initializes the engine.
    * 
    * @param w width of the screen.
@@ -203,6 +216,11 @@ public final class Core {
       throw new RuntimeException("Not implemented!");
     
     rom.init();
+    
+    
+    
+    //////////
+    pw = new PhysicsWorld();
 	}
 	
 	/**
