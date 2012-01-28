@@ -35,10 +35,20 @@ public class Conventions {
    */
   public static final Vector3f FRONT_VECTOR = new Vector3f(0, -1, 0);
   /**
+   * Back vector, taken from Blender (0,1,0).
+   * @since 0.2
+   */
+  public static final Vector3f BACK_VECTOR = new Vector3f(0, 1, 0);
+  /**
    * Up vector, taken from Blender (0,0,1).
    * @since 0.1
    */
   public static final Vector3f UP_VECTOR = new Vector3f(0, 0, 1);
+  /**
+   * Down vector, taken from Blender (0,0,1).
+   * @since 0.2
+   */
+  public static final Vector3f DOWN_VECTOR = new Vector3f(0, 0, -1);
   /**
    * Right vector, taken from Blender (-1,0,0).
    * @since 0.1
