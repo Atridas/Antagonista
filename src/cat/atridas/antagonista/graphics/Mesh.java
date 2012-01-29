@@ -249,20 +249,20 @@ public abstract class Mesh extends Resource {
         physicsMeshVertexBuffer.flip();
         faces.position(0);
         faces.limit(totalNumFaces * 3 * Utils.SHORT_SIZE);
-        IndexedMesh indexedMesh = new IndexedMesh();
         
-        indexedMesh.indexType = ScalarType.SHORT;
+        
+        IndexedMesh indexedMesh = new IndexedMesh();
         
         indexedMesh.numTriangles = totalNumFaces;
         indexedMesh.triangleIndexBase = faces;
-        indexedMesh.triangleIndexStride = 0;//3 * Utils.SHORT_SIZE;
+        indexedMesh.triangleIndexStride = 3 * Utils.SHORT_SIZE;
         
         indexedMesh.numVertices = numVerts;
         indexedMesh.vertexBase = physicsMeshVertexBuffer;
-        indexedMesh.vertexStride = 0;//3 * Utils.FLOAT_SIZE;
+        indexedMesh.vertexStride = 3 * Utils.FLOAT_SIZE;
         
         TriangleIndexVertexArray tiva = new TriangleIndexVertexArray();
-        tiva.addIndexedMesh(indexedMesh);
+        tiva.addIndexedMesh(indexedMesh, ScalarType.SHORT);
         
         physicsMesh = new PhysicsStaticMeshCore(tiva);
       }

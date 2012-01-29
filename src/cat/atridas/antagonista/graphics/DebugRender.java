@@ -300,6 +300,9 @@ public abstract class DebugRender {
       Color3f color, 
       float duration, 
       boolean depthEnabled) {
+    assert minCoords.x < maxCoords.x;
+    assert minCoords.y < maxCoords.y;
+    assert minCoords.z < maxCoords.z;
     if(active)
       aabbs.add(new AABB(minCoords, maxCoords, duration, depthEnabled, color));
   }

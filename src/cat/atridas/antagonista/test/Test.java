@@ -85,7 +85,7 @@ public class Test {
     camera.setMaxDistance(20);
 
     sceneData.setPerspective(45, 1, 100);
-    sceneData.setCamera(new Point3f(30, -30, 30), new Point3f(0, 0, 0), new Vector3f(0, 0, 1));
+    sceneData.setCamera(new Point3f(20, -15, 10), new Point3f(0, 0, 0), new Vector3f(0, 0, 1));
     sceneData.setAmbientLight(new Color3f(0.3f, 0.3f, 0.3f));
     sceneData.setDirectionalLight(new Vector3f(0,1,1), new Color3f(0.3f, 0.3f, 0.3f));
 
