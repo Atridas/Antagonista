@@ -4,7 +4,6 @@ import java.util.logging.Level;
 
 import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4f;
-import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -14,7 +13,6 @@ import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.DebugRender;
-import cat.atridas.antagonista.graphics.Font;
 import cat.atridas.antagonista.graphics.Mesh;
 import cat.atridas.antagonista.graphics.MeshManager;
 import cat.atridas.antagonista.graphics.RenderManager;
@@ -22,8 +20,8 @@ import cat.atridas.antagonista.graphics.RTSCamera;
 import cat.atridas.antagonista.graphics.RenderableObject;
 import cat.atridas.antagonista.graphics.SceneData;
 import cat.atridas.antagonista.graphics.TextureManager;
-import cat.atridas.antagonista.graphics.FontManager.TextAlignment;
 import cat.atridas.antagonista.input.InputManager;
+import cat.atridas.antagonista.physics.PhysicsUserInfo;
 
 public class Test {
   
@@ -74,7 +72,11 @@ public class Test {
     MeshManager mem  = core.getMeshManager();
     Mesh habitacio = mem.getResource(hs7);
     
-    core.getPhysicsWorld().createStaticRigidBody(habitacio.getPhysicsMesh());
+    
+    PhysicsUserInfo pui = new PhysicsUserInfo();
+    pui.color.set(Utils.RED);
+    pui.zTest = true;
+    core.getPhysicsWorld().createStaticRigidBody(habitacio.getPhysicsMesh(), pui);
     
     assert !Utils.hasGLErrors();
     

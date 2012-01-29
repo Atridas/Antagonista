@@ -1,6 +1,5 @@
 package cat.atridas.antagonista.physics;
 
-import javax.vecmath.Color3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -20,12 +19,15 @@ import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
 import com.bulletphysics.collision.shapes.BvhTriangleMeshShape;
 import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.collision.shapes.SphereShape;
+import com.bulletphysics.collision.shapes.StridingMeshInterface;
+import com.bulletphysics.collision.shapes.VertexData;
 import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
 import com.bulletphysics.dynamics.DynamicsWorld;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.dynamics.constraintsolver.ConstraintSolver;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
+import com.bulletphysics.linearmath.DebugDrawModes;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 
@@ -64,26 +66,55 @@ public class PhysicsWorld {
    */
   public void debugDraw() {
     dynamicsWorld.debugDrawWorld();
-    Transform transform = new Transform();
-    DebugRender dr = Core.getCore().getDebugRender();
     
-    for(CollisionObject co : dynamicsWorld.getCollisionObjectArray()) {
-      co.getWorldTransform(transform);
-      CollisionShape cs = co.getCollisionShape();
-      if(cs instanceof SphereShape) {
-        SphereShape ss = (SphereShape) cs;
-        float r = ss.getRadius();
+    // wireframe drawing seems to not be implemented correctly in jBullet, so I draw it here.
+    if((dynamicsWorld.getDebugDrawer().getDebugMode() & DebugDrawModes.DRAW_WIREFRAME) != 0) {
+      Transform transform = new Transform();
+      DebugRender dr = Core.getCore().getDebugRender();
+      
+      Vector3f scaling = new Vector3f();
+      Vector3f[] triangle = new Vector3f[] {new Vector3f(),new Vector3f(),new Vector3f()};
+  
+      Point3f point1 = new Point3f();
+      Point3f point2 = new Point3f();
+      
+      for(CollisionObject co : dynamicsWorld.getCollisionObjectArray()) {
+        co.getWorldTransform(transform);
+        CollisionShape cs = co.getCollisionShape();
         
-        dr.addSphere(new Point3f(transform.origin), r, new Color3f(1,0,0), false);
-      } else if(cs instanceof BvhTriangleMeshShape) {
-        BvhTriangleMeshShape triangleMeshShape = (BvhTriangleMeshShape)cs;
-
-        Vector3f min = new Vector3f();
-        Vector3f max = new Vector3f();
-        triangleMeshShape.getLocalAabbMin(min);
-        triangleMeshShape.getLocalAabbMax(max);
+        PhysicsUserInfo userInfo = (PhysicsUserInfo)co.getUserPointer();
         
-        //dr.addAABB(new Point3f(min), new Point3f(max), new Color3f(1,0,0), false);
+        if(cs instanceof SphereShape) {
+          SphereShape ss = (SphereShape) cs;
+          float r = ss.getRadius();
+          
+          dr.addSphere(new Point3f(transform.origin), r, userInfo.color, userInfo.zTest);
+        } else if(cs instanceof BvhTriangleMeshShape) {
+          BvhTriangleMeshShape triangleMeshShape = (BvhTriangleMeshShape)cs;
+          
+          StridingMeshInterface meshInterface = triangleMeshShape.getMeshInterface();
+          
+          meshInterface.getScaling(scaling);
+          
+          for(int i = 0; i < meshInterface.getNumSubParts(); ++i) {
+            VertexData vd = meshInterface.getLockedReadOnlyVertexIndexBase(i);
+            for(int j = 0; j < vd.getIndexCount()/3; j++) {
+              vd.getTriangle(j*3, scaling, triangle);
+              point1.set(triangle[0]);
+              point2.set(triangle[1]);
+              dr.addLine(point1, point2, userInfo.color, userInfo.zTest);
+              point1.set(triangle[0]);
+              point2.set(triangle[2]);
+              dr.addLine(point1, point2, userInfo.color, userInfo.zTest);
+              point1.set(triangle[2]);
+              point2.set(triangle[1]);
+              dr.addLine(point1, point2, userInfo.color, userInfo.zTest);
+            }
+            
+          }
+        } else {
+          throw new RuntimeException("Debug draw of shape " + cs.getClass().getCanonicalName() + " is not yet implemented!");
+        }
       }
     }
   }
@@ -92,7 +123,7 @@ public class PhysicsWorld {
     dynamicsWorld.stepSimulation(dt.dt);
   }
   
-  public StaticRigidBody createStaticRigidBody(PhysicsStaticMeshCore meshCore) {
+  public StaticRigidBody createStaticRigidBody(PhysicsStaticMeshCore meshCore, PhysicsUserInfo userInfo) {
     
     DefaultMotionState dms = new DefaultMotionState();
 
@@ -102,6 +133,7 @@ public class PhysicsWorld {
     
     int collisionFlags = rb.getCollisionFlags();
     rb.setCollisionFlags(collisionFlags & CollisionFlags.STATIC_OBJECT);
+    rb.setUserPointer(userInfo);
     
     dynamicsWorld.addRigidBody(rb);
     

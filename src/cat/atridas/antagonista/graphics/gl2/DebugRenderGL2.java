@@ -837,12 +837,21 @@ public class DebugRenderGL2 extends DebugRender {
    */
   private boolean prevDepthMask;
   
+  /**
+   * Depth function  prior to starting the rendering phase of this class.
+   * @since 0.2
+   */
+  private int prevDepthFunction;
+  
   @Override
   protected void beginRender(RenderManager rm) {
     assert !cleaned;
     initBuffers(rm);
     prevDepthMask = glGetBoolean(GL_DEPTH_WRITEMASK);
+    prevDepthFunction = glGetInteger(GL_DEPTH_FUNC);
     glDepthMask(false);
+    glDepthFunc(GL_LEQUAL);
+    glDepthRange(0, 0.9999);
     
 
     assert !Utils.hasGLErrors();
@@ -852,6 +861,8 @@ public class DebugRenderGL2 extends DebugRender {
   protected void endRender() {
     assert !cleaned;
     glDepthMask(prevDepthMask);
+    glDepthFunc(prevDepthFunction);
+    glDepthRange(0, 1);
 
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);

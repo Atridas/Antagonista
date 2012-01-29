@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
 
+import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
@@ -127,17 +128,23 @@ public abstract class Utils {
    * @since 0.1
    */
   public static final Vector3f V3_MINUS_Z = new Vector3f(0,0,-1);
-  /*
-  public static File findFile(String name) {
-    try {
-      //URL url = Utils.class.getResource(name);
-    	URL url = ResourceLoader.getResource(name);
-      return new File(url.toURI());
-    } catch (Exception e) {
-      return new File(name);
-    }
-  }
-  */
+  
+
+  /**
+   * Red color
+   * @since 0.2
+   */
+  public static final Color3f RED = new Color3f(1,0,0);
+  /**
+   * Green color
+   * @since 0.2
+   */
+  public static final Color3f GREEN = new Color3f(0,1,0);
+  /**
+   * Blue color
+   * @since 0.2
+   */
+  public static final Color3f BLUE = new Color3f(0,0,1);
   
   /**
    * Returns <code>true</code> if the program is runned in a windows environment. <code>false</code>

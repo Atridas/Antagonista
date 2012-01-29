@@ -80,8 +80,8 @@ public class PhysicsDebugDrawer extends IDebugDraw {
   }
 
   //private int debugMode = DebugDrawModes.MAX_DEBUG_DRAW_MODE;
-  //private int debugMode = DebugDrawModes.DRAW_WIREFRAME;
-  private int debugMode = DebugDrawModes.DRAW_WIREFRAME | DebugDrawModes.DRAW_AABB;
+  private int debugMode = DebugDrawModes.DRAW_WIREFRAME;
+  //private int debugMode = DebugDrawModes.DRAW_WIREFRAME | DebugDrawModes.DRAW_AABB;
   
   @Override
   public int getDebugMode() {

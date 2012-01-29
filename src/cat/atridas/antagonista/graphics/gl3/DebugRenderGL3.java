@@ -429,7 +429,8 @@ public class DebugRenderGL3 extends DebugRender {
    * Increases the size of the auxiliar buffers.
    */
   private void growBuffers() {
-    int newCapacity = buffer1.capacity() / Utils.FLOAT_SIZE + POS_COL_VERTEX_SIZE * 50;
+    int oldCapacity = buffer1.capacity();
+    int newCapacity = oldCapacity + POS_COL_VERTEX_SIZE * 50;
     buffer1 = BufferUtils.createFloatBuffer( newCapacity );
     buffer2 = BufferUtils.createFloatBuffer( newCapacity );
     buffer3 = BufferUtils.createFloatBuffer( newCapacity );
@@ -1331,12 +1332,21 @@ public class DebugRenderGL3 extends DebugRender {
    */
   private boolean prevDepthMask;
   
+  /**
+   * Depth function  prior to starting the rendering phase of this class.
+   * @since 0.2
+   */
+  private int prevDepthFunction;
+  
   @Override
   protected void beginRender(RenderManager rm) {
     assert !cleaned;
     initBuffers(rm);
     prevDepthMask = glGetBoolean(GL_DEPTH_WRITEMASK);
+    prevDepthFunction = glGetInteger(GL_DEPTH_FUNC);
     glDepthMask(false);
+    glDepthFunc(GL_LEQUAL);
+    glDepthRange(0, 0.9999);
     
     setGlobalMatrixes(rm);
     
@@ -1348,6 +1358,8 @@ public class DebugRenderGL3 extends DebugRender {
   protected void endRender() {
     assert !cleaned;
     glDepthMask(prevDepthMask);
+    glDepthFunc(prevDepthFunction);
+    glDepthRange(0, 1);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
