@@ -258,7 +258,7 @@ public class DebugRenderGL2 extends DebugRender {
    * Increases the size of the auxiliar buffers.
    */
   private void growBuffers() {
-    int newCapacity = buffer1.capacity() / Utils.FLOAT_SIZE + POS_COL_VERTEX_SIZE * 50;
+    int newCapacity = buffer1.capacity() + POS_COL_VERTEX_SIZE * 50;
     buffer1 = BufferUtils.createFloatBuffer( newCapacity );
     buffer2 = BufferUtils.createFloatBuffer( newCapacity );
 
