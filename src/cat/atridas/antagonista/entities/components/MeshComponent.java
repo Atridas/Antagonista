@@ -35,6 +35,7 @@ public abstract class MeshComponent extends BaseComponent<MeshComponent> {
 
   @Override
   public void copy(MeshComponent _other) {
+    super.copy(_other);
     meshId = _other.meshId;
     lastMeshIdChange = _other.lastMeshIdChange;
   }
@@ -67,15 +68,17 @@ public abstract class MeshComponent extends BaseComponent<MeshComponent> {
 
     @Override
     public void pushChanges() {
-      MeshComponent.this.copy(this);
+      synchronized (MeshComponent.this) {
+        MeshComponent.this.copy(this);
+      }
     }
 
     @Override
     public void pullChanges() {
-      this.copy(MeshComponent.this);
+      synchronized (MeshComponent.this) {
+        this.copy(MeshComponent.this);
+      }
     }
-    
-    
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////

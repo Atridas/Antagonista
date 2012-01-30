@@ -36,6 +36,7 @@ public abstract class TransformComponent extends BaseComponent<TransformComponen
 
   @Override
   public void copy(TransformComponent _other) {
+    super.copy(_other);
     transformation.setTransform(_other.transformation);
     lastTransformationChange = _other.lastTransformationChange;
   }
@@ -68,12 +69,16 @@ public abstract class TransformComponent extends BaseComponent<TransformComponen
 
     @Override
     public void pushChanges() {
-      TransformComponent.this.copy(this);
+      synchronized (TransformComponent.this) {
+        TransformComponent.this.copy(this);
+      }
     }
 
     @Override
     public void pullChanges() {
-      this.copy(TransformComponent.this);
+      synchronized (TransformComponent.this) {
+        this.copy(TransformComponent.this);
+      }
     }
     
     
