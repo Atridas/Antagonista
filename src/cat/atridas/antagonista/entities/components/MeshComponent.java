@@ -5,8 +5,10 @@ import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.entities.BaseComponent;
 import cat.atridas.antagonista.entities.Entity;
+import cat.atridas.antagonista.entities.GlobalComponent;
+import cat.atridas.antagonista.entities.LocalComponent;
 
-public final class MeshComponent extends BaseComponent<MeshComponent> {
+public abstract class MeshComponent extends BaseComponent<MeshComponent> {
   
   private HashedString meshId = null;
   private DeltaTime lastMeshIdChange = null;
@@ -43,6 +45,40 @@ public final class MeshComponent extends BaseComponent<MeshComponent> {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////
+  
+  public final static class Global extends MeshComponent implements GlobalComponent<MeshComponent> {
+
+    public Global(Entity _entity) {
+      super(_entity);
+    }
+
+    @Override
+    public Local createLocalCopy() {
+      return new Local();
+    }
+    
+  }
+  
+  public final class Local extends MeshComponent implements LocalComponent<MeshComponent> {
+
+    private Local() {
+      super(MeshComponent.this.getEntity());
+    }
+
+    @Override
+    public void pushChanges() {
+      MeshComponent.this.copy(this);
+    }
+
+    @Override
+    public void pullChanges() {
+      this.copy(MeshComponent.this);
+    }
+    
+    
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////
 
   private final static HashedString componentType = new HashedString("MeshComponent");
   
@@ -50,17 +86,12 @@ public final class MeshComponent extends BaseComponent<MeshComponent> {
   public HashedString getComponentType() {
     return componentType;
   }
-
-  @Override
-  public MeshComponent clone() {
-    return (MeshComponent) super.clone();
-  }
  
   public static HashedString getComponentStaticType() {
     return componentType;
   }
   
   static {
-    Core.getCore().getEntityManager().registerComponentType(MeshComponent.class);
+    Core.getCore().getEntityManager().registerComponentType(Global.class);
   }
 }

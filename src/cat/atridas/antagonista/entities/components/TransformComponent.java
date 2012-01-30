@@ -6,8 +6,10 @@ import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.entities.BaseComponent;
 import cat.atridas.antagonista.entities.Entity;
+import cat.atridas.antagonista.entities.GlobalComponent;
+import cat.atridas.antagonista.entities.LocalComponent;
 
-public final class TransformComponent extends BaseComponent<TransformComponent> {
+public abstract class TransformComponent extends BaseComponent<TransformComponent> {
   
   private Transformation transformation = new Transformation();
   private DeltaTime lastTransformationChange = null;
@@ -44,6 +46,40 @@ public final class TransformComponent extends BaseComponent<TransformComponent> 
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////
+  
+  public final static class Global extends TransformComponent implements GlobalComponent<TransformComponent> {
+
+    public Global(Entity _entity) {
+      super(_entity);
+    }
+
+    @Override
+    public Local createLocalCopy() {
+      return new Local();
+    }
+    
+  }
+  
+  public final class Local extends TransformComponent implements LocalComponent<TransformComponent> {
+
+    private Local() {
+      super(TransformComponent.this.getEntity());
+    }
+
+    @Override
+    public void pushChanges() {
+      TransformComponent.this.copy(this);
+    }
+
+    @Override
+    public void pullChanges() {
+      this.copy(TransformComponent.this);
+    }
+    
+    
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////
 
   private final static HashedString componentType = new HashedString("TransformComponent");
   
@@ -51,20 +87,12 @@ public final class TransformComponent extends BaseComponent<TransformComponent> 
   public HashedString getComponentType() {
     return componentType;
   }
-
-  @Override
-  public TransformComponent clone() {
-    TransformComponent other = (TransformComponent) super.clone();
-    other.transformation = new Transformation();
-    other.transformation.setTransform(transformation);
-    return other;
-  }
  
   public static HashedString getComponentStaticType() {
     return componentType;
   }
   
   static {
-    Core.getCore().getEntityManager().registerComponentType(TransformComponent.class);
+    Core.getCore().getEntityManager().registerComponentType(Global.class);
   }
 }

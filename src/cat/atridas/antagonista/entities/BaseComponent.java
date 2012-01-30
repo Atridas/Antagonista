@@ -1,14 +1,12 @@
 package cat.atridas.antagonista.entities;
 
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 import cat.atridas.antagonista.Clock;
-import cat.atridas.antagonista.HashedString;
-import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 
-public abstract class BaseComponent <T extends BaseComponent<?>> implements Cloneable {
-  private static Logger LOGGER = Logger.getLogger(BaseComponent.class.getCanonicalName());
+public abstract class BaseComponent <T extends BaseComponent<?>> implements Component<T> {
+  //private static Logger LOGGER = Logger.getLogger(BaseComponent.class.getCanonicalName());
   
   private final Entity entity;
   
@@ -20,20 +18,5 @@ public abstract class BaseComponent <T extends BaseComponent<?>> implements Clon
   
   public Entity getEntity() {
     return entity;
-  }
-  
-  public abstract HashedString getComponentType();
-
-  public abstract void copy(T _other);
-
-  @SuppressWarnings("unchecked")
-  @Override
-  public BaseComponent<T> clone() {
-    try {
-      return (BaseComponent<T>)super.clone();
-    } catch (CloneNotSupportedException e) {
-      LOGGER.severe(Utils.logExceptionStringAndStack(e));
-      throw new RuntimeException(e);
-    }
   }
 }

@@ -43,10 +43,16 @@ public class TestEntities {
     Transformation transform = new Transformation();
     tc.getTransform(transform);
     
-    MeshComponent mc = em.createComponent(entity1.getId(), MeshComponent.getComponentStaticType());
+    MeshComponent.Global mc = em.createComponent(entity1.getId(), MeshComponent.getComponentStaticType());
+
+    MeshComponent.Local localMC1 =  mc.createLocalCopy();
+    MeshComponent.Local localMC2 =  mc.createLocalCopy();
     
-    tc = tc.clone();
-    mc = mc.clone();
+    localMC1.setMesh(new HashedString("Habitacio"));
+    
+    localMC1.pushChanges();
+    
+    localMC2.pullChanges();
     
     System.out.println(transform.toString());
   }

@@ -34,10 +34,10 @@ public final class EntityManager {
    * Map from componentIDs -> EntityIDs -> Component objects.
    * @since 0.2
    */
-  private final HashMap<HashedString, HashMap<HashedString, ? extends BaseComponent<?>>> components = new HashMap<>();
+  private final HashMap<HashedString, HashMap<HashedString, ? extends GlobalComponent<?>>> components = new HashMap<>();
   
   
-  private final HashMap<HashedString, Class<? extends BaseComponent<?>>> componentTypes = new HashMap<>();
+  private final HashMap<HashedString, Class<? extends Component<?>>> componentTypes = new HashMap<>();
   
   /**
    * Creates a new entity, with the specified name identifier.
@@ -60,11 +60,11 @@ public final class EntityManager {
   }
   
   
-  public synchronized <T extends BaseComponent<?>> T createComponent(HashedString entity, HashedString component) {
+  public synchronized <T extends GlobalComponent<?>> T createComponent(HashedString entity, HashedString component) {
     assert entities.containsKey(entity);
     assert components.containsKey(component);
     
-    HashMap<HashedString, ? extends BaseComponent<?>> componentMap = components.get(component);
+    HashMap<HashedString, ? extends GlobalComponent<?>> componentMap = components.get(component);
     assert !componentMap.containsKey(entity);
     
     @SuppressWarnings("unchecked")
@@ -90,7 +90,7 @@ public final class EntityManager {
     return createEntity(name);
   }
   
-  public<T extends BaseComponent<?>> void registerComponentType(Class<T> component) {
+  public<T extends GlobalComponent<?>> void registerComponentType(Class<T> component) {
     try {
       Method m = component.getMethod("getComponentStaticType");
       HashedString identifier = (HashedString)m.invoke(component);
