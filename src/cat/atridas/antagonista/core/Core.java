@@ -3,8 +3,10 @@ package cat.atridas.antagonista.core;
 import java.awt.Canvas;
 import java.util.ArrayList;
 
+import cat.atridas.antagonista.Clock;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.entities.EntityManager;
 import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.graphics.EffectManager;
 import cat.atridas.antagonista.graphics.FontManager;
@@ -44,6 +46,10 @@ public final class Core {
   private RenderableObjectManager rom;
   
   private PhysicsWorld pw;
+  
+  private EntityManager           entityManager = new EntityManager();
+  
+  private Clock clock;
 
   /**
    * Gets the RenderManager.
@@ -155,6 +161,26 @@ public final class Core {
   }
   
   /**
+   * Gets the EntityManager.
+   * 
+   * @return the EntityManager.
+   * @since 0.2
+   */
+  public EntityManager getEntityManager() {
+    return entityManager;
+  }
+  
+  /**
+   * Gets the global clock.
+   * 
+   * @return the global clock.
+   * @since 0.2
+   */
+  public Clock getClock() {
+    return clock;
+  }
+  
+  /**
    * Initializes the engine.
    * 
    * @param w width of the screen.
@@ -221,6 +247,8 @@ public final class Core {
     
     //////////
     pw = new PhysicsWorld();
+    
+    clock = new Clock();
 	}
 	
 	/**
@@ -262,6 +290,7 @@ public final class Core {
     em  = null;
     fm  = null;
     tm  = null;
+    entityManager = null;
     
     System.gc();
     System.runFinalization();

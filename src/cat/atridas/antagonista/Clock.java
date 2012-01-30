@@ -59,6 +59,16 @@ public class Clock {
 	}
 	
 	/**
+	 * Fetches the last delta time object.
+	 * 
+	 * @return the last delta time object.
+	 * @since 0.2
+	 */
+	public DeltaTime getCurrentFrameDeltaTime() {
+	  return lastDeltaTime;
+	}
+	
+	/**
 	 * Class that encapsulates information avout the time lapsed in every frame.
 	 * 
    * @author Isaac 'Atridas' Serrano Guasch

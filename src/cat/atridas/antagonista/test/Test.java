@@ -127,7 +127,7 @@ public class Test {
     
     dr.activate();
     
-    Clock clock = new Clock();
+    Clock clock = core.getClock();
     while(!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
 
       DeltaTime dt = clock.update();
