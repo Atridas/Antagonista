@@ -4,6 +4,7 @@ import javax.vecmath.Matrix4f;
 
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Transformation;
+import cat.atridas.antagonista.core.Core;
 
 /**
  * Encapsulates a renderable object instance.
@@ -28,7 +29,7 @@ public final class RenderableObject {
    * Mesh core of this renderable object.
    * @since 0.1
    */
-  private final Mesh mesh;
+  private Mesh mesh;
   
   /**
    * Indicates if this renderable object must be rendered or not.
@@ -99,6 +100,27 @@ public final class RenderableObject {
    */
   public Mesh getMesh() {
     return mesh;
+  }
+  
+  /**
+   * Changes the mesh this renderable object uses.
+   * 
+   * @param _mesh new mesh object.
+   * @since 0.2
+   */
+  public void changeMesh(Mesh _mesh) {
+    assert _mesh != null;
+    mesh = _mesh;
+  }
+
+  /**
+   * Changes the mesh this renderable object uses.
+   * 
+   * @param _mesh new mesh object identifier.
+   * @since 0.2
+   */
+  public void changeMesh(HashedString _mesh) {
+    mesh = Core.getCore().getMeshManager().getResource(_mesh);
   }
 
   /**

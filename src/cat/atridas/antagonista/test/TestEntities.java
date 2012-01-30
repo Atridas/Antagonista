@@ -3,10 +3,13 @@ package cat.atridas.antagonista.test;
 import java.util.logging.Level;
 
 import cat.atridas.antagonista.HashedString;
+import cat.atridas.antagonista.Transformation;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.entities.Entity;
 import cat.atridas.antagonista.entities.EntityManager;
+import cat.atridas.antagonista.entities.components.MeshComponent;
+import cat.atridas.antagonista.entities.components.TransformComponent;
 
 public class TestEntities {
   public static void main(String[] args) {
@@ -34,6 +37,17 @@ public class TestEntities {
     System.out.println(entity3.getId());
     System.out.println(entity4.getId());
     System.out.println(entity5.getId());
-    System.out.println(em.createEntity(new HashedString("aaa")));
+    
+    
+    TransformComponent tc = em.createComponent(entity1.getId(), TransformComponent.getComponentStaticType());
+    Transformation transform = new Transformation();
+    tc.getTransform(transform);
+    
+    MeshComponent mc = em.createComponent(entity1.getId(), MeshComponent.getComponentStaticType());
+    
+    tc = tc.clone();
+    mc = mc.clone();
+    
+    System.out.println(transform.toString());
   }
 }

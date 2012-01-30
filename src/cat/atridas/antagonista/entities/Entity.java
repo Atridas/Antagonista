@@ -1,6 +1,9 @@
 package cat.atridas.antagonista.entities;
 
+import java.util.logging.Logger;
+
 import cat.atridas.antagonista.HashedString;
+import cat.atridas.antagonista.Utils;
 
 /**
  * Embeds an Entity of the game.
@@ -10,6 +13,7 @@ import cat.atridas.antagonista.HashedString;
  *
  */
 public final class Entity {
+  private static Logger LOGGER = Logger.getLogger(Entity.class.getCanonicalName());
 
   /**
    * String identifier.
@@ -59,5 +63,20 @@ public final class Entity {
     } else if (!id.equals(other.id))
       return false;
     return true;
+  }
+  
+  @Override
+  public String toString() {
+    return "Entity " + id;
+  }
+  
+  @Override
+  public Object clone() {
+    try {
+      return super.clone();
+    } catch (CloneNotSupportedException e) {
+      LOGGER.severe(Utils.logExceptionStringAndStack(e));
+      throw new RuntimeException(e);
+    }
   }
 }

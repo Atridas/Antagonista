@@ -328,4 +328,9 @@ public final class Core {
 		}
 		return instance;
 	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+    throw new CloneNotSupportedException(); 
+	}
 }

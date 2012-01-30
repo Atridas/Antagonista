@@ -112,5 +112,10 @@ public class Clock {
       timeMilisSinceStart = lastDeltaTime.timeMilisSinceStart + _realDTMilis;
       frame = lastDeltaTime.frame + 1;
     }
+    
+    @Override
+    public String toString() {
+      return timeMilisSinceStart + "ms, " + fps + "FPS";
+    }
 	}
 }

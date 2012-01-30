@@ -45,7 +45,7 @@ public final class Transformation {
   private final Quat4f   rotation    = new Quat4f(0,0,0,1);
   private boolean rotationUpdated = true;
   
-  private float scale;
+  private float scale = 1;
   
   //auxiliar
   private final Matrix4f transformMatrix = new Matrix4f();
@@ -299,5 +299,15 @@ public final class Transformation {
       Conventions.eulerAnglesToQuaternion(yawPitchRoll, rotation);
       rotationUpdated = true;
     }
+  }
+  
+  @Override
+  public String toString() {
+    getMatrix(transformMatrix);
+    return transformMatrix.toString();
+    //return  "(" + transformMatrix.m00 + ", " + transformMatrix.m01 + ", " + transformMatrix.m02 + ", " + transformMatrix.m03 + ")\n" +
+    //        "(" + transformMatrix.m10 + ", " + transformMatrix.m11 + ", " + transformMatrix.m12 + ", " + transformMatrix.m13 + ")\n" +
+    //        "(" + transformMatrix.m20 + ", " + transformMatrix.m21 + ", " + transformMatrix.m22 + ", " + transformMatrix.m23 + ")\n" +
+    //        "(" + transformMatrix.m30 + ", " + transformMatrix.m31 + ", " + transformMatrix.m32 + ", " + transformMatrix.m33 + ")";
   }
 }

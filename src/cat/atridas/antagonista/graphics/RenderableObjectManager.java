@@ -68,6 +68,16 @@ public abstract class RenderableObjectManager {
   }
   
   /**
+   * Gets a renderable object.
+   * 
+   * @param name of the renderable object.
+   * @since 0.2
+   */
+  public final RenderableObject getRenderableObject(HashedString name) {
+    return renderableObjects.get(name);
+  }
+  
+  /**
    * Deletes from this manager a renderable object.
    * 
    * @param name of the object to be deleted.
