@@ -3,6 +3,7 @@ package cat.atridas.antagonista.entities;
 //import java.util.logging.Logger;
 
 import cat.atridas.antagonista.Clock;
+import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.core.Core;
 
 /**
@@ -97,5 +98,10 @@ public abstract class BaseComponent <T extends BaseComponent<?>> implements Comp
   @Override
   public Entity getEntity() {
     return entity;
+  }
+  
+  @Override
+  public HashedString getEntityId() {
+    return entity.getId();
   }
 }

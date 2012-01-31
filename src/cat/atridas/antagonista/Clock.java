@@ -75,7 +75,7 @@ public class Clock {
    * @since 0.1
 	 *
 	 */
-	public class DeltaTime {
+	public class DeltaTime implements Comparable<DeltaTime> {
 	  /**
 	   * Approximation, in seconds, of the time lapsed this frame.
 	   * @since 0.1
@@ -116,6 +116,33 @@ public class Clock {
     @Override
     public String toString() {
       return timeMilisSinceStart + "ms, " + fps + "FPS";
+    }
+
+    @Override
+    public int compareTo(DeltaTime o) {
+      return Long.compare(timeMilisSinceStart, o.timeMilisSinceStart);
+    }
+    
+    /**
+     * Returns true if this delta time object was created before the object passed as
+     * parameter.
+     * 
+     * @param o other object to compare.
+     * @return true if this object is older.
+     */
+    public boolean isOltherThan(DeltaTime o) {
+      return compareTo(o) > 0;
+    }
+
+    /**
+     * Returns true if this delta time object was created after the object passed as
+     * parameter.
+     * 
+     * @param o other object to compare.
+     * @return true if this object is newer.
+     */
+    public boolean isNewerThan(DeltaTime o) {
+      return compareTo(o) < 0;
     }
 	}
 }

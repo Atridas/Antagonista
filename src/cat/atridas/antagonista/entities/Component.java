@@ -27,6 +27,13 @@ public interface Component<T extends Component<?>> {
    */
   Entity getEntity();
   /**
+   * Gets the Entity's id this component is attached.
+   * 
+   * @return the Entity's id this component is attached.
+   * @since 0.1
+   */
+  HashedString getEntityId();
+  /**
    * Copies the component, used to reuse discarded components.
    * @param _other input component to copy.
    * @since 0.1
