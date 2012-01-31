@@ -65,6 +65,7 @@ public abstract class TransformComponent extends BaseComponent<TransformComponen
 
     private Local() {
       super(TransformComponent.this.getEntity());
+      pullChanges();
     }
 
     @Override

@@ -32,6 +32,7 @@ import cat.atridas.antagonista.core.Core;
  *
  *   private Local() {
  *     super(<strong>NewComponent</strong>.this.getEntity());
+ *     pullChanges();
  *   }
  *
  *   &#64;Override

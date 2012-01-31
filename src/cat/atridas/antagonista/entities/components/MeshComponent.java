@@ -64,6 +64,7 @@ public abstract class MeshComponent extends BaseComponent<MeshComponent> {
 
     private Local() {
       super(MeshComponent.this.getEntity());
+      pullChanges();
     }
 
     @Override

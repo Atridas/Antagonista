@@ -120,7 +120,8 @@ public class Clock {
 
     @Override
     public int compareTo(DeltaTime o) {
-      return Long.compare(timeMilisSinceStart, o.timeMilisSinceStart);
+      int c = Long.compare(timeMilisSinceStart, o.timeMilisSinceStart);
+      return c;
     }
     
     /**
@@ -131,7 +132,7 @@ public class Clock {
      * @return true if this object is older.
      */
     public boolean isOltherThan(DeltaTime o) {
-      return compareTo(o) > 0;
+      return compareTo(o) < 0;
     }
 
     /**
@@ -142,7 +143,7 @@ public class Clock {
      * @return true if this object is newer.
      */
     public boolean isNewerThan(DeltaTime o) {
-      return compareTo(o) < 0;
+      return compareTo(o) > 0;
     }
 	}
 }

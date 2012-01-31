@@ -2,14 +2,25 @@ package cat.atridas.antagonista.test;
 
 import java.util.logging.Level;
 
+import javax.vecmath.Color3f;
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
+
+import cat.atridas.antagonista.Clock;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Transformation;
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.entities.Entity;
 import cat.atridas.antagonista.entities.EntityManager;
+import cat.atridas.antagonista.entities.SystemManager;
 import cat.atridas.antagonista.entities.components.MeshComponent;
 import cat.atridas.antagonista.entities.components.TransformComponent;
+import cat.atridas.antagonista.entities.systems.RenderingSystem;
+import cat.atridas.antagonista.graphics.RenderManager;
+import cat.atridas.antagonista.graphics.SceneData;
+import cat.atridas.antagonista.input.InputManager;
 
 public class TestEntities {
   public static void main(String[] args) {
@@ -26,34 +37,80 @@ public class TestEntities {
     
     EntityManager em = core.getEntityManager();
 
+    
+    SystemManager sm = core.getSystemManager();
+    sm.registerSystem(new RenderingSystem());
+    
     Entity entity1 = em.createEntity();
-    Entity entity2 = em.createEntity();
-    Entity entity3 = em.createEntity();
-    Entity entity4 = em.createEntity();
-    Entity entity5 = em.createEntity(new HashedString("aaa"));
-
-    System.out.println(entity1.getId());
-    System.out.println(entity2.getId());
-    System.out.println(entity3.getId());
-    System.out.println(entity4.getId());
-    System.out.println(entity5.getId());
+    em.createEntity();
+    em.createEntity();
+    em.createEntity();
+    em.createEntity(new HashedString("aaa"));
     
     
     TransformComponent tc = em.createComponent(entity1.getId(), TransformComponent.getComponentStaticType());
     Transformation transform = new Transformation();
     tc.getTransform(transform);
     
-    MeshComponent.Global mc = em.createComponent(entity1.getId(), MeshComponent.getComponentStaticType());
+    MeshComponent mc = em.createComponent(entity1.getId(), MeshComponent.getComponentStaticType());
+    mc.setMesh(new HashedString("Habitacio"));
 
-    MeshComponent.Local localMC1 =  mc.createLocalCopy();
-    MeshComponent.Local localMC2 =  mc.createLocalCopy();
     
-    localMC1.setMesh(new HashedString("Habitacio"));
+    InputManager im = core.getInputManager();
+    RenderManager rm = core.getRenderManager();
     
-    localMC1.pushChanges();
     
-    localMC2.pullChanges();
     
-    System.out.println(transform.toString());
+
+    SceneData sceneData = rm.getSceneData();
+    //RTSCamera camera = new RTSCamera();
+    
+    //camera.setMaxDistance(20);
+
+    sceneData.setPerspective(45, 1, 100);
+    sceneData.setCamera(new Point3f(20, -15, 10), new Point3f(0, 0, 0), new Vector3f(0, 0, 1));
+    sceneData.setAmbientLight(new Color3f(0.3f, 0.3f, 0.3f));
+    sceneData.setDirectionalLight(new Vector3f(0,1,1), new Color3f(0.3f, 0.3f, 0.3f));
+    
+    
+    
+    Clock clock = core.getClock();
+    while(!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
+
+      DeltaTime dt = clock.update();
+      
+      core.getPhysicsWorld().update(dt);
+      
+      sm.updateSimple(dt);
+      
+      
+      core.getPhysicsWorld().debugDraw();
+      
+      rm.initFrame();
+      
+      core.getRenderableObjectManager().renderAll(rm);
+      core.getDebugRender().render(rm,dt);
+      
+      rm.present();
+      
+      Core.getCore().getFontManager().cleanTextCache();
+      
+      Core.getCore().getInputManager().update(dt);
+      
+      synchronized (TestEntities.class) {
+        try {
+          TestEntities.class.wait(1);
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+    }
+    
+    core.cleanUnusedResources(false);
+    core.cleanUnusedResources(true);
+    
+    core.close();
+    
   }
 }

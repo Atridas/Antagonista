@@ -10,14 +10,15 @@ import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.Transformation;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.entities.Component;
-import cat.atridas.antagonista.entities.Entity;
 import cat.atridas.antagonista.entities.SystemManager;
 import cat.atridas.antagonista.entities.components.MeshComponent;
 import cat.atridas.antagonista.entities.components.TransformComponent;
 import cat.atridas.antagonista.graphics.RenderableObject;
 import cat.atridas.antagonista.graphics.RenderableObjectManager;
 
-public class RenderingSystem {
+public class RenderingSystem implements cat.atridas.antagonista.entities.System {
+  private final static HashedString systemID = new HashedString("RenderingSystem");
+  
   private final static List<HashedString> usedComponents;
   private final static List<HashedString> usedInterfaces;
   
@@ -32,67 +33,80 @@ public class RenderingSystem {
     usedInterfaces = Collections.unmodifiableList(interfaces);
     
   }
+
+  @Override
+  public HashedString getSystemId() {
+    return systemID;
+  }
   
+  @Override
   public List<HashedString> getUsedComponents() {
     return usedComponents;
   }
-  
+
+  @Override
   public List<HashedString> getUsedInterfaces() {
     return usedInterfaces;
   }
   
   private RenderableObjectManager rom = Core.getCore().getRenderableObjectManager();
   
-  private static ThreadLocal<Transformation> g_transAux = new ThreadLocal<>();
+  private static ThreadLocal<Transformation> g_transAux = new ThreadLocal<Transformation>() {
+                                                                    @Override protected Transformation initialValue() {
+                                                                      return new Transformation();
+                                                                    }
+                                                                  };
   
   private final HashMap<HashedString, DeltaTime> lastModifications = new HashMap<>();
-  
-  public void addEntity(Entity entity, Component<?>[] components, DeltaTime currentTime) {
+
+  @Override
+  public void addEntity(HashedString entity, Component<?>[] components, DeltaTime currentTime) {
     
     assert components.length == usedComponents.size();
     if(RenderingSystem.class.desiredAssertionStatus()) {
       for(int i = 0; i < components.length; ++i) {
         assert components[i].getComponentType().equals(usedComponents.get(i));
-        assert components[i].getEntityId().equals(entity.getId());
+        assert components[i].getEntityId().equals(entity);
       }
     }
-    assert !lastModifications.containsKey(entity.getId());
+    assert !lastModifications.containsKey(entity);
 
     TransformComponent transform = (TransformComponent)components[0];
     MeshComponent      mesh      = (MeshComponent)     components[1];
     
     Transformation l_transAux = g_transAux.get();
     
-    RenderableObject ro = rom.addRenderableObject(entity.getId(), mesh.getComponentType());
+    RenderableObject ro = rom.addRenderableObject(entity, mesh.getMesh());
     transform.getTransform(l_transAux);
     ro.setTransformation(l_transAux);
     
-    lastModifications.put(entity.getId(), currentTime);
+    lastModifications.put(entity, currentTime);
     
   }
-  
-  public void updateEntity(Entity entity, Component<?>[] components, DeltaTime currentTime) {
+
+  @Override
+  public void updateEntity(HashedString entity, Component<?>[] components, DeltaTime currentTime) {
 
     assert components.length == usedComponents.size();
     if(RenderingSystem.class.desiredAssertionStatus()) {
       for(int i = 0; i < components.length; ++i) {
         assert components[i].getComponentType().equals(usedComponents.get(i));
-        assert components[i].getEntityId().equals(entity.getId());
+        assert components[i].getEntityId().equals(entity);
       }
     }
-    assert lastModifications.containsKey(entity.getId());
+    assert lastModifications.containsKey(entity);
 
 
     TransformComponent transform = (TransformComponent)components[0];
     MeshComponent      mesh      = (MeshComponent)     components[1];
     
-    DeltaTime lastUpdate = lastModifications.get(entity.getId());
+    DeltaTime lastUpdate = lastModifications.get(entity);
     
     boolean modified = false;
     RenderableObject ro = null;
     
     if(mesh.getMeshLastTime().isNewerThan(lastUpdate)) {
-      ro = rom.getRenderableObject(entity.getId());
+      ro = rom.getRenderableObject(entity);
       
       ro.changeMesh(mesh.getMesh());
       
@@ -101,7 +115,7 @@ public class RenderingSystem {
     
     if(transform.getTransformLastTime().isNewerThan(lastUpdate)) {
       if(!modified) {
-        ro = rom.getRenderableObject(entity.getId());
+        ro = rom.getRenderableObject(entity);
         modified = true;
       }
 
@@ -113,15 +127,16 @@ public class RenderingSystem {
     
     
     if(modified) {
-      lastModifications.put(entity.getId(), currentTime);
+      lastModifications.put(entity, currentTime);
     }
   }
-  
-  public void deleteEntity(Entity entity, DeltaTime currentTime) {
-    assert lastModifications.containsKey(entity.getId());
+
+  @Override
+  public void deleteEntity(HashedString entity, DeltaTime currentTime) {
+    assert lastModifications.containsKey(entity);
     
-    rom.destroyRenderableObject(entity.getId());
+    rom.destroyRenderableObject(entity);
     
-    lastModifications.remove(entity.getId());
+    lastModifications.remove(entity);
   }
 }

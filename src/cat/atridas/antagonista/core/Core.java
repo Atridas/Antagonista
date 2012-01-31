@@ -7,6 +7,7 @@ import cat.atridas.antagonista.Clock;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.entities.EntityManager;
+import cat.atridas.antagonista.entities.SystemManager;
 import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.graphics.EffectManager;
 import cat.atridas.antagonista.graphics.FontManager;
@@ -47,6 +48,7 @@ public final class Core {
   
   private PhysicsWorld pw;
   
+  private SystemManager           systemManager = new SystemManager();
   private EntityManager           entityManager = new EntityManager();
   
   private Clock clock;
@@ -158,6 +160,16 @@ public final class Core {
    */
   public PhysicsWorld getPhysicsWorld() {
     return pw;
+  }
+  
+  /**
+   * Gets the SystemManager.
+   * 
+   * @return the EntityManager.
+   * @since 0.2
+   */
+  public SystemManager getSystemManager() {
+    return systemManager;
   }
   
   /**
@@ -290,6 +302,7 @@ public final class Core {
     em  = null;
     fm  = null;
     tm  = null;
+    systemManager = null;
     entityManager = null;
     
     System.gc();
