@@ -11,6 +11,13 @@ import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.core.Core;
 
+/**
+ * Manages and updates all the systems.
+ * 
+ * @author Isaac 'Atridas' Serrano Guasch
+ * @since 0.2
+ *
+ */
 public class SystemManager {
   public static final HashedString renderInteface = new HashedString("Render Interface");
   public static final HashedString inputInteface = new HashedString("Input Interface");
@@ -103,7 +110,7 @@ public class SystemManager {
           for(int i = 0; i < optionalComponents.size(); ++i) {
             GlobalComponent<?> optional = em.getComponent(entityId, optionalComponents.get(i));
             if(optional != null) {
-              components[i + dif] = (LocalComponent<?>) optional.createLocalCopy();
+              components[i + dif] = optional.createLocalCopy();
             }
           }
           
@@ -126,7 +133,7 @@ public class SystemManager {
           for(int i = 0; i < optionalComponents.size(); ++i) {
             GlobalComponent<?> optional = em.getComponent(entityId, optionalComponents.get(i));
             if(optional != null) {
-              components[i + dif] = (LocalComponent<?>) optional.createLocalCopy();
+              components[i + dif] = optional.createLocalCopy();
             } else {
               components[i + dif] = null;
             }
@@ -147,7 +154,7 @@ public class SystemManager {
         if(components[i + dif] == null) {
           GlobalComponent<?> optional = em.getComponent(entityId, optionalComponents.get(i));
           if(optional != null) {
-            components[i + dif] = (LocalComponent<?>) optional.createLocalCopy();
+            components[i + dif] = optional.createLocalCopy();
           }
         }
       }

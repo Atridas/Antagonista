@@ -24,7 +24,7 @@ public class RenderingSystem implements cat.atridas.antagonista.entities.System 
   private final static List<HashedString> usedComponents;
   private final static List<HashedString> optionalComponents;
   private final static Set<HashedString> writeToComponents;
-  private final static List<HashedString> usedInterfaces;
+  private final static Set<HashedString> usedInterfaces;
   private final static Set<HashedString> writeToInterfaces;
   
   static {
@@ -37,9 +37,9 @@ public class RenderingSystem implements cat.atridas.antagonista.entities.System 
     
     writeToComponents = Collections.emptySet();
 
-    List<HashedString> interfaces = new ArrayList<>();
+    Set<HashedString> interfaces = new HashSet<>();
     interfaces.add(SystemManager.renderInteface);
-    usedInterfaces = Collections.unmodifiableList(interfaces);
+    usedInterfaces = Collections.unmodifiableSet(interfaces);
     writeToInterfaces = Collections.unmodifiableSet(new HashSet<HashedString>(usedInterfaces));
   }
 
@@ -64,7 +64,7 @@ public class RenderingSystem implements cat.atridas.antagonista.entities.System 
   }
 
   @Override
-  public List<HashedString> getUsedInterfaces() {
+  public Set<HashedString> getUsedInterfaces() {
     return usedInterfaces;
   }
 

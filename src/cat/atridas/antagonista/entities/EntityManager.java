@@ -45,7 +45,10 @@ public final class EntityManager {
    */
   private final HashMap<HashedString, HashSet<HashedString>> entityComponentCache = new HashMap<>();
   
-  
+  /**
+   * Maps each component id with its Class.
+   * @since 0.2
+   */
   private final HashMap<HashedString, Class<? extends Component<?>>> componentTypes = new HashMap<>();
   
   /**
@@ -78,7 +81,14 @@ public final class EntityManager {
     return entity;
   }
   
-  
+  /**
+   * Creates a new Component.
+   * 
+   * @param entity id of the entity that will have the component.
+   * @param component id of the component to create.
+   * @return a new component.
+   * @since 0.2
+   */
   public synchronized <T extends GlobalComponent<?>> T createComponent(HashedString entity, HashedString component) {
     assert entities.containsKey(entity);
     assert components.containsKey(component);
@@ -105,6 +115,14 @@ public final class EntityManager {
     }
   }
   
+  /**
+   * Fetches a component.
+   * 
+   * @param entity id of the entity.
+   * @param component id of the component to fetch.
+   * @return a component or <code>null</code> if this entity does not have this component.
+   * @since 0.2
+   */
   @SuppressWarnings("unchecked")
   public synchronized <T extends GlobalComponent<?>> T getComponent(HashedString entity, HashedString component) {
 
@@ -132,6 +150,12 @@ public final class EntityManager {
     return createEntity(name);
   }
   
+  /**
+   * Used by Component classes to register its existence.
+   * 
+   * @param component to be registered.
+   * @since 0.2
+   */
   public<T extends GlobalComponent<?>> void registerComponentType(Class<T> component) {
     try {
       Method m = component.getMethod("getComponentStaticType");
