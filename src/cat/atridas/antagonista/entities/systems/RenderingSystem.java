@@ -3,7 +3,9 @@ package cat.atridas.antagonista.entities.systems;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Clock.DeltaTime;
@@ -18,20 +20,27 @@ import cat.atridas.antagonista.graphics.RenderableObjectManager;
 
 public class RenderingSystem implements cat.atridas.antagonista.entities.System {
   private final static HashedString systemID = new HashedString("RenderingSystem");
-  
+
   private final static List<HashedString> usedComponents;
+  private final static List<HashedString> optionalComponents;
+  private final static Set<HashedString> writeToComponents;
   private final static List<HashedString> usedInterfaces;
+  private final static Set<HashedString> writeToInterfaces;
   
   static {
     List<HashedString> components = new ArrayList<>();
     components.add(TransformComponent.getComponentStaticType());
     components.add(MeshComponent.getComponentStaticType());
     usedComponents = Collections.unmodifiableList(components);
+    
+    optionalComponents = Collections.emptyList();
+    
+    writeToComponents = Collections.emptySet();
 
     List<HashedString> interfaces = new ArrayList<>();
     interfaces.add(SystemManager.renderInteface);
     usedInterfaces = Collections.unmodifiableList(interfaces);
-    
+    writeToInterfaces = Collections.unmodifiableSet(new HashSet<HashedString>(usedInterfaces));
   }
 
   @Override
@@ -43,10 +52,25 @@ public class RenderingSystem implements cat.atridas.antagonista.entities.System 
   public List<HashedString> getUsedComponents() {
     return usedComponents;
   }
+  
+  @Override
+  public List<HashedString> getOptionalComponents() {
+    return optionalComponents;
+  }
+
+  @Override
+  public Set<HashedString>  getWriteToComponents() {
+    return writeToComponents;
+  }
 
   @Override
   public List<HashedString> getUsedInterfaces() {
     return usedInterfaces;
+  }
+
+  @Override
+  public Set<HashedString>  getWriteToInterfaces() {
+    return writeToInterfaces;
   }
   
   private RenderableObjectManager rom = Core.getCore().getRenderableObjectManager();
@@ -61,14 +85,8 @@ public class RenderingSystem implements cat.atridas.antagonista.entities.System 
 
   @Override
   public void addEntity(HashedString entity, Component<?>[] components, DeltaTime currentTime) {
-    
-    assert components.length == usedComponents.size();
-    if(RenderingSystem.class.desiredAssertionStatus()) {
-      for(int i = 0; i < components.length; ++i) {
-        assert components[i].getComponentType().equals(usedComponents.get(i));
-        assert components[i].getEntityId().equals(entity);
-      }
-    }
+
+    assert SystemManager.assertSystemInputParameters(entity,  components, this);
     assert !lastModifications.containsKey(entity);
 
     TransformComponent transform = (TransformComponent)components[0];
@@ -87,13 +105,7 @@ public class RenderingSystem implements cat.atridas.antagonista.entities.System 
   @Override
   public void updateEntity(HashedString entity, Component<?>[] components, DeltaTime currentTime) {
 
-    assert components.length == usedComponents.size();
-    if(RenderingSystem.class.desiredAssertionStatus()) {
-      for(int i = 0; i < components.length; ++i) {
-        assert components[i].getComponentType().equals(usedComponents.get(i));
-        assert components[i].getEntityId().equals(entity);
-      }
-    }
+    assert SystemManager.assertSystemInputParameters(entity,  components, this);
     assert lastModifications.containsKey(entity);
 
 

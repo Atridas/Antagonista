@@ -1,6 +1,7 @@
 package cat.atridas.antagonista.entities;
 
 import java.util.List;
+import java.util.Set;
 
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Clock.DeltaTime;
@@ -8,11 +9,14 @@ import cat.atridas.antagonista.Clock.DeltaTime;
 public interface System {
 
   
-  public HashedString getSystemId();
+  HashedString getSystemId();
+
+  List<HashedString> getUsedComponents();
+  List<HashedString> getOptionalComponents();
+  Set<HashedString>  getWriteToComponents();
   
-  public List<HashedString> getUsedComponents();
-  
-  public List<HashedString> getUsedInterfaces();
+  List<HashedString> getUsedInterfaces();
+  Set<HashedString>  getWriteToInterfaces();
   
   
   void addEntity(HashedString entity, Component<?>[] components, DeltaTime currentTime);

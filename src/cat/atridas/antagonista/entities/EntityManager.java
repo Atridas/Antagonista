@@ -110,11 +110,13 @@ public final class EntityManager {
 
     HashMap<HashedString, GlobalComponent<?>> componentMap = components.get(component);
     T componentToReturn = (T) componentMap.get(entity);
-    assert componentToReturn != null;
-    assert entityComponentCache.get(entity).contains(component);
+    assert 
+        (componentToReturn != null && entityComponentCache.get(entity).contains(component))
+        ||
+        (componentToReturn == null && !entityComponentCache.get(entity).contains(component));
 
-    assert componentToReturn.getComponentType().equals(component);
-    assert componentToReturn.getEntityId().equals(entity);
+    assert componentToReturn == null || componentToReturn.getComponentType().equals(component);
+    assert componentToReturn == null || componentToReturn.getEntityId().equals(entity);
     
     return componentToReturn;
   }

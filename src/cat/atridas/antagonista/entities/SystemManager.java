@@ -13,6 +13,7 @@ import cat.atridas.antagonista.core.Core;
 
 public class SystemManager {
   public static final HashedString renderInteface = new HashedString("Render Interface");
+  public static final HashedString inputInteface = new HashedString("Input Interface");
   
   
   /**
@@ -56,6 +57,7 @@ public class SystemManager {
       
       updateSystem(system, em, dt);
       
+      pushSystemChanges(system);
     }
   }
   
@@ -73,39 +75,63 @@ public class SystemManager {
     HashSet<HashedString> systemAcumulatedEntityChanges = acumulatedEntityChanges.get(system.getSystemId());
     
     HashMap<HashedString,LocalComponent<?>[]> systemEntities = entitiesCache.get(system.getSystemId());
+
     
-    List<HashedString> componentsUsed = null;
+
+    List<HashedString> componentsUsed     = system.getUsedComponents();
+    List<HashedString> optionalComponents = system.getOptionalComponents();
     
     if(systemAcumulatedEntityChanges.size() > 0) {
-      componentsUsed = system.getUsedComponents();
-    }
     
-    for(HashedString entityId : systemAcumulatedEntityChanges) {
-      
-      boolean thisSystemHasThisEntity = systemEntities.containsKey(entityId);
-      List<HashedString> systemComponents = system.getUsedComponents();
-      Set<HashedString> entityComponents = em.getAllComponents(entityId);
-      boolean thisEntityHasAllNeededComponents = entityComponents.containsAll( systemComponents );
-      
-      if(!thisSystemHasThisEntity && thisEntityHasAllNeededComponents) {
-        //afegir entitat.
+      for(HashedString entityId : systemAcumulatedEntityChanges) {
         
-        LocalComponent<?>[] components = new LocalComponent<?>[ componentsUsed.size() ];
+        boolean thisSystemHasThisEntity = systemEntities.containsKey(entityId);
+        List<HashedString> systemComponents = system.getUsedComponents();
+        Set<HashedString> entityComponents = em.getAllComponents(entityId);
+        boolean thisEntityHasAllNeededComponents = entityComponents.containsAll( systemComponents );
         
-        for(int i = 0; i < components.length; ++i) {
-          components[i] = (LocalComponent<?>) em.getComponent(entityId, componentsUsed.get(i)).createLocalCopy();
+        if(!thisSystemHasThisEntity && thisEntityHasAllNeededComponents) {
+          //afegir entitat.
+          
+          LocalComponent<?>[] components = new LocalComponent<?>[ componentsUsed.size() + optionalComponents.size() ];
+          
+          for(int i = 0; i < componentsUsed.size(); ++i) {
+            components[i] = (LocalComponent<?>) em.getComponent(entityId, componentsUsed.get(i)).createLocalCopy();
+          }
+          int dif = componentsUsed.size();
+          
+          for(int i = 0; i < optionalComponents.size(); ++i) {
+            GlobalComponent<?> optional = em.getComponent(entityId, optionalComponents.get(i));
+            if(optional != null) {
+              components[i + dif] = (LocalComponent<?>) optional.createLocalCopy();
+            }
+          }
+          
+          systemEntities.put(entityId, components);
+          
+          system.addEntity(entityId, components, dt);
+          
+        } else if(thisSystemHasThisEntity && !thisEntityHasAllNeededComponents) {
+          //treure entitat.
+          
+          system.deleteEntity(entityId, dt);
+          
+          systemEntities.remove(entityId);
+        } else if(thisSystemHasThisEntity) {
+          
+          LocalComponent<?>[] components = systemEntities.get(entityId);
+          
+          int dif = componentsUsed.size();
+          
+          for(int i = 0; i < optionalComponents.size(); ++i) {
+            GlobalComponent<?> optional = em.getComponent(entityId, optionalComponents.get(i));
+            if(optional != null) {
+              components[i + dif] = (LocalComponent<?>) optional.createLocalCopy();
+            } else {
+              components[i + dif] = null;
+            }
+          }
         }
-        
-        systemEntities.put(entityId, components);
-        
-        system.addEntity(entityId, components, dt);
-        
-      } else if(thisSystemHasThisEntity && !thisEntityHasAllNeededComponents) {
-        //treure entitat.
-        
-        system.deleteEntity(entityId, dt);
-        
-        systemEntities.remove(entityId);
       }
     }
     
@@ -115,20 +141,67 @@ public class SystemManager {
       HashedString entityId = systemEntity.getKey();
       LocalComponent<?>[] components = systemEntity.getValue();
       
+      int dif = componentsUsed.size();
+      
+      for(int i = 0; i < optionalComponents.size(); ++i) {
+        if(components[i + dif] == null) {
+          GlobalComponent<?> optional = em.getComponent(entityId, optionalComponents.get(i));
+          if(optional != null) {
+            components[i + dif] = (LocalComponent<?>) optional.createLocalCopy();
+          }
+        }
+      }
+      
       for(LocalComponent<?> component : components) {
-        component.pullChanges();
+        if(component != null)
+          component.pullChanges();
       }
       
       system.updateEntity(entityId, components, dt);
     }
+  }
+  
+  private synchronized void pushSystemChanges(System system) {
     
+    HashMap<HashedString,LocalComponent<?>[]> systemEntities = entitiesCache.get(system.getSystemId());
     
-    //push changes AFTER everything...
+    Set<HashedString> writeToComponents = system.getWriteToComponents();
     
     for(LocalComponent<?>[] components : systemEntities.values()) {
       for(LocalComponent<?> component : components) {
-        component.pushChanges();
+        if(component != null && writeToComponents.contains(component.getComponentType()))
+          component.pushChanges();
       }
     }
+  }
+  
+  
+  
+  public static boolean assertSystemInputParameters(HashedString entity, Component<?>[] components, System system) {
+
+    List<HashedString> usedComponents = system.getUsedComponents();
+    List<HashedString> optionalComponents = system.getOptionalComponents();
+    
+    if( components.length != usedComponents.size() + optionalComponents.size() )
+      return false;
+
+    for(int i = 0; i < usedComponents.size(); ++i) {
+      if(! components[i].getComponentType().equals(usedComponents.get(i)) )
+        return false;
+      if(! components[i].getEntityId().equals(entity) )
+        return false;
+    }
+    
+    for(int i = 0; i < optionalComponents.size(); ++i) {
+      int j = i + usedComponents.size();
+      if(components[j] != null) {
+        if(! components[j].getComponentType().equals(optionalComponents.get(i)) )
+          return false;
+        if(! components[j].getEntityId().equals(entity) )
+          return false;
+      }
+    }
+    
+    return true;
   }
 }
