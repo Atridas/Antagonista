@@ -1,0 +1,6 @@
+antagonist text
+specular factor, specular power, height, alpha
+0.5 50 0.2 False
+BasicEffect
+albedo
+DiffuseMasterTest

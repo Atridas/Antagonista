@@ -36,7 +36,7 @@ public class TestEntities {
     Utils.setConsoleLogLevel(Level.CONFIG);
 
     Core core = Core.getCore();
-    core.init(800, 600, Test.class.getName(), true, null);
+    core.init(800, 600, TestEntities.class.getName(), true, null);
     
     EntityManager em = core.getEntityManager();
 
@@ -48,19 +48,37 @@ public class TestEntities {
     
     Entity entityRoom   = em.createEntity(new HashedString("Room"));
     Entity entityCamera = em.createEntity(new HashedString("Camera"));
+
+    Entity entityMaster = em.createEntity(new HashedString("Master"));
     
     
-    TransformComponent tc = em.createComponent(entityRoom.getId(), TransformComponent.getComponentStaticType());
-    Transformation transform = new Transformation();
-    tc.getTransform(transform);
+    em.createComponent(entityRoom.getId(), TransformComponent.getComponentStaticType());
+    
     
     MeshComponent mc = em.createComponent(entityRoom.getId(), MeshComponent.getComponentStaticType());
     mc.setMesh(new HashedString("Habitacio"));
 
+    /////////////////////////////////////////////////////////////////////
+    
+    
+    TransformComponent tc = em.createComponent(entityMaster.getId(), TransformComponent.getComponentStaticType());
+    
+    Transformation transform = new Transformation();
+    //transform.setTranslation(new Vector3f(0,0,1));
+    tc.setTransform(transform);
+    
+    
+    mc = em.createComponent(entityMaster.getId(), MeshComponent.getComponentStaticType());
+    mc.setMesh(new HashedString("MasterTest"));
+    
+    
+    /////////////////////////////////////////////////////////////////////
     
     RTSCameraComponent cc = em.createComponent(entityCamera.getId(), RTSCameraComponent.getComponentStaticType());
     RTSCamera camera = new RTSCamera();
-    camera.setMaxDistance(20);
+    camera.setMaxDistance(30);
+    camera.setDistance(20);
+    camera.setPitch(60);
     cc.setCamera(camera);
     
     
