@@ -1,6 +1,7 @@
 package cat.atridas.antagonista.physics;
 
 import com.bulletphysics.collision.shapes.BvhTriangleMeshShape;
+import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.collision.shapes.StridingMeshInterface;
 
 /**
@@ -11,11 +12,17 @@ import com.bulletphysics.collision.shapes.StridingMeshInterface;
  *
  */
 public class PhysicsStaticMeshCore implements PhysicShape {
-  final BvhTriangleMeshShape meshShape;
+  private final BvhTriangleMeshShape meshShape;
   
   
   public PhysicsStaticMeshCore(StridingMeshInterface mesh) {
     meshShape = new BvhTriangleMeshShape(mesh, true);
+  }
+
+
+  @Override
+  public CollisionShape getBulletShape() {
+    return meshShape;
   }
   
 }

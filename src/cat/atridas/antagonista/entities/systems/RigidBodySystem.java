@@ -2,12 +2,14 @@ package cat.atridas.antagonista.entities.systems;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import cat.atridas.antagonista.HashedString;
+import cat.atridas.antagonista.Transformation;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.core.Core;
@@ -16,24 +18,32 @@ import cat.atridas.antagonista.entities.SystemManager;
 import cat.atridas.antagonista.entities.components.RigidBodyComponent;
 import cat.atridas.antagonista.entities.components.TransformComponent;
 import cat.atridas.antagonista.physics.PhysicShape;
-import cat.atridas.antagonista.physics.PhysicsStaticMeshCore;
 import cat.atridas.antagonista.physics.PhysicsUserInfo;
 import cat.atridas.antagonista.physics.PhysicsWorld;
+import cat.atridas.antagonista.physics.StaticRigidBody;
 
 public class RigidBodySystem implements cat.atridas.antagonista.entities.System {
   private static Logger LOGGER = Logger.getLogger(RigidBodySystem.class.getCanonicalName());
 
   private PhysicsWorld physicsWorld = Core.getCore().getPhysicsWorld();
   
+  
+  private final HashMap<HashedString, StaticRigidBody> staticRigidBodies = new HashMap<>();
+  
   @Override
   public void addEntity(HashedString entity, Component<?>[] components, DeltaTime currentTime) {
     
     assert SystemManager.assertSystemInputParameters(entity,  components, this);
 
-    //TransformComponent    transformC    = (TransformComponent)   components[0];
+    TransformComponent    transformC    = (TransformComponent)   components[0];
     RigidBodyComponent    rigidBodyC    = (RigidBodyComponent)   components[1];
     
 
+    Transformation transform = new Transformation();
+    transformC.getTransform(transform);
+    
+    
+    
     PhysicsUserInfo pui = new PhysicsUserInfo();
     pui.color.set(Utils.RED);
     pui.zTest = true;
@@ -42,13 +52,14 @@ public class RigidBodySystem implements cat.atridas.antagonista.entities.System 
     
     switch(rigidBodyC.getType()) {
     case STATIC:
-      if(shape instanceof PhysicsStaticMeshCore) {
-        physicsWorld.createStaticRigidBody((PhysicsStaticMeshCore) rigidBodyC.getShape(), pui);
-        break;
-      }
+      
+      assert !staticRigidBodies.containsKey(entity);
+      
+      StaticRigidBody srb = physicsWorld.createStaticRigidBody(shape, pui, transform);
+      staticRigidBodies.put(entity, srb);
+      break;
     default:
-      LOGGER.severe("RigidBody type and Shape are incompatible!");
-      throw new IllegalArgumentException("RigidBody type and Shape are incompatible!");
+      throw new IllegalArgumentException("Not implemented! " + rigidBodyC.getType());
     }
     
     
@@ -64,7 +75,14 @@ public class RigidBodySystem implements cat.atridas.antagonista.entities.System 
 
   @Override
   public void deleteEntity(HashedString entity, DeltaTime currentTime) {
-
+    
+    StaticRigidBody srb = staticRigidBodies.get(entity);
+    if(srb != null) {
+      physicsWorld.deleteRigidBody(srb);
+      return;
+    }
+    
+    LOGGER.warning("Deleting entity [" + entity + "] from RigidBodySystem, and it's rigid body was not found.");
   }
   
 

@@ -1,9 +1,11 @@
 package cat.atridas.antagonista.physics;
 
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import cat.atridas.antagonista.Clock.DeltaTime;
+import cat.atridas.antagonista.Transformation;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.Conventions;
@@ -123,20 +125,29 @@ public class PhysicsWorld {
     dynamicsWorld.stepSimulation(dt.dt);
   }
   
-  public StaticRigidBody createStaticRigidBody(PhysicsStaticMeshCore meshCore, PhysicsUserInfo userInfo) {
+  public StaticRigidBody createStaticRigidBody(PhysicShape _physicShape, PhysicsUserInfo _userInfo, Transformation _bodyTransform) {
     
-    DefaultMotionState dms = new DefaultMotionState();
+    Matrix4f mat = new Matrix4f();
+    _bodyTransform.getMatrix(mat);
+    Transform trans = new Transform(mat);
+    
 
-    RigidBodyConstructionInfo rbci = new RigidBodyConstructionInfo(0, dms, meshCore.meshShape);
+    DefaultMotionState dms = new DefaultMotionState(trans);
+
+    RigidBodyConstructionInfo rbci = new RigidBodyConstructionInfo(0, dms, _physicShape.getBulletShape());
     //RigidBodyConstructionInfo rbci = new RigidBodyConstructionInfo(0, dms, new SphereShape(5));
     RigidBody rb = new RigidBody(rbci);
     
     int collisionFlags = rb.getCollisionFlags();
     rb.setCollisionFlags(collisionFlags & CollisionFlags.STATIC_OBJECT);
-    rb.setUserPointer(userInfo);
+    rb.setUserPointer(_userInfo);
     
     dynamicsWorld.addRigidBody(rb);
     
     return new StaticRigidBody(rb);
+  }
+  
+  public void deleteRigidBody(AntagonistRigidBody rigidBody) {
+    dynamicsWorld.removeRigidBody(rigidBody.getBulletObject());
   }
 }

@@ -9,6 +9,7 @@ import javax.vecmath.Vector3f;
 
 import cat.atridas.antagonista.Clock;
 import cat.atridas.antagonista.HashedString;
+import cat.atridas.antagonista.Transformation;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.core.Core;
@@ -73,10 +74,12 @@ public class Test {
     Mesh habitacio = mem.getResource(hs7);
     
     
+    Transformation transform = new Transformation();
+    
     PhysicsUserInfo pui = new PhysicsUserInfo();
     pui.color.set(Utils.RED);
     pui.zTest = true;
-    core.getPhysicsWorld().createStaticRigidBody(habitacio.getPhysicsMesh(), pui);
+    core.getPhysicsWorld().createStaticRigidBody(habitacio.getPhysicsMesh(), pui, transform);
     
     assert !Utils.hasGLErrors();
     

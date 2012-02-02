@@ -1,5 +1,7 @@
 package cat.atridas.antagonista.physics;
 
-public interface PhysicShape {
+import com.bulletphysics.collision.shapes.CollisionShape;
 
+public interface PhysicShape {
+  CollisionShape getBulletShape();
 }
