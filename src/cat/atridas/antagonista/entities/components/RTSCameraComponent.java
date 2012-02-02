@@ -17,6 +17,11 @@ public class RTSCameraComponent extends BaseComponent<RTSCameraComponent> {
     super(_entity);
   }
   
+  public void init(RTSCamera _camera) {
+    setCamera(_camera);
+    setInitialized();
+  }
+  
   public void setCamera(RTSCamera _camera) {
     camera = _camera;
   }

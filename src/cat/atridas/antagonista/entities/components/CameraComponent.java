@@ -17,6 +17,11 @@ public class CameraComponent extends BaseComponent<CameraComponent> {
     super(_entity);
   }
   
+  public void init(Camera _camera) {
+    setCamera(_camera);
+    setInitialized();
+  }
+  
   public void setCamera(Camera _camera) {
     camera = _camera;
   }

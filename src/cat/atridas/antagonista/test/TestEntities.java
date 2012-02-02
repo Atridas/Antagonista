@@ -52,24 +52,25 @@ public class TestEntities {
     Entity entityMaster = em.createEntity(new HashedString("Master"));
     
     
-    em.createComponent(entityRoom.getId(), TransformComponent.getComponentStaticType());
+    TransformComponent tc = em.createComponent(entityRoom.getId(), TransformComponent.getComponentStaticType());
     
+    tc.init();
     
     MeshComponent mc = em.createComponent(entityRoom.getId(), MeshComponent.getComponentStaticType());
-    mc.setMesh(new HashedString("Habitacio"));
+    mc.init(new HashedString("Habitacio"));
 
     /////////////////////////////////////////////////////////////////////
     
     
-    TransformComponent tc = em.createComponent(entityMaster.getId(), TransformComponent.getComponentStaticType());
+    tc = em.createComponent(entityMaster.getId(), TransformComponent.getComponentStaticType());
     
     Transformation transform = new Transformation();
     //transform.setTranslation(new Vector3f(0,0,1));
-    tc.setTransform(transform);
+    tc.init(transform);
     
     
     mc = em.createComponent(entityMaster.getId(), MeshComponent.getComponentStaticType());
-    mc.setMesh(new HashedString("MasterTest"));
+    mc.init(new HashedString("MasterTest"));
     
     
     /////////////////////////////////////////////////////////////////////
@@ -79,7 +80,7 @@ public class TestEntities {
     camera.setMaxDistance(30);
     camera.setDistance(20);
     camera.setPitch(60);
-    cc.setCamera(camera);
+    cc.init(camera);
     
     
     

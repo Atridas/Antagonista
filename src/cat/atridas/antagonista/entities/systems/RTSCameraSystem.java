@@ -36,7 +36,7 @@ public class RTSCameraSystem implements cat.atridas.antagonista.entities.System 
     
     CameraComponent cc = Core.getCore().getEntityManager().createComponent(entity, CameraComponent.getComponentStaticType());
     
-    cc.setCamera(camera.getCamera());
+    cc.init(camera.getCamera());
     
   }
 

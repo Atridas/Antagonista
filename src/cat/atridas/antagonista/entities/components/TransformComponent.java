@@ -19,6 +19,17 @@ public abstract class TransformComponent extends BaseComponent<TransformComponen
     super(entity);
     lastTransformationChange = globalClock.getCurrentFrameDeltaTime();
   }
+  
+  public void init() {
+    lastTransformationChange = globalClock.getCurrentFrameDeltaTime();
+    setInitialized();
+  }
+  
+  public void init(Transformation _transformation) {
+    transformation.setTransform(_transformation);
+    lastTransformationChange = globalClock.getCurrentFrameDeltaTime();
+    setInitialized();
+  }
 
   
   public void setTransform(Transformation _transformation) {

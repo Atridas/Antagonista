@@ -104,6 +104,7 @@ public class SystemManager {
           
           for(int i = 0; i < componentsUsed.size(); ++i) {
             components[i] = (LocalComponent<?>) em.getComponent(entityId, componentsUsed.get(i)).createLocalCopy();
+            assert components[i].isInitialized();
           }
           int dif = componentsUsed.size();
           
@@ -111,6 +112,7 @@ public class SystemManager {
             GlobalComponent<?> optional = em.getComponent(entityId, optionalComponents.get(i));
             if(optional != null) {
               components[i + dif] = optional.createLocalCopy();
+              assert components[i].isInitialized();
             }
           }
           
@@ -134,6 +136,7 @@ public class SystemManager {
             GlobalComponent<?> optional = em.getComponent(entityId, optionalComponents.get(i));
             if(optional != null) {
               components[i + dif] = optional.createLocalCopy();
+              assert components[i].isInitialized();
             } else {
               components[i + dif] = null;
             }

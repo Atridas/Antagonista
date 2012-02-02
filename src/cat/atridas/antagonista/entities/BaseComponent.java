@@ -76,6 +76,11 @@ public abstract class BaseComponent <T extends BaseComponent<?>> implements Comp
   private Entity entity;
   
   /**
+   * @since 0.2
+   */
+  private boolean isInit = false;
+  
+  /**
    * Access to the global clock, to register <strong>when</strong> a state has changed.
    * @since 0.2
    */
@@ -94,15 +99,29 @@ public abstract class BaseComponent <T extends BaseComponent<?>> implements Comp
   @Override
   public void copy(T _other) {
     entity = _other.getEntity();
+    isInit = _other.isInitialized();
   }
 
   @Override
-  public Entity getEntity() {
+  public final Entity getEntity() {
     return entity;
   }
   
   @Override
-  public HashedString getEntityId() {
+  public final HashedString getEntityId() {
     return entity.getId();
+  }
+  
+  @Override
+  public final boolean isInitialized() {
+    return isInit;
+  }
+  
+  /**
+   * Call when this component has been initialized.
+   * @since 0.2
+   */
+  protected final void setInitialized() {
+    isInit = true;
   }
 }

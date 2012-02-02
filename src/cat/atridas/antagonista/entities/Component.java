@@ -39,4 +39,12 @@ public interface Component<T extends Component<?>> {
    * @since 0.1
    */
   void copy(T _other);
+  
+  /**
+   * Marks if this Component has been initialized.
+   * 
+   * @return <code>true</code> only if this component has been initialized.
+   * @since 0.2
+   */
+  boolean isInitialized();
 }

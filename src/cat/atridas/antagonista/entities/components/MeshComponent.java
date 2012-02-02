@@ -18,6 +18,12 @@ public abstract class MeshComponent extends BaseComponent<MeshComponent> {
     lastMeshIdChange = globalClock.getCurrentFrameDeltaTime();
   }
   
+  public void init(HashedString _meshId) {
+    meshId = _meshId;
+    lastMeshIdChange = globalClock.getCurrentFrameDeltaTime();
+    setInitialized();
+  }
+  
   public void setMesh(HashedString _meshId) {
     if(meshId == null || !meshId.equals(_meshId)) {
       meshId = _meshId;
