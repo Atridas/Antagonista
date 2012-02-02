@@ -10,7 +10,7 @@ import com.bulletphysics.collision.shapes.StridingMeshInterface;
  * @since 0.2
  *
  */
-public class PhysicsStaticMeshCore {
+public class PhysicsStaticMeshCore implements PhysicShape {
   final BvhTriangleMeshShape meshShape;
   
   

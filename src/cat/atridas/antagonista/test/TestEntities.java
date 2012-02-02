@@ -3,6 +3,7 @@ package cat.atridas.antagonista.test;
 import java.util.logging.Level;
 
 import javax.vecmath.Color3f;
+import javax.vecmath.Point2f;
 import javax.vecmath.Vector3f;
 
 import cat.atridas.antagonista.Clock;
@@ -16,16 +17,31 @@ import cat.atridas.antagonista.entities.EntityManager;
 import cat.atridas.antagonista.entities.SystemManager;
 import cat.atridas.antagonista.entities.components.MeshComponent;
 import cat.atridas.antagonista.entities.components.RTSCameraComponent;
+import cat.atridas.antagonista.entities.components.RigidBodyComponent;
 import cat.atridas.antagonista.entities.components.TransformComponent;
+import cat.atridas.antagonista.entities.components.RigidBodyComponent.PhysicType;
 import cat.atridas.antagonista.entities.systems.RTSCameraSystem;
 import cat.atridas.antagonista.entities.systems.RenderingCameraSystem;
 import cat.atridas.antagonista.entities.systems.RenderingSystem;
+import cat.atridas.antagonista.entities.systems.RigidBodySystem;
+import cat.atridas.antagonista.graphics.DebugRender;
+import cat.atridas.antagonista.graphics.Font;
 import cat.atridas.antagonista.graphics.RTSCamera;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.SceneData;
 import cat.atridas.antagonista.input.InputManager;
 
 public class TestEntities {
+  /**
+   * Arguments de la VM interessants:
+   * 
+   * -ea -Djava.library.path="./native/windows" 
+   * -XX:MinHeapFreeRatio=90 -XX:MaxHeapFreeRatio=95 
+   * -Xmx2048m -XX:+UseG1GC
+   * -verbose:gc 
+   * 
+   * @param args
+   */
   public static void main(String[] args) {
     //comprovem que els asserts estiguin actius
     boolean assertsActives = false;
@@ -40,11 +56,19 @@ public class TestEntities {
     
     EntityManager em = core.getEntityManager();
 
+    ///////////////////////////////////////////////////////////////////////////////////////
     
     SystemManager sm = core.getSystemManager();
     sm.registerSystem(new RTSCameraSystem());
+    
+    sm.registerSystem(new RigidBodySystem());
+    
     sm.registerSystem(new RenderingCameraSystem());
     sm.registerSystem(new RenderingSystem());
+    
+    
+    
+    ///////////////////////////////////////////////////////////////////////////////////////
     
     Entity entityRoom   = em.createEntity(new HashedString("Room"));
     Entity entityCamera = em.createEntity(new HashedString("Camera"));
@@ -58,6 +82,9 @@ public class TestEntities {
     
     MeshComponent mc = em.createComponent(entityRoom.getId(), MeshComponent.getComponentStaticType());
     mc.init(new HashedString("Habitacio"));
+    
+    RigidBodyComponent rbc = em.createComponent(entityRoom.getId(), RigidBodyComponent.getComponentStaticType());
+    rbc.init(PhysicType.STATIC, core.getMeshManager().getResource(new HashedString("Habitacio")).getPhysicsMesh());
 
     /////////////////////////////////////////////////////////////////////
     
@@ -100,6 +127,9 @@ public class TestEntities {
     sceneData.setAmbientLight(new Color3f(0.3f, 0.3f, 0.3f));
     sceneData.setDirectionalLight(new Vector3f(0,1,1), new Color3f(0.3f, 0.3f, 0.3f));
     
+    DebugRender dr = core.getDebugRender();
+    dr.activate();
+    Font font = core.getFontManager().getResource(new HashedString("font14"));
 
     im.loadActions("data/xml/inputManager.xml");
     
@@ -114,13 +144,13 @@ public class TestEntities {
       
       sm.updateSimple(dt);
       
-      
+      dr.addString2D(new Point2f(.0f,.0f), font, "FPS: " + dt.fps, .05f, new Color3f(0,0,0));
       core.getPhysicsWorld().debugDraw();
       
       rm.initFrame();
       
       core.getRenderableObjectManager().renderAll(rm);
-      core.getDebugRender().render(rm,dt);
+      dr.render(rm,dt);
       
       rm.present();
       
@@ -128,6 +158,7 @@ public class TestEntities {
       
       Core.getCore().getInputManager().update(dt);
       
+      /*
       synchronized (TestEntities.class) {
         try {
           TestEntities.class.wait(1);
@@ -136,6 +167,7 @@ public class TestEntities {
           e.printStackTrace();
         }
       }
+      */
     }
     
     core.cleanUnusedResources(false);

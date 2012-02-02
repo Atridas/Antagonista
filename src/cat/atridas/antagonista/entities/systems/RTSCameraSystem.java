@@ -24,8 +24,9 @@ public class RTSCameraSystem implements cat.atridas.antagonista.entities.System 
   HashedString camLeft  = new HashedString("move_camera_left");
   HashedString camRight = new HashedString("move_camera_right");
   HashedString camDist  = new HashedString("move_camera_distance");
-  
-  
+
+  float speed = 2f;
+  float speedZoom = .01f;
 
   @Override
   public void addEntity(HashedString entity, Component<?>[] components, DeltaTime currentTime) {
@@ -55,19 +56,19 @@ public class RTSCameraSystem implements cat.atridas.antagonista.entities.System 
       RTSCamera rtsCamera = rtsCameraComponent.getCamera();
       
       if(im.isActionActive(camUp)) {
-        rtsCamera.moveUp(2f * currentTime.dt);
+        rtsCamera.moveUp(speed * currentTime.dt);
       }
       if(im.isActionActive(camDown)) {
-        rtsCamera.moveUp(-2f * currentTime.dt);
+        rtsCamera.moveUp(-speed * currentTime.dt);
       }
       if(im.isActionActive(camRight)) {
-        rtsCamera.moveRight(2f * currentTime.dt);
+        rtsCamera.moveRight(speed * currentTime.dt);
       }
       if(im.isActionActive(camLeft)) {
-        rtsCamera.moveRight(-2f * currentTime.dt);
+        rtsCamera.moveRight(-speed * currentTime.dt);
       }
       if(im.isActionActive(camDist)) {
-        rtsCamera.addDistance( -.01f * im.getActionValue(camDist) );
+        rtsCamera.addDistance( -speedZoom * im.getActionValue(camDist) );
       }
       
       cameraComponent.setActive(true);
@@ -107,7 +108,6 @@ public class RTSCameraSystem implements cat.atridas.antagonista.entities.System 
     writeToComponents = Collections.unmodifiableSet(writes);
 
     Set<HashedString> interfaces = new HashSet<>();
-    interfaces.add(SystemManager.renderInteface);
     interfaces.add(SystemManager.inputInteface);
     usedInterfaces = Collections.unmodifiableSet(interfaces);
     writeToInterfaces = Collections.unmodifiableSet(new HashSet<HashedString>(usedInterfaces));

@@ -21,6 +21,7 @@ import cat.atridas.antagonista.core.Core;
 public class SystemManager {
   public static final HashedString renderInteface = new HashedString("Render Interface");
   public static final HashedString inputInteface = new HashedString("Input Interface");
+  public static final HashedString physicsInteface = new HashedString("Physics Interface");
   
   
   /**
