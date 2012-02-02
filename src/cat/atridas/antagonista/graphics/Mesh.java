@@ -225,8 +225,8 @@ public abstract class Mesh extends Resource {
           //  faces.putShort(index);
           //}
           idxs[faceIndex * 3 + 0] = Short.parseShort(indexes[0]);
-          idxs[faceIndex * 3 + 1] = Short.parseShort(indexes[1]);
-          idxs[faceIndex * 3 + 2] = Short.parseShort(indexes[2]);
+          idxs[faceIndex * 3 + 1] = Short.parseShort(indexes[2]);
+          idxs[faceIndex * 3 + 2] = Short.parseShort(indexes[1]);
           faceIndex++;
         }
         aux += numFaces[i];

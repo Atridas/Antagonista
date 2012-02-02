@@ -1,5 +1,6 @@
 package cat.atridas.antagonista.physics;
 
+import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -25,6 +26,7 @@ import com.bulletphysics.collision.shapes.BvhTriangleMeshShape;
 import com.bulletphysics.collision.shapes.CapsuleShapeZ;
 import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.collision.shapes.ConvexShape;
+import com.bulletphysics.collision.shapes.CylinderShapeZ;
 import com.bulletphysics.collision.shapes.SphereShape;
 import com.bulletphysics.collision.shapes.StridingMeshInterface;
 import com.bulletphysics.collision.shapes.VertexData;
@@ -87,10 +89,13 @@ public class PhysicsWorld {
   
       Point3f point1 = new Point3f();
       Point3f point2 = new Point3f();
-      
+
       Vector3f vector1 = new Vector3f();
+      Vector3f vector2 = new Vector3f();
 
       Matrix4f matrix1 = new Matrix4f();
+      
+      Transform transform1 = new Transform();
       
       float[] faux1 = new float[1];
       
@@ -134,14 +139,39 @@ public class PhysicsWorld {
           //TODO
           CapsuleShapeZ cShape = (CapsuleShapeZ) cs;
           
+          
           float height = cShape.getHalfHeight();
           float radius = cShape.getRadius();
 
           transform.getMatrix(matrix1);
           
-          point1.set(radius * 2, radius * 2, height * 2);
-          
+          point1.set(radius, radius, height + radius);
+
           dr.addOBB(matrix1, point1, userInfo.color, userInfo.zTest);
+
+          //point1.set(.5f,.5f,2);
+          //transform.getMatrix(matrix1);
+          //dr.addOBB(matrix1, point1, new Color3f(0,1,1), userInfo.zTest);
+          
+          
+          /*
+          transform1.origin.set(0,0,0);
+          transform1.basis.setIdentity();
+          
+          cShape.getAabb(transform, vector1, vector2);
+
+          //transform.transform(vector1);
+          //transform.transform(vector2);
+          
+          point1.set(vector1);
+          point2.set(vector2);
+          
+          dr.addAABB(point1, point2, userInfo.color, userInfo.zTest);
+          
+          point1.set(.5f,.5f,2);
+          transform.getMatrix(matrix1);
+          dr.addOBB(matrix1, point1, new Color3f(0,1,1), userInfo.zTest);
+          */
           
           /*
           cShape.getBoundingSphere(vector1, faux1);
@@ -149,6 +179,21 @@ public class PhysicsWorld {
           point1.set(vector1);
           dr.addSphere(point1, faux1[0], userInfo.color, userInfo.zTest);
           */
+        } else if(cs instanceof CylinderShapeZ) {
+            //TODO
+            CylinderShapeZ cShape = (CylinderShapeZ) cs;
+            
+            cShape.getHalfExtentsWithoutMargin(vector1);
+
+            transform.getMatrix(matrix1);
+            
+            point1.set(vector1);
+            point1.x = point1.y = point1.x * 2;
+            
+            //point2.set(.5f,.5f,2);
+
+            dr.addOBB(matrix1, point1, userInfo.color, userInfo.zTest);
+            //dr.addOBB(matrix1, point2, new Color3f(0, 1, 1), userInfo.zTest);
         } else {
           throw new RuntimeException("Debug draw of shape " + cs.getClass().getCanonicalName() + " is not yet implemented!");
         }
@@ -200,7 +245,9 @@ public class PhysicsWorld {
     //TODO sweepBP.getOverlappingPairCache().setInternalGhostPairCallback(new GhostPairCallback());
     //float characterHeight = 1.75f * characterScale;
     //float characterWidth = 1.75f * characterScale;
-    ConvexShape capsule = new CapsuleShapeZ(characterWidth, characterHeight);
+    
+    ConvexShape capsule = new CapsuleShapeZ(characterWidth, characterHeight + characterWidth*2);
+    //ConvexShape capsule = new CylinderShapeZ(new Vector3f(characterWidth/2, 0, characterHeight));
     ghostObject.setCollisionShape(capsule);
     ghostObject.setCollisionFlags(CollisionFlags.CHARACTER_OBJECT);
     ghostObject.setUserPointer(_userInfo);

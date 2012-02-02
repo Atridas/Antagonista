@@ -32,6 +32,7 @@ import cat.atridas.antagonista.graphics.RTSCamera;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.SceneData;
 import cat.atridas.antagonista.input.InputManager;
+import cat.atridas.antagonista.physics.KinematicCharacter;
 import cat.atridas.antagonista.physics.PhysicsUserInfo;
 
 public class TestEntities {
@@ -109,7 +110,7 @@ public class TestEntities {
     RTSCamera camera = new RTSCamera();
     camera.setMaxDistance(30);
     camera.setDistance(20);
-    camera.setPitch(15);
+    camera.setPitch(0);
     cc.init(camera);
     
     
@@ -123,12 +124,12 @@ public class TestEntities {
 
     PhysicsUserInfo pui = new PhysicsUserInfo();
     pui.color.set(Utils.RED);
-    pui.zTest = true;
+    pui.zTest = false;
     
     transform = new Transformation();
     transform.setTranslation(new Vector3f(0,0,5));
     
-    core.getPhysicsWorld().createKinematicCharacter(.5f, 2, transform, .2f, pui);
+    KinematicCharacter kc = core.getPhysicsWorld().createKinematicCharacter(.25f, 3f, transform, .05f, pui);
     
     
     ///////////////////////////////////////////////////////////////////////////////////
@@ -158,6 +159,10 @@ public class TestEntities {
     im.activateMode(Utils.MAIN_GAME);
     
     Clock clock = core.getClock();
+    
+    clock.reset();
+    sm.updateSimple(clock.update());
+    clock.reset();
     while(!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
 
       DeltaTime dt = clock.update();
@@ -165,6 +170,10 @@ public class TestEntities {
       core.getPhysicsWorld().update(dt);
       
       sm.updateSimple(dt);
+      
+      Vector3f walk = new Vector3f(1,0,0);
+      walk.scale(dt.dt * 30);
+      kc.getBulletObject().setWalkDirection(walk);
       /*
       dr.addOBB(new Matrix4f(new float[] {
                                        1,0,0,0,

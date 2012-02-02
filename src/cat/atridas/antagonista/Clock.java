@@ -58,6 +58,15 @@ public class Clock {
 		return lastDeltaTime;
 	}
 	
+	public void reset() {
+	  lastTime = Sys.getTime();
+    for(int i = 0; i < WINDOW_LENGTH; ++i) {
+      deltaTimes[i] = 0;
+    }
+    current = 0;
+    lastDeltaTime = new DeltaTime();
+	}
+	
 	/**
 	 * Fetches the last delta time object.
 	 * 

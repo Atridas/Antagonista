@@ -74,7 +74,7 @@ public class RTSCamera implements Camera {
    * @since 0.1
    * @see #pitch
    */
-  private float minPitch = 15,
+  private float minPitch = -85,
                 maxPitch = 85;
   
   /**
@@ -293,7 +293,8 @@ public class RTSCamera implements Camera {
    * @since 0.1
    */
   private void updateVariables() {
-    assert pitch > 0 && pitch < 90;
+    //assert pitch > 0;
+    assert pitch < 90;
     assert pitch >= minPitch && pitch <= maxPitch;
     
     Vector3f v3CenterToEye = v3Aux1;
