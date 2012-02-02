@@ -3,7 +3,9 @@ package cat.atridas.antagonista.test;
 import java.util.logging.Level;
 
 import javax.vecmath.Color3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point2f;
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import cat.atridas.antagonista.Clock;
@@ -30,6 +32,7 @@ import cat.atridas.antagonista.graphics.RTSCamera;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.SceneData;
 import cat.atridas.antagonista.input.InputManager;
+import cat.atridas.antagonista.physics.PhysicsUserInfo;
 
 public class TestEntities {
   /**
@@ -106,10 +109,29 @@ public class TestEntities {
     RTSCamera camera = new RTSCamera();
     camera.setMaxDistance(30);
     camera.setDistance(20);
-    camera.setPitch(60);
+    camera.setPitch(15);
     cc.init(camera);
     
     
+    
+    
+    
+    
+    
+    ////////////////////////////////////////////////////////////////////////////////////
+    
+
+    PhysicsUserInfo pui = new PhysicsUserInfo();
+    pui.color.set(Utils.RED);
+    pui.zTest = true;
+    
+    transform = new Transformation();
+    transform.setTranslation(new Vector3f(0,0,5));
+    
+    core.getPhysicsWorld().createKinematicCharacter(.5f, 2, transform, .2f, pui);
+    
+    
+    ///////////////////////////////////////////////////////////////////////////////////
     
     InputManager im = core.getInputManager();
     RenderManager rm = core.getRenderManager();
@@ -143,7 +165,17 @@ public class TestEntities {
       core.getPhysicsWorld().update(dt);
       
       sm.updateSimple(dt);
+      /*
+      dr.addOBB(new Matrix4f(new float[] {
+                                       1,0,0,0,
+                                       0,1,0,0,
+                                       0,0,1,0.5f,
+                                       0,0,0,1
+                                        }),
+          new Point3f(.5f,.5f,.5f), new Color3f(1,0,0));
       
+      dr.addAABB(new Point3f(-.5f,-.5f,0), new Point3f(.5f,.5f,1), new Color3f(1,0,0));
+      */
       dr.addString2D(new Point2f(.0f,.0f), font, "FPS: " + dt.fps, .05f, new Color3f(0,0,0));
       core.getPhysicsWorld().debugDraw();
       

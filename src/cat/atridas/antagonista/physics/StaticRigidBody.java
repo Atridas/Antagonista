@@ -1,5 +1,7 @@
 package cat.atridas.antagonista.physics;
 
+import com.bulletphysics.dynamics.RigidBody;
+
 /**
  * This class represents a static rigid body; a static scene part that will be never moved.
  * 
@@ -7,14 +9,14 @@ package cat.atridas.antagonista.physics;
  * @since 0.2
  *
  */
-public class StaticRigidBody implements AntagonistRigidBody {
-  private final com.bulletphysics.dynamics.RigidBody rigidBody;
+public class StaticRigidBody implements BulletRigidBody {
+  private final RigidBody rigidBody;
   
-  StaticRigidBody(com.bulletphysics.dynamics.RigidBody _rigidBody) {
+  StaticRigidBody(RigidBody _rigidBody) {
     rigidBody = _rigidBody;
   }
   
-  public com.bulletphysics.dynamics.RigidBody getBulletObject() {
+  public RigidBody getBulletObject() {
     return rigidBody;
   }
 }

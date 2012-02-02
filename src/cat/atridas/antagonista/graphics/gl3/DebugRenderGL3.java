@@ -1127,7 +1127,7 @@ public class DebugRenderGL3 extends DebugRender {
   protected void renderBBs(RenderManager rm) {
     assert !cleaned;
 
-    if(aabbs.size() == 0)
+    if(aabbs.size() + obbs.size() == 0)
       return;
     
     try {

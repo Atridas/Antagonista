@@ -11,6 +11,7 @@ import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.Conventions;
 
 import com.bulletphysics.collision.broadphase.BroadphaseInterface;
+import com.bulletphysics.collision.broadphase.CollisionFilterGroups;
 import com.bulletphysics.collision.broadphase.DbvtBroadphase;
 import com.bulletphysics.collision.broadphase.Dispatcher;
 import com.bulletphysics.collision.dispatch.CollisionConfiguration;
@@ -18,15 +19,19 @@ import com.bulletphysics.collision.dispatch.CollisionDispatcher;
 import com.bulletphysics.collision.dispatch.CollisionFlags;
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
+import com.bulletphysics.collision.dispatch.GhostPairCallback;
+import com.bulletphysics.collision.dispatch.PairCachingGhostObject;
 import com.bulletphysics.collision.shapes.BvhTriangleMeshShape;
+import com.bulletphysics.collision.shapes.CapsuleShapeZ;
 import com.bulletphysics.collision.shapes.CollisionShape;
+import com.bulletphysics.collision.shapes.ConvexShape;
 import com.bulletphysics.collision.shapes.SphereShape;
 import com.bulletphysics.collision.shapes.StridingMeshInterface;
 import com.bulletphysics.collision.shapes.VertexData;
 import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
-import com.bulletphysics.dynamics.DynamicsWorld;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
+import com.bulletphysics.dynamics.character.KinematicCharacterController;
 import com.bulletphysics.dynamics.constraintsolver.ConstraintSolver;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 import com.bulletphysics.linearmath.DebugDrawModes;
@@ -48,15 +53,18 @@ public class PhysicsWorld {
   
   private ConstraintSolver constraintSolver = new SequentialImpulseConstraintSolver();
   
-  private DynamicsWorld dynamicsWorld = new DiscreteDynamicsWorld(
-                                                  collisionDispatcher,
-                                                  broadphase,
-                                                  constraintSolver,
-                                                  collisionConfiguration);
+  private DiscreteDynamicsWorld dynamicsWorld = new DiscreteDynamicsWorld(
+                                                          collisionDispatcher,
+                                                          broadphase,
+                                                          constraintSolver,
+                                                          collisionConfiguration);
   
   {
     Vector3f gravity = new Vector3f(Conventions.DOWN_VECTOR);
     gravity.scale(9.8f);
+
+    broadphase.getOverlappingPairCache().setInternalGhostPairCallback(new GhostPairCallback());
+    
     dynamicsWorld.setGravity( gravity );
     
     dynamicsWorld.setDebugDrawer(new PhysicsDebugDrawer());
@@ -80,6 +88,12 @@ public class PhysicsWorld {
       Point3f point1 = new Point3f();
       Point3f point2 = new Point3f();
       
+      Vector3f vector1 = new Vector3f();
+
+      Matrix4f matrix1 = new Matrix4f();
+      
+      float[] faux1 = new float[1];
+      
       for(CollisionObject co : dynamicsWorld.getCollisionObjectArray()) {
         co.getWorldTransform(transform);
         CollisionShape cs = co.getCollisionShape();
@@ -90,7 +104,9 @@ public class PhysicsWorld {
           SphereShape ss = (SphereShape) cs;
           float r = ss.getRadius();
           
-          dr.addSphere(new Point3f(transform.origin), r, userInfo.color, userInfo.zTest);
+          point1.set(transform.origin);
+          
+          dr.addSphere(point1, r, userInfo.color, userInfo.zTest);
         } else if(cs instanceof BvhTriangleMeshShape) {
           BvhTriangleMeshShape triangleMeshShape = (BvhTriangleMeshShape)cs;
           
@@ -114,6 +130,25 @@ public class PhysicsWorld {
             }
             
           }
+        } else if(cs instanceof CapsuleShapeZ) {
+          //TODO
+          CapsuleShapeZ cShape = (CapsuleShapeZ) cs;
+          
+          float height = cShape.getHalfHeight();
+          float radius = cShape.getRadius();
+
+          transform.getMatrix(matrix1);
+          
+          point1.set(radius * 2, radius * 2, height * 2);
+          
+          dr.addOBB(matrix1, point1, userInfo.color, userInfo.zTest);
+          
+          /*
+          cShape.getBoundingSphere(vector1, faux1);
+          transform.transform(vector1);
+          point1.set(vector1);
+          dr.addSphere(point1, faux1[0], userInfo.color, userInfo.zTest);
+          */
         } else {
           throw new RuntimeException("Debug draw of shape " + cs.getClass().getCanonicalName() + " is not yet implemented!");
         }
@@ -142,12 +177,51 @@ public class PhysicsWorld {
     rb.setCollisionFlags(collisionFlags & CollisionFlags.STATIC_OBJECT);
     rb.setUserPointer(_userInfo);
     
-    dynamicsWorld.addRigidBody(rb);
+    //dynamicsWorld.addRigidBody(rb);
+    dynamicsWorld.addRigidBody(rb, (short)CollisionFilterGroups.STATIC_FILTER, (short)(CollisionFilterGroups.ALL_FILTER ^ CollisionFilterGroups.STATIC_FILTER));
     
     return new StaticRigidBody(rb);
   }
   
-  public void deleteRigidBody(AntagonistRigidBody rigidBody) {
+  public KinematicCharacter createKinematicCharacter(
+      float characterWidth,
+      float characterHeight,
+      Transformation _bodyTransform,
+      float stepHeight,
+      PhysicsUserInfo _userInfo
+      ) {
+
+    Matrix4f mat = new Matrix4f();
+    _bodyTransform.getMatrix(mat);
+    Transform trans = new Transform(mat);
+
+    PairCachingGhostObject ghostObject = new PairCachingGhostObject();
+    ghostObject.setWorldTransform(trans);
+    //TODO sweepBP.getOverlappingPairCache().setInternalGhostPairCallback(new GhostPairCallback());
+    //float characterHeight = 1.75f * characterScale;
+    //float characterWidth = 1.75f * characterScale;
+    ConvexShape capsule = new CapsuleShapeZ(characterWidth, characterHeight);
+    ghostObject.setCollisionShape(capsule);
+    ghostObject.setCollisionFlags(CollisionFlags.CHARACTER_OBJECT);
+    ghostObject.setUserPointer(_userInfo);
+
+    //float stepHeight = 0.35f * characterScale;
+    KinematicCharacterController character = new KinematicCharacterController(ghostObject, capsule, stepHeight);
+
+    character.setUpAxis(2);
+    //TODO new BspToBulletConverter().convertBsp(getClass().getResourceAsStream("/com/bulletphysics/demos/bsp/exported.bsp.txt"));
+
+    dynamicsWorld.addCollisionObject(ghostObject, CollisionFilterGroups.CHARACTER_FILTER, (short)(CollisionFilterGroups.STATIC_FILTER | CollisionFilterGroups.DEFAULT_FILTER | CollisionFilterGroups.CHARACTER_FILTER));
+    //dynamicsWorld.addCollisionObject(ghostObject);
+
+    dynamicsWorld.addAction(character);
+    
+    return new KinematicCharacter(character, ghostObject);
+  }
+  
+  public void deleteRigidBody(BulletRigidBody rigidBody) {
+
     dynamicsWorld.removeRigidBody(rigidBody.getBulletObject());
+    
   }
 }
