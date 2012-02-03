@@ -267,6 +267,11 @@ public class PhysicsWorld {
     return new KinematicCharacter(character, ghostObject);
   }
   
+  public void deleteKinematicCharacter(KinematicCharacter kinematicCharacter) {
+    dynamicsWorld.removeAction(kinematicCharacter.getBulletObject());
+    dynamicsWorld.removeCollisionObject(kinematicCharacter.getGhostObject());
+  }
+  
   public void deleteRigidBody(BulletRigidBody rigidBody) {
 
     dynamicsWorld.removeRigidBody(rigidBody.getBulletObject());

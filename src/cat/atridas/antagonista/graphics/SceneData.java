@@ -435,13 +435,26 @@ public abstract class SceneData {
     inverseVPMatrix_.mul( inverseVPMatrix );
   }
   
+  /**
+   * Local helper Point4f.
+   * @since 0.2
+   */
   private final ThreadLocal<Point4f> aux_getFarPlanePoint = new ThreadLocal<Point4f>() {
                                                                         @Override
                                                                         protected Point4f initialValue() {
                                                                           return new Point4f();
                                                                         }
                                                                       };
-  public final void getFarPlanePoint(Point2f windowPoint, Point3f worldPoint_) {
+  /**
+   * Gets the point where the line from the camera defined with the window coordinates
+   * intersects the far plane.
+   * 
+   * @param _windowPoint window coordinates. They range from (0,0) at the bottom left to
+   *                   (width, height) at the top right.
+   * @param worldPoint_ return parameter. Point in world coordinates.
+   * @since 0.2
+   */
+  public final void getFarPlanePoint(Point2f _windowPoint, Point3f worldPoint_) {
     if(!inverseVPMatrixUpdated) {
       //inverseVPMatrix.setIdentity();
       getViewProjectionMatrix(inverseVPMatrix);
@@ -452,20 +465,20 @@ public abstract class SceneData {
     
     Point4f homogeneusPoint = aux_getFarPlanePoint.get();
     
-    homogeneusPoint.set(0,0,-far,1);
-    projectionMatrix.transform(homogeneusPoint);
+    //homogeneusPoint.set(0,0,-far,1);
+    //projectionMatrix.transform(homogeneusPoint);
     
-
-    homogeneusPoint.x = windowPoint.x / rm.getWidth();
-    homogeneusPoint.y = windowPoint.y / rm.getHeight();
+    homogeneusPoint.x = _windowPoint.x / rm.getWidth();
+    homogeneusPoint.y = _windowPoint.y / rm.getHeight();
 
     homogeneusPoint.x *= 2; homogeneusPoint.x -= 1;
     homogeneusPoint.y *= 2; homogeneusPoint.y -= 1;
 
-    homogeneusPoint.x *= homogeneusPoint.w;
-    homogeneusPoint.y *= homogeneusPoint.w;
+    //TODO generalitzar per a tota matriu de projeccio. és possible?
+    homogeneusPoint.x *= far;
+    homogeneusPoint.y *= far;
     
-    homogeneusPoint.z = homogeneusPoint.z;
+    homogeneusPoint.z = far;
     homogeneusPoint.w = far;
     
     inverseVPMatrix.transform(homogeneusPoint);

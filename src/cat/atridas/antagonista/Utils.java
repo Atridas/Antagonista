@@ -145,6 +145,11 @@ public abstract class Utils {
    * @since 0.2
    */
   public static final Color3f BLUE = new Color3f(0,0,1);
+  /**
+   * Sky Blue color
+   * @since 0.2
+   */
+  public static final Color3f SKY_BLUE = new Color3f(0,1,1);
   
   /**
    * Returns <code>true</code> if the program is runned in a windows environment. <code>false</code>

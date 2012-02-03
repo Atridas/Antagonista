@@ -10,7 +10,7 @@ import org.lwjgl.Sys;
  * 
  */
 public class Clock {
-	public static final int WINDOW_LENGTH = 10;
+	public static final int WINDOW_LENGTH = 5;
 	
 	DeltaTime lastDeltaTime = new DeltaTime();
 	long lastTime;

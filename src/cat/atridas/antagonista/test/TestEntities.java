@@ -16,11 +16,13 @@ import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.entities.Entity;
 import cat.atridas.antagonista.entities.EntityManager;
 import cat.atridas.antagonista.entities.SystemManager;
+import cat.atridas.antagonista.entities.components.CharacterControllerComponent;
 import cat.atridas.antagonista.entities.components.MeshComponent;
 import cat.atridas.antagonista.entities.components.RTSCameraComponent;
 import cat.atridas.antagonista.entities.components.RigidBodyComponent;
 import cat.atridas.antagonista.entities.components.TransformComponent;
 import cat.atridas.antagonista.entities.components.RigidBodyComponent.PhysicType;
+import cat.atridas.antagonista.entities.systems.PhysicsCharacterControllerSystem;
 import cat.atridas.antagonista.entities.systems.RTSCameraSystem;
 import cat.atridas.antagonista.entities.systems.RenderingCameraSystem;
 import cat.atridas.antagonista.entities.systems.RenderingSystem;
@@ -65,6 +67,7 @@ public class TestEntities {
     SystemManager sm = core.getSystemManager();
     sm.registerSystem(new RTSCameraSystem());
     
+    sm.registerSystem(new PhysicsCharacterControllerSystem());
     sm.registerSystem(new RigidBodySystem());
     
     sm.registerSystem(new RenderingCameraSystem());
@@ -73,51 +76,50 @@ public class TestEntities {
     
     
     ///////////////////////////////////////////////////////////////////////////////////////
-    
-    Entity entityRoom   = em.createEntity(new HashedString("Room"));
-    Entity entityCamera = em.createEntity(new HashedString("Camera"));
-
-    Entity entityMaster = em.createEntity(new HashedString("Master"));
-    
-    
-    TransformComponent tc = em.createComponent(entityRoom.getId(), TransformComponent.getComponentStaticType());
-    
-    tc.init();
-    
-    MeshComponent mc = em.createComponent(entityRoom.getId(), MeshComponent.getComponentStaticType());
-    mc.init(new HashedString("Habitacio"));
-    
-    RigidBodyComponent rbc = em.createComponent(entityRoom.getId(), RigidBodyComponent.getComponentStaticType());
-    rbc.init(PhysicType.STATIC, core.getMeshManager().getResource(new HashedString("Habitacio")).getPhysicsMesh());
-
+    {
+      Entity entityRoom   = em.createEntity(new HashedString("Room"));
+      
+      TransformComponent tc = em.createComponent(entityRoom.getId(), TransformComponent.getComponentStaticType());
+      
+      tc.init();
+      
+      MeshComponent mc = em.createComponent(entityRoom.getId(), MeshComponent.getComponentStaticType());
+      mc.init(new HashedString("Habitacio"));
+      
+      RigidBodyComponent rbc = em.createComponent(entityRoom.getId(), RigidBodyComponent.getComponentStaticType());
+      rbc.init(PhysicType.STATIC, core.getMeshManager().getResource(new HashedString("Habitacio")).getPhysicsMesh());
+    }
     /////////////////////////////////////////////////////////////////////
-    
-    
-    tc = em.createComponent(entityMaster.getId(), TransformComponent.getComponentStaticType());
-    
-    Transformation transform = new Transformation();
-    //transform.setTranslation(new Vector3f(0,0,1));
-    tc.init(transform);
-    
-    
-    mc = em.createComponent(entityMaster.getId(), MeshComponent.getComponentStaticType());
-    mc.init(new HashedString("MasterTest"));
-    
+    {
+      Entity entityMaster = em.createEntity(new HashedString("Master"));
+      
+      TransformComponent tc = em.createComponent(entityMaster.getId(), TransformComponent.getComponentStaticType());
+      
+      Transformation transform = new Transformation();
+      transform.setTranslation(new Vector3f(0,0,4));
+      tc.init(transform);
+      
+      
+      MeshComponent mc = em.createComponent(entityMaster.getId(), MeshComponent.getComponentStaticType());
+      mc.init(new HashedString("MasterTest"));
+      
+      CharacterControllerComponent ccc = em.createComponent(entityMaster.getId(), CharacterControllerComponent.getComponentStaticType());
+      ccc.init(new Point3f(5,5,1), .5f, 2, .1f, 3f);
+    }
     
     /////////////////////////////////////////////////////////////////////
-    
-    RTSCameraComponent cc = em.createComponent(entityCamera.getId(), RTSCameraComponent.getComponentStaticType());
-    RTSCamera camera = new RTSCamera();
-    camera.setMaxDistance(30);
-    camera.setDistance(20);
-    camera.setPitch(60);
-    cc.init(camera);
-    
-    
-    
-    
-
-    
+    {
+      
+      Entity entityCamera = em.createEntity(new HashedString("Camera"));
+      
+      RTSCameraComponent cc = em.createComponent(entityCamera.getId(), RTSCameraComponent.getComponentStaticType());
+      RTSCamera camera = new RTSCamera();
+      camera.setMaxDistance(30);
+      camera.setDistance(20);
+      camera.setPitch(60);
+      cc.init(camera);
+      
+    }
     
     ////////////////////////////////////////////////////////////////////////////////////
     
@@ -137,7 +139,7 @@ public class TestEntities {
     
     ////////////////////////////////////////////////////////////////////////////////////
     
-
+    /*
     PhysicsUserInfo pui = new PhysicsUserInfo();
     pui.color.set(new Color3f(0,1,1));
     pui.zTest = false;
@@ -146,7 +148,7 @@ public class TestEntities {
     transform.setTranslation(new Vector3f(0,0,5));
     
     KinematicCharacter kc = core.getPhysicsWorld().createKinematicCharacter(.5f, 2f, transform, .05f, pui);
-    
+    */
     
     ///////////////////////////////////////////////////////////////////////////////////
     
@@ -179,6 +181,8 @@ public class TestEntities {
     clock.reset();
     sm.updateSimple(clock.update());
     clock.reset();
+    
+    float runningTime = 0;
     while(!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
 
       DeltaTime dt = clock.update();
@@ -197,9 +201,13 @@ public class TestEntities {
         Vector3f collisionNormal = vector1;
         rm.getSceneData().getCameraPosition(origin);
         
-        pui = core.getPhysicsWorld().raycast(origin,destiny,collisionPoint,collisionNormal);
+        PhysicsUserInfo pui = core.getPhysicsWorld().raycast(origin,destiny,collisionPoint,collisionNormal);
         if(pui != null) {
           dr.addCross(collisionPoint, pui.color, 1, .5f);
+          
+          
+          CharacterControllerComponent ccc = em.getComponent(new HashedString("Master"), CharacterControllerComponent.getComponentStaticType());
+          ccc.setDesiredPosition(collisionPoint);
         }
       }
       
@@ -225,9 +233,10 @@ public class TestEntities {
       }
       ////////////////////////////////////////*/
       
-      Vector3f walk = new Vector3f(1,0,0);
-      walk.scale(dt.dt * 30);
-      kc.getBulletObject().setWalkDirection(walk);
+      //Vector3f walk = new Vector3f(1,0,0);
+      //walk.scale(dt.dt * 30);
+      //kc.getBulletObject().setWalkDirection(walk);
+      
       /*
       dr.addOBB(new Matrix4f(new float[] {
                                        1,0,0,0,
@@ -240,6 +249,11 @@ public class TestEntities {
       dr.addAABB(new Point3f(-.5f,-.5f,0), new Point3f(.5f,.5f,1), new Color3f(1,0,0));
       */
       dr.addString2D(new Point2f(.0f,.0f), font, "FPS: " + dt.fps, .05f, new Color3f(0,0,0));
+      runningTime += dt.dt;
+      dr.addString2D(new Point2f(.0f,.05f), font, "timeSec: " + runningTime, .05f, new Color3f(0,0,0));
+      dr.addString2D(new Point2f(.0f,.1f), font, "timeMS: " + dt.timeMilisSinceStart, .05f, new Color3f(0,0,0));
+      dr.addString2D(new Point2f(.0f,.15f), font, "timeDrift: " + runningTime * 1000 / dt.timeMilisSinceStart, .05f, new Color3f(0,0,0));
+      
       core.getPhysicsWorld().debugDraw();
       
       rm.initFrame();
