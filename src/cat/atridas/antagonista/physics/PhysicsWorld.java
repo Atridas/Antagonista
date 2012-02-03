@@ -1,6 +1,5 @@
 package cat.atridas.antagonista.physics;
 
-import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -19,6 +18,7 @@ import com.bulletphysics.collision.dispatch.CollisionConfiguration;
 import com.bulletphysics.collision.dispatch.CollisionDispatcher;
 import com.bulletphysics.collision.dispatch.CollisionFlags;
 import com.bulletphysics.collision.dispatch.CollisionObject;
+import com.bulletphysics.collision.dispatch.CollisionWorld.ClosestRayResultCallback;
 import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
 import com.bulletphysics.collision.dispatch.GhostPairCallback;
 import com.bulletphysics.collision.dispatch.PairCachingGhostObject;
@@ -76,6 +76,7 @@ public class PhysicsWorld {
    * Draws the physics scene to the debug drawer.
    * @since 0.2
    */
+  @SuppressWarnings("unused")
   public void debugDraw() {
     dynamicsWorld.debugDrawWorld();
     
@@ -270,5 +271,29 @@ public class PhysicsWorld {
 
     dynamicsWorld.removeRigidBody(rigidBody.getBulletObject());
     
+  }
+  
+
+  private Vector3f raycastOrigin  = new Vector3f();
+  private Vector3f raycastDestiny = new Vector3f();
+  //ClosestRayResultCallback raycastCRRC = new ClosestRayResultCallback(raycastOrigin, raycastDestiny);
+  public PhysicsUserInfo raycast(Point3f origin, Point3f destiny, Point3f point_, Vector3f normal_) {
+
+    raycastOrigin.set(origin);
+    raycastDestiny.set(destiny);
+
+    ClosestRayResultCallback raycastCRRC = new ClosestRayResultCallback(raycastOrigin, raycastDestiny);
+    //raycastCRRC.rayFromWorld.set(origin);
+    //raycastCRRC.rayToWorld.set(destiny);
+    
+    dynamicsWorld.rayTest(raycastOrigin, raycastDestiny, raycastCRRC);
+    
+    point_.set(raycastCRRC.hitPointWorld);
+    normal_.normalize(raycastCRRC.hitNormalWorld);
+    
+    if(raycastCRRC.collisionObject != null)
+      return (PhysicsUserInfo) raycastCRRC.collisionObject.getUserPointer();
+    else
+      return null;
   }
 }

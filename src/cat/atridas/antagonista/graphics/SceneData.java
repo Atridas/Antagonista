@@ -2,7 +2,9 @@ package cat.atridas.antagonista.graphics;
 
 import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import cat.atridas.antagonista.Utils;
@@ -31,6 +33,16 @@ public abstract class SceneData {
    * @since 0.1
    */
   private final Matrix4f projectionMatrix = new Matrix4f();
+  
+  private final Matrix4f inverseVPMatrix = new Matrix4f();
+  private boolean inverseVPMatrixUpdated = false;
+  
+  /**
+   * Distance to the near/far planes.
+   * @since 0.2
+   */
+  private float near, far;
+  
   private final Point3f cameraPosition  = new Point3f();
   private final Vector3f cameraUpVector  = new Vector3f();
   private final Vector3f cameraDirection = new Vector3f();
@@ -152,76 +164,89 @@ public abstract class SceneData {
         2*zFar*zNear / (zNear-zFar),
         0);
         
+    inverseVPMatrixUpdated = false;
+    near = zNear;
+    far = zFar;
   }
   
   /**
    * Sets a frustum projection.
    * 
-   * @param left plane
-   * @param right plane
-   * @param bottom plane
-   * @param top plane
-   * @param near plane
-   * @param far plane
+   * @param _left plane
+   * @param _right plane
+   * @param _bottom plane
+   * @param _top plane
+   * @param _near plane
+   * @param _far plane
    * @since 0.1
    */
   public final void setFrustum(
-      float left, float right, 
-      float bottom, float top, 
-      float near, float far) 
+      float _left, float _right, 
+      float _bottom, float _top, 
+      float _near, float _far) 
   {
     projectionMatrix.setColumn(0, 
-        2*near / (right-left), 
+        2*_near / (_right-_left), 
         0.0f, 
         0.0f, 
         0.0f);
     projectionMatrix.setColumn(1, 
         0.0f, 
-        2*near / (top-bottom), 
+        2*_near / (_top-_bottom), 
         0.0f, 
         0.0f);
     projectionMatrix.setColumn(2, 
-        (right+left) / (right-left), 
-        (top+bottom) / (top-bottom), 
-        -(far+near) / (far-near), 
+        (_right+_left) / (_right-_left), 
+        (_top+_bottom) / (_top-_bottom), 
+        -(_far+_near) / (_far-_near), 
         -1.0f);
     projectionMatrix.setColumn(3, 
         0.0f, 
         0.0f, 
-        -2*near * far / (far-near), 
+        -2*_near * _far / (_far-_near), 
         0.0f);
+
+    inverseVPMatrixUpdated = false;
+    near = _near;
+    far = _far;
   }
   
   /**
    * Orthogonal projection.
    * 
-   * @param left plane
-   * @param right plane
-   * @param top plane
-   * @param bottom plane
-   * @param near plane
-   * @param far plane
+   * @param _left plane
+   * @param _right plane
+   * @param _top plane
+   * @param _bottom plane
+   * @param _near plane
+   * @param _far plane
    * @since 0.1
    */
   public final void setOrtho(
-      float left, float right, 
-      float top,  float bottom,
-      float near, float far)
+      float _left, float _right, 
+      float _top,  float _bottom,
+      float _near, float _far)
   {
-    getOrtho(left, right,  top,  bottom, near,  far, projectionMatrix);
+    getOrtho(_left, _right,  _top,  _bottom, _near,  _far, projectionMatrix);
+    inverseVPMatrixUpdated = false;
+    near = _near;
+    far = _far;
   }
   
   /**
    * Set an orthogonal projection going from 0 to the current screen width an heights.
    * 
-   * @param near plane
-   * @param far plane
+   * @param _near plane
+   * @param _far plane
    * @since 0.1
    * @see #setOrtho(float, float, float, float, float, float)
    */
-  public final void setOrtho(float near, float far)
+  public final void setOrtho(float _near, float _far)
   {
     getOrtho(near,  far, projectionMatrix);
+    inverseVPMatrixUpdated = false;
+    near = _near;
+    far = _far;
   }
   
   /**
@@ -311,6 +336,7 @@ public abstract class SceneData {
     viewMatrix.setColumn(3, cameraPosition.x, cameraPosition.y, cameraPosition.z, 1.0f);
     
     viewMatrix.invert();
+    inverseVPMatrixUpdated = false;
   }
   
   /**
@@ -369,7 +395,7 @@ public abstract class SceneData {
    * @since 0.1
    */
   public final void getViewProjectionMatrix(Matrix4f viewProjection_) {
-    viewProjection_.mul( projectionMatrix );
+    viewProjection_.set( projectionMatrix );
     viewProjection_.mul( viewMatrix   );
   }
   
@@ -380,7 +406,7 @@ public abstract class SceneData {
    * @since 0.1
    */
   public final void getViewMatrix(Matrix4f view_) {
-    view_.mul( viewMatrix );
+    view_.set( viewMatrix );
   }
   
   /**
@@ -390,6 +416,62 @@ public abstract class SceneData {
    * @since 0.1
    */
   public final void getProjectionMatrix(Matrix4f projection_) {
-    projection_.mul( projectionMatrix );
+    projection_.set( projectionMatrix );
+  }
+  
+  /**
+   * Gets the inverse matrix that transforms from homogeneus space to world space.
+   * 
+   * @param inverseVPMatrix_ output parameter.
+   * @since 0.2
+   */
+  public final void getInverseViewProjectionMatrix(Matrix4f inverseVPMatrix_) {
+    if(!inverseVPMatrixUpdated) {
+      //inverseVPMatrix.setIdentity();
+      getViewProjectionMatrix(inverseVPMatrix);
+      inverseVPMatrix.invert();
+      inverseVPMatrixUpdated = true;
+    }
+    inverseVPMatrix_.mul( inverseVPMatrix );
+  }
+  
+  private final ThreadLocal<Point4f> aux_getFarPlanePoint = new ThreadLocal<Point4f>() {
+                                                                        @Override
+                                                                        protected Point4f initialValue() {
+                                                                          return new Point4f();
+                                                                        }
+                                                                      };
+  public final void getFarPlanePoint(Point2f windowPoint, Point3f worldPoint_) {
+    if(!inverseVPMatrixUpdated) {
+      //inverseVPMatrix.setIdentity();
+      getViewProjectionMatrix(inverseVPMatrix);
+      //getProjectionMatrix(inverseVPMatrix);
+      inverseVPMatrix.invert();
+      inverseVPMatrixUpdated = true;
+    }
+    
+    Point4f homogeneusPoint = aux_getFarPlanePoint.get();
+    
+    homogeneusPoint.set(0,0,-far,1);
+    projectionMatrix.transform(homogeneusPoint);
+    
+
+    homogeneusPoint.x = windowPoint.x / rm.getWidth();
+    homogeneusPoint.y = windowPoint.y / rm.getHeight();
+
+    homogeneusPoint.x *= 2; homogeneusPoint.x -= 1;
+    homogeneusPoint.y *= 2; homogeneusPoint.y -= 1;
+
+    homogeneusPoint.x *= homogeneusPoint.w;
+    homogeneusPoint.y *= homogeneusPoint.w;
+    
+    homogeneusPoint.z = homogeneusPoint.z;
+    homogeneusPoint.w = far;
+    
+    inverseVPMatrix.transform(homogeneusPoint);
+
+    worldPoint_.x = homogeneusPoint.x;
+    worldPoint_.y = homogeneusPoint.y;
+    worldPoint_.z = homogeneusPoint.z;
   }
 }

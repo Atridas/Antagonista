@@ -3,7 +3,6 @@ package cat.atridas.antagonista.test;
 import java.util.logging.Level;
 
 import javax.vecmath.Color3f;
-import javax.vecmath.Matrix4f;
 import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -46,6 +45,7 @@ public class TestEntities {
    * 
    * @param args
    */
+  @SuppressWarnings("unused")
   public static void main(String[] args) {
     //comprovem que els asserts estiguin actius
     boolean assertsActives = false;
@@ -110,26 +110,42 @@ public class TestEntities {
     RTSCamera camera = new RTSCamera();
     camera.setMaxDistance(30);
     camera.setDistance(20);
-    camera.setPitch(0);
+    camera.setPitch(60);
     cc.init(camera);
     
     
     
     
+
     
     
+    ////////////////////////////////////////////////////////////////////////////////////
+    
+    Point2f point2d = new Point2f();
+
+    Point3f point1 = new Point3f();
+    Point3f point2 = new Point3f();
+    Point3f point3 = new Point3f();
+    Point3f point4 = new Point3f();
+
+    Vector3f vector1 = new Vector3f();
+    Vector3f vector2 = new Vector3f();
+    Vector3f vector3 = new Vector3f();
+    Vector3f vector4 = new Vector3f();
+    
+    HashedString shootAction = new HashedString("shoot");
     
     ////////////////////////////////////////////////////////////////////////////////////
     
 
     PhysicsUserInfo pui = new PhysicsUserInfo();
-    pui.color.set(Utils.RED);
+    pui.color.set(new Color3f(0,1,1));
     pui.zTest = false;
     
     transform = new Transformation();
     transform.setTranslation(new Vector3f(0,0,5));
     
-    KinematicCharacter kc = core.getPhysicsWorld().createKinematicCharacter(.25f, 3f, transform, .05f, pui);
+    KinematicCharacter kc = core.getPhysicsWorld().createKinematicCharacter(.5f, 2f, transform, .05f, pui);
     
     
     ///////////////////////////////////////////////////////////////////////////////////
@@ -167,9 +183,47 @@ public class TestEntities {
 
       DeltaTime dt = clock.update();
       
+      
+      if(im.isActionActive(shootAction)) {
+        point2d.x = im.getMouseX();
+        point2d.y = im.getMouseY();
+        rm.getSceneData().getFarPlanePoint(point2d, point1);
+        //dr.addCross(point1, Utils.BLUE, 3, 5);
+        
+
+        Point3f origin  = point2;
+        Point3f destiny = point1;
+        Point3f collisionPoint = point3;
+        Vector3f collisionNormal = vector1;
+        rm.getSceneData().getCameraPosition(origin);
+        
+        pui = core.getPhysicsWorld().raycast(origin,destiny,collisionPoint,collisionNormal);
+        if(pui != null) {
+          dr.addCross(collisionPoint, pui.color, 1, .5f);
+        }
+      }
+      
+      
       core.getPhysicsWorld().update(dt);
       
       sm.updateSimple(dt);
+      
+      /*////////////////////////////////////////
+      Point3f origin  = point1;
+      Point3f destiny = point2;
+      Point3f collisionPoint = point3;
+      Vector3f collisionNormal = vector1;
+      
+      origin.set(0,0,10);
+      destiny.set(0,0,-10);
+      if(core.getPhysicsWorld().raycast(origin,destiny,collisionPoint,collisionNormal) != null) {
+        dr.addCross(collisionPoint, new Color3f(1,1,0), 3);
+        point4.set(collisionNormal);
+        point4.scale(5);
+        point4.add(collisionPoint);
+        dr.addLine(collisionPoint, point4, new Color3f(0,1,1));
+      }
+      ////////////////////////////////////////*/
       
       Vector3f walk = new Vector3f(1,0,0);
       walk.scale(dt.dt * 30);

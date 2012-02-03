@@ -9,6 +9,8 @@
     <event name="move_camera_right" type="keyboard" action="down" key="KEY_D"/>
     
     <event name="move_camera_distance" type="mouse" action="move" key="MOUSE_WHEEL"/>
+    
+    <event name="shoot" type="mouse" action="up_down" key="MOUSE0" />
   </mode>
 
 </input_manager>
