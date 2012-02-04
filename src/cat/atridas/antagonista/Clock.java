@@ -10,12 +10,56 @@ import org.lwjgl.Sys;
  * 
  */
 public class Clock {
+  /**
+   * Size of the buffer used to absorb spikes.
+   * @since 0.1
+   */
 	public static final int WINDOW_LENGTH = 5;
 	
+	/**
+	 * Influence of the previous drift in the produced delta time.
+	 * @since 0.2
+	 */
+	public static final float DRIFT_INFLUENCE = 0.01f;
+	
+	/**
+	 * Delta time objectives. The engine will try to accomplish a frame duration of this values.
+	 * @since 0.2
+	 */
+	public static final float MS_OBJECTIVES[] = {16, 33, 50, 100};
+	
+	/**
+	 * Timer resolution.
+	 * @since 0.2
+	 */
+	public static final long timerResolution = Sys.getTimerResolution();
+	
+	/**
+	 * Last instance of a Delta time counter;
+	 * @since 0.1
+	 */
 	DeltaTime lastDeltaTime = new DeltaTime();
+	/**
+	 * Last clock time;
+	 * @since 0.1
+	 */
 	long lastTime;
+	/**
+	 * Array of delta times. Used to absorb spike frames (frames with an unusual duration).
+	 * @since 0.1
+	 */
 	final long[] deltaTimes = new long[WINDOW_LENGTH];
+	/**
+	 * Current buffer position.
+	 * @since 0.1
+	 */
 	int current = 0;
+	
+	/**
+	 * Measures the drift from the mesured time to the time obtained adding all produced delta times.
+	 * @since 0.2
+	 */
+	float drift = 0;
 	
 	/**
 	 * Creates a new clock.
@@ -32,9 +76,26 @@ public class Clock {
 	 * @return a DeltaTime object witch includes info of the time lapsed
 	 *         since last call.
 	 */
-	public DeltaTime update() {
+	public synchronized DeltaTime update() {
 		long time = Sys.getTime();
 		long realDeltaTime = deltaTimes[current] = time - lastTime;
+    
+		
+		float dtMilis = realDeltaTime / timerResolution;
+		for(int i = 0; i < MS_OBJECTIVES.length; ++i) {
+		  if(dtMilis < MS_OBJECTIVES[i]) {
+		    float dist = MS_OBJECTIVES[i] - dtMilis;
+		    try {
+          wait((long)dist);
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
+		    time = Sys.getTime();
+		    realDeltaTime = deltaTimes[current] = time - lastTime;
+		    break;
+		  }
+		}
+		
 		lastTime = time;
 		if(deltaTimes[current] < 1)
 			deltaTimes[current] = 1;
@@ -52,7 +113,11 @@ public class Clock {
 			}
 		}
 		
-		float dt = ((float) sum) / (total * Sys.getTimerResolution());
+		float dt = ((float) sum) / (total * timerResolution);
+		
+		dt -= drift * DRIFT_INFLUENCE;
+		
+		drift += dt - realDeltaTime / 1000.f;
 		
 		lastDeltaTime = new DeltaTime(dt, realDeltaTime);
 		return lastDeltaTime;
@@ -97,10 +162,10 @@ public class Clock {
 	   */
 	  public final int fps;
 	  /**
-	   * Exact time in miliseconds since the creation of this clock.
-     * @since 0.1
+	   * Exact time in ticks since the creation of this clock.
+     * @since 0.2
 	   */
-    public final long  timeMilisSinceStart;
+    private final long  timeTicksSinceStart;
     /**
      * Frame numer. This variable contains the number of times wich the <code>update</code> function
      * of the corresponding clock has been called.
@@ -111,25 +176,35 @@ public class Clock {
     private DeltaTime() {
       dt = 0;
       fps = 0;
-      timeMilisSinceStart = 0;
+      timeTicksSinceStart = 0;
       frame = 0;
     }
     
-    private DeltaTime(float _dt, long _realDTMilis) {
+    private DeltaTime(float _dt, long _realDTTicks) {
       dt = _dt;
       fps = (int)(1 / dt);
-      timeMilisSinceStart = lastDeltaTime.timeMilisSinceStart + _realDTMilis;
+      timeTicksSinceStart = lastDeltaTime.timeTicksSinceStart + _realDTTicks;
       frame = lastDeltaTime.frame + 1;
+    }
+    
+    /**
+     * Gets the time in milliseconds since the last reset of the clock.
+     * 
+     * @return the time in milliseconds.
+     * @since 0.2
+     */
+    public long getTimeMilisSinceStart() {
+      return timeTicksSinceStart * 1000 / timerResolution;
     }
     
     @Override
     public String toString() {
-      return timeMilisSinceStart + "ms, " + fps + "FPS";
+      return timeTicksSinceStart + "ms, " + fps + "FPS";
     }
 
     @Override
     public int compareTo(DeltaTime o) {
-      int c = Long.compare(timeMilisSinceStart, o.timeMilisSinceStart);
+      int c = Long.compare(timeTicksSinceStart, o.timeTicksSinceStart);
       return c;
     }
     

@@ -1049,7 +1049,7 @@ public abstract class DebugRender {
     renderAxes(rm);
     renderTriangles(rm);
     renderBBs(rm);
-    //renderStrings(rm);
+    renderStrings(rm);
     endRender();
 
     cleanList(lines, dt.dt);

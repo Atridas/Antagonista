@@ -29,10 +29,12 @@ public final class FontManagerGL3 extends FontManagerGL {
   @Override
   protected void activateVAO(int vao, CachedTextInfo cachedBuffers) {
     if(uninitializedVAOs.contains(vao)) {
-      vao = glGenVertexArrays();
+      //vao = glGenVertexArrays();
       glBindVertexArray(vao);
       
       bindVertexAttribs(cachedBuffers);
+      
+      uninitializedVAOs.remove(vao);
       
     } else {
       glBindVertexArray(vao);

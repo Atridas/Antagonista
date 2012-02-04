@@ -41,8 +41,9 @@ public class TestEntities {
    * Arguments de la VM interessants:
    * 
    * -ea -Djava.library.path="./native/windows" 
-   * -XX:MinHeapFreeRatio=90 -XX:MaxHeapFreeRatio=95 
-   * -Xmx2048m -XX:+UseG1GC
+   * -Xmx1024m -XX:+UseG1GC
+   * -XX:MaxGCPauseMillis=5
+   * -XX:GCPauseIntervalMillis=83
    * -verbose:gc 
    * -Dcom.sun.management.jmxremote
    *  
@@ -252,8 +253,8 @@ public class TestEntities {
       dr.addString2D(new Point2f(.0f,.0f), font, "FPS: " + dt.fps, .05f, new Color3f(0,0,0));
       runningTime += dt.dt;
       dr.addString2D(new Point2f(.0f,.05f), font, "timeSec: " + runningTime, .05f, new Color3f(0,0,0));
-      dr.addString2D(new Point2f(.0f,.1f), font, "timeMS: " + dt.timeMilisSinceStart, .05f, new Color3f(0,0,0));
-      dr.addString2D(new Point2f(.0f,.15f), font, "timeDrift: " + runningTime * 1000 / dt.timeMilisSinceStart, .05f, new Color3f(0,0,0));
+      dr.addString2D(new Point2f(.0f,.1f), font, "timeMS: " + dt.getTimeMilisSinceStart(), .05f, new Color3f(0,0,0));
+      dr.addString2D(new Point2f(.0f,.15f), font, "timeDrift: " + runningTime * 1000 / dt.getTimeMilisSinceStart(), .05f, new Color3f(0,0,0));
       
       core.getPhysicsWorld().debugDraw();
       
