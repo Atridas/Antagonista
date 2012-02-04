@@ -44,7 +44,8 @@ public class TestEntities {
    * -XX:MinHeapFreeRatio=90 -XX:MaxHeapFreeRatio=95 
    * -Xmx2048m -XX:+UseG1GC
    * -verbose:gc 
-   * 
+   * -Dcom.sun.management.jmxremote
+   *  
    * @param args
    */
   @SuppressWarnings("unused")

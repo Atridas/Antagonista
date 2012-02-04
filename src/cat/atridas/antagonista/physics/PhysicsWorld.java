@@ -90,6 +90,7 @@ public class PhysicsWorld {
   
       Point3f point1 = new Point3f();
       Point3f point2 = new Point3f();
+      Point3f point3 = new Point3f();
 
       Vector3f vector1 = new Vector3f();
       Vector3f vector2 = new Vector3f();
@@ -126,13 +127,8 @@ public class PhysicsWorld {
               vd.getTriangle(j*3, scaling, triangle);
               point1.set(triangle[0]);
               point2.set(triangle[1]);
-              dr.addLine(point1, point2, userInfo.color, userInfo.zTest);
-              point1.set(triangle[0]);
-              point2.set(triangle[2]);
-              dr.addLine(point1, point2, userInfo.color, userInfo.zTest);
-              point1.set(triangle[2]);
-              point2.set(triangle[1]);
-              dr.addLine(point1, point2, userInfo.color, userInfo.zTest);
+              point3.set(triangle[2]);
+              dr.addTriangle(point1, point2, point3, userInfo.color, userInfo.zTest);
             }
             
           }
