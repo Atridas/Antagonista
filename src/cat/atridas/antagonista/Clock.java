@@ -26,7 +26,7 @@ public class Clock {
 	 * Delta time objectives. The engine will try to accomplish a frame duration of this values.
 	 * @since 0.2
 	 */
-	public static final float MS_OBJECTIVES[] = {16, 33, 50, 100};
+	public static final float MS_OBJECTIVES[] = {1000f/60, 1000f/30, 1000f/20, 1000f/10};
 	
 	/**
 	 * Timer resolution.
@@ -81,16 +81,16 @@ public class Clock {
 		long realDeltaTime = deltaTimes[current] = time - lastTime;
     
 		
-		float dtMilis = realDeltaTime / timerResolution;
+		float dtMilis = (1000f * realDeltaTime) / timerResolution;
 		for(int i = 0; i < MS_OBJECTIVES.length; ++i) {
-		  if(dtMilis < MS_OBJECTIVES[i]) {
-		    float dist = MS_OBJECTIVES[i] - dtMilis;
+		  float dist = MS_OBJECTIVES[i] - dtMilis;
+		  if(dist >= 1f) {
 		    try {
           wait((long)dist);
         } catch (InterruptedException e) {
           throw new RuntimeException(e);
         }
-		    time = Sys.getTime();
+		    time += (long)(dist * timerResolution / 1000.f);
 		    realDeltaTime = deltaTimes[current] = time - lastTime;
 		    break;
 		  }

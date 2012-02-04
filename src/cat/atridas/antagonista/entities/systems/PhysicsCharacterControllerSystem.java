@@ -9,10 +9,12 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
 import com.bulletphysics.linearmath.Transform;
 
+import cat.atridas.antagonista.Conventions;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Transformation;
 import cat.atridas.antagonista.Utils;
@@ -39,9 +41,12 @@ public class PhysicsCharacterControllerSystem implements cat.atridas.antagonista
   private Transformation g_transformation = new Transformation();
   private Vector3f       g_vector1        = new Vector3f();
   private Vector3f       g_vector2        = new Vector3f();
+  private Vector3f       g_vector3        = new Vector3f();
 
   private Point3f        g_point1         = new Point3f();
   private Point3f        g_point2         = new Point3f();
+  
+  private Quat4f         g_quat1          = new Quat4f();
   
   @Override
   public void addEntity(HashedString entity, Component<?>[] components, DeltaTime currentTime) {
@@ -56,14 +61,22 @@ public class PhysicsCharacterControllerSystem implements cat.atridas.antagonista
 
     Transformation transform = new Transformation();
     transformC.getTransform(transform);
-    
-    
+
+    Vector3f vectorAux     = g_vector1;
+    Vector3f upAdjustment  = g_vector2;
+    float zAdjustment = ccC.getCharacterHeight() * .5f;
+    upAdjustment.set(Conventions.UP_VECTOR);
+    upAdjustment.scale(zAdjustment);
     
     PhysicsUserInfo pui = new PhysicsUserInfo();
     pui.color.set(Utils.SKY_BLUE);
     pui.zTest = true;
     
     transformC.getTransform(g_transformation);
+    
+    g_transformation.getTranslation(vectorAux);
+    vectorAux.add(upAdjustment);
+    g_transformation.setTranslation(vectorAux);
     
     KinematicCharacter kc = physicsWorld.createKinematicCharacter(
         ccC.getCharacterWidth(),
@@ -91,7 +104,12 @@ public class PhysicsCharacterControllerSystem implements cat.atridas.antagonista
 
     Vector3f vectorAux     = g_vector1;
     Vector3f walkDirection = g_vector2;
+    Vector3f upAdjustment  = g_vector3;
     //
+    
+    float zAdjustment = ccC.getCharacterHeight() * .5f;
+    upAdjustment.set(Conventions.UP_VECTOR);
+    upAdjustment.scale(zAdjustment);
     
     KinematicCharacter kc = kinematicCharacters.get(entity);
     
@@ -116,6 +134,21 @@ public class PhysicsCharacterControllerSystem implements cat.atridas.antagonista
     kc.getBulletObject().setWalkDirection(walkDirection);
     kc.getGhostObject().getWorldTransform(g_transform);
     
+    /////////////////////////////////////////////////////////
+    walkDirection.z = 0;
+    if(walkDirection.lengthSquared() > Utils.EPSILON) {
+      Vector3f originalDir = Conventions.FRONT_VECTOR;
+    
+      
+      walkDirection.normalize();
+      
+      Utils.getClosestRotation(originalDir, walkDirection, g_quat1);
+      
+      g_transformation.setRotation(g_quat1);
+    }
+    /////////////////////////////////////////////////////////
+    
+    g_transform.origin.sub(upAdjustment);
     
     g_transformation.setTranslation(g_transform.origin);
     transformC.setTransform(g_transformation);

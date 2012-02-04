@@ -33,7 +33,6 @@ import cat.atridas.antagonista.graphics.RTSCamera;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.SceneData;
 import cat.atridas.antagonista.input.InputManager;
-import cat.atridas.antagonista.physics.KinematicCharacter;
 import cat.atridas.antagonista.physics.PhysicsUserInfo;
 
 public class TestEntities {
@@ -98,7 +97,7 @@ public class TestEntities {
       TransformComponent tc = em.createComponent(entityMaster.getId(), TransformComponent.getComponentStaticType());
       
       Transformation transform = new Transformation();
-      transform.setTranslation(new Vector3f(0,0,4));
+      transform.setTranslation(new Vector3f(0,0,1.001f));
       tc.init(transform);
       
       
@@ -106,7 +105,7 @@ public class TestEntities {
       mc.init(new HashedString("MasterTest"));
       
       CharacterControllerComponent ccc = em.createComponent(entityMaster.getId(), CharacterControllerComponent.getComponentStaticType());
-      ccc.init(new Point3f(5,5,1), .5f, 2, .1f, 3f);
+      ccc.init(new Point3f(5,5,1), 1f, 2, .1f, 3f);
     }
     
     /////////////////////////////////////////////////////////////////////

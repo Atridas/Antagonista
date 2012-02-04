@@ -2046,37 +2046,37 @@ public abstract class DebugRender {
   protected final FloatBuffer createBBVertexBuffer() {
     ArrayList<Float> vertices = new ArrayList<>();
 
-    vertices.add( 1.f);
-    vertices.add(-1.f);
-    vertices.add( 1.f);
+    vertices.add( .5f);
+    vertices.add(-.5f);
+    vertices.add( .5f);
 
-    vertices.add( 1.f);
-    vertices.add( 1.f);
-    vertices.add( 1.f);
+    vertices.add( .5f);
+    vertices.add( .5f);
+    vertices.add( .5f);
 
-    vertices.add(-1.f);
-    vertices.add( 1.f);
-    vertices.add( 1.f);
+    vertices.add(-.5f);
+    vertices.add( .5f);
+    vertices.add( .5f);
 
-    vertices.add(-1.f);
-    vertices.add(-1.f);
-    vertices.add( 1.f);
+    vertices.add(-.5f);
+    vertices.add(-.5f);
+    vertices.add( .5f);
 
-    vertices.add( 1.f);
-    vertices.add(-1.f);
-    vertices.add(-1.f);
+    vertices.add( .5f);
+    vertices.add(-.5f);
+    vertices.add(-.5f);
 
-    vertices.add( 1.f);
-    vertices.add( 1.f);
-    vertices.add(-1.f);
+    vertices.add( .5f);
+    vertices.add( .5f);
+    vertices.add(-.5f);
 
-    vertices.add(-1.f);
-    vertices.add( 1.f);
-    vertices.add(-1.f);
+    vertices.add(-.5f);
+    vertices.add( .5f);
+    vertices.add(-.5f);
 
-    vertices.add(-1.f);
-    vertices.add(-1.f);
-    vertices.add(-1.f);
+    vertices.add(-.5f);
+    vertices.add(-.5f);
+    vertices.add(-.5f);
     //////////////////////////////////////////////////////////////
     Float faux1[] = vertices.toArray(new Float[vertices.size()]);
     float faux2[] = new float[faux1.length];

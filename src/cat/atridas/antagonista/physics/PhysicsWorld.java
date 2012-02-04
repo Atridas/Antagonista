@@ -1,5 +1,6 @@
 package cat.atridas.antagonista.physics;
 
+import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -142,13 +143,14 @@ public class PhysicsWorld {
 
           transform.getMatrix(matrix1);
           
-          point1.set(radius, radius, height + radius);
+          point1.set(radius*2, radius*2, (height + radius)*2);
 
           dr.addOBB(matrix1, point1, userInfo.color, userInfo.zTest);
 
+          
           //point1.set(.5f,.5f,2);
           //transform.getMatrix(matrix1);
-          //dr.addOBB(matrix1, point1, new Color3f(0,1,1), userInfo.zTest);
+          //dr.addOBB(matrix1, point1, new Color3f(0,0,1), false);
           
           
           /*
@@ -187,10 +189,11 @@ public class PhysicsWorld {
             point1.set(vector1);
             point1.x = point1.y = point1.x * 2;
             
-            //point2.set(.5f,.5f,2);
 
             dr.addOBB(matrix1, point1, userInfo.color, userInfo.zTest);
-            //dr.addOBB(matrix1, point2, new Color3f(0, 1, 1), userInfo.zTest);
+            
+            //point2.set(.5f,.5f,2);
+            //dr.addOBB(matrix1, point2, new Color3f(1, 1, 1), false);
         } else {
           throw new RuntimeException("Debug draw of shape " + cs.getClass().getCanonicalName() + " is not yet implemented!");
         }
@@ -243,7 +246,7 @@ public class PhysicsWorld {
     //float characterHeight = 1.75f * characterScale;
     //float characterWidth = 1.75f * characterScale;
     
-    ConvexShape capsule = new CapsuleShapeZ(characterWidth, characterHeight + characterWidth*2);
+    ConvexShape capsule = new CapsuleShapeZ(characterWidth * .5f, characterHeight * .5f + characterWidth);
     //ConvexShape capsule = new CylinderShapeZ(new Vector3f(characterWidth/2, 0, characterHeight));
     ghostObject.setCollisionShape(capsule);
     ghostObject.setCollisionFlags(CollisionFlags.CHARACTER_OBJECT);
