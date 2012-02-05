@@ -1,6 +1,5 @@
 package cat.atridas.antagonista.physics;
 
-import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;

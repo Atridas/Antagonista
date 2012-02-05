@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.vecmath.Tuple3f;
+import javax.vecmath.Vector3f;
+
 import org.lwjgl.BufferUtils;
 
 import com.bulletphysics.collision.shapes.IndexedMesh;
@@ -78,9 +81,15 @@ public abstract class Mesh extends Resource {
   
   /**
    * PhysicsMesh, for rigid body simulation and collision detection.
-   * @since 0.1
+   * @since 0.2
    */
   private PhysicsStaticMeshCore physicsMesh;
+  
+  /**
+   * Points of the (Axis Aligned) bounding box.
+   * @since 0.2
+   */
+  private final Tuple3f minBB = new Vector3f(), maxBB = new Vector3f();
   
   /**
    * Constructs an uninitialized mesh.
@@ -186,6 +195,35 @@ public abstract class Mesh extends Resource {
           
           if(loadPhysicMesh && j < 3) { //només l' x,y,z
             physicsMeshVertexBuffer.putFloat(f);
+          }
+          
+          if(j == 0) {// x
+            if(i == 0) {
+              minBB.x = f;
+              maxBB.x = f;
+            } else if(minBB.x > f) {
+              minBB.x = f;
+            } else if(maxBB.x < f) {
+              maxBB.x = f;
+            }
+          } else if(j == 1) {// x
+            if(i == 0) {
+              minBB.y = f;
+              maxBB.y = f;
+            } else if(minBB.y > f) {
+              minBB.y = f;
+            } else if(maxBB.y < f) {
+              maxBB.y = f;
+            }
+          } else if(j == 2) {// z
+            if(i == 0) {
+              minBB.z = f;
+              maxBB.z = f;
+            } else if(minBB.z > f) {
+              minBB.z = f;
+            } else if(maxBB.z < f) {
+              maxBB.z = f;
+            }
           }
         }
         
@@ -337,6 +375,26 @@ public abstract class Mesh extends Resource {
    */
   public final PhysicsStaticMeshCore getPhysicsMesh() {
     return physicsMesh;
+  }
+
+  /**
+   * Gets the minimum points of the bounding box of this mesh.
+   * 
+   * @param minBB_ output parameter.
+   * @since 0.2
+   */
+  public final void getMinBB(Tuple3f minBB_) {
+    minBB_.set(minBB);
+  }
+
+  /**
+   * Gets the maximum points of the bounding box of this mesh.
+   * 
+   * @param minBB_ output parameter.
+   * @since 0.2
+   */
+  public final void getMaxBB(Tuple3f maxBB_) {
+    maxBB_.set(maxBB);
   }
   
   /**
