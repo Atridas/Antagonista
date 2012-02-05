@@ -94,6 +94,7 @@ public class TestEntities {
       rbc.init(PhysicType.STATIC, core.getMeshManager().getResource(new HashedString("Habitacio")).getPhysicsMesh());
     }*/
     MeshManager mm = core.getMeshManager();
+    /*
     HashedString terraMesh = new HashedString("TerraBasic");
     HashedString murMesh = new HashedString("ParetsBasic");
     Vector3f vecAux = new Vector3f();
@@ -161,6 +162,8 @@ public class TestEntities {
       
       createMur(em, mm, transAux, murMesh);
     }
+    */
+    crearNivell(nivellDeProves, mm, em);
     
     /////////////////////////////////////////////////////////////////////
     Entity entityMaster = createMaster(em);
@@ -403,4 +406,64 @@ public class TestEntities {
     
     return entityMaster;
   }
+  
+  
+  private static void crearNivell(String config, MeshManager mm, EntityManager em) {
+    HashedString terraMesh = new HashedString("TerraBasic");
+    HashedString murMesh = new HashedString("ParetsBasic");
+    Vector3f vecAux = new Vector3f();
+    Transformation transAux = new Transformation();
+    
+    
+    int x, y;
+    String[] lines = config.split("\n");
+    String[] coords = lines[0].split(" ");
+    assert coords.length == 2;
+
+    x = Integer.parseInt(coords[0]);
+    y = Integer.parseInt(coords[1]);
+    
+    assert lines.length == y + 1;
+    
+    for(int j = 0; j < y; j++) {
+      String line = lines[j+1];
+      for(int i = 0; i < x; i++) {
+        char tipus = line.charAt(i);
+
+        vecAux.set(i*2 - x, j*2 - y,0);
+        transAux.setTranslation(vecAux);
+        
+        
+        
+        switch(tipus) {
+        case 'M':
+          createMur(em, mm, transAux, murMesh);
+          break;
+        case 'R':
+          createRajola(em, mm, transAux, terraMesh);
+          break;
+        default:
+          assert false;
+        }
+        
+      }
+    }
+  }
+  
+  private static final String nivellDeProves = 
+          "30 14\n" +
+          "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMM\n" +
+          "MMRRRRRRRRRRRRMMMMMRRRRRMMMMMM\n" +
+          "MMRRRRRRRRRRRRMMMMRRRRRRRMMMMM\n" +
+          "MMRRRRRRRRRRRRMMMRRRRRRRRRMMMM\n" +
+          "MMRRRRRRRRRRRRMMRRRRRRRRRRRMMM\n" +
+          "MMRRRRRRRRRRRRMRRRRRRRRRRRRRMM\n" +
+          "MRRRRRRRRRRRRRRRRRRRRRRRRRRRMM\n" +
+          "MRRRRRRRRRRRRRRRRRRRRRRRRRRRMM\n" +
+          "MMRRRRRRRRRRRRMRRRRRRRRRRRRRMM\n" +
+          "MMRRRRRRRRRRRRMMRRRRRRRRRRRMMM\n" +
+          "MMRRRRRRRRRRRRMMMRRRRRRRRRMMMM\n" +
+          "MMRRRRRRRRRRRRMMMMRRRRRRRMMMMM\n" +
+          "MMRRRRRRRRRRRRMMMMMRRRRRMMMMMM\n" +
+          "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMM";
 }

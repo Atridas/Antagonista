@@ -26,7 +26,7 @@ public class RTSCameraSystem implements cat.atridas.antagonista.entities.System 
   HashedString camRight = new HashedString("move_camera_right");
   HashedString camDist  = new HashedString("move_camera_distance");
 
-  float speed = 2f;
+  float speed = 5f;
   float speedZoom = .01f;
 
   @Override
