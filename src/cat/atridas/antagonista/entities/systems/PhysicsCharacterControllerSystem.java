@@ -21,6 +21,7 @@ import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.entities.Component;
+import cat.atridas.antagonista.entities.Entity;
 import cat.atridas.antagonista.entities.SystemManager;
 import cat.atridas.antagonista.entities.components.CharacterControllerComponent;
 import cat.atridas.antagonista.entities.components.TransformComponent;
@@ -49,11 +50,11 @@ public class PhysicsCharacterControllerSystem implements cat.atridas.antagonista
   private Quat4f         g_quat1          = new Quat4f();
   
   @Override
-  public void addEntity(HashedString entity, Component<?>[] components, DeltaTime currentTime) {
+  public void addEntity(Entity entity, Component<?>[] components, DeltaTime currentTime) {
     
     assert SystemManager.assertSystemInputParameters(entity,  components, this);
     
-    assert !kinematicCharacters.containsKey(entity);
+    assert !kinematicCharacters.containsKey(entity.getId());
 
     TransformComponent           transformC = (TransformComponent)           components[0];
     CharacterControllerComponent ccC        = (CharacterControllerComponent) components[1];
@@ -68,7 +69,7 @@ public class PhysicsCharacterControllerSystem implements cat.atridas.antagonista
     upAdjustment.set(Conventions.UP_VECTOR);
     upAdjustment.scale(zAdjustment);
     
-    PhysicsUserInfo pui = new PhysicsUserInfo();
+    PhysicsUserInfo pui = new PhysicsUserInfo(entity);
     pui.color.set(Utils.SKY_BLUE);
     pui.zTest = true;
     
@@ -85,15 +86,15 @@ public class PhysicsCharacterControllerSystem implements cat.atridas.antagonista
         ccC.getStepHeight(),
         pui);
     
-    kinematicCharacters.put(entity, kc);
+    kinematicCharacters.put(entity.getId(), kc);
   }
 
   @Override
-  public void updateEntity(HashedString entity, Component<?>[] components, DeltaTime currentTime) {
+  public void updateEntity(Entity entity, Component<?>[] components, DeltaTime currentTime) {
 
     assert SystemManager.assertSystemInputParameters(entity,  components, this);
 
-    assert kinematicCharacters.containsKey(entity);
+    assert kinematicCharacters.containsKey(entity.getId());
 
     TransformComponent           transformC = (TransformComponent)           components[0];
     CharacterControllerComponent ccC        = (CharacterControllerComponent) components[1];
@@ -111,7 +112,7 @@ public class PhysicsCharacterControllerSystem implements cat.atridas.antagonista
     upAdjustment.set(Conventions.UP_VECTOR);
     upAdjustment.scale(zAdjustment);
     
-    KinematicCharacter kc = kinematicCharacters.get(entity);
+    KinematicCharacter kc = kinematicCharacters.get(entity.getId());
     
     transformC.getTransform(g_transformation);
     
@@ -155,17 +156,17 @@ public class PhysicsCharacterControllerSystem implements cat.atridas.antagonista
   }
 
   @Override
-  public void deleteEntity(HashedString entity, DeltaTime currentTime) {
+  public void deleteEntity(Entity entity, DeltaTime currentTime) {
 
-    assert kinematicCharacters.containsKey(entity);
+    assert kinematicCharacters.containsKey(entity.getId());
     
-    KinematicCharacter kc = kinematicCharacters.get(entity);
+    KinematicCharacter kc = kinematicCharacters.get(entity.getId());
     if(kc != null) {
       physicsWorld.deleteKinematicCharacter(kc);
       return;
     }
     
-    LOGGER.warning("Deleting entity [" + entity + "] from PhysicsCharacterControllerSystem, and it's kinematic character was not found.");
+    LOGGER.warning("Deleting entity [" + entity.getId() + "] from PhysicsCharacterControllerSystem, and it's kinematic character was not found.");
   }
   
 
@@ -179,6 +180,7 @@ public class PhysicsCharacterControllerSystem implements cat.atridas.antagonista
   private final static List<HashedString> usedComponents;
   private final static List<HashedString> optionalComponents;
   private final static Set<HashedString> writeToComponents;
+  private final static Set<HashedString> otherComponents;
   private final static Set<HashedString> usedInterfaces;
   private final static Set<HashedString> writeToInterfaces;
   
@@ -194,6 +196,8 @@ public class PhysicsCharacterControllerSystem implements cat.atridas.antagonista
     Set<HashedString> writeTo = new HashSet<>();
     writeTo.add(TransformComponent.getComponentStaticType());
     writeToComponents = Collections.unmodifiableSet(writeTo);
+    
+    otherComponents = Collections.emptySet();
 
     Set<HashedString> interfaces = new HashSet<>();
     interfaces.add(SystemManager.physicsInteface);
@@ -229,5 +233,10 @@ public class PhysicsCharacterControllerSystem implements cat.atridas.antagonista
   @Override
   public Set<HashedString>  getWriteToInterfaces() {
     return writeToInterfaces;
+  }
+
+  @Override
+  public Set<HashedString> getOtherReadComponents() {
+    return otherComponents;
   }
 }

@@ -2,6 +2,8 @@ package cat.atridas.antagonista.physics;
 
 import javax.vecmath.Color3f;
 
+import cat.atridas.antagonista.entities.Entity;
+
 /**
  * Engine information for each physic entity.
  * 
@@ -20,4 +22,13 @@ public class PhysicsUserInfo {
    */
   public boolean zTest;
   
+  /**
+   * Game entity this physic object is associated with.
+   * @since 0.2
+   */
+  public final Entity entity;
+  
+  public PhysicsUserInfo(Entity _entity) {
+    entity = _entity;
+  }
 }

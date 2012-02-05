@@ -46,6 +46,13 @@ public interface System {
    * @since 0.2
    */
   Set<HashedString>  getWriteToComponents();
+  /**
+   * Set of components this system may read from other entities when updating/adding entities.
+   * 
+   * @return components this system may read from other entities.
+   * @since 0.2
+   */
+  Set<HashedString>  getOtherReadComponents();
   
   /**
    * Interfaces this system uses.
@@ -74,7 +81,7 @@ public interface System {
    * @param currentTime the current delta time.
    * @since 0.2
    */
-  void addEntity(HashedString entity, Component<?>[] components, DeltaTime currentTime);
+  void addEntity(Entity entity, Component<?>[] components, DeltaTime currentTime);
   
   /**
    * This method is called each frame for each entity that meets the requirements.
@@ -86,7 +93,7 @@ public interface System {
    * @param currentTime the current delta time.
    * @since 0.2
    */
-  void updateEntity(HashedString entity, Component<?>[] components, DeltaTime currentTime);
+  void updateEntity(Entity entity, Component<?>[] components, DeltaTime currentTime);
   
   /**
    * This method is called each time an entity no longer meets the requirements of this system.
@@ -95,5 +102,5 @@ public interface System {
    * @param currentTime the current delta time.
    * @since 0.2
    */
-  void deleteEntity(HashedString entity, DeltaTime currentTime);
+  void deleteEntity(Entity entity, DeltaTime currentTime);
 }

@@ -66,6 +66,7 @@ public final class EntityManager {
    * @since 0.2
    */
   public synchronized Entity createEntity(HashedString name) {
+    //TODO fer un read/write lock
     if(entities.containsKey(name)) {
       LOGGER.severe("Creating a entity with a used identifier! " + name);
       throw new RuntimeException();
@@ -82,6 +83,30 @@ public final class EntityManager {
   }
   
   /**
+   * Generates a new entity, with an automatically generated name.
+   * 
+   * @return a new entity.
+   * @since 0.2
+   */
+  public synchronized Entity createEntity() {
+    //TODO fer un read/write lock
+    HashedString name = new HashedString("Auto-" + autoName++);
+    return createEntity(name);
+  }
+  
+  /**
+   * Fetches a entity.
+   * 
+   * @param name id of the entity.
+   * @return a entity. <code>null</code> if no entity with this name was found.
+   * @since 0.2
+   */
+  public synchronized Entity getEntity(HashedString name) {
+    //TODO fer un read/write lock
+    return entities.get(name);
+  }
+  
+  /**
    * Creates a new Component.
    * 
    * @param entity id of the entity that will have the component.
@@ -89,13 +114,14 @@ public final class EntityManager {
    * @return a new component.
    * @since 0.2
    */
-  public synchronized <T extends GlobalComponent<?>> T createComponent(HashedString entity, HashedString component) {
-    assert entities.containsKey(entity);
+  public synchronized <T extends GlobalComponent<?>> T createComponent(Entity entity, HashedString component) {
+    //TODO fer un read/write lock
+    assert entities.containsKey(entity.getId());
     assert components.containsKey(component);
     
     HashMap<HashedString, GlobalComponent<?>> componentMap = components.get(component);
-    HashSet<HashedString> componentSet = entityComponentCache.get(entity);
-    assert !componentMap.containsKey(entity);
+    HashSet<HashedString> componentSet = entityComponentCache.get(entity.getId());
+    assert !componentMap.containsKey(entity.getId());
     assert !componentSet.contains(component);
     
     @SuppressWarnings("unchecked")
@@ -103,10 +129,10 @@ public final class EntityManager {
     
     try {
       Constructor<T> constructor = componentClass.getConstructor(Entity.class);
-      T createdComponent = constructor.newInstance(entities.get(entity));
-      componentMap.put(entity, createdComponent);
+      T createdComponent = constructor.newInstance(entity);
+      componentMap.put(entity.getId(), createdComponent);
       componentSet.add(component);
-      updatedEntities.add(entity);
+      updatedEntities.add(entity.getId());
       
       return createdComponent;
     } catch (Exception e) {
@@ -124,30 +150,20 @@ public final class EntityManager {
    * @since 0.2
    */
   @SuppressWarnings("unchecked")
-  public synchronized <T extends GlobalComponent<?>> T getComponent(HashedString entity, HashedString component) {
+  public synchronized <T extends GlobalComponent<?>> T getComponent(Entity entity, HashedString component) {
+    //TODO fer un read/write lock
 
     HashMap<HashedString, GlobalComponent<?>> componentMap = components.get(component);
-    T componentToReturn = (T) componentMap.get(entity);
+    T componentToReturn = (T) componentMap.get(entity.getId());
     assert 
-        (componentToReturn != null && entityComponentCache.get(entity).contains(component))
+        (componentToReturn != null && entityComponentCache.get(entity.getId()).contains(component))
         ||
-        (componentToReturn == null && !entityComponentCache.get(entity).contains(component));
+        (componentToReturn == null && !entityComponentCache.get(entity.getId()).contains(component));
 
     assert componentToReturn == null || componentToReturn.getComponentType().equals(component);
-    assert componentToReturn == null || componentToReturn.getEntityId().equals(entity);
+    assert componentToReturn == null || componentToReturn.getEntityId().equals(entity.getId());
     
     return componentToReturn;
-  }
-  
-  /**
-   * Generates a new entity, with an automatically generated name.
-   * 
-   * @return a new entity.
-   * @since 0.2
-   */
-  public synchronized Entity createEntity() {
-    HashedString name = new HashedString("Auto-" + autoName++);
-    return createEntity(name);
   }
   
   /**

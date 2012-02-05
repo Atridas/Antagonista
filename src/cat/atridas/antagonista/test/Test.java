@@ -76,10 +76,10 @@ public class Test {
     
     Transformation transform = new Transformation();
     
-    PhysicsUserInfo pui = new PhysicsUserInfo();
+    PhysicsUserInfo pui = new PhysicsUserInfo(null); //TODO
     pui.color.set(Utils.RED);
     pui.zTest = true;
-    core.getPhysicsWorld().createStaticRigidBody(habitacio.getPhysicsMesh(), pui, transform);
+    core.getPhysicsWorld().createStaticRigidBody(habitacio.getPhysicsMesh(), new Vector3f(), pui, transform);
     
     assert !Utils.hasGLErrors();
     

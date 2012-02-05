@@ -2,12 +2,15 @@ package cat.atridas.antagonista.entities.components;
 
 import java.util.logging.Logger;
 
+import javax.vecmath.Vector3f;
+
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.entities.BaseComponent;
 import cat.atridas.antagonista.entities.Entity;
 import cat.atridas.antagonista.entities.GlobalComponent;
 import cat.atridas.antagonista.entities.LocalComponent;
+import cat.atridas.antagonista.physics.BoundingBoxShape;
 import cat.atridas.antagonista.physics.PhysicShape;
 import cat.atridas.antagonista.physics.PhysicsStaticMeshCore;
 
@@ -28,6 +31,8 @@ public class RigidBodyComponent extends BaseComponent<RigidBodyComponent> {
     case STATIC:
       if(_shape instanceof PhysicsStaticMeshCore) {
         break;
+      }else if(_shape instanceof BoundingBoxShape) {
+        break;
       }
     default:
       LOGGER.severe("RigidBody type and Shape are incompatible!");
@@ -42,6 +47,10 @@ public class RigidBodyComponent extends BaseComponent<RigidBodyComponent> {
   
   public PhysicShape getShape() {
     return shape;
+  }
+  
+  public void getOffset(Vector3f offset_) {
+    shape.getFromGameToBulletVector(offset_);
   }
 
   @Override

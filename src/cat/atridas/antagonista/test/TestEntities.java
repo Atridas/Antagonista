@@ -18,6 +18,7 @@ import cat.atridas.antagonista.entities.EntityManager;
 import cat.atridas.antagonista.entities.SystemManager;
 import cat.atridas.antagonista.entities.components.CharacterControllerComponent;
 import cat.atridas.antagonista.entities.components.MeshComponent;
+import cat.atridas.antagonista.entities.components.NavigableTerrainComponent;
 import cat.atridas.antagonista.entities.components.RTSCameraComponent;
 import cat.atridas.antagonista.entities.components.RigidBodyComponent;
 import cat.atridas.antagonista.entities.components.TransformComponent;
@@ -29,10 +30,12 @@ import cat.atridas.antagonista.entities.systems.RenderingSystem;
 import cat.atridas.antagonista.entities.systems.RigidBodySystem;
 import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.graphics.Font;
+import cat.atridas.antagonista.graphics.MeshManager;
 import cat.atridas.antagonista.graphics.RTSCamera;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.SceneData;
 import cat.atridas.antagonista.input.InputManager;
+import cat.atridas.antagonista.physics.PhysicShape;
 import cat.atridas.antagonista.physics.PhysicsUserInfo;
 
 public class TestEntities {
@@ -77,7 +80,7 @@ public class TestEntities {
     
     
     ///////////////////////////////////////////////////////////////////////////////////////
-    {
+    /*{
       Entity entityRoom   = em.createEntity(new HashedString("Room"));
       
       TransformComponent tc = em.createComponent(entityRoom.getId(), TransformComponent.getComponentStaticType());
@@ -89,31 +92,85 @@ public class TestEntities {
       
       RigidBodyComponent rbc = em.createComponent(entityRoom.getId(), RigidBodyComponent.getComponentStaticType());
       rbc.init(PhysicType.STATIC, core.getMeshManager().getResource(new HashedString("Habitacio")).getPhysicsMesh());
+    }*/
+    MeshManager mm = core.getMeshManager();
+    HashedString terraMesh = new HashedString("TerraBasic");
+    HashedString murMesh = new HashedString("ParetsBasic");
+    Vector3f vecAux = new Vector3f();
+    Transformation transAux = new Transformation();
+    for(int i = -10; i <= 10; i+=2) {
+      for(int j = -10; j <= 10; j+=2) {
+        vecAux.set(i,j,0);
+        transAux.setTranslation(vecAux);
+        
+        createRajola(em, mm, transAux, terraMesh);
+      }
+      
+      // murs
+      // top
+      {
+        vecAux.set(i,12,0);
+        transAux.setTranslation(vecAux);
+        
+        createMur(em, mm, transAux, murMesh);
+      }
+      // right
+      {
+        vecAux.set(12,i,0);
+        transAux.setTranslation(vecAux);
+        
+        createMur(em, mm, transAux, murMesh);
+      }
+      // bot
+      {
+        vecAux.set(i,-12,0);
+        transAux.setTranslation(vecAux);
+        
+        createMur(em, mm, transAux, murMesh);
+      }
+      // left
+      {
+        vecAux.set(-12,i,0);
+        transAux.setTranslation(vecAux);
+        
+        createMur(em, mm, transAux, murMesh);
+      }
     }
-    /////////////////////////////////////////////////////////////////////
+
     {
-      Entity entityMaster = em.createEntity(new HashedString("Master"));
+      vecAux.set(12,12,0);
+      transAux.setTranslation(vecAux);
       
-      TransformComponent tc = em.createComponent(entityMaster.getId(), TransformComponent.getComponentStaticType());
-      
-      Transformation transform = new Transformation();
-      transform.setTranslation(new Vector3f(0,0,1.001f));
-      tc.init(transform);
-      
-      
-      MeshComponent mc = em.createComponent(entityMaster.getId(), MeshComponent.getComponentStaticType());
-      mc.init(new HashedString("MasterTest"));
-      
-      CharacterControllerComponent ccc = em.createComponent(entityMaster.getId(), CharacterControllerComponent.getComponentStaticType());
-      ccc.init(new Point3f(5,5,1), 1f, 2, .1f, 3f);
+      createMur(em, mm, transAux, murMesh);
     }
+    {
+      vecAux.set(-12,12,0);
+      transAux.setTranslation(vecAux);
+      
+      createMur(em, mm, transAux, murMesh);
+    }
+    {
+      vecAux.set(12,-12,0);
+      transAux.setTranslation(vecAux);
+      
+      createMur(em, mm, transAux, murMesh);
+    }
+    {
+      vecAux.set(-12,-12,0);
+      transAux.setTranslation(vecAux);
+      
+      createMur(em, mm, transAux, murMesh);
+    }
+    
+    /////////////////////////////////////////////////////////////////////
+    Entity entityMaster = createMaster(em);
     
     /////////////////////////////////////////////////////////////////////
     {
       
       Entity entityCamera = em.createEntity(new HashedString("Camera"));
       
-      RTSCameraComponent cc = em.createComponent(entityCamera.getId(), RTSCameraComponent.getComponentStaticType());
+      RTSCameraComponent cc = em.createComponent(entityCamera, RTSCameraComponent.getComponentStaticType());
       RTSCamera camera = new RTSCamera();
       camera.setMaxDistance(30);
       camera.setDistance(20);
@@ -170,7 +227,7 @@ public class TestEntities {
     sceneData.setDirectionalLight(new Vector3f(0,1,1), new Color3f(0.3f, 0.3f, 0.3f));
     
     DebugRender dr = core.getDebugRender();
-    dr.activate();
+    //dr.activate();
     Font font = core.getFontManager().getResource(new HashedString("font14"));
 
     im.loadActions("data/xml/inputManager.xml");
@@ -203,11 +260,11 @@ public class TestEntities {
         rm.getSceneData().getCameraPosition(origin);
         
         PhysicsUserInfo pui = core.getPhysicsWorld().raycast(origin,destiny,collisionPoint,collisionNormal);
-        if(pui != null) {
+        if(pui != null && pui.entity.getGlobalComponent(NavigableTerrainComponent.getComponentStaticType()) != null) {
           dr.addCross(collisionPoint, pui.color, 1, .5f);
           
           
-          CharacterControllerComponent ccc = em.getComponent(new HashedString("Master"), CharacterControllerComponent.getComponentStaticType());
+          CharacterControllerComponent ccc = em.getComponent(entityMaster, CharacterControllerComponent.getComponentStaticType());
           ccc.setDesiredPosition(collisionPoint);
         }
       }
@@ -285,5 +342,65 @@ public class TestEntities {
     
     core.close();
     
+  }
+  
+  
+  
+  private static Entity createRajola(EntityManager em, MeshManager mm, Transformation position, HashedString meshName) {
+    Entity rajola = em.createEntity();
+    
+    
+    TransformComponent tc = em.createComponent(rajola, TransformComponent.getComponentStaticType());
+    tc.init(position);
+    
+    MeshComponent mc = em.createComponent(rajola, MeshComponent.getComponentStaticType());
+    mc.init(meshName);
+    
+    RigidBodyComponent rbc = em.createComponent(rajola, RigidBodyComponent.getComponentStaticType());
+    PhysicShape mesh = mm.getResource(meshName).getPhysicsMesh();
+    
+    rbc.init(PhysicType.STATIC, mesh);
+    
+    
+    NavigableTerrainComponent ntc = em.createComponent(rajola, NavigableTerrainComponent.getComponentStaticType());
+    ntc.init();
+    
+    return rajola;
+  }
+  
+  private static Entity createMur(EntityManager em, MeshManager mm, Transformation position, HashedString meshName) {
+    Entity mur = em.createEntity();
+    
+    TransformComponent tc = em.createComponent(mur, TransformComponent.getComponentStaticType());
+    tc.init(position);
+    
+    MeshComponent mc = em.createComponent(mur, MeshComponent.getComponentStaticType());
+    mc.init(meshName);
+    
+    RigidBodyComponent rbc = em.createComponent(mur, RigidBodyComponent.getComponentStaticType());
+    PhysicShape mesh = mm.getResource(meshName).getPhysicsMesh();
+    
+    rbc.init(PhysicType.STATIC, mesh);
+    
+    return mur;
+  }
+  
+  private static Entity createMaster(EntityManager em) {
+    Entity entityMaster = em.createEntity(new HashedString("Master"));
+    
+    TransformComponent tc = em.createComponent(entityMaster, TransformComponent.getComponentStaticType());
+    
+    Transformation transform = new Transformation();
+    transform.setTranslation(new Vector3f(0,0,1.001f));
+    tc.init(transform);
+    
+    
+    MeshComponent mc = em.createComponent(entityMaster, MeshComponent.getComponentStaticType());
+    mc.init(new HashedString("MasterTest"));
+    
+    CharacterControllerComponent ccc = em.createComponent(entityMaster, CharacterControllerComponent.getComponentStaticType());
+    ccc.init(new Point3f(5,5,1), 1f, 2, .1f, 3f);
+    
+    return entityMaster;
   }
 }

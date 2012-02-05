@@ -22,6 +22,7 @@ import com.bulletphysics.collision.dispatch.CollisionWorld.ClosestRayResultCallb
 import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
 import com.bulletphysics.collision.dispatch.GhostPairCallback;
 import com.bulletphysics.collision.dispatch.PairCachingGhostObject;
+import com.bulletphysics.collision.shapes.BoxShape;
 import com.bulletphysics.collision.shapes.BvhTriangleMeshShape;
 import com.bulletphysics.collision.shapes.CapsuleShapeZ;
 import com.bulletphysics.collision.shapes.CollisionShape;
@@ -178,22 +179,38 @@ public class PhysicsWorld {
           dr.addSphere(point1, faux1[0], userInfo.color, userInfo.zTest);
           */
         } else if(cs instanceof CylinderShapeZ) {
-            //TODO
-            CylinderShapeZ cShape = (CylinderShapeZ) cs;
-            
-            cShape.getHalfExtentsWithoutMargin(vector1);
+          //TODO
+          CylinderShapeZ cShape = (CylinderShapeZ) cs;
+          
+          cShape.getHalfExtentsWithoutMargin(vector1);
 
-            transform.getMatrix(matrix1);
-            
-            point1.set(vector1);
-            point1.x = point1.y = point1.x * 2;
-            
+          transform.getMatrix(matrix1);
+          
+          point1.set(vector1);
+          point1.x = point1.y = point1.x * 2;
+          
 
-            dr.addOBB(matrix1, point1, userInfo.color, userInfo.zTest);
-            
-            //point2.set(.5f,.5f,2);
-            //dr.addOBB(matrix1, point2, new Color3f(1, 1, 1), false);
-        } else {
+          dr.addOBB(matrix1, point1, userInfo.color, userInfo.zTest);
+          
+          //point2.set(.5f,.5f,2);
+          //dr.addOBB(matrix1, point2, new Color3f(1, 1, 1), false);
+      } else if(cs instanceof BoxShape) {
+        //TODO
+        BoxShape box = (BoxShape) cs;
+        
+        box.getHalfExtentsWithoutMargin(vector1);
+
+        transform.getMatrix(matrix1);
+        
+        point1.set(vector1);
+        point1.scale(2);
+        
+
+        dr.addOBB(matrix1, point1, userInfo.color, userInfo.zTest);
+        
+        //point2.set(.5f,.5f,2);
+        //dr.addOBB(matrix1, point2, new Color3f(1, 1, 1), false);
+    } else {
           throw new RuntimeException("Debug draw of shape " + cs.getClass().getCanonicalName() + " is not yet implemented!");
         }
       }
@@ -204,7 +221,7 @@ public class PhysicsWorld {
     dynamicsWorld.stepSimulation(dt.dt);
   }
   
-  public StaticRigidBody createStaticRigidBody(PhysicShape _physicShape, PhysicsUserInfo _userInfo, Transformation _bodyTransform) {
+  public StaticRigidBody createStaticRigidBody(PhysicShape _physicShape, Vector3f fromGameToBulletOffset, PhysicsUserInfo _userInfo, Transformation _bodyTransform) {
     
     Matrix4f mat = new Matrix4f();
     _bodyTransform.getMatrix(mat);
@@ -212,6 +229,8 @@ public class PhysicsWorld {
     
 
     DefaultMotionState dms = new DefaultMotionState(trans);
+    dms.centerOfMassOffset.origin.set(fromGameToBulletOffset);
+    dms.centerOfMassOffset.origin.scale(-1);
 
     RigidBodyConstructionInfo rbci = new RigidBodyConstructionInfo(0, dms, _physicShape.getBulletShape());
     //RigidBodyConstructionInfo rbci = new RigidBodyConstructionInfo(0, dms, new SphereShape(5));

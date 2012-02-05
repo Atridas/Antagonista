@@ -1,6 +1,7 @@
 package cat.atridas.antagonista.entities;
 
 import cat.atridas.antagonista.HashedString;
+import cat.atridas.antagonista.core.Core;
 
 /**
  * Embeds an Entity of the game.
@@ -17,6 +18,9 @@ public final class Entity {
    * @since 0.2
    */
   private final HashedString id;
+  
+  
+  private static final EntityManager em = Core.getCore().getEntityManager();
   
   /**
    * Constructor.
@@ -38,7 +42,9 @@ public final class Entity {
     return id;
   }
   
-  
+  public <T extends GlobalComponent<?>> T getGlobalComponent(HashedString component) {
+    return em.getComponent(this, component);
+  }
   
   @Override
   public int hashCode() {

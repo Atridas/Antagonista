@@ -38,7 +38,7 @@ public class SystemManager {
    * 
    * @since 0.2
    */
-  private final HashMap<HashedString, HashMap<HashedString,LocalComponent<?>[]>> entitiesCache = new HashMap<>();
+  private final HashMap<HashedString, HashMap<HashedString,CachedEntity>> entitiesCache = new HashMap<>();
   
   /**
    * Acumulation of all entity changes since last update, for each system.
@@ -49,7 +49,7 @@ public class SystemManager {
   public void registerSystem(System system) {
     systems.add(system);
     
-    entitiesCache.put(system.getSystemId(), new HashMap<HashedString,LocalComponent<?>[]>());
+    entitiesCache.put(system.getSystemId(), new HashMap<HashedString,CachedEntity>());
     acumulatedEntityChanges.put(system.getSystemId(), new HashSet<HashedString>());
   }
   
@@ -82,7 +82,7 @@ public class SystemManager {
   private void updateSystem(System system, EntityManager em, DeltaTime dt) {
     HashSet<HashedString> systemAcumulatedEntityChanges = acumulatedEntityChanges.get(system.getSystemId());
     
-    HashMap<HashedString,LocalComponent<?>[]> systemEntities = entitiesCache.get(system.getSystemId());
+    HashMap<HashedString,CachedEntity> systemEntities = entitiesCache.get(system.getSystemId());
 
     
 
@@ -92,6 +92,7 @@ public class SystemManager {
     if(systemAcumulatedEntityChanges.size() > 0) {
     
       for(HashedString entityId : systemAcumulatedEntityChanges) {
+        Entity entity = em.getEntity(entityId);
         
         boolean thisSystemHasThisEntity = systemEntities.containsKey(entityId);
         List<HashedString> systemComponents = system.getUsedComponents();
@@ -101,45 +102,46 @@ public class SystemManager {
         if(!thisSystemHasThisEntity && thisEntityHasAllNeededComponents) {
           //afegir entitat.
           
-          LocalComponent<?>[] components = new LocalComponent<?>[ componentsUsed.size() + optionalComponents.size() ];
+          CachedEntity cachedEntity = new CachedEntity(entity, componentsUsed.size() + optionalComponents.size());
+          
           
           for(int i = 0; i < componentsUsed.size(); ++i) {
-            components[i] = (LocalComponent<?>) em.getComponent(entityId, componentsUsed.get(i)).createLocalCopy();
-            assert components[i].isInitialized();
+            cachedEntity.localComponents[i] = (LocalComponent<?>) em.getComponent(entity, componentsUsed.get(i)).createLocalCopy();
+            assert cachedEntity.localComponents[i].isInitialized();
           }
           int dif = componentsUsed.size();
           
           for(int i = 0; i < optionalComponents.size(); ++i) {
-            GlobalComponent<?> optional = em.getComponent(entityId, optionalComponents.get(i));
+            GlobalComponent<?> optional = em.getComponent(entity, optionalComponents.get(i));
             if(optional != null) {
-              components[i + dif] = optional.createLocalCopy();
-              assert components[i].isInitialized();
+              cachedEntity.localComponents[i + dif] = optional.createLocalCopy();
+              assert cachedEntity.localComponents[i].isInitialized();
             }
           }
           
-          systemEntities.put(entityId, components);
+          systemEntities.put(entityId, cachedEntity);
           
-          system.addEntity(entityId, components, dt);
+          system.addEntity(entity, cachedEntity.localComponents, dt);
           
         } else if(thisSystemHasThisEntity && !thisEntityHasAllNeededComponents) {
           //treure entitat.
           
-          system.deleteEntity(entityId, dt);
+          system.deleteEntity(entity, dt);
           
           systemEntities.remove(entityId);
         } else if(thisSystemHasThisEntity) {
           
-          LocalComponent<?>[] components = systemEntities.get(entityId);
+          CachedEntity cachedEntity = systemEntities.get(entityId);
           
           int dif = componentsUsed.size();
           
           for(int i = 0; i < optionalComponents.size(); ++i) {
-            GlobalComponent<?> optional = em.getComponent(entityId, optionalComponents.get(i));
+            GlobalComponent<?> optional = em.getComponent(entity, optionalComponents.get(i));
             if(optional != null) {
-              components[i + dif] = optional.createLocalCopy();
-              assert components[i].isInitialized();
+              cachedEntity.localComponents[i + dif] = optional.createLocalCopy();
+              assert cachedEntity.localComponents[i].isInitialized();
             } else {
-              components[i + dif] = null;
+              cachedEntity.localComponents[i + dif] = null;
             }
           }
         }
@@ -148,38 +150,38 @@ public class SystemManager {
     
     systemAcumulatedEntityChanges.clear();
     
-    for(Entry<HashedString,LocalComponent<?>[]> systemEntity : systemEntities.entrySet()) {
-      HashedString entityId = systemEntity.getKey();
-      LocalComponent<?>[] components = systemEntity.getValue();
+    for(Entry<HashedString,CachedEntity> systemEntity : systemEntities.entrySet()) {
+      //HashedString entityId = systemEntity.getKey();
+      CachedEntity cachedEntity = systemEntity.getValue();
       
       int dif = componentsUsed.size();
       
       for(int i = 0; i < optionalComponents.size(); ++i) {
-        if(components[i + dif] == null) {
-          GlobalComponent<?> optional = em.getComponent(entityId, optionalComponents.get(i));
+        if(cachedEntity.localComponents[i + dif] == null) {
+          GlobalComponent<?> optional = em.getComponent(cachedEntity.entity, optionalComponents.get(i));
           if(optional != null) {
-            components[i + dif] = optional.createLocalCopy();
+            cachedEntity.localComponents[i + dif] = optional.createLocalCopy();
           }
         }
       }
       
-      for(LocalComponent<?> component : components) {
+      for(LocalComponent<?> component : cachedEntity.localComponents) {
         if(component != null)
           component.pullChanges();
       }
       
-      system.updateEntity(entityId, components, dt);
+      system.updateEntity(cachedEntity.entity, cachedEntity.localComponents, dt);
     }
   }
   
   private synchronized void pushSystemChanges(System system) {
     
-    HashMap<HashedString,LocalComponent<?>[]> systemEntities = entitiesCache.get(system.getSystemId());
+    HashMap<HashedString,CachedEntity> systemEntities = entitiesCache.get(system.getSystemId());
     
     Set<HashedString> writeToComponents = system.getWriteToComponents();
     
-    for(LocalComponent<?>[] components : systemEntities.values()) {
-      for(LocalComponent<?> component : components) {
+    for(CachedEntity cachedEntity : systemEntities.values()) {
+      for(LocalComponent<?> component : cachedEntity.localComponents) {
         if(component != null && writeToComponents.contains(component.getComponentType()))
           component.pushChanges();
       }
@@ -188,7 +190,7 @@ public class SystemManager {
   
   
   
-  public static boolean assertSystemInputParameters(HashedString entity, Component<?>[] components, System system) {
+  public static boolean assertSystemInputParameters(Entity entity, Component<?>[] components, System system) {
 
     List<HashedString> usedComponents = system.getUsedComponents();
     List<HashedString> optionalComponents = system.getOptionalComponents();
@@ -199,7 +201,7 @@ public class SystemManager {
     for(int i = 0; i < usedComponents.size(); ++i) {
       if(! components[i].getComponentType().equals(usedComponents.get(i)) )
         return false;
-      if(! components[i].getEntityId().equals(entity) )
+      if(! components[i].getEntityId().equals(entity.getId()) )
         return false;
     }
     
@@ -208,11 +210,21 @@ public class SystemManager {
       if(components[j] != null) {
         if(! components[j].getComponentType().equals(optionalComponents.get(i)) )
           return false;
-        if(! components[j].getEntityId().equals(entity) )
+        if(! components[j].getEntityId().equals(entity.getId()) )
           return false;
       }
     }
     
     return true;
+  }
+  
+  private static final class CachedEntity {
+    public final Entity entity;
+    public final LocalComponent<?>[] localComponents;
+    
+    public CachedEntity(Entity _entity, int numLocalComponents) {
+      entity = _entity;
+      localComponents = new LocalComponent<?>[numLocalComponents];
+    }
   }
 }

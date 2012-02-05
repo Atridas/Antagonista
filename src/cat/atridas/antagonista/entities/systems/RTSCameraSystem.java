@@ -10,6 +10,7 @@ import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.entities.Component;
+import cat.atridas.antagonista.entities.Entity;
 import cat.atridas.antagonista.entities.SystemManager;
 import cat.atridas.antagonista.entities.components.CameraComponent;
 import cat.atridas.antagonista.entities.components.RTSCameraComponent;
@@ -29,7 +30,7 @@ public class RTSCameraSystem implements cat.atridas.antagonista.entities.System 
   float speedZoom = .01f;
 
   @Override
-  public void addEntity(HashedString entity, Component<?>[] components, DeltaTime currentTime) {
+  public void addEntity(Entity entity, Component<?>[] components, DeltaTime currentTime) {
     
     assert SystemManager.assertSystemInputParameters(entity,  components, this);
 
@@ -42,7 +43,7 @@ public class RTSCameraSystem implements cat.atridas.antagonista.entities.System 
   }
 
   @Override
-  public void updateEntity(HashedString entity, Component<?>[] components, DeltaTime currentTime) {
+  public void updateEntity(Entity entity, Component<?>[] components, DeltaTime currentTime) {
 
     assert SystemManager.assertSystemInputParameters(entity,  components, this);
 
@@ -79,7 +80,7 @@ public class RTSCameraSystem implements cat.atridas.antagonista.entities.System 
   }
 
   @Override
-  public void deleteEntity(HashedString entity, DeltaTime currentTime) {
+  public void deleteEntity(Entity entity, DeltaTime currentTime) {
     //TODO Core.getCore().getEntityManager().deleteComponent
   }
   
@@ -89,6 +90,7 @@ public class RTSCameraSystem implements cat.atridas.antagonista.entities.System 
   private final static List<HashedString> usedComponents;
   private final static List<HashedString> optionalComponents;
   private final static Set<HashedString> writeToComponents;
+  private final static Set<HashedString> otherComponents;
   private final static Set<HashedString> usedInterfaces;
   private final static Set<HashedString> writeToInterfaces;
   
@@ -106,6 +108,8 @@ public class RTSCameraSystem implements cat.atridas.antagonista.entities.System 
     writes.add(CameraComponent.getComponentStaticType());
     
     writeToComponents = Collections.unmodifiableSet(writes);
+    
+    otherComponents = Collections.emptySet();
 
     Set<HashedString> interfaces = new HashSet<>();
     interfaces.add(SystemManager.inputInteface);
@@ -141,5 +145,10 @@ public class RTSCameraSystem implements cat.atridas.antagonista.entities.System 
   @Override
   public Set<HashedString>  getWriteToInterfaces() {
     return writeToInterfaces;
+  }
+
+  @Override
+  public Set<HashedString> getOtherReadComponents() {
+    return otherComponents;
   }
 }

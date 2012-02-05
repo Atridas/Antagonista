@@ -10,16 +10,50 @@ import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.entities.Component;
+import cat.atridas.antagonista.entities.Entity;
 import cat.atridas.antagonista.entities.SystemManager;
 import cat.atridas.antagonista.entities.components.CameraComponent;
 import cat.atridas.antagonista.graphics.SceneData;
 
 public class RenderingCameraSystem implements cat.atridas.antagonista.entities.System {
+  
+
+  @Override
+  public void addEntity(Entity entity, Component<?>[] components, DeltaTime currentTime) {
+    // --
+  }
+
+  @Override
+  public void updateEntity(Entity entity, Component<?>[] components, DeltaTime currentTime) {
+
+    assert SystemManager.assertSystemInputParameters(entity,  components, this);
+
+    CameraComponent    camera    = (CameraComponent)   components[0];
+    
+    if(camera.isActive()) {
+      SceneData sd = Core.getCore().getRenderManager().getSceneData();
+      
+      sd.setCamera(camera.getCamera());
+    }
+  }
+
+  @Override
+  public void deleteEntity(Entity entity, DeltaTime currentTime) {
+    // --
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  
   private final static HashedString systemID = new HashedString("RenderingCameraSystem");
 
   private final static List<HashedString> usedComponents;
   private final static List<HashedString> optionalComponents;
   private final static Set<HashedString> writeToComponents;
+  private final static Set<HashedString> otherComponents;
   private final static Set<HashedString> usedInterfaces;
   private final static Set<HashedString> writeToInterfaces;
   
@@ -31,6 +65,8 @@ public class RenderingCameraSystem implements cat.atridas.antagonista.entities.S
     optionalComponents = Collections.emptyList();
     
     writeToComponents = Collections.emptySet();
+    
+    otherComponents = Collections.emptySet();
 
     Set<HashedString> interfaces = new HashSet<>();
     interfaces.add(SystemManager.renderInteface);
@@ -69,26 +105,7 @@ public class RenderingCameraSystem implements cat.atridas.antagonista.entities.S
   }
 
   @Override
-  public void addEntity(HashedString entity, Component<?>[] components, DeltaTime currentTime) {
-    // --
-  }
-
-  @Override
-  public void updateEntity(HashedString entity, Component<?>[] components, DeltaTime currentTime) {
-
-    assert SystemManager.assertSystemInputParameters(entity,  components, this);
-
-    CameraComponent    camera    = (CameraComponent)   components[0];
-    
-    if(camera.isActive()) {
-      SceneData sd = Core.getCore().getRenderManager().getSceneData();
-      
-      sd.setCamera(camera.getCamera());
-    }
-  }
-
-  @Override
-  public void deleteEntity(HashedString entity, DeltaTime currentTime) {
-    // --
+  public Set<HashedString> getOtherReadComponents() {
+    return otherComponents;
   }
 }
