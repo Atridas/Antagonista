@@ -22,6 +22,8 @@ import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Resource;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
+import cat.atridas.antagonista.physics.BoundingBoxShape;
+import cat.atridas.antagonista.physics.PhysicShape;
 import cat.atridas.antagonista.physics.PhysicsStaticMeshCore;
 
 /**
@@ -83,7 +85,7 @@ public abstract class Mesh extends Resource {
    * PhysicsMesh, for rigid body simulation and collision detection.
    * @since 0.2
    */
-  private PhysicsStaticMeshCore physicsMesh;
+  private PhysicShape physicsMesh;
   
   /**
    * Points of the (Axis Aligned) bounding box.
@@ -303,6 +305,8 @@ public abstract class Mesh extends Resource {
         tiva.addIndexedMesh(indexedMesh, ScalarType.SHORT);
         
         physicsMesh = new PhysicsStaticMeshCore(tiva);
+      } else {
+        physicsMesh = new BoundingBoxShape(minBB, maxBB);
       }
       
       return errors;
@@ -367,13 +371,13 @@ public abstract class Mesh extends Resource {
   }
   
   /**
-   * Gets the physics mesh of this object. Used to have a reference core to create 
+   * Gets the physics shape of this object. Used to have a reference core to create 
    * static Rigid Bodies.
    * 
    * @return the physics mesh of this object.
    * @since 0.2
    */
-  public final PhysicsStaticMeshCore getPhysicsMesh() {
+  public final PhysicShape getPhysicsMesh() {
     return physicsMesh;
   }
 

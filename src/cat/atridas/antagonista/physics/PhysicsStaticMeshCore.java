@@ -1,7 +1,8 @@
 package cat.atridas.antagonista.physics;
 
+import javax.vecmath.Vector3f;
+
 import com.bulletphysics.collision.shapes.BvhTriangleMeshShape;
-import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.collision.shapes.StridingMeshInterface;
 
 /**
@@ -21,8 +22,13 @@ public class PhysicsStaticMeshCore implements PhysicShape {
 
 
   @Override
-  public CollisionShape getBulletShape() {
+  public BvhTriangleMeshShape getBulletShape() {
     return meshShape;
   }
-  
+
+
+  @Override
+  public void getFromGameToBulletVector(Vector3f out_) {
+    out_.set(0,0,0);
+  }
 }
