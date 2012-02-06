@@ -1042,12 +1042,13 @@ public abstract class DebugRender {
    */
   public void render(RenderManager rm, DeltaTime dt) {
     beginRender(rm);
-    renderLines(rm);
+    //renderLines(rm);
+    renderLinesAndTriangles(rm);
     renderCrosses(rm);
     renderSpheres(rm);
     renderCircles(rm);
     renderAxes(rm);
-    renderTriangles(rm);
+    //renderTriangles(rm);
     renderBBs(rm);
     renderStrings(rm);
     endRender();
@@ -1128,7 +1129,18 @@ public abstract class DebugRender {
    * 
    * @see #lines
    */
-  protected abstract void renderLines(RenderManager rm);
+  //protected abstract void renderLines(RenderManager rm);
+  /**
+   * Overwrite and implement how to render all lines and all triangles.
+   * 
+   * @param rm Render Manager
+   * 
+   * @since 0.2
+   * 
+   * @see #lines
+   * @see DebugRender#triangles
+   */
+  protected abstract void renderLinesAndTriangles(RenderManager rm);
   /**
    * Overwrite and implement how to render all crosses.
    * 
@@ -1178,7 +1190,7 @@ public abstract class DebugRender {
    * 
    * @see #triangles
    */
-  protected abstract void renderTriangles(RenderManager rm);
+  //protected abstract void renderTriangles(RenderManager rm);
   /**
    * Overwrite and implement how to render all bounding boxes.
    * 

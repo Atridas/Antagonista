@@ -265,7 +265,7 @@ public class DebugRenderGL2 extends DebugRender {
     glBindBuffer(GL_ARRAY_BUFFER, linesBuffer);
     glBufferData(GL_ARRAY_BUFFER, newCapacity * Utils.FLOAT_SIZE, GL_DYNAMIC_DRAW);
   }
-  
+  /*
   @Override
   protected void renderLines(RenderManager rm) {
     assert !cleaned;
@@ -358,6 +358,168 @@ public class DebugRenderGL2 extends DebugRender {
       //brut pq és una classe per fer debug.
       growBuffers();
       renderLines(rm);
+    }
+    
+  }
+  */
+  @Override
+  protected void renderLinesAndTriangles(RenderManager rm) {
+    assert !cleaned;
+    
+
+    if(lines.size() == 0)
+      return;
+    
+    try {      
+      float[] vertexL = new float[POS_COL_VERTEX_SIZE * 2];
+      float[] vertexT = new float[POS_COL_VERTEX_SIZE * 2];
+
+      int linesToDraw1 = 0;
+      int linesToDraw2 = 0;
+      buffer1.clear();
+      buffer2.clear();
+
+      
+      for(Line line: lines) {
+        
+        vertexL[0] = line.origin.x;
+        vertexL[1] = line.origin.y;
+        vertexL[2] = line.origin.z;
+
+        vertexL[3] = line.color.x;
+        vertexL[4] = line.color.y;
+        vertexL[5] = line.color.z;
+        
+        vertexL[6] = line.destination.x;
+        vertexL[7] = line.destination.y;
+        vertexL[8] = line.destination.z;
+
+        vertexL[9]  = line.color.x;
+        vertexL[10] = line.color.y;
+        vertexL[11] = line.color.z;
+        
+        if(line.depthEnabled) {
+          buffer1.put(vertexL);
+          linesToDraw1++;
+        } else {
+          buffer2.put(vertexL);
+          linesToDraw2++;
+        }
+      }
+      
+      for(Triangle triangle: triangles) {
+
+        ///////////////////////////////////////
+        vertexT[0] = triangle.v0.x;
+        vertexT[1] = triangle.v0.y;
+        vertexT[2] = triangle.v0.z;
+
+        vertexT[3] = triangle.color.x;
+        vertexT[4] = triangle.color.y;
+        vertexT[5] = triangle.color.z;
+        
+        vertexT[6] = triangle.v1.x;
+        vertexT[7] = triangle.v1.y;
+        vertexT[8] = triangle.v1.z;
+
+        vertexT[9]  = triangle.color.x;
+        vertexT[10] = triangle.color.y;
+        vertexT[11] = triangle.color.z;
+        
+        
+        ///////////////////////////////////////
+        vertexT[12] = triangle.v0.x;
+        vertexT[13] = triangle.v0.y;
+        vertexT[14] = triangle.v0.z;
+
+        vertexT[15] = triangle.color.x;
+        vertexT[16] = triangle.color.y;
+        vertexT[17] = triangle.color.z;
+        
+        vertexT[18] = triangle.v2.x;
+        vertexT[19] = triangle.v2.y;
+        vertexT[20] = triangle.v2.z;
+
+        vertexT[21] = triangle.color.x;
+        vertexT[22] = triangle.color.y;
+        vertexT[23] = triangle.color.z;
+        
+
+        ///////////////////////////////////////
+        vertexT[24] = triangle.v2.x;
+        vertexT[25] = triangle.v2.y;
+        vertexT[26] = triangle.v2.z;
+
+        vertexT[27] = triangle.color.x;
+        vertexT[28] = triangle.color.y;
+        vertexT[29] = triangle.color.z;
+        
+        vertexT[30] = triangle.v1.x;
+        vertexT[31] = triangle.v1.y;
+        vertexT[32] = triangle.v1.z;
+
+        vertexT[33] = triangle.color.x;
+        vertexT[34] = triangle.color.y;
+        vertexT[35] = triangle.color.z;
+
+        ///////////////////////////////////////
+        if(triangle.depthEnabled) {
+          buffer1.put(vertexT);
+          linesToDraw1 += 3;
+        } else {
+          buffer2.put(vertexT);
+          linesToDraw2 += 3;
+        }
+      }
+      
+      Matrix4f identityMatrix = null;
+      if(linesToDraw1 + linesToDraw2 > 0) {
+        glBindBuffer(GL_ARRAY_BUFFER, linesBuffer);
+        assert !Utils.hasGLErrors();
+
+        glEnableVertexAttribArray(TechniquePass.POSITION_ATTRIBUTE);
+        glEnableVertexAttribArray(TechniquePass.COLOR_ATTRIBUTE);
+
+        glVertexAttribPointer(TechniquePass.POSITION_ATTRIBUTE, 3, GL_FLOAT, false, 6*Utils.FLOAT_SIZE, 0);
+        glVertexAttribPointer(TechniquePass.COLOR_ATTRIBUTE, 3, GL_FLOAT, false, 6*Utils.FLOAT_SIZE, 3*Utils.FLOAT_SIZE);
+
+        assert !Utils.hasGLErrors();
+        
+        identityMatrix = new Matrix4f();
+        identityMatrix.setIdentity();
+      }
+      
+      if(linesToDraw1>0) {
+        buffer1.flip();
+      
+        glEnable(GL_DEPTH_TEST);
+
+        glBindBuffer(GL_ARRAY_BUFFER, linesBuffer);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, buffer1);
+
+        renderArrays(GL_LINES, linesToDraw1 * 2, identityMatrix, rm);
+
+        assert !Utils.hasGLErrors();
+      }
+      
+      if(linesToDraw2>0) {
+        buffer2.flip();
+      
+        glDisable(GL_DEPTH_TEST);
+
+        glBindBuffer(GL_ARRAY_BUFFER, linesBuffer);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, buffer2);
+      
+        renderArrays(GL_LINES, linesToDraw2 * 2, identityMatrix, rm);
+
+        assert !Utils.hasGLErrors();
+      }
+      
+    } catch(BufferOverflowException e) {
+      //fem creixer el buffer i rellancem el métode.
+      //brut pq és una classe per fer debug.
+      growBuffers();
+      renderLinesAndTriangles(rm);
     }
     
   }
@@ -583,7 +745,7 @@ public class DebugRenderGL2 extends DebugRender {
     }
     
   }
-  
+  /*
   @Override
   protected void renderTriangles(RenderManager rm) {
     assert !cleaned;
@@ -717,7 +879,7 @@ public class DebugRenderGL2 extends DebugRender {
     }
     
   }
-  
+  */
   @Override
   protected void renderBBs(RenderManager rm) {
     assert !cleaned;
