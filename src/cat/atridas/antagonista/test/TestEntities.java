@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
 import cat.atridas.antagonista.Clock;
@@ -94,11 +95,13 @@ public class TestEntities {
       rbc.init(PhysicType.STATIC, core.getMeshManager().getResource(new HashedString("Habitacio")).getPhysicsMesh());
     }*/
     MeshManager mm = core.getMeshManager();
+    Vector3f vecAux = new Vector3f();
+    Quat4f quatAux = new Quat4f();
+    Transformation transAux = new Transformation();
+    HashedString altarMesh = new HashedString("AltarBasic");
     /*
     HashedString terraMesh = new HashedString("TerraBasic");
     HashedString murMesh = new HashedString("ParetsBasic");
-    Vector3f vecAux = new Vector3f();
-    Transformation transAux = new Transformation();
     for(int i = -10; i <= 10; i+=2) {
       for(int j = -10; j <= 10; j+=2) {
         vecAux.set(i,j,0);
@@ -165,6 +168,16 @@ public class TestEntities {
     */
     crearNivell(nivellDeProves, mm, em);
     
+    vecAux.set(22,0,0);
+    
+    quatAux.x = quatAux.y = 0;
+    quatAux.z = (float)Math.sqrt(.5f);
+    quatAux.w = (float)Math.sqrt(.5f);
+    
+    transAux.setTranslation(vecAux);
+    transAux.setRotation(quatAux);
+    createAltar(em, mm, transAux, altarMesh);
+    
     /////////////////////////////////////////////////////////////////////
     Entity entityMaster = createMaster(em);
     
@@ -230,7 +243,7 @@ public class TestEntities {
     sceneData.setDirectionalLight(new Vector3f(0,1,1), new Color3f(0.3f, 0.3f, 0.3f));
     
     DebugRender dr = core.getDebugRender();
-    //dr.activate();
+    dr.activate();
     Font font = core.getFontManager().getResource(new HashedString("font14"));
 
     im.loadActions("data/xml/inputManager.xml");
@@ -372,6 +385,23 @@ public class TestEntities {
   }
   
   private static Entity createMur(EntityManager em, MeshManager mm, Transformation position, HashedString meshName) {
+    Entity mur = em.createEntity();
+    
+    TransformComponent tc = em.createComponent(mur, TransformComponent.getComponentStaticType());
+    tc.init(position);
+    
+    MeshComponent mc = em.createComponent(mur, MeshComponent.getComponentStaticType());
+    mc.init(meshName);
+    
+    RigidBodyComponent rbc = em.createComponent(mur, RigidBodyComponent.getComponentStaticType());
+    PhysicShape mesh = mm.getResource(meshName).getPhysicsMesh();
+    
+    rbc.init(PhysicType.STATIC, mesh);
+    
+    return mur;
+  }
+  
+  private static Entity createAltar(EntityManager em, MeshManager mm, Transformation position, HashedString meshName) {
     Entity mur = em.createEntity();
     
     TransformComponent tc = em.createComponent(mur, TransformComponent.getComponentStaticType());

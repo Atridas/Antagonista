@@ -83,8 +83,10 @@ public class PhysicsWorld {
     
     // wireframe drawing seems to not be implemented correctly in jBullet, so I draw it here.
     if((dynamicsWorld.getDebugDrawer().getDebugMode() & DebugDrawModes.DRAW_WIREFRAME) != 0) {
-      Transform transform = new Transform();
+      
       DebugRender dr = Core.getCore().getDebugRender();
+
+      Transform transform = new Transform();
       
       Vector3f scaling = new Vector3f();
       Vector3f[] triangle = new Vector3f[] {new Vector3f(),new Vector3f(),new Vector3f()};
@@ -115,6 +117,8 @@ public class PhysicsWorld {
           point1.set(transform.origin);
           
           dr.addSphere(point1, r, userInfo.color, userInfo.zTest);
+          
+          
         } else if(cs instanceof BvhTriangleMeshShape) {
           BvhTriangleMeshShape triangleMeshShape = (BvhTriangleMeshShape)cs;
           
@@ -122,13 +126,21 @@ public class PhysicsWorld {
           
           meshInterface.getScaling(scaling);
           
+          transform.getMatrix(matrix1);
+          
           for(int i = 0; i < meshInterface.getNumSubParts(); ++i) {
             VertexData vd = meshInterface.getLockedReadOnlyVertexIndexBase(i);
             for(int j = 0; j < vd.getIndexCount()/3; j++) {
               vd.getTriangle(j*3, scaling, triangle);
+              
               point1.set(triangle[0]);
               point2.set(triangle[1]);
               point3.set(triangle[2]);
+
+              matrix1.transform(point1, point1);
+              matrix1.transform(point2, point2);
+              matrix1.transform(point3, point3);
+              
               dr.addTriangle(point1, point2, point3, userInfo.color, userInfo.zTest);
             }
             

@@ -61,7 +61,22 @@ public class DebugRenderGL3 extends DebugRender {
    * Global data buffer for instanced rendering.
    * @since 0.1
    */
-  private int multipleInstancesGlobalDataBuffer = -1, instancesColorBuffer = -1;
+  private int multipleInstancesGlobalDataBuffer1 = -1, instancesColorBuffer1 = -1,
+              multipleInstancesGlobalDataBuffer2 = -1, instancesColorBuffer2 = -1;
+  
+  private boolean lastInstanceBuffer1 = false;
+  
+
+  /**
+   * Floats each instance.
+   * @since 0.2
+   */
+  private static final int colorBufferInstanceSize = 3;
+  /**
+   * Floats each instance.
+   * @since 0.2
+   */
+  private static final int matrixBufferInstanceSize = 16*3;
 
   /**
    * OpenGL identifiers needed to render spheres.
@@ -128,7 +143,7 @@ public class DebugRenderGL3 extends DebugRender {
     glVertexAttribPointer(TechniquePass.POSITION_ATTRIBUTE, 3, GL_FLOAT, false, 0, 0);
     
     
-    glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer1);
     
     glVertexAttribPointer(TechniquePass.COLOR_ATTRIBUTE, 3, GL_FLOAT, false, 0, 0);
     glVertexAttribDivisor(TechniquePass.COLOR_ATTRIBUTE, 1);
@@ -167,7 +182,7 @@ public class DebugRenderGL3 extends DebugRender {
     glVertexAttribPointer(TechniquePass.POSITION_ATTRIBUTE, 3, GL_FLOAT, false, 0, 0);
     
     
-    glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer1);
     
     glVertexAttribPointer(TechniquePass.COLOR_ATTRIBUTE, 3, GL_FLOAT, false, 0, 0);
     glVertexAttribDivisor(TechniquePass.COLOR_ATTRIBUTE, 1);
@@ -209,7 +224,7 @@ public class DebugRenderGL3 extends DebugRender {
     glVertexAttribPointer(TechniquePass.POSITION_ATTRIBUTE, 3, GL_FLOAT, false, 0, 0);
     
     
-    glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer1);
     
     glVertexAttribPointer(TechniquePass.COLOR_ATTRIBUTE, 3, GL_FLOAT, false, 0, 0);
     glVertexAttribDivisor(TechniquePass.COLOR_ATTRIBUTE, 1);
@@ -248,7 +263,7 @@ public class DebugRenderGL3 extends DebugRender {
     glVertexAttribPointer(TechniquePass.POSITION_ATTRIBUTE, 3, GL_FLOAT, false, 0, 0);
     
     
-    glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer1);
     
     glVertexAttribPointer(TechniquePass.COLOR_ATTRIBUTE, 3, GL_FLOAT, false, 0, 0);
     glVertexAttribDivisor(TechniquePass.COLOR_ATTRIBUTE, 1);
@@ -338,14 +353,25 @@ public class DebugRenderGL3 extends DebugRender {
       assert !Utils.hasGLErrors();
       
 
-      instancesColorBuffer = glGenBuffers();
-      glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+      instancesColorBuffer1 = glGenBuffers();
+      glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer1);
       glBufferData(GL_ARRAY_BUFFER, rm.getMaxInstancesBasic() * 3 * Utils.FLOAT_SIZE, GL_DYNAMIC_DRAW);
       
-      multipleInstancesGlobalDataBuffer = glGenBuffers();
-      glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+      multipleInstancesGlobalDataBuffer1 = glGenBuffers();
+      glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer1);
+      glBufferData(GL_UNIFORM_BUFFER, TechniquePass.BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE * rm.getMaxInstancesBasic(), GL_DYNAMIC_DRAW);      
+
+      
+      instancesColorBuffer2 = glGenBuffers();
+      glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer2);
+      glBufferData(GL_ARRAY_BUFFER, rm.getMaxInstancesBasic() * 3 * Utils.FLOAT_SIZE, GL_DYNAMIC_DRAW);
+      
+      multipleInstancesGlobalDataBuffer2 = glGenBuffers();
+      glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer2);
       glBufferData(GL_UNIFORM_BUFFER, TechniquePass.BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE * rm.getMaxInstancesBasic(), GL_DYNAMIC_DRAW);
 
+      
+      
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
@@ -599,7 +625,7 @@ public class DebugRenderGL3 extends DebugRender {
 
         glBindBufferBase( GL_UNIFORM_BUFFER, 
                           TechniquePass.BASIC_INSTANCE_UNIFORMS_BINDING, 
-                          multipleInstancesGlobalDataBuffer);
+                          multipleInstancesGlobalDataBuffer1);
       }
       
       if(crossesToDraw1>0) {
@@ -608,10 +634,10 @@ public class DebugRenderGL3 extends DebugRender {
       
         glEnable(GL_DEPTH_TEST);
 
-        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer1);
         glBufferSubData(GL_ARRAY_BUFFER, 0, buffer1);
         
-        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer1);
         glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer2);
       
         renderArraysInstanced(GL_LINES, crossesNumVertexs, crossesToDraw1, rm);
@@ -625,10 +651,10 @@ public class DebugRenderGL3 extends DebugRender {
       
         glDisable(GL_DEPTH_TEST);
 
-        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer1);
         glBufferSubData(GL_ARRAY_BUFFER, 0, buffer3);
         
-        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer1);
         glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer4);
 
       
@@ -723,7 +749,7 @@ public class DebugRenderGL3 extends DebugRender {
 
         glBindBufferBase( GL_UNIFORM_BUFFER, 
                           TechniquePass.BASIC_INSTANCE_UNIFORMS_BINDING, 
-                          multipleInstancesGlobalDataBuffer);
+                          multipleInstancesGlobalDataBuffer1);
       }
       
       if(spheresToDraw1>0) {
@@ -732,10 +758,10 @@ public class DebugRenderGL3 extends DebugRender {
       
         glEnable(GL_DEPTH_TEST);
 
-        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer1);
         glBufferSubData(GL_ARRAY_BUFFER, 0, buffer1);
         
-        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer1);
         glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer2);
       
         renderElementsInstanced(GL_LINE_STRIP, sphereNumIndices, spheresToDraw1, rm);
@@ -749,10 +775,10 @@ public class DebugRenderGL3 extends DebugRender {
       
         glDisable(GL_DEPTH_TEST);
 
-        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer1);
         glBufferSubData(GL_ARRAY_BUFFER, 0, buffer3);
         
-        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer1);
         glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer4);
 
       
@@ -853,7 +879,7 @@ public class DebugRenderGL3 extends DebugRender {
 
         glBindBufferBase( GL_UNIFORM_BUFFER, 
                           TechniquePass.BASIC_INSTANCE_UNIFORMS_BINDING, 
-                          multipleInstancesGlobalDataBuffer);
+                          multipleInstancesGlobalDataBuffer1);
       }
       
       if(circlesToDraw1>0) {
@@ -863,11 +889,11 @@ public class DebugRenderGL3 extends DebugRender {
         glEnable(GL_DEPTH_TEST);
         assert !Utils.hasGLErrors();
 
-        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer1);
         glBufferSubData(GL_ARRAY_BUFFER, 0, buffer1);
         assert !Utils.hasGLErrors();
         
-        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer1);
         glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer2);
         assert !Utils.hasGLErrors();
       
@@ -882,10 +908,10 @@ public class DebugRenderGL3 extends DebugRender {
       
         glDisable(GL_DEPTH_TEST);
 
-        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer1);
         glBufferSubData(GL_ARRAY_BUFFER, 0, buffer3);
         
-        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer1);
         glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer4);
 
       
@@ -962,7 +988,7 @@ public class DebugRenderGL3 extends DebugRender {
 
         glBindBufferBase( GL_UNIFORM_BUFFER, 
                           TechniquePass.BASIC_INSTANCE_UNIFORMS_BINDING, 
-                          multipleInstancesGlobalDataBuffer);
+                          multipleInstancesGlobalDataBuffer1);
       }
       
       if(axesToDraw1>0) {
@@ -970,7 +996,7 @@ public class DebugRenderGL3 extends DebugRender {
       
         glEnable(GL_DEPTH_TEST);
         
-        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer1);
         glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer1);
         assert !Utils.hasGLErrors();
       
@@ -984,7 +1010,7 @@ public class DebugRenderGL3 extends DebugRender {
       
         glDisable(GL_DEPTH_TEST);
         
-        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer1);
         glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer1);
         assert !Utils.hasGLErrors();
       
@@ -1159,6 +1185,7 @@ public class DebugRenderGL3 extends DebugRender {
       rm.getSceneData().getViewMatrix(view);
       rm.getSceneData().getViewProjectionMatrix(viewProj);
       ///////////////////////////////////////////////
+
       
       for(AABB aabb: aabbs) {
         FloatBuffer colorBuffer, matrixesBuffer;
@@ -1241,30 +1268,76 @@ public class DebugRenderGL3 extends DebugRender {
         Utils.matrixToBuffer(modelViewInvTransp, matrixesBuffer);
       }
 
+      assert !Utils.hasGLErrors();
+
       
       if(bbToDraw1 + bbToDraw2 > 0) {
         glBindVertexArray(bbVAO);
 
         glBindBufferBase( GL_UNIFORM_BUFFER, 
                           TechniquePass.BASIC_INSTANCE_UNIFORMS_BINDING, 
-                          multipleInstancesGlobalDataBuffer);
+                          multipleInstancesGlobalDataBuffer1);
       }
+
+      assert !Utils.hasGLErrors();
+      
+      int maxInstances = rm.getMaxInstancesBasic();
       
       if(bbToDraw1>0) {
         buffer1.flip();
         buffer2.flip();
+
+        assert buffer1.limit() == bbToDraw1 * colorBufferInstanceSize;
+        assert buffer2.limit() == bbToDraw1 * matrixBufferInstanceSize;
       
         glEnable(GL_DEPTH_TEST);
-
-        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, buffer1);
         
-        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
-        glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer2);
-      
-        renderElementsInstanced(GL_LINES, bbNumIndices, bbToDraw1, rm);
+        for(int i = 0; i < bbToDraw1; i += maxInstances) {
+          int instancesColorBuffer, multipleInstancesGlobalDataBuffer;
+          if(lastInstanceBuffer1) {
+            instancesColorBuffer = instancesColorBuffer1;
+            multipleInstancesGlobalDataBuffer = multipleInstancesGlobalDataBuffer1;
+            lastInstanceBuffer1 = false;
+          } else {
+            instancesColorBuffer = instancesColorBuffer2;
+            multipleInstancesGlobalDataBuffer = multipleInstancesGlobalDataBuffer2;
+            lastInstanceBuffer1 = true;
+          }
+          
+          int instancesToDraw;
+          if(bbToDraw1 - i > maxInstances) {
+            instancesToDraw = maxInstances;
+          } else {
+            instancesToDraw = bbToDraw1 - i;
+          }
 
-        assert !Utils.hasGLErrors();
+          buffer1.position(i * colorBufferInstanceSize);
+          buffer2.position(i * matrixBufferInstanceSize);
+
+          buffer1.limit((i + instancesToDraw) * colorBufferInstanceSize);
+          buffer2.limit((i + instancesToDraw) * matrixBufferInstanceSize);
+
+          glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+          glBufferSubData(GL_ARRAY_BUFFER, 0, buffer1);
+          
+          glVertexAttribPointer(TechniquePass.COLOR_ATTRIBUTE, 3, GL_FLOAT, false, 0, 0);
+          
+          
+          glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+          glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer2);
+  
+          assert !Utils.hasGLErrors();
+
+
+          glBindBufferBase( GL_UNIFORM_BUFFER, 
+                            TechniquePass.BASIC_INSTANCE_UNIFORMS_BINDING, 
+                            multipleInstancesGlobalDataBuffer);
+        
+          renderElementsInstanced(GL_LINES, bbNumIndices, instancesToDraw, rm);
+  
+          assert !Utils.hasGLErrors();
+          
+        }
       }
       
       if(bbToDraw2>0) {
@@ -1273,12 +1346,13 @@ public class DebugRenderGL3 extends DebugRender {
       
         glDisable(GL_DEPTH_TEST);
 
-        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer1);
         glBufferSubData(GL_ARRAY_BUFFER, 0, buffer3);
         
-        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);
+        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer1);
         glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer4);
 
+        assert !Utils.hasGLErrors();
       
         renderElementsInstanced(GL_LINES, bbNumIndices, bbToDraw2, rm);
 
@@ -1392,10 +1466,13 @@ public class DebugRenderGL3 extends DebugRender {
 
         glDeleteBuffers(bbIndexBuffer);
         glDeleteBuffers(bbVertexBuffer);
+
         
+        glDeleteBuffers(instancesColorBuffer1);
+        glDeleteBuffers(multipleInstancesGlobalDataBuffer1);
         
-        glDeleteBuffers(instancesColorBuffer);
-        glDeleteBuffers(multipleInstancesGlobalDataBuffer);
+        glDeleteBuffers(instancesColorBuffer2);
+        glDeleteBuffers(multipleInstancesGlobalDataBuffer2);
         
         
         glDeleteVertexArrays(linesVAO);
