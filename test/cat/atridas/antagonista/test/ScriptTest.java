@@ -19,6 +19,7 @@ import cat.atridas.antagonista.entities.systems.RTSCameraSystem;
 import cat.atridas.antagonista.entities.systems.RenderingCameraSystem;
 import cat.atridas.antagonista.entities.systems.RenderingSystem;
 import cat.atridas.antagonista.entities.systems.RigidBodySystem;
+import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.graphics.MeshManager;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.SceneData;
@@ -45,11 +46,11 @@ public class ScriptTest {
     if(!assertsActives)
       throw new RuntimeException("Falta activar els asserts");
     
-    Utils.setConsoleLogLevel(Level.CONFIG);
+    Utils.setConsoleLogLevel(Level.FINEST);
     
     
     
-    //ScriptManager scriptManager = new ScriptManager();
+    ScriptManager scriptManager = new ScriptManager();
 
     Core core = Core.getCore();
     core.init(800, 600, TestEntities.class.getName(), true, null);
@@ -75,7 +76,14 @@ public class ScriptTest {
     
     EntityManager em = core.getEntityManager();
     MeshManager mm = core.getMeshManager();
+
+    im.loadActions("data/xml/inputManager.xml");
+    im.activateMode(Utils.MAIN_GAME);
     
+    DebugRender dr = core.getDebugRender();
+    dr.activate();
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////
     
 
     SceneData sceneData = rm.getSceneData();
@@ -90,10 +98,29 @@ public class ScriptTest {
     
     EntityFactory.createCamera(em, new HashedString("Camera"));
     
+    
+    String script = 
+        "from cat.atridas.antagonista.core import Core\n" +
+        "from javax.vecmath import Point3f\n" +
+        "from javax.vecmath import Color3f\n" +
+        "from cat.atridas.antagonista import HashedString\n" +
+        
+        "inputManager = Core.getCore().getInputManager()\n" +
+        "debugRender  = Core.getCore().getDebugRender()\n" +
+        
+        "def shoot():\n" +
+        
+        "  if inputManager.isActionActive(HashedString(\"shoot\")):\n" +
+        "    debugRender.addCross(Point3f(1.1,0.2,0), Color3f(1,1,1), 1, 0.5)\n" +
+        "    print('catacrocker')\n";
+    
+    scriptManager.execute(script);
+    
     while(!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
 
       DeltaTime dt = clock.update();
       
+      scriptManager.execute("shoot()");
       
       core.getPhysicsWorld().update(dt);
       
@@ -104,13 +131,13 @@ public class ScriptTest {
       rm.initFrame();
       
       core.getRenderableObjectManager().renderAll(rm);
-      //dr.render(rm,dt);
+      dr.render(rm,dt);
       
       rm.present();
       
       Core.getCore().getFontManager().cleanTextCache();
       
-      Core.getCore().getInputManager().update(dt);
+      im.update(dt);
     }
     
     core.cleanUnusedResources(false);
