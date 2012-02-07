@@ -1,5 +1,6 @@
 package cat.atridas.antagonista.test;
 
+import java.io.FileNotFoundException;
 import java.util.logging.Level;
 
 import javax.vecmath.Color3f;
@@ -38,8 +39,9 @@ public class ScriptTest {
    * -Dcom.sun.management.jmxremote
    *  
    * @param args
+   * @throws FileNotFoundException 
    */
-  public static void main(String[] args) {
+  public static void main(String[] args) throws FileNotFoundException {
     //comprovem que els asserts estiguin actius
     boolean assertsActives = false;
     assert (assertsActives = true) == true;
@@ -48,13 +50,13 @@ public class ScriptTest {
     
     Utils.setConsoleLogLevel(Level.FINEST);
     
-    
-    
-    ScriptManager scriptManager = new ScriptManager();
 
     Core core = Core.getCore();
     core.init(800, 600, TestEntities.class.getName(), true, null);
 
+    
+    ScriptManager scriptManager = new ScriptManager("data/xml/scriptManager.xml");
+    
     ///////////////////////////////////////////////////////////////////////////////////////
     
     SystemManager sm = core.getSystemManager();
@@ -99,28 +101,18 @@ public class ScriptTest {
     EntityFactory.createCamera(em, new HashedString("Camera"));
     
     
-    String script = 
-        "from cat.atridas.antagonista.core import Core\n" +
-        "from javax.vecmath import Point3f\n" +
-        "from javax.vecmath import Color3f\n" +
-        "from cat.atridas.antagonista import HashedString\n" +
-        
-        "inputManager = Core.getCore().getInputManager()\n" +
-        "debugRender  = Core.getCore().getDebugRender()\n" +
-        
-        "def shoot():\n" +
-        
-        "  if inputManager.isActionActive(HashedString(\"shoot\")):\n" +
-        "    debugRender.addCross(Point3f(1.1,0.2,0), Color3f(1,1,1), 1, 0.5)\n" +
-        "    print('catacrocker')\n";
     
-    scriptManager.execute(script);
+    //scriptManager.load("data/scripts/test.py");
+    
+    //String script = "from data.scripts.test import catacrocker\n";
+    
+    //scriptManager.execute(script);
     
     while(!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
 
       DeltaTime dt = clock.update();
       
-      scriptManager.execute("shoot()");
+      scriptManager.execute("catacrocker()");
       
       core.getPhysicsWorld().update(dt);
       

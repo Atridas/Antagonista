@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<script_manager base_path="data/scripts/">
+  <file>test.py</file>
+  <script>print('catacrocker')</script>
+</script_manager>
