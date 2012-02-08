@@ -45,12 +45,18 @@ public class SystemManager {
    * @since 0.2
    */
   private final HashMap<HashedString, HashSet<HashedString>> acumulatedEntityChanges = new HashMap<>();
-  
+
   public void registerSystem(System system) {
     systems.add(system);
     
     entitiesCache.put(system.getSystemId(), new HashMap<HashedString,CachedEntity>());
     acumulatedEntityChanges.put(system.getSystemId(), new HashSet<HashedString>());
+  }
+  
+  public void registerSystem(String system) {    
+    String script = "SYSTEM_MANAGER.registerSystem( " + system + "() )";
+    
+    Core.getCore().getScriptManager().execute(script);
   }
   
   

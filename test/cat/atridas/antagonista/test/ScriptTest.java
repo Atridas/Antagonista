@@ -6,11 +6,9 @@ import java.util.logging.Level;
 import javax.vecmath.Color3f;
 import javax.vecmath.Vector3f;
 
-import cat.atridas.antagonista.Clock;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Transformation;
 import cat.atridas.antagonista.Utils;
-import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.defensa.EntityFactory;
 import cat.atridas.antagonista.entities.EntityManager;
@@ -25,7 +23,6 @@ import cat.atridas.antagonista.graphics.MeshManager;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.SceneData;
 import cat.atridas.antagonista.input.InputManager;
-import cat.atridas.antagonista.scripting.ScriptManager;
 
 public class ScriptTest {
   /**
@@ -55,28 +52,36 @@ public class ScriptTest {
     core.init(800, 600, TestEntities.class.getName(), true, null);
 
     
-    ScriptManager scriptManager = new ScriptManager("data/xml/scriptManager.xml");
+    //ScriptManager scriptManager = new ScriptManager("data/xml/scriptManager.xml");
     
-    cat.atridas.antagonista.entities.System pyRTSCameraSystem = scriptManager.createNewInstance("RTSCameraSystem", cat.atridas.antagonista.entities.System.class);
+    //cat.atridas.antagonista.entities.System pyRTSCameraSystem = scriptManager.createNewInstance("RTSCameraSystem", cat.atridas.antagonista.entities.System.class);
     
     ///////////////////////////////////////////////////////////////////////////////////////
     
     SystemManager sm = core.getSystemManager();
-    //sm.registerSystem(new RTSCameraSystem());
-    sm.registerSystem(pyRTSCameraSystem);
+    /*
+    sm.registerSystem(new RTSCameraSystem());
+    //sm.registerSystem(pyRTSCameraSystem);
     
     sm.registerSystem(new PhysicsCharacterControllerSystem());
     sm.registerSystem(new RigidBodySystem());
     
     sm.registerSystem(new RenderingCameraSystem());
     sm.registerSystem(new RenderingSystem());
+    */
+    sm.registerSystem("RTSCameraSystem");
+    
+    sm.registerSystem("PhysicsCharacterControllerSystem");
+    sm.registerSystem("RigidBodySystem");
+    
+    sm.registerSystem("RenderingCameraSystem");
+    sm.registerSystem("RenderingSystem");
     
     
     
     ///////////////////////////////////////////////////////////////////////////////////////
     
     InputManager im = core.getInputManager();
-    Clock clock = core.getClock();
     RenderManager rm = core.getRenderManager();
     
     EntityManager em = core.getEntityManager();
@@ -87,13 +92,14 @@ public class ScriptTest {
     
     DebugRender dr = core.getDebugRender();
     dr.activate();
+    core.setPhysicsDebugRender(true);
     
     ///////////////////////////////////////////////////////////////////////////////////////////
     
 
     SceneData sceneData = rm.getSceneData();
     sceneData.setAmbientLight(new Color3f(0.3f, 0.3f, 0.3f));
-    sceneData.setDirectionalLight(new Vector3f(0,1,1), new Color3f(0.3f, 0.3f, 0.3f));
+    sceneData.setDirectionalLight(new Vector3f(0.5f,1,-1), new Color3f(0.3f, 0.3f, 0.3f));
     
     
     
@@ -113,26 +119,8 @@ public class ScriptTest {
     
     while(!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
 
-      DeltaTime dt = clock.update();
+      core.performSimpleTick();
       
-      scriptManager.execute("catacrocker()");
-      
-      core.getPhysicsWorld().update(dt);
-      
-      sm.updateSimple(dt);
-      
-      core.getPhysicsWorld().debugDraw();
-      
-      rm.initFrame();
-      
-      core.getRenderableObjectManager().renderAll(rm);
-      dr.render(rm,dt);
-      
-      rm.present();
-      
-      Core.getCore().getFontManager().cleanTextCache();
-      
-      im.update(dt);
     }
     
     core.cleanUnusedResources(false);

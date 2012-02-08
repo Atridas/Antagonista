@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import cat.atridas.antagonista.Clock;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.entities.EntityManager;
 import cat.atridas.antagonista.entities.SystemManager;
 import cat.atridas.antagonista.graphics.DebugRender;
@@ -26,6 +27,7 @@ import cat.atridas.antagonista.graphics.gl3.FontManagerGL3;
 import cat.atridas.antagonista.graphics.gl3.RenderableObjectManagerGL3;
 import cat.atridas.antagonista.input.InputManager;
 import cat.atridas.antagonista.physics.PhysicsWorld;
+import cat.atridas.antagonista.scripting.ScriptManager;
 
 /**
  * Core singleton class. Contains all Engine managers.
@@ -51,8 +53,12 @@ public final class Core {
   private SystemManager           systemManager = new SystemManager();
   private EntityManager           entityManager = new EntityManager();
   
+  private ScriptManager           scriptManager;
+  
   private Clock clock;
 
+  
+  private boolean physicsDebugRender = false;
   /**
    * Gets the RenderManager.
    * 
@@ -181,6 +187,16 @@ public final class Core {
   public EntityManager getEntityManager() {
     return entityManager;
   }
+
+  /**
+   * Gets the ScriptManager.
+   * 
+   * @return the ScriptManager.
+   * @since 0.3
+   */
+  public ScriptManager getScriptManager() {
+    return scriptManager;
+  }
   
   /**
    * Gets the global clock.
@@ -261,6 +277,43 @@ public final class Core {
     pw = new PhysicsWorld();
     
     clock = new Clock();
+    
+    ////////////////
+    
+    scriptManager = new ScriptManager("data/xml/scriptManager.xml");
+	}
+	
+	public void setPhysicsDebugRender(boolean active) {
+	  physicsDebugRender = active;
+	}
+	
+	public boolean getPhysicsDebugRender() {
+	  return physicsDebugRender;
+	}
+	
+	public void performSimpleTick() {
+	  DeltaTime dt = clock.update();
+    im.update(dt);
+    
+    pw.update(dt);
+    
+    systemManager.updateSimple(dt);
+
+    
+    //-----------------------------------------
+    
+      if(physicsDebugRender)
+    pw.debugDraw();
+    
+    rm.initFrame();
+    
+    rom.renderAll(rm); 
+    dr.render(rm, dt);
+    
+    rm.present();
+    
+    fm.cleanTextCache();
+    
 	}
 	
 	/**
