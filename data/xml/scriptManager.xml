@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <script_manager base_path="data/scripts/">
+
+  <script>from cat.atridas.antagonista.core import Core</script>
+
+  <script>CORE = Core.getCore()</script>
+  <script>RENDER_MANAGER = CORE.getRenderManager()</script>
+  <script>INPUT_MANAGER = CORE.getInputManager()</script>
+  <script>TEXTURE_MANAGER = CORE.getTextureManager()</script>
+  <script>EFFECT_MANAGER = CORE.getEffectManager()</script>
+  <script>MATERIAL_MANAGER = CORE.getMaterialManager()</script>
+  <script>DEBUG_RENDER = CORE.getDebugRender()</script>
+  <script>MESH_MANAGER = CORE.getMeshManager()</script>
+  <script>RENDERABLE_OBJECT_MANAGER = CORE.getRenderableObjectManager()</script>
+  <script>PHYSICS_WORLD = CORE.getPhysicsWorld()</script>
+  <script>SYSTEM_MANAGER = CORE.getSystemManager()</script>
+  <script>ENTITY_MANAGER = CORE.getEntityManager()</script>
+  
+  <file>constants.py</file>
+  <file>RTSCameraSystem.py</file>
+  
+  
   <file>test.py</file>
-  <script>print('catacrocker')</script>
 </script_manager>

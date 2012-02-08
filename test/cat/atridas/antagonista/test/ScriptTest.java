@@ -57,10 +57,13 @@ public class ScriptTest {
     
     ScriptManager scriptManager = new ScriptManager("data/xml/scriptManager.xml");
     
+    cat.atridas.antagonista.entities.System pyRTSCameraSystem = scriptManager.createNewInstance("RTSCameraSystem", cat.atridas.antagonista.entities.System.class);
+    
     ///////////////////////////////////////////////////////////////////////////////////////
     
     SystemManager sm = core.getSystemManager();
-    sm.registerSystem(new RTSCameraSystem());
+    //sm.registerSystem(new RTSCameraSystem());
+    sm.registerSystem(pyRTSCameraSystem);
     
     sm.registerSystem(new PhysicsCharacterControllerSystem());
     sm.registerSystem(new RigidBodySystem());

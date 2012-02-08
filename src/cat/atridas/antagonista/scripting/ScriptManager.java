@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.python.core.PyCode;
 import org.python.core.PyException;
+import org.python.core.PyObject;
 import org.python.util.PythonInterpreter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -23,9 +24,11 @@ public final class ScriptManager {
   
   private String basePath;
   
-  private final PythonInterpreter interpreter;
-  
+  private PythonInterpreter interpreter;
+
   private final HashMap<String, PyCode> cachedMiniScripts = new HashMap<>();
+  private final HashMap<String, PyCode> cachedFiles = new HashMap<>();
+  private final HashMap<String, PyObject> cachedPyClasses = new HashMap<>();
   
   private String configFile;
   
@@ -88,6 +91,12 @@ public final class ScriptManager {
   
   public void reload() {
     cachedMiniScripts.clear();
+    cachedFiles.clear();
+    cachedPyClasses.clear();
+    
+    interpreter = new PythonInterpreter();
+    interpreter.setOut(new PythonWriter());
+    
     load(configFile);
   }
   
@@ -102,21 +111,51 @@ public final class ScriptManager {
       
       
     } catch(PyException e) {
+      LOGGER.warning("Exception in script: \"" + script + '"');
       LOGGER.warning(Utils.logExceptionStringAndStack(e));
     }
   }
   
   public void executeFile(String file) {
     try {
-      String script = Utils.readFile(basePath + file);
+      PyCode code = cachedFiles.get(file);
+      if(code == null) {
+        String script = Utils.readFile(basePath + file);
+        code = interpreter.compile(script, file);
+        cachedFiles.put(script, code);
+      }
       
-      interpreter.exec(script);
+      interpreter.exec(code);
       
     } catch (Exception e) {
       LOGGER.warning(Utils.logExceptionStringAndStack(e));
     }
   }
   
+  @SuppressWarnings("unchecked")
+  public <T> T createNewInstance(String _pythonClass, Class<T> _javaClass) {
+    try {
+      
+      PyObject l_pyClass = cachedPyClasses.get(_pythonClass);
+      
+      if(l_pyClass == null) {
+        
+        l_pyClass = interpreter.get(_pythonClass);
+        
+        cachedPyClasses.put(_pythonClass, l_pyClass);
+      }
+      
+      PyObject l_pyObject = l_pyClass.__call__();
+      Object l_javaObject = l_pyObject.__tojava__(_javaClass);
+      
+      assert _javaClass.isAssignableFrom(l_javaObject.getClass());
+      
+      return (T) l_javaObject;
+    } catch(Exception e) {
+      LOGGER.warning(Utils.logExceptionStringAndStack(e));
+      return null;
+    }
+  }
   
   private class PythonWriter extends Writer {
     //TODO fer-ho millor
