@@ -23,14 +23,74 @@ class AntagonistVertex:
         self.u = 0
         self.v = 0
         
+        
+        
+        weights = []
+        w_indices = []
+        
+        for group in vertex.groups:
+          weights.append(group.weight)
+          w_indices.append(group.group)
+        
+        while len(weights) < 4:
+          weights.append(0)
+          w_indices.append(0)
+        
+        weight_acum = 0
+        
+        for i in range(4):
+          weight_acum = weight_acum + weights[i]
+          
+        if weight_acum == 0:
+          self.animated = False
+          self.weights  = [0,0,0,0]
+          self.w_indices = [0,0,0,0]
+        else:
+          self.animated = True
+          self.weights  = []
+          self.w_indices = []
+          for i in range(4):
+            self.weights.append(weights[i] / weight_acum)
+            self.w_indices.append(w_indices[i])
+          
+        
     def __str__(self):
         aux =    "vertex pos:"    + str(self.x ) + ", " + str(self.y ) + ", " + str(self.z )
         aux = aux + " normal:"    + str(self.nx) + ", " + str(self.ny) + ", " + str(self.nz)
         aux = aux + " tangent:"   + str(self.tx) + ", " + str(self.ty) + ", " + str(self.tz)
         aux = aux + " bitangent:" + str(self.bx) + ", " + str(self.by) + ", " + str(self.bz)
         aux = aux +     " uv:"    + str(self.u ) + ", " + str(self.v)
+        if self.animated:
+          aux = aux + " weights: " + str(self.weights) + " indices: " + str(self.w_indices)
         return aux
 
+    def cmp_pesos(self,other):
+        if self.weights[0] == other.weights[0]:
+          if self.weights[1] == other.weights[1]:
+            if self.weights[2] == other.weights[2]:
+              if self.weights[3] == other.weights[3]:
+                if self.w_indices[0] == other.w_indices[0]:
+                  if self.w_indices[1] == other.w_indices[1]:
+                    if self.w_indices[2] == other.w_indices[2]:
+                      if self.w_indices[3] == other.w_indices[3]:
+                        return 0
+                      else:
+                        return self.w_indices[3] - other.w_indices[3]
+                    else:
+                      return self.w_indices[2] - other.w_indices[2]
+                  else:
+                    return self.w_indices[1] - other.w_indices[1]
+                else:
+                  return self.w_indices[0] - other.w_indices[0]
+              else:
+                return self.weights[3] - other.weights[3]
+            else:
+              return self.weights[2] - other.weights[2]
+          else:
+            return self.weights[1] - other.weights[1]
+        else:
+          return self.weights[0] - other.weights[0]
+        
     def __cmp__(self, other):
         if self.x == other.x:
             if self.y == other.y:
@@ -40,7 +100,14 @@ class AntagonistVertex:
                             if self.nz == other.nz:
                                 if self.u == other.u:
                                     if self.v == other.v:
-                                        return 0
+                                        if self.animated and other.animated:
+                                          return self.cmp_pesos(other)
+                                        elif self.animated:
+                                          return 1
+                                        elif other.animated:
+                                          return -1
+                                        else:
+                                          return 0
                                     else:
                                         return self.v - other.v
                                 else:
@@ -77,7 +144,14 @@ class AntagonistVertex:
         return self.__cmp__(other) != 0
 
     def __hash__(self):
-        return hash(self.x) ^ hash(self.y) ^ hash(self.z) ^ hash(self.nx) ^ hash(self.ny) ^ hash(self.nz) ^ hash(self.u) ^ hash(self.v)
+        h1 = hash(self.x) ^ hash(self.y) ^ hash(self.z) ^ hash(self.nx) ^ hash(self.ny) ^ hash(self.nz) ^ hash(self.u) ^ hash(self.v)
+        
+        if self.animated:
+          h2 = hash(self.weights[0]) ^ hash(self.weights[1]) ^ hash(self.weights[2]) ^ hash(self.weights[3])
+          h3 = hash(self.w_indices[0]) ^ hash(self.w_indices[1]) ^ hash(self.w_indices[2]) ^ hash(self.w_indices[3])
+          h1 = h1 ^ h2 ^ h3
+          
+        return h1
 
 
 def calcTan(u1, u2, u3, p1, p2, p3):
@@ -223,11 +297,275 @@ class NormalAux:
         return math.acos(c)
 
 class AntagonistMesh:
-    def __init__(self, materialFaces, vertices):
+    def __init__(self, materialFaces, vertices, vertex_groups):
         self.materialFaces = materialFaces
         self.vertices = vertices
+        
+        self.bones = []
+        
+        for vertex_group in vertex_groups:
+          self.bones.append(vertex_group.name)
+        
+        self.animated = False
+        
+        for v in vertices:
+          if v.animated:
+            self.animated = True
+            break
 
-def createMesh(mesh, consolePrint):
+        new_vertex_map = {}
+        new_vertex_array = []
+        
+        for material in self.materialFaces.keys():
+          self.materialFaces[material] = self.OptimizeFaces(self.materialFaces[material])
+        
+          for face in self.materialFaces[material]:
+            v1 = face.i1
+            if v1 in new_vertex_map.keys():
+              face.i1 = new_vertex_map[v1]
+            else:
+              new_index = len(new_vertex_map.keys())
+              old_index = face.i1
+              new_vertex_map[old_index] = new_index
+              new_vertex_array.append( self.vertices[old_index] )
+              face.i1 = new_index
+              
+            v2 = face.i2
+            if v2 in new_vertex_map.keys():
+              face.i2 = new_vertex_map[v2]
+            else:
+              new_index = len(new_vertex_map.keys())
+              old_index = face.i2
+              new_vertex_map[old_index] = new_index
+              new_vertex_array.append( self.vertices[old_index] )
+              face.i2 = new_index
+              
+            v3 = face.i3
+            if v3 in new_vertex_map.keys():
+              face.i3 = new_vertex_map[v3]
+            else:
+              new_index = len(new_vertex_map.keys())
+              old_index = face.i3
+              new_vertex_map[old_index] = new_index
+              new_vertex_array.append( self.vertices[old_index] )
+              face.i3 = new_index
+        
+        self.vertices = new_vertex_array
+        
+    def OptimizeFaces(self, input_faces):
+        CACHE_DECAY_POWER = 1.5
+        LAST_TRI_SCORE = 0.75
+        VALENCE_BOOST_SCALE = 2.0
+        VALENCE_BOOST_POWER = 0.5
+        MAX_SIZE_VERTEX_CACHE = 32
+        
+        class Triangle:
+          #added s'ha afegit ja a la llista de triangles a renderitzar o no.
+          
+          #score
+          
+          #vertices: llista de 3 indexos
+          
+          def __init__(self, v1, v2, v3):
+            self.added = False
+            self.vertices = [v1, v2, v3]
+          
+        class Vertex:
+          #unused_triangles: triangles que encara l'utilitzen i no s'han posat a la 
+          #                  llista de renderització
+          
+          #cache_pos: posició a la cache
+          
+          #score: puntuació per ser renderitzat
+          
+          #triangles: llista d'indexos als triangles que utilitzen aquest vertex
+          
+          def __init__(self):
+            self.unused_triangles = 0
+            self.cache_pos = -1
+            self.triangles = []
+        
+        def FindVertexScore(vertex):
+          if vertex.unused_triangles == 0:
+            return -1 #no triangle needs this vertex
+          score = 0
+          cache_position = vertex.cache_pos
+          if cache_position >= 0:
+            if cache_position < 3:
+              score = LAST_TRI_SCORE
+            else:
+              scaler = 1.0 / (MAX_SIZE_VERTEX_CACHE - 3)
+              score = 1 - (cache_position - 3) * scaler
+              score = score ** CACHE_DECAY_POWER
+          
+          valence_boost = vertex.unused_triangles  ** (-VALENCE_BOOST_POWER)
+          score = score + valence_boost * VALENCE_BOOST_SCALE
+          return score
+        
+        def FindTriangleScore(triangle, vertices):
+          return vertices[triangle.vertices[0]].score + vertices[triangle.vertices[1]].score + vertices[triangle.vertices[2]].score
+        
+        def UpdateCache(cache, v1, v2, v3):
+          discarted = [v1,v2,v3]
+          
+          replaced = 0
+          for i in range(MAX_SIZE_VERTEX_CACHE):
+            if v1 == cache[i] or v2 == cache[i] or v3 == cache[i]:
+              replaced = replaced + 1
+              cache[i] = discarted[0]
+              discarted[0] = discarted[1]
+              discarted[1] = discarted[2]
+              discarted[2] = -1
+            else:
+              aux = cache[i]
+              cache[i] = discarted[0]
+              discarted[0] = discarted[1]
+              discarted[1] = discarted[2]
+              discarted[2] = aux
+          
+          return discarted
+          
+        def RecomputeScores(cache, discarted, vertices, triangles):
+          for i in range(MAX_SIZE_VERTEX_CACHE):
+            if cache[i] < 0:
+              break # no hi ha mes vertexos a la cache
+            
+            vertex = vertices[ cache[i] ]
+            vertex.cache_pos = i
+            vertex.score = FindVertexScore(vertex)
+          if discarted[0] >= 0:
+            vertex = vertices[ discarted[0] ]
+            vertex.cache_pos = i
+            vertex.score = FindVertexScore(vertex)
+          if discarted[1] >= 0:
+            vertex = vertices[ discarted[1] ]
+            vertex.cache_pos = i
+            vertex.score = FindVertexScore(vertex)
+          if discarted[2] >= 0:
+            vertex = vertices[ discarted[2] ]
+            vertex.cache_pos = i
+            vertex.score = FindVertexScore(vertex)
+            
+          best_triangle = -1
+          for i in range(MAX_SIZE_VERTEX_CACHE):
+            if cache[i] < 0:
+              break # no hi ha mes vertexos a la cache
+            vertex = vertices[ cache[i] ]
+            
+            for triangle_index in vertex.triangles:
+              triangle = triangles[triangle_index]
+              if not triangle.added:
+                triangle.score = FindTriangleScore(triangle, vertices)
+                if best_triangle < 0 or triangle.score > triangles[best_triangle].score:
+                  best_triangle = triangle_index
+                  
+          if discarted[0] >= 0:
+            vertex = vertices[ discarted[0] ]
+            
+            for triangle_index in vertex.triangles:
+              triangle = triangles[triangle_index]
+              if not triangle.added:
+                triangle.score = FindTriangleScore(triangle, vertices)
+                if best_triangle < 0 or triangle.score > triangles[best_triangle].score:
+                  best_triangle = triangle_index
+          if discarted[1] >= 0:
+            vertex = vertices[ discarted[1] ]
+            
+            for triangle_index in vertex.triangles:
+              triangle = triangles[triangle_index]
+              if not triangle.added:
+                triangle.score = FindTriangleScore(triangle, vertices)
+                if best_triangle < 0 or triangle.score > triangles[best_triangle].score:
+                  best_triangle = triangle_index
+          if discarted[2] >= 0:
+            vertex = vertices[ discarted[2] ]
+            
+            for triangle_index in vertex.triangles:
+              triangle = triangles[triangle_index]
+              if not triangle.added:
+                triangle.score = FindTriangleScore(triangle, vertices)
+                if best_triangle < 0 or triangle.score > triangles[best_triangle].score:
+                  best_triangle = triangle_index
+                  
+          if best_triangle < 0:
+            for i in range(len(triangles)):
+              triangle = triangles[i]
+              if (not triangle.added) and ( best_triangle < 0 or triangle.score > triangles[best_triangle].score):
+                best_triangle = i
+          
+          return best_triangle
+            
+        
+        #algoritme principal ---------------------------------------------------------------
+        vertices = []
+        for vertex in self.vertices:
+          vertices.append(Vertex())
+        
+        triangles = []
+        for i in range(len(input_faces)):
+          triangle = input_faces[i]
+          v1 = triangle.i1
+          v2 = triangle.i2
+          v3 = triangle.i3
+          triangles.append(Triangle(v1,v2,v3))
+          
+          vertex = vertices[v1]
+          vertex.unused_triangles = vertex.unused_triangles + 1
+          vertex.triangles.append(i)
+          
+          vertex = vertices[v2]
+          vertex.unused_triangles = vertex.unused_triangles + 1
+          vertex.triangles.append(i)
+          
+          vertex = vertices[v3]
+          vertex.unused_triangles = vertex.unused_triangles + 1
+          vertex.triangles.append(i)
+          
+        for vertex in vertices:
+          vertex.score = FindVertexScore(vertex)
+          
+        best_triangle = 0
+        for i in range(len(triangles)):
+          triangle = triangles[i]
+          triangle.score = FindTriangleScore(triangle, vertices)
+          if triangle.score > triangles[best_triangle].score:
+            best_triangle = i
+        
+        #-------------------------------------------------------
+        
+        cache = []
+        for i in range(MAX_SIZE_VERTEX_CACHE):
+          cache.append(-1)
+        
+        ordered_faces = []
+        
+        for i in range(len(triangles)):
+          ordered_faces.append( input_faces[best_triangle] )
+          
+          if i == len(triangles) - 1:
+            break # si no, catacroker
+          
+          triangles[best_triangle].added = True
+          
+          v_index1 = triangles[best_triangle].vertices[0]
+          v_index2 = triangles[best_triangle].vertices[1]
+          v_index3 = triangles[best_triangle].vertices[2]
+          
+          v1 = vertices[ v_index1 ]
+          v2 = vertices[ v_index2 ]
+          v3 = vertices[ v_index3 ]
+          
+          v1.unused_triangles = v1.unused_triangles - 1
+          v2.unused_triangles = v2.unused_triangles - 1
+          v3.unused_triangles = v3.unused_triangles - 1
+          
+          discarted = UpdateCache(cache, v_index1, v_index2, v_index3)
+          
+          best_triangle = RecomputeScores(cache, discarted, vertices, triangles)
+          
+        return ordered_faces
+        
+def createMesh(mesh, vertex_groups, consolePrint):
     faces = []
     vertices = {} # mapa vertexId -> cares que el contenen, vertex corresponent
     for faceId in range(len(mesh.faces)):
@@ -331,11 +669,23 @@ def createMesh(mesh, consolePrint):
         
     if consolePrint:
         i = 0
+        max_bone = 0
         for v in verticesArray:
             print(i)
             print(v)
             print('\n')
             i = i + 1
+            
+            if v.w_indices[0] > max_bone:
+              max_bone = v.w_indices[0]
+            if v.w_indices[1] > max_bone:
+              max_bone = v.w_indices[1]
+            if v.w_indices[2] > max_bone:
+              max_bone = v.w_indices[2]
+            if v.w_indices[3] > max_bone:
+              max_bone = v.w_indices[3]
+        
+        print("max bone: " + str(max_bone))
         
     materialFaces = {}
     for face in faces:
@@ -344,7 +694,15 @@ def createMesh(mesh, consolePrint):
             materialFaces[material] = []
         materialFaces[material].append(face)
         
-    return AntagonistMesh(materialFaces, verticesArray)  
+    mesh = AntagonistMesh(materialFaces, verticesArray, vertex_groups)  
+    
+    if consolePrint:
+      for material in mesh.materialFaces.keys():
+        print(material)
+        for face in mesh.materialFaces[material]:
+          print( str(face.i1) + ", " + str(face.i2) + ", " + str(face.i3) )
+    
+    return mesh
 
 
 def saveMeshText(mesh, originalMesh, filepath):
@@ -356,6 +714,8 @@ def saveMeshText(mesh, originalMesh, filepath):
     else:
         f.write("\nFalse")
     f.write("\npos, normal, tangent, bitangent, uv")
+    if mesh.animated:
+      f.write(", weights, indices")
     f.write("\n%s" % len(mesh.vertices))
     f.write(" "    + str(False)) #Animats
     for v in mesh.vertices:
@@ -377,6 +737,19 @@ def saveMeshText(mesh, originalMesh, filepath):
         
         f.write(" %s"  % v.u)
         f.write(" %s"  % v.v)
+        
+        if mesh.animated:
+          f.write(" %s" % v.weights[0])
+          f.write(" %s" % v.weights[1])
+          f.write(" %s" % v.weights[2])
+          f.write(" %s" % v.weights[3])
+          
+          f.write(" %s" % v.w_indices[0])
+          f.write(" %s" % v.w_indices[1])
+          f.write(" %s" % v.w_indices[2])
+          f.write(" %s" % v.w_indices[3])
+          
+          
     
     f.write('\n\n%s' % len(mesh.materialFaces))
     for material in mesh.materialFaces.keys():
@@ -387,7 +760,11 @@ def saveMeshText(mesh, originalMesh, filepath):
             f.write('\n%s' % face.i1)
             f.write(' %s'  % face.i2)
             f.write(' %s'  % face.i3)
-
+    
+    if mesh.animated:
+      f.write('\n\n%s' % len(mesh.bones))
+      for bone in mesh.bones:
+        f.write('\n%s' % bone)
 
 def addMaterials(mesh, materials):
     for material in mesh.materialFaces.keys():
@@ -637,8 +1014,9 @@ class ExportAntagonistMesh(bpy.types.Operator, AntagonistExportHelper):
 
     def execute(self, context):
         import os
-        mesh = createMesh(context.object.data, False)
+        mesh = createMesh(context.object.data, context.object.vertex_groups, False)
         
+        #return {'FINISHED'}
         #path = os.path.dirname(self.filepath) + "/" + context.object.data.name
         path = self.filepath
         
