@@ -372,7 +372,7 @@ public class DebugRenderGL2 extends DebugRender {
     
     try {      
       float[] vertexL = new float[POS_COL_VERTEX_SIZE * 2];
-      float[] vertexT = new float[POS_COL_VERTEX_SIZE * 2];
+      float[] vertexT = new float[POS_COL_VERTEX_SIZE * 6];
 
       int linesToDraw1 = 0;
       int linesToDraw2 = 0;
