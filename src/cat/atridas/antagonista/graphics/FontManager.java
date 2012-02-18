@@ -27,6 +27,8 @@ public abstract class FontManager extends ResourceManager<Font> {
   //private static Logger logger = Logger.getLogger(FontManager.class.getCanonicalName());
   private Font defaultFont = new Font.NullFont();
   
+  public static final HashedString FONT_14 = new HashedString("font14");
+  
   /**
    * Cache of texts recently used.
    * @since 0.1 

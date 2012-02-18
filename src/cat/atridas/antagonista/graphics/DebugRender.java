@@ -7,9 +7,9 @@ import java.util.Collections;
 
 import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4f;
-import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Quat4f;
+import javax.vecmath.Tuple2f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
@@ -166,8 +166,8 @@ public abstract class DebugRender {
    * @since 0.1
    */
   public void addLine( 
-      Point3f origin, 
-      Point3f destination, 
+      Tuple3f origin, 
+      Tuple3f destination, 
       Color3f color, 
       float duration, 
       boolean depthEnabled) {
@@ -187,7 +187,7 @@ public abstract class DebugRender {
    * @since 0.1
    */
   public void addCross( 
-      Point3f center,
+      Tuple3f center,
       Color3f color, 
       float size, 
       float duration, 
@@ -208,7 +208,7 @@ public abstract class DebugRender {
    * @since 0.1
    */
   public void addSphere( 
-      Point3f center,
+      Tuple3f center,
       float radius,
       Color3f color, 
       float duration, 
@@ -230,8 +230,8 @@ public abstract class DebugRender {
    * @since 0.1
    */
   public void addCircle( 
-      Point3f center, 
-      Vector3f planeNormal,
+      Tuple3f center, 
+      Tuple3f planeNormal,
       float radius,
       Color3f color, 
       float duration, 
@@ -256,8 +256,7 @@ public abstract class DebugRender {
       float size,
       float duration, 
       boolean depthEnabled) {
-    if(active)
-      axes.add(new Axes(transformation, size, duration, depthEnabled));
+    axes.add(new Axes(transformation, size, duration, depthEnabled));
   }
   
   /**
@@ -273,9 +272,9 @@ public abstract class DebugRender {
    * @since 0.1
    */
   public void addTriangle( 
-      Point3f v0, 
-      Point3f v1, 
-      Point3f v2,
+      Tuple3f v0, 
+      Tuple3f v1, 
+      Tuple3f v2,
       Color3f color,
       float duration, 
       boolean depthEnabled) {
@@ -295,8 +294,8 @@ public abstract class DebugRender {
    * @since 0.1
    */
   public void addAABB( 
-      Point3f minCoords, 
-      Point3f maxCoords, 
+      Tuple3f minCoords, 
+      Tuple3f maxCoords, 
       Color3f color, 
       float duration, 
       boolean depthEnabled) {
@@ -343,7 +342,7 @@ public abstract class DebugRender {
    * @since 0.1
    */
   public void addString( 
-      Point3f position,
+      Tuple3f position,
       Font font,
       String text,
       float desiredHeight,
@@ -369,7 +368,7 @@ public abstract class DebugRender {
    * @since 0.1
    */
   public void addString2D( 
-      Point2f position,
+      Tuple2f position,
       Font font,
       String text,
       float desiredHeight,
@@ -391,11 +390,11 @@ public abstract class DebugRender {
    * @param color color of the primitive.
    * @param duration time, in seconds, this information will be rendered.
    * @since 0.1
-   * @see #addLine(Point3f, Point3f, Color3f, float, boolean)
+   * @see #addLine(Tuple3f, Tuple3f, Color3f, float, boolean)
    */
   public void addLine( 
-      Point3f origin, 
-      Point3f destination, 
+      Tuple3f origin, 
+      Tuple3f destination, 
       Color3f color, 
       float duration 
       ) {
@@ -410,11 +409,11 @@ public abstract class DebugRender {
    * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
    *        <code>false</code> otherwise.
    * @since 0.1
-   * @see #addLine(Point3f, Point3f, Color3f, float, boolean)
+   * @see #addLine(Tuple3f, Tuple3f, Color3f, float, boolean)
    */
   public void addLine( 
-      Point3f origin, 
-      Point3f destination, 
+      Tuple3f origin, 
+      Tuple3f destination, 
       Color3f color, 
       boolean depthEnabled
       ) {
@@ -427,11 +426,11 @@ public abstract class DebugRender {
    * @param destination final point of the line.
    * @param color color of the primitive.
    * @since 0.1
-   * @see #addLine(Point3f, Point3f, Color3f, float, boolean)
+   * @see #addLine(Tuple3f, Tuple3f, Color3f, float, boolean)
    */
   public void addLine( 
-      Point3f origin, 
-      Point3f destination, 
+      Tuple3f origin, 
+      Tuple3f destination, 
       Color3f color) {
     addLine(origin,destination,color,0,true);
   }
@@ -445,10 +444,10 @@ public abstract class DebugRender {
    * @param size radi of the lines exiting from the center point.
    * @param duration time, in seconds, this information will be rendered.
    * @since 0.1
-   * @see #addCross(Point3f, Color3f, float, float, boolean)
+   * @see #addCross(Tuple3f, Color3f, float, float, boolean)
    */
   public void addCross( 
-      Point3f center,
+      Tuple3f center,
       Color3f color, 
       float size, 
       float duration) {
@@ -463,10 +462,10 @@ public abstract class DebugRender {
    * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
    *        <code>false</code> otherwise.
    * @since 0.1
-   * @see #addCross(Point3f, Color3f, float, float, boolean)
+   * @see #addCross(Tuple3f, Color3f, float, float, boolean)
    */
   public void addCross( 
-      Point3f center,
+      Tuple3f center,
       Color3f color, 
       float size, 
       boolean depthEnabled) {
@@ -479,10 +478,10 @@ public abstract class DebugRender {
    * @param color color of the primitive.
    * @param size radi of the lines exiting from the center point.
    * @since 0.1
-   * @see #addCross(Point3f, Color3f, float, float, boolean)
+   * @see #addCross(Tuple3f, Color3f, float, float, boolean)
    */
   public void addCross( 
-      Point3f center,
+      Tuple3f center,
       Color3f color, 
       float size) {
     addCross(center,color,size,0,true);
@@ -497,10 +496,10 @@ public abstract class DebugRender {
    * @param color color of the primitive.
    * @param duration time, in seconds, this information will be rendered.
    * @since 0.1
-   * @see #addSphere(Point3f, float, Color3f, float, boolean)
+   * @see #addSphere(Tuple3f, float, Color3f, float, boolean)
    */
   public void addSphere( 
-      Point3f center,
+      Tuple3f center,
       float radius,
       Color3f color, 
       float duration) {
@@ -515,10 +514,10 @@ public abstract class DebugRender {
    * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
    *        <code>false</code> otherwise.
    * @since 0.1
-   * @see #addSphere(Point3f, float, Color3f, float, boolean)
+   * @see #addSphere(Tuple3f, float, Color3f, float, boolean)
    */
   public void addSphere( 
-      Point3f center,
+      Tuple3f center,
       float radius,
       Color3f color, 
       boolean depthEnabled) {
@@ -531,10 +530,10 @@ public abstract class DebugRender {
    * @param radius of the sphere.
    * @param color color of the primitive.
    * @since 0.1
-   * @see #addSphere(Point3f, float, Color3f, float, boolean)
+   * @see #addSphere(Tuple3f, float, Color3f, float, boolean)
    */
   public void addSphere( 
-      Point3f center,
+      Tuple3f center,
       float radius,
       Color3f color) {
     addSphere(center,radius,color,0,true);
@@ -549,11 +548,11 @@ public abstract class DebugRender {
    * @param color color of the primitive.
    * @param duration time, in seconds, this information will be rendered.
    * @since 0.1
-   * @see #addCircle(Point3f, Vector3f, float, Color3f, float, boolean)
+   * @see #addCircle(Tuple3f, Tuple3f, float, Color3f, float, boolean)
    */
   public void addCircle( 
-      Point3f center, 
-      Vector3f planeNormal,
+      Tuple3f center, 
+      Tuple3f planeNormal,
       float radius,
       Color3f color, 
       float duration) {
@@ -569,11 +568,11 @@ public abstract class DebugRender {
    * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
    *        <code>false</code> otherwise.
    * @since 0.1
-   * @see #addCircle(Point3f, Vector3f, float, Color3f, float, boolean)
+   * @see #addCircle(Tuple3f, Tuple3f, float, Color3f, float, boolean)
    */
   public void addCircle( 
-      Point3f center, 
-      Vector3f planeNormal,
+      Tuple3f center, 
+      Tuple3f planeNormal,
       float radius,
       Color3f color, 
       boolean depthEnabled) {
@@ -587,10 +586,10 @@ public abstract class DebugRender {
    * @param radius of the circle.
    * @param color color of the primitive.
    * @since 0.1
-   * @see #addCircle(Point3f, Vector3f, float, Color3f, float, boolean)
+   * @see #addCircle(Tuple3f, Vector3f, float, Color3f, float, boolean)
    */
   public void addCircle( 
-      Point3f center, 
+      Tuple3f center, 
       Vector3f planeNormal,
       float radius,
       Color3f color) {
@@ -653,12 +652,12 @@ public abstract class DebugRender {
    * @param color color of the primitive.
    * @param duration time, in seconds, this information will be rendered.
    * @since 0.1
-   * @see #addTriangle(Point3f, Point3f, Point3f, Color3f, float, boolean)
+   * @see #addTriangle(Tuple3f, Tuple3f, Tuple3f, Color3f, float, boolean)
    */
   public void addTriangle( 
-      Point3f v0, 
-      Point3f v1, 
-      Point3f v2,
+      Tuple3f v0, 
+      Tuple3f v1, 
+      Tuple3f v2,
       Color3f color, 
       float duration) {
     addTriangle(v0, v1, v2, color, duration, true);
@@ -676,9 +675,9 @@ public abstract class DebugRender {
    * @see #addTriangle(Point3f, Point3f, Point3f, Color3f, float, boolean)
    */
   public void addTriangle( 
-      Point3f v0, 
-      Point3f v1, 
-      Point3f v2,
+      Tuple3f v0, 
+      Tuple3f v1, 
+      Tuple3f v2,
       Color3f color, 
       boolean depthEnabled) {
     addTriangle(v0, v1, v2, color, 0, depthEnabled);
@@ -694,8 +693,8 @@ public abstract class DebugRender {
    * @see #addTriangle(Point3f, Point3f, Point3f, Color3f, float, boolean)
    */
   public void addTriangle( 
-      Point3f v0, 
-      Point3f v1, 
+      Tuple3f v0, 
+      Tuple3f v1, 
       Point3f v2,
       Color3f color) {
     addTriangle(v0, v1, v2, color, 0, true);
@@ -713,8 +712,8 @@ public abstract class DebugRender {
    * @see #addAABB(Point3f, Point3f, Color3f, float, boolean)
    */
   public void addAABB( 
-      Point3f minCoords, 
-      Point3f maxCoords, 
+      Tuple3f minCoords, 
+      Tuple3f maxCoords, 
       Color3f color,  
       float duration) {
     addAABB(minCoords, maxCoords, color, duration, true);
@@ -731,8 +730,8 @@ public abstract class DebugRender {
    * @see #addAABB(Point3f, Point3f, Color3f, float, boolean)
    */
   public void addAABB( 
-      Point3f minCoords, 
-      Point3f maxCoords, 
+      Tuple3f minCoords, 
+      Tuple3f maxCoords, 
       Color3f color,  
       boolean depthEnabled) {
     addAABB(minCoords, maxCoords, color, 0, depthEnabled);
@@ -747,8 +746,8 @@ public abstract class DebugRender {
    * @see #addAABB(Point3f, Point3f, Color3f, float, boolean)
    */
   public void addAABB( 
-      Point3f minCoords, 
-      Point3f maxCoords, 
+      Tuple3f minCoords, 
+      Tuple3f maxCoords, 
       Color3f color) {
     addAABB(minCoords, maxCoords, color, 0, true);
   }
@@ -816,10 +815,10 @@ public abstract class DebugRender {
    * @param color color of the primitive.
    * @param duration time, in seconds, this information will be rendered.
    * @since 0.1
-   * @see #addString(Point3f, Font, String, float, TextAlignment, Color3f, float, boolean)
+   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f, float, boolean)
    */
   public void addString( 
-      Point3f position,
+      Tuple3f position,
       Font font,
       String text,
       float desiredHeight,
@@ -840,10 +839,10 @@ public abstract class DebugRender {
    * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
    *        <code>false</code> otherwise.
    * @since 0.1
-   * @see #addString(Point3f, Font, String, float, TextAlignment, Color3f, float, boolean)
+   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f, float, boolean)
    */
   public void addString( 
-      Point3f position,
+      Tuple3f position,
       Font font,
       String text,
       float desiredHeight,
@@ -862,10 +861,10 @@ public abstract class DebugRender {
    * @param alignment of the text respect the point passed.
    * @param color color of the primitive.
    * @since 0.1
-   * @see #addString(Point3f, Font, String, float, TextAlignment, Color3f, float, boolean)
+   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f, float, boolean)
    */
   public void addString( 
-      Point3f position,
+      Tuple3f position,
       Font font,
       String text,
       float desiredHeight,
@@ -885,10 +884,10 @@ public abstract class DebugRender {
    * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
    *        <code>false</code> otherwise.
    * @since 0.1
-   * @see #addString(Point3f, Font, String, float, TextAlignment, Color3f, float, boolean)
+   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f, float, boolean)
    */
   public void addString( 
-      Point3f position,
+      Tuple3f position,
       Font font,
       String text,
       float desiredHeight,
@@ -907,10 +906,10 @@ public abstract class DebugRender {
    * @param color color of the primitive.
    * @param duration time, in seconds, this information will be rendered.
    * @since 0.1
-   * @see #addString(Point3f, Font, String, float, TextAlignment, Color3f, float, boolean)
+   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f, float, boolean)
    */
   public void addString( 
-      Point3f position,
+      Tuple3f position,
       Font font,
       String text,
       float desiredHeight,
@@ -929,10 +928,10 @@ public abstract class DebugRender {
    * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
    *        <code>false</code> otherwise.
    * @since 0.1
-   * @see #addString(Point3f, Font, String, float, TextAlignment, Color3f, float, boolean)
+   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f, float, boolean)
    */
   public void addString( 
-      Point3f position,
+      Tuple3f position,
       Font font,
       String text,
       float desiredHeight,
@@ -949,10 +948,10 @@ public abstract class DebugRender {
    * @param desiredHeight height in engine units of the text.
    * @param color color of the primitive.
    * @since 0.1
-   * @see #addString(Point3f, Font, String, float, TextAlignment, Color3f, float, boolean)
+   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f, float, boolean)
    */
   public void addString( 
-      Point3f position,
+      Tuple3f position,
       Font font,
       String text,
       float desiredHeight,
@@ -971,10 +970,10 @@ public abstract class DebugRender {
    * @param alignment of the text respect the point passed.
    * @param color color of the primitive.
    * @since 0.1
-   * @see #addString2D(Point2f, Font, String, float, TextAlignment, Color3f, float)
+   * @see #addString2D(Tuple2f, Font, String, float, TextAlignment, Color3f, float)
    */
   public void addString2D( 
-      Point2f position,
+      Tuple2f position,
       Font font,
       String text,
       float desiredHeight,
@@ -993,10 +992,10 @@ public abstract class DebugRender {
    * @param color color of the primitive.
    * @param duration time, in seconds, this information will be rendered.
    * @since 0.1
-   * @see #addString2D(Point2f, Font, String, float, TextAlignment, Color3f, float)
+   * @see #addString2D(Tuple2f, Font, String, float, TextAlignment, Color3f, float)
    */
   public void addString2D( 
-      Point2f position,
+      Tuple2f position,
       Font font,
       String text,
       float desiredHeight,
@@ -1014,10 +1013,10 @@ public abstract class DebugRender {
    * @param desiredHeight height in normalized units (1 means the entire screen height).
    * @param color color of the primitive.
    * @since 0.1
-   * @see #addString2D(Point2f, Font, String, float, TextAlignment, Color3f, float)
+   * @see #addString2D(Tuple2f, Font, String, float, TextAlignment, Color3f, float)
    */
   public void addString2D( 
-      Point2f position,
+      Tuple2f position,
       Font font,
       String text,
       float desiredHeight,
@@ -1379,7 +1378,7 @@ public abstract class DebugRender {
      * @param color
      * @since 0.1
      */
-    Line(Point3f _origin, Point3f _destination,
+    Line(Tuple3f _origin, Tuple3f _destination,
         final float duration, final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
       origin= new Point3f( _origin );
@@ -1416,7 +1415,7 @@ public abstract class DebugRender {
      * @param color
      * @since 0.1
      */
-    Cross(Point3f _center, float _size,
+    Cross(Tuple3f _center, float _size,
         final float duration, final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
       center= new Point3f( _center );
@@ -1453,7 +1452,7 @@ public abstract class DebugRender {
      * @param color
      * @since 0.1
      */
-    Sphere(Point3f _center, float _radius,
+    Sphere(Tuple3f _center, float _radius,
         final float duration, final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
       center= new Point3f( _center );
@@ -1496,16 +1495,16 @@ public abstract class DebugRender {
      * @param color
      * @since 0.1
      */
-    Circle(Point3f _center, float _radius, Vector3f _planeNormal,
+    Circle(Tuple3f _center, float _radius, Tuple3f _planeNormal,
         final float duration, final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
       center = new Point3f ( _center );
       radius = _radius ;
       
-      assert Math.abs(_planeNormal.lengthSquared() - 1) < Utils.EPSILON;
+      planeNormal = new Vector3f(_planeNormal);
+      assert Math.abs(planeNormal.lengthSquared() - 1) < Utils.EPSILON; //¿?
+      planeNormal.normalize();
       
-      planeNormal = new Vector3f();
-      planeNormal.normalize(_planeNormal);
     }
   }
   
@@ -1580,7 +1579,7 @@ public abstract class DebugRender {
      * @param color
      * @since 0.1
      */
-    Triangle(Point3f _v0, Point3f _v1, Point3f _v2,
+    Triangle(Tuple3f _v0, Tuple3f _v1, Tuple3f _v2,
         final float duration, final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
       v0 = new Point3f(_v0);
@@ -1617,7 +1616,7 @@ public abstract class DebugRender {
      * @param color
      * @since 0.1
      */
-    AABB(Point3f _minCoords, Point3f _maxCoords,
+    AABB(Tuple3f _minCoords, Tuple3f _maxCoords,
         final float duration, final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
       minCoords = new Point3f(_minCoords);
@@ -1716,7 +1715,7 @@ public abstract class DebugRender {
      * @param color
      * @since 0.1
      */
-    DebugString(final Point3f _position, final Font _font, final String _text, final float _desiredHeight,
+    DebugString(final Tuple3f _position, final Font _font, final String _text, final float _desiredHeight,
         final boolean _on2D, final TextAlignment _aligment,
         final float duration, final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);

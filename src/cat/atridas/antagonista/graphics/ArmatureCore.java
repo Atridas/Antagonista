@@ -14,6 +14,7 @@ import javax.vecmath.Vector3f;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Resource;
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.core.Core;
 
 public class ArmatureCore extends Resource {
   private static Logger LOGGER = Logger.getLogger(ArmatureCore.class.getCanonicalName());
@@ -161,12 +162,17 @@ public class ArmatureCore extends Resource {
   
   public void debugRender(DebugRender dr, Matrix4f worldMatrix) {
     Matrix4f aux = new Matrix4f();
+    Vector3f translation = new Vector3f();
+    Font font = Core.getCore().getFontManager().getResource(FontManager.FONT_14);
     
     for(Bone bone : bones) {
-      bone.getTransformMatrix(aux);
-      aux.mul(worldMatrix);
+      aux.set(worldMatrix);
+      bone.mulTransformMatrix(aux);
       
-      dr.addAxes(aux, 1, false);
+      dr.addAxes(aux, .1f, false);
+      
+      aux.get(translation);
+      dr.addString(translation, font, bone.getName().toString(), .1f, Utils.BLACK, false);
     }
     
   }

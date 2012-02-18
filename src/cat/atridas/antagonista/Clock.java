@@ -115,7 +115,12 @@ public class Clock {
 		
 		float dt = ((float) sum) / (total * timerResolution);
 		
-		dt -= drift * DRIFT_INFLUENCE;
+		float correction = drift * DRIFT_INFLUENCE;
+		
+		if(correction < dt)
+		  dt -= correction;
+		else
+		  dt *= 1.f - DRIFT_INFLUENCE;
 		
 		drift += dt - realDeltaTime / 1000.f;
 		
@@ -181,6 +186,7 @@ public class Clock {
     }
     
     private DeltaTime(float _dt, long _realDTTicks) {
+      assert _dt > 0;
       dt = _dt;
       fps = (int)(1 / dt);
       timeTicksSinceStart = lastDeltaTime.timeTicksSinceStart + _realDTTicks;

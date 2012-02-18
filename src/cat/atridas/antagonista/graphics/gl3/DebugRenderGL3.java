@@ -1103,29 +1103,43 @@ public class DebugRenderGL3 extends DebugRender {
       if(axesToDraw1>0) {
         buffer1.flip();
       
-        glEnable(GL_DEPTH_TEST);
-        
-        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer1);//TODO
-        glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer1);
-        assert !Utils.hasGLErrors();
-      
-        renderArraysInstanced(GL_LINES, axesNumVertexs, axesToDraw1, rm);
 
-        assert !Utils.hasGLErrors();
+        
+        drawInstanced(
+            null, buffer1, 
+            axesToDraw1, false, true,
+            GL_LINES, axesNumVertexs, rm);
+        
+        //glEnable(GL_DEPTH_TEST);
+        
+        //glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer1);//TODO
+        //glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer1);
+        //assert !Utils.hasGLErrors();
+      
+        //renderArraysInstanced(GL_LINES, axesNumVertexs, axesToDraw1, rm);
+
+        //assert !Utils.hasGLErrors();
       }
       
       if(axesToDraw2>0) {
         buffer2.flip();
       
-        glDisable(GL_DEPTH_TEST);
-        
-        glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer1);
-        glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer1);
-        assert !Utils.hasGLErrors();
-      
-        renderArraysInstanced(GL_LINES, axesNumVertexs, axesToDraw2, rm);
 
-        assert !Utils.hasGLErrors();
+        
+        drawInstanced(
+            null, buffer2, 
+            axesToDraw2, false, false,
+            GL_LINES, axesNumVertexs, rm);
+      
+        //glDisable(GL_DEPTH_TEST);
+        
+        //glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer2);
+        //glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer2);
+        //assert !Utils.hasGLErrors();
+      
+        //renderArraysInstanced(GL_LINES, axesNumVertexs, axesToDraw2, rm);
+
+        //assert !Utils.hasGLErrors();
       }
         
     } catch(BufferOverflowException e) {
@@ -1135,129 +1149,7 @@ public class DebugRenderGL3 extends DebugRender {
       renderCircles(rm);
     }
   }
-  /*
-  @Override
-  protected void renderTriangles(RenderManager rm) {
-    assert !cleaned;
-    
 
-    if(triangles.size() == 0)
-      return;
-    
-    try {      
-      float[] vertex = new float[POS_COL_VERTEX_SIZE * 6];
-
-      int trianglesToDraw1 = 0;
-      int trianglesToDraw2 = 0;
-      buffer1.clear();
-      buffer2.clear();
-
-      
-      for(Triangle triangle: triangles) {
-
-        ///////////////////////////////////////
-        vertex[0] = triangle.v0.x;
-        vertex[1] = triangle.v0.y;
-        vertex[2] = triangle.v0.z;
-
-        vertex[3] = triangle.color.x;
-        vertex[4] = triangle.color.y;
-        vertex[5] = triangle.color.z;
-        
-        vertex[6] = triangle.v1.x;
-        vertex[7] = triangle.v1.y;
-        vertex[8] = triangle.v1.z;
-
-        vertex[9]  = triangle.color.x;
-        vertex[10] = triangle.color.y;
-        vertex[11] = triangle.color.z;
-        
-        
-        ///////////////////////////////////////
-        vertex[12] = triangle.v0.x;
-        vertex[13] = triangle.v0.y;
-        vertex[14] = triangle.v0.z;
-
-        vertex[15] = triangle.color.x;
-        vertex[16] = triangle.color.y;
-        vertex[17] = triangle.color.z;
-        
-        vertex[18] = triangle.v2.x;
-        vertex[19] = triangle.v2.y;
-        vertex[20] = triangle.v2.z;
-
-        vertex[21] = triangle.color.x;
-        vertex[22] = triangle.color.y;
-        vertex[23] = triangle.color.z;
-        
-
-        ///////////////////////////////////////
-        vertex[24] = triangle.v2.x;
-        vertex[25] = triangle.v2.y;
-        vertex[26] = triangle.v2.z;
-
-        vertex[27] = triangle.color.x;
-        vertex[28] = triangle.color.y;
-        vertex[29] = triangle.color.z;
-        
-        vertex[30] = triangle.v1.x;
-        vertex[31] = triangle.v1.y;
-        vertex[32] = triangle.v1.z;
-
-        vertex[33] = triangle.color.x;
-        vertex[34] = triangle.color.y;
-        vertex[35] = triangle.color.z;
-
-        ///////////////////////////////////////
-        if(triangle.depthEnabled) {
-          buffer1.put(vertex);
-          trianglesToDraw1++;
-        } else {
-          buffer2.put(vertex);
-          trianglesToDraw2++;
-        }
-      }
-      
-      if(trianglesToDraw1 + trianglesToDraw2 > 0) {
-        setGlobalMatrixes(rm);
-        glBindVertexArray(linesVAO);
-      }
-      
-      if(trianglesToDraw1>0) {
-        buffer1.flip();
-      
-        glEnable(GL_DEPTH_TEST);
-
-        glBindBuffer(GL_ARRAY_BUFFER, linesBuffer);
-        glBufferData(GL_ARRAY_BUFFER, buffer1, GL_DYNAMIC_DRAW);
-      
-        renderArrays(GL_LINES, trianglesToDraw1 * 6, rm);
-
-        assert !Utils.hasGLErrors();
-      }
-      
-      if(trianglesToDraw2>0) {
-        buffer2.flip();
-      
-        glDisable(GL_DEPTH_TEST);
-
-        glBindBuffer(GL_ARRAY_BUFFER, linesBuffer);
-        glBufferData(GL_ARRAY_BUFFER, buffer2, GL_DYNAMIC_DRAW);
-      
-        renderArrays(GL_LINES, trianglesToDraw2 * 6, rm);
-
-        assert !Utils.hasGLErrors();
-      }
-      
-    } catch(BufferOverflowException e) {
-      //fem creixer el buffer i rellancem el métode.
-      //brut pq és una classe per fer debug.
-      growBuffers();
-      renderTriangles(rm);
-    }
-    
-  }
-  */
   @Override
   protected void renderBBs(RenderManager rm) {
     assert !cleaned;
@@ -1427,7 +1319,7 @@ public class DebugRenderGL3 extends DebugRender {
       int primitiveType, int numIndices,
       RenderManager rm) 
   {
-    assert colorBuffer.limit() == instances * colorBufferInstanceSize;
+    assert colorBuffer == null || colorBuffer.limit() == instances * colorBufferInstanceSize;
     assert matrixBuffer.limit() == instances * matrixBufferInstanceSize;
   
     rm.setDepthTest(depthTest);
@@ -1453,16 +1345,19 @@ public class DebugRenderGL3 extends DebugRender {
         instancesToDraw = instances - i;
       }
 
-      colorBuffer.position(i * colorBufferInstanceSize);
+      if(colorBuffer != null)
+        colorBuffer.position(i * colorBufferInstanceSize);
       matrixBuffer.position(i * matrixBufferInstanceSize);
 
-      colorBuffer.limit((i + instancesToDraw) * colorBufferInstanceSize);
+      if(colorBuffer != null)
+        colorBuffer.limit((i + instancesToDraw) * colorBufferInstanceSize);
       matrixBuffer.limit((i + instancesToDraw) * matrixBufferInstanceSize);
 
-      glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
-      glBufferSubData(GL_ARRAY_BUFFER, 0, colorBuffer);
-      
-      glVertexAttribPointer(TechniquePass.COLOR_ATTRIBUTE, 3, GL_FLOAT, false, 0, 0);
+      if(colorBuffer != null) {
+        glBindBuffer(GL_ARRAY_BUFFER, instancesColorBuffer);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, colorBuffer);
+        glVertexAttribPointer(TechniquePass.COLOR_ATTRIBUTE, 3, GL_FLOAT, false, 0, 0);
+      }
       
       
       glBindBuffer(GL_UNIFORM_BUFFER, multipleInstancesGlobalDataBuffer);

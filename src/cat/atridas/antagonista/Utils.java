@@ -159,6 +159,11 @@ public abstract class Utils {
    */
   public static final Color3f BLUE = new Color3f(0,0,1);
   /**
+   * Blue color
+   * @since 0.3
+   */
+  public static final Color3f BLACK = new Color3f(0,0,0);
+  /**
    * Sky Blue color
    * @since 0.2
    */

@@ -319,8 +319,8 @@ public final class Core {
     
     //-----------------------------------------
     
-      if(physicsDebugRender)
-    pw.debugDraw();
+    if(physicsDebugRender)
+      pw.debugDraw();
     
     rm.initFrame();
     

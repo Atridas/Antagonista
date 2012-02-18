@@ -106,7 +106,7 @@ public class TestAnimacions {
     TransformComponent tc = em.createComponent(entityMaster, TransformComponent.getComponentStaticType());
     
     Transformation transform = new Transformation();
-    transform.setTranslation(new Vector3f(0,0,1.001f));
+    transform.setTranslation(new Vector3f(0,0,1));
     tc.init(transform);
     
     Matrix4f worldMatrix = new Matrix4f();
@@ -133,10 +133,13 @@ public class TestAnimacions {
     //scriptManager.execute(script);
     
     while(!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
+      
+      //dr.addAxes(worldMatrix, 1, false);
+      //dr.addCross(new Point3f(0,0,1), Utils.RED, 1, true);
+      
+      masterArmature.debugRender(dr, worldMatrix);
 
       core.performSimpleTick();
-      
-      //masterArmature.debugRender(dr, worldMatrix);
       
     }
     
