@@ -9,6 +9,7 @@ import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.entities.EntityManager;
 import cat.atridas.antagonista.entities.SystemManager;
+import cat.atridas.antagonista.graphics.ArmatureManager;
 import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.graphics.EffectManager;
 import cat.atridas.antagonista.graphics.FontManager;
@@ -45,6 +46,7 @@ public final class Core {
   private EffectManager           em  = new EffectManager(); //TODO
   private MaterialManager         mm  = new MaterialManager();
   private DebugRender             dr;
+  private ArmatureManager         am  = new ArmatureManager();
   private MeshManager             mem = new MeshManager();
   private RenderableObjectManager rom;
   
@@ -134,6 +136,17 @@ public final class Core {
   public DebugRender getDebugRender()
   {
     return dr;
+  }
+
+  /**
+   * Gets the ArmatureManager.
+   * 
+   * @return the ArmatureManager.
+   * @since 0.3
+   */
+  public ArmatureManager getArmatureManager()
+  {
+    return am;
   }
 
   /**
@@ -256,6 +269,10 @@ public final class Core {
       //TODO
       throw new RuntimeException("Not implemented");
     }
+    
+    al.clear();
+    al.add(new HashedString("arm"));
+    am.init(al, "data/armatures/");
     
     al.clear();
     al.add(new HashedString("mesh"));

@@ -86,7 +86,7 @@ class RTSCameraSystem(System):
         rtsCamera.moveRight(-self.speed * currentTime.dt)
       
       if INPUT_MANAGER.isActionActive(CONST_CAM_DISTANCE):
-        rtsCamera.addDistance( -self.speedZoom * INPUT_MANAGER.getActionValue(camDist) )
+        rtsCamera.addDistance( -self.speedZoom * INPUT_MANAGER.getActionValue(CONST_CAM_DISTANCE) )
       
       
       cameraComponent.setActive(True)

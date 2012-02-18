@@ -127,6 +127,11 @@ public class ArmatureCore extends Resource {
         loadBone(lines, null);
       }
       
+      bones.trimToSize();
+      for(Bone bone : bones) {
+        bone.children.trimToSize();
+      }
+      
       return true;
     } catch(Exception e) {
       LOGGER.warning("Error loading material file with text format.");
@@ -151,6 +156,18 @@ public class ArmatureCore extends Resource {
     
     bones.add(root);
     boneMap.put(Utils.ROOT, root);
+    
+  }
+  
+  public void debugRender(DebugRender dr, Matrix4f worldMatrix) {
+    Matrix4f aux = new Matrix4f();
+    
+    for(Bone bone : bones) {
+      bone.getTransformMatrix(aux);
+      aux.mul(worldMatrix);
+      
+      dr.addAxes(aux, 1, false);
+    }
     
   }
 

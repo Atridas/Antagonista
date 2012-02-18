@@ -176,24 +176,32 @@ public abstract class Mesh extends Resource {
       
       numVerts = Integer.parseInt(vertsParams[0]);
       boolean animated = Boolean.parseBoolean(vertsParams[1]);
-      assert !animated;//TODO animats
+      //assert !animated;//TODO animats
       
       if(loadPhysicMesh) {
         physicsMeshVertexBuffer = BufferUtils.createByteBuffer(numVerts * Utils.FLOAT_SIZE * 3);
       }
       
-      float[] vtxs = new float[ numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH ];
+      ByteBuffer vertexBuffer;
+      if(animated) {
+        vertexBuffer = BufferUtils.createByteBuffer(numVerts * NUM_ELEMENTS_PER_VERTEX_ANIMATED_MESH * Utils.FLOAT_SIZE);
+      } else {
+        vertexBuffer = BufferUtils.createByteBuffer(numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH * Utils.FLOAT_SIZE);
+      }
       
       assert lines.length >= firstVertexLine + numVerts;
       
       for(int i = 0; i < numVerts; ++i) {
         String elements[] = lines[i + firstVertexLine].split(" ");
-        assert elements.length == NUM_ELEMENTS_PER_VERTEX_STATIC_MESH;
+        if(animated) {
+          assert elements.length == NUM_ELEMENTS_PER_VERTEX_STATIC_MESH + 8;
+        } else {
+          assert elements.length == NUM_ELEMENTS_PER_VERTEX_STATIC_MESH;
+        }
         
         for(int j = 0; j < NUM_ELEMENTS_PER_VERTEX_STATIC_MESH; ++j) {
           float f = Float.parseFloat(elements[j]);
-          //vertexBuffer.putFloat(f);
-          vtxs[i * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH + j] = f;
+          vertexBuffer.putFloat(f);
           
           if(loadPhysicMesh && j < 3) { //només l' x,y,z
             physicsMeshVertexBuffer.putFloat(f);
@@ -229,6 +237,27 @@ public abstract class Mesh extends Resource {
           }
         }
         
+        if(animated) {
+          float w1 = Float.parseFloat(elements[NUM_ELEMENTS_PER_VERTEX_STATIC_MESH + 0]);
+          float w2 = Float.parseFloat(elements[NUM_ELEMENTS_PER_VERTEX_STATIC_MESH + 1]);
+          float w3 = Float.parseFloat(elements[NUM_ELEMENTS_PER_VERTEX_STATIC_MESH + 2]);
+          float w4 = Float.parseFloat(elements[NUM_ELEMENTS_PER_VERTEX_STATIC_MESH + 3]);
+
+          short i1 = Short.parseShort(elements[NUM_ELEMENTS_PER_VERTEX_STATIC_MESH + 4]);
+          short i2 = Short.parseShort(elements[NUM_ELEMENTS_PER_VERTEX_STATIC_MESH + 5]);
+          short i3 = Short.parseShort(elements[NUM_ELEMENTS_PER_VERTEX_STATIC_MESH + 6]);
+          short i4 = Short.parseShort(elements[NUM_ELEMENTS_PER_VERTEX_STATIC_MESH + 7]);
+
+          vertexBuffer.putFloat(w1);
+          vertexBuffer.putFloat(w2);
+          vertexBuffer.putFloat(w3);
+          vertexBuffer.putFloat(w4);
+
+          vertexBuffer.putShort(i1);
+          vertexBuffer.putShort(i2);
+          vertexBuffer.putShort(i3);
+          vertexBuffer.putShort(i4);
+        }
         
       }
       
@@ -272,14 +301,18 @@ public abstract class Mesh extends Resource {
         aux += numFaces[i];
       }
       
-      ByteBuffer vertexBuffer = BufferUtils.createByteBuffer(numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH * Utils.FLOAT_SIZE);
+      //ByteBuffer vertexBuffer = BufferUtils.createByteBuffer(numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH * Utils.FLOAT_SIZE);
       ByteBuffer faces = BufferUtils.createByteBuffer(totalNumFaces * 3 * Utils.SHORT_SIZE);
   
-      vertexBuffer.asFloatBuffer().put(vtxs);
+      //vertexBuffer.asFloatBuffer().put(vtxs);
       faces.asShortBuffer().put(idxs);
   
       vertexBuffer.position(0);
-      vertexBuffer.limit(numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH * Utils.FLOAT_SIZE);
+      if(animated) {
+        vertexBuffer.limit(numVerts * NUM_ELEMENTS_PER_VERTEX_ANIMATED_MESH * Utils.FLOAT_SIZE);
+      } else {
+        vertexBuffer.limit(numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH * Utils.FLOAT_SIZE);
+      }
       faces.position(0);
       faces.limit(totalNumFaces * 3 * Utils.SHORT_SIZE);
       
