@@ -3,7 +3,7 @@ import bpy, math
 epsilon = 0#1e-05
 
 class AntagonistVertex:
-    def __init__(self, vertex):
+    def __init__(self, vertex, antagonistArmature, vertex_groups):
         self.x = vertex.co[0]
         self.y = vertex.co[1]
         self.z = vertex.co[2]
@@ -28,9 +28,15 @@ class AntagonistVertex:
         weights = []
         w_indices = []
         
-        for group in vertex.groups:
-          weights.append(group.weight)
-          w_indices.append(group.group)
+        if antagonistArmature is not None:
+          for group in vertex.groups:
+            blender_group = group.group
+            bone_name = vertex_groups[blender_group].name
+            if bone_name in antagonistArmature.bones.keys() and antagonistArmature.bones[bone_name].deform:
+              bone_id = antagonistArmature.bones[bone_name].index
+              
+              weights.append(group.weight)
+              w_indices.append(bone_id)
         
         while len(weights) < 4:
           weights.append(0)
@@ -174,14 +180,14 @@ def calcTan(u1, u2, u3, p1, p2, p3):
         
     
 class AntagonistFace:
-    def __init__(self, mesh, vertices, v1, v2, v3, uv1, uv2, uv3, n, material):
+    def __init__(self, mesh, vertices, v1, v2, v3, uv1, uv2, uv3, n, material, antagonistArmature, vertex_groups):
         self.material = material
         self.i1 = v1 #indexos
         self.i2 = v2
         self.i3 = v3
-        self.v1 = AntagonistVertex(mesh.vertices[v1]) #vertexos amb valors
-        self.v2 = AntagonistVertex(mesh.vertices[v2])
-        self.v3 = AntagonistVertex(mesh.vertices[v3])
+        self.v1 = AntagonistVertex(mesh.vertices[v1], antagonistArmature, vertex_groups) #vertexos amb valors
+        self.v2 = AntagonistVertex(mesh.vertices[v2], antagonistArmature, vertex_groups)
+        self.v3 = AntagonistVertex(mesh.vertices[v3], antagonistArmature, vertex_groups)
         self.nx = n[0] # normal de la cara
         self.ny = n[1]
         self.nz = n[2]
@@ -573,19 +579,25 @@ def createMesh(object, consolePrint):
 
     mesh = object.data
     vertex_groups = object.vertex_groups
+    armature = None
+    antagonistArmature = None
+    for modifier in object.modifiers:
+      if modifier.type == 'ARMATURE':
+        armature = modifier.object.data.name
+        antagonistArmature = AntagonistArmature(modifier.object.data)
     
     faces = []
     vertices = {} # mapa vertexId -> cares que el contenen, vertex corresponent
     for faceId in range(len(mesh.faces)):
         face = mesh.faces[faceId]
         uv_textures = mesh.uv_textures['UV1'].data[faceId]
-        f = AntagonistFace(mesh, vertices, face.vertices[0], face.vertices[1], face.vertices[2], uv_textures.uv1, uv_textures.uv2, uv_textures.uv3, face.normal, face.material_index)
+        f = AntagonistFace(mesh, vertices, face.vertices[0], face.vertices[1], face.vertices[2], uv_textures.uv1, uv_textures.uv2, uv_textures.uv3, face.normal, face.material_index, antagonistArmature, vertex_groups)
         
         faces.append(f)
         
         
         if len(face.vertices) == 4:
-            f = AntagonistFace(mesh, vertices, face.vertices[2], face.vertices[3], face.vertices[0], uv_textures.uv3, uv_textures.uv4, uv_textures.uv1, face.normal, face.material_index)
+            f = AntagonistFace(mesh, vertices, face.vertices[2], face.vertices[3], face.vertices[0], uv_textures.uv3, uv_textures.uv4, uv_textures.uv1, face.normal, face.material_index, antagonistArmature, vertex_groups)
             
             faces.append(f)
             
@@ -702,10 +714,6 @@ def createMesh(object, consolePrint):
             materialFaces[material] = []
         materialFaces[material].append(face)
       
-    armature = None
-    for modifier in object.modifiers:
-      if modifier.type == 'ARMATURE':
-        armature = modifier.object.data.name
         
     mesh = AntagonistMesh(materialFaces, verticesArray, vertex_groups, armature)  
     
@@ -776,9 +784,9 @@ def saveMeshText(mesh, originalMesh, filepath):
     
     if mesh.animated:
       f.write('\n\n%s'  % mesh.armature)
-      f.write('\n%s'  % len(mesh.bones))
-      for bone in mesh.bones:
-        f.write('\n%s' % bone)
+      #f.write('\n%s'  % len(mesh.bones))
+      #for bone in mesh.bones:
+      #  f.write('\n%s' % bone)
 
 def addMaterials(mesh, materials):
     for material in mesh.materialFaces.keys():
@@ -904,14 +912,26 @@ def addTextures(mat, textures):
 class AntagonistBone:
   def __init__(self, bone):
     self.name = bone.name
-    if bone.parent is None:
-      self.parent = ''
-    else:
-      self.parent = bone.parent.name
+    #if bone.parent is None:
+    #  self.parent = ''
+    #else:
+    #  self.parent = bone.parent.name
     
     self.children = []
     
-    matrix_decomposed = bone.matrix_local.decompose()
+    matrix_local = bone.matrix_local
+    
+    parent = bone.parent
+    while parent is not None and not parent.use_deform:
+      #matrix_local = parent.matrix_local * matrix_local
+      parent = parent.parent
+    
+    if parent is None:
+      self.parent = ''
+    else:
+      self.parent = parent.name
+    
+    matrix_decomposed = matrix_local.decompose()
     
     self.translation = matrix_decomposed[0]
     self.rotation = matrix_decomposed[1]
@@ -936,19 +956,31 @@ class AntagonistBone:
 class AntagonistArmature:
   
   def __init__(self, armature):
-    bones = {}
+    self.name = armature.name
+    self.bones = {}
     for bone in armature.bones:
-      bones[bone.name] = AntagonistBone(bone)
+      self.bones[bone.name] = AntagonistBone(bone)
       
     self.root_bones = []
     
-    for bone in bones.values():
-      if bone.parent == '':
-        self.root_bones.append(bone)
-      else:
-        parent = bones[bone.parent]
-        parent.children.append(bone)
+    for bone in self.bones.values():
+      if bone.deform:
+        if bone.parent == '':
+          self.root_bones.append(bone)
+        else:
+          parent = self.bones[bone.parent]
+          parent.children.append(bone)
 
+    def IndexBones(bone, nextIndex):
+      bone.index = nextIndex
+      nextIndex = nextIndex + 1
+      for child in bone.children:
+        nextIndex = IndexBones(child, nextIndex)
+      return nextIndex
+          
+    i = 0
+    for root_bone in self.root_bones:
+      i = IndexBones(root_bone, i)
         
   def __str__(self):
     aux = "Armature with " + str(len(self.root_bones)) + " root bones"
@@ -958,7 +990,7 @@ class AntagonistArmature:
         
 
 def boneTextFormat(bone):
-  aux = bone.name + " " + str(len(bone.children)) + " " + str(bone.deform)
+  aux = bone.name + " " + str(len(bone.children))
   aux = aux + " " + str(bone.translation.x) + " " + str(bone.translation.y) + " " + str(bone.translation.z)
   aux = aux + " " + str(bone.rotation.w   ) + " " + str(bone.rotation.x   ) + " " + str(bone.rotation.y   ) + " " + str(bone.rotation.z)
   aux = aux + " " + str(bone.scale.x      ) + " " + str(bone.scale.y      ) + " " + str(bone.scale.z      )
@@ -970,13 +1002,136 @@ def saveArmatureText(armature, filepath):
     f = open(filepath, 'w')
     f.write("antagonist text")
     
-    f.write("\nname num_children deform pos.xyz rotation.wxyz scale.xyz")
+    f.write("\nname num_children pos.xyz rotation.wxyz scale.xyz")
     
     f.write( "\n" + str( len( armature.root_bones ) ) )
     
     for root_bone in armature.root_bones:
       f.write( "\n" + boneTextFormat(root_bone) )
         
+    
+    
+# ------------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------------------
+class AntagonistPoseBone:
+  def __init__(self, bone, matrixToParentInv):
+    self.name = bone.name
+    
+    matrix = matrixToParentInv * bone.matrix
+    
+    matrix_decomposed = matrix.decompose()
+    
+    self.translation = matrix_decomposed[0]
+    self.rotation = matrix_decomposed[1]
+    self.scale = matrix_decomposed[2]
+    
+  def __str__(self):
+    aux = self.name
+    aux = aux + "\n  - p: " + str(self.translation.x) + ", " + str(self.translation.y) + ", " + str(self.translation.z)
+    aux = aux + "\n  - r: " + str(self.rotation.w) + ", " + str(self.rotation.x) + ", " + str(self.rotation.y) + ", " + str(self.rotation.z)
+    aux = aux + "\n  - s: " + str(self.scale.x) + ", " + str(self.scale.y) + ", " + str(self.scale.z)
+    return aux
+
+from mathutils import Matrix
+
+class AntagonistPose:
+  
+  def __init__(self, antagonistArmature, pose):
+    self.bones = {}
+    
+    #print( "\n\naaaaaaa--------------------------\n\n" )
+    
+    def addBone(bone_name, basisMatrixInv):
+      blender_bone = pose.bones[bone_name]
+      antagonist_bone = AntagonistPoseBone(blender_bone, basisMatrixInv)
+      matrixInv = blender_bone.matrix.inverted()
+      
+      self.bones[bone_name] = antagonist_bone 
+      
+      #print( antagonist_bone )
+      
+      for bone_child in antagonistArmature.bones[bone_name].children:
+        addBone(bone_child.name, matrixInv)
+    
+    basisMatrix = Matrix()
+    for root_bone in antagonistArmature.root_bones:
+      addBone(root_bone.name, basisMatrix)
+      
+  def __str__(self):  
+    aux = "Pose:"
+    for bone_name in self.bones.keys():
+      aux = aux + "\n-" + str(self.bones[bone_name])
+    return aux
+    
+class AntagonistAnimation:
+  
+  def __init__(self, animated_object, scene):
+    self.name = animated_object.name
+    
+    frame_range = animated_object.animation_data.action.frame_range
+    
+    first_frame = int(frame_range[0])
+    last_frame = int(frame_range[1])
+    
+    current_frame = scene.frame_current
+    
+    pose = animated_object.pose
+    antagonistArmature = AntagonistArmature(animated_object.data)
+    
+    self.skeleton = antagonistArmature.name
+    
+    poses = []
+    
+    for frame in range(first_frame, last_frame + 1):
+      scene.frame_set(frame)
+      scene.update()
+      antpose = AntagonistPose(antagonistArmature, pose)
+      poses.append( antpose )
+      print("----------------------------------------------------")
+      print(antpose.bones["Tibia_R"].translation.y)
+      print("----------------------------------------------------")
+      
+    scene.frame_set( current_frame )
+    
+    self.bone_channels = {}
+    
+    for bone_name in antagonistArmature.bones.keys():
+      if antagonistArmature.bones[bone_name].deform:
+        bone_channel = []
+        i = 0
+        for frame in range(first_frame, last_frame + 1):
+          bone_channel.append( poses[i].bones[ bone_name ] )
+          i = i + 1
+          
+        self.bone_channels[bone_name] = bone_channel
+    
+    self.num_samples = last_frame - first_frame + 1
+    self.duration = (self.num_samples - 1) / scene.render.fps
+ 
+def bonePoseTextFormat(bone):
+  aux =             str(bone.translation.x) + " " + str(bone.translation.y) + " " + str(bone.translation.z)
+  aux = aux + " " + str(bone.rotation.w   ) + " " + str(bone.rotation.x   ) + " " + str(bone.rotation.y   ) + " " + str(bone.rotation.z)
+  aux = aux + " " + str(bone.scale.x      ) + " " + str(bone.scale.y      ) + " " + str(bone.scale.z      )
+  return aux 
+        
+def saveAnimationText(animation, filepath):
+  f = open(filepath, 'w')
+  f.write("antagonist text")
+  
+  f.write("\nskeleton num_samples duration num_channels")
+  
+  f.write("\n" +     animation.skeleton  + " " + str(animation.num_samples))
+  f.write( " " + str(animation.duration) + " " + str(len(animation.bone_channels)))
+  
+  f.write("\npos.xyz rotation.wxyz scale.xyz")
+  
+  for bone_channel_name in animation.bone_channels.keys():
+    f.write( "\n" + bone_channel_name )
+    for bone_pose in animation.bone_channels[bone_channel_name]:
+      f.write( "\n" + bonePoseTextFormat(bone_pose))
+      
 # ------------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------------------
@@ -1018,7 +1173,7 @@ class OBJECT_PT_export_mesh(bpy.types.Panel):
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "data"
-    bl_label = "Export mesh"
+    bl_label = "Export Mesh"
     bl_idname = "OBJECT_PT_export_mesh"
     
     display = 0
@@ -1046,8 +1201,8 @@ class OBJECT_PT_export_mesh(bpy.types.Panel):
         row = layout.row()
         row.prop(obj.data, "antagonist_class")
         
-        row = layout.row()
-        row.prop(obj.data, "meta_keyframes")
+        #row = layout.row()
+        #row.prop(obj.data, "meta_keyframes")
         
         
         row = layout.row()
@@ -1102,6 +1257,12 @@ class ExportAntagonistMesh(bpy.types.Operator, AntagonistExportHelper):
             description="Save Textures",
             default=False,
             )
+            
+    save_armature = BoolProperty(
+            name="Save Armature",
+            description="Save Armature",
+            default=False,
+            )
     
     def getDefaultFileName(self, context):
         return context.object.data.name
@@ -1133,7 +1294,7 @@ class ExportAntagonistMesh(bpy.types.Operator, AntagonistExportHelper):
             pathdir = os.path.dirname(path) + "/../materials/"
             for material in materials:
                 if(self.binary_format):
-                    saveMaterialText(material, pathdir + material.name + ".mat")
+                    saveMaterialText(material, pathdir + material.name + ".mat") #TODO
                 else:
                     saveMaterialText(material, pathdir + material.name + ".mat")
                     
@@ -1149,6 +1310,13 @@ class ExportAntagonistMesh(bpy.types.Operator, AntagonistExportHelper):
                 image.save()
                 image.filepath_raw = oldpath
             
+        if self.save_armature and mesh.animated:
+          armature = AntagonistArmature(bpy.data.armatures[ mesh.armature ])
+          pathdir = os.path.dirname(path) + "/../armatures/" + mesh.armature + ".arm"
+          if(self.binary_format):
+            saveArmatureText(armature, pathdir) #TODO
+          else:
+            saveArmatureText(armature, pathdir)
         
         return {'FINISHED'} # write_some_data(context, self.filepath, self.use_setting, self.type)
 
@@ -1172,7 +1340,7 @@ class OBJECT_PT_export_material(bpy.types.Panel):
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "material"
-    bl_label = "Export material"
+    bl_label = "Export Material"
     bl_idname = "OBJECT_PT_export_material"
     
     display = 0
@@ -1296,7 +1464,7 @@ class OBJECT_PT_export_armature(bpy.types.Panel):
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "data"
-    bl_label = "Export armature"
+    bl_label = "Export Armature"
     bl_idname = "OBJECT_PT_export_armature"
     
     display = 0
@@ -1316,7 +1484,7 @@ class OBJECT_PT_export_armature(bpy.types.Panel):
         obj = context.object
 
         row = layout.row()
-        row.label(text="The currently selected armature is: " + obj.data.name, icon='MESH_DATA')
+        row.label(text="The currently selected armature is: " + obj.data.name, icon='ARMATURE_DATA')
 
         row = layout.row()
         row.operator("export.antagonist_armature", text="Export current Armature")
@@ -1355,7 +1523,11 @@ class ExportAntagonistArmature(bpy.types.Operator, AntagonistExportHelper):
         
         armature = AntagonistArmature(context.armature)
         
+        #pose = AntagonistPose( armature, context.object.pose)
+        
         #print(armature)
+        #print(pose)
+        #return {'FINISHED'}
         
         path = self.filepath
         
@@ -1364,6 +1536,94 @@ class ExportAntagonistArmature(bpy.types.Operator, AntagonistExportHelper):
             saveArmatureText(armature, path)
         else:
             saveArmatureText(armature, path)
+        
+        return {'FINISHED'} # write_some_data(context, self.filepath, self.use_setting, self.type)
+
+# ------------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------------------
+
+import bpy.types
+
+class OBJECT_PT_export_animation(bpy.types.Panel):
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "object"
+    bl_label = "Export Animation"
+    bl_idname = "OBJECT_PT_export_animation"
+    
+    display = 0
+    
+    @classmethod
+    def poll(cls, context):
+        engine = context.scene.render.engine
+        return isinstance(context.object.data, bpy.types.Armature) and engine == 'BLENDER_RENDER'
+    
+    def draw_header(self, context):
+        layout = self.layout
+        layout.label(text="", icon="SCRIPTPLUGINS")
+    
+    def draw(self, context):
+        layout = self.layout
+
+        obj = context.object
+
+        row = layout.row()
+        row.label(text="The currently selected armature is: " + obj.data.name, icon='ARMATURE_DATA')
+        row = layout.row()
+        row.label(text="The currently selected animation is: " + obj.name, icon='POSE_HLT')
+
+        row = layout.row()
+        row.operator("export.antagonist_animation", text="Export current Animation")
+
+        
+class ExportAntagonistAnimation(bpy.types.Operator, AntagonistExportHelper):
+    '''Export a material in antagonist format.'''
+    bl_idname = "export.antagonist_animation"  # this is important since its how bpy.ops.export.some_data is constructed
+    bl_label = "Export Antagonist Animation"
+
+    # ExportHelper mixin class uses this
+    filename_ext = ".ani"
+
+    filter_glob = StringProperty(
+            default="*.ani",
+            options={'HIDDEN'},
+            )
+
+    # List of operator properties, the attributes will be assigned
+    # to the class instance from the operator settings before calling.
+    binary_format = BoolProperty(
+            name="Binary",
+            description="Binary Format",
+            default=True,
+            )
+    
+    def getDefaultFileName(self, context):
+        return context.object.name
+
+    @classmethod
+    def poll(cls, context):
+        return isinstance(context.object.data, bpy.types.Armature)
+
+    def execute(self, context):
+        import os
+        
+        animation = AntagonistAnimation( context.object, context.scene)
+        
+        #print(armature)
+        #print("------------------------------------------")
+        #print(animation)
+        #print("------------------------------------------")
+        #return {'FINISHED'}
+        
+        path = self.filepath
+        
+        if(self.binary_format):
+            print("binary not yet implemented, using text format") #TODO
+            saveAnimationText(animation, path)
+        else:
+            saveAnimationText(animation, path)
         
         return {'FINISHED'} # write_some_data(context, self.filepath, self.use_setting, self.type)
         
@@ -1380,9 +1640,11 @@ def register():
     bpy.utils.register_class(ExportAntagonistMesh)
     bpy.utils.register_class(ExportAntagonistMaterial)
     bpy.utils.register_class(ExportAntagonistArmature)
+    bpy.utils.register_class(ExportAntagonistAnimation)
     bpy.utils.register_class(OBJECT_PT_export_mesh)
     bpy.utils.register_class(OBJECT_PT_export_material)
     bpy.utils.register_class(OBJECT_PT_export_armature)
+    bpy.utils.register_class(OBJECT_PT_export_animation)
     bpy.utils.register_class(OBJECT_OT_print_vertices)
     bpy.utils.register_class(OBJECT_OT_print_material)
     bpy.types.INFO_MT_file_export.append(menu_func_export)
@@ -1392,9 +1654,11 @@ def unregister():
     bpy.utils.unregister_class(ExportAntagonistMesh)
     bpy.utils.unregister_class(ExportAntagonistMaterial)
     bpy.utils.unregister_class(ExportAntagonistArmature)
+    bpy.utils.unregister_class(ExportAntagonistAnimation)
     bpy.utils.unregister_class(OBJECT_PT_export_mesh)
     bpy.utils.unregister_class(OBJECT_PT_export_material)
     bpy.utils.unregister_class(OBJECT_PT_export_armature)
+    bpy.utils.unregister_class(OBJECT_PT_export_animation)
     bpy.utils.unregister_class(OBJECT_OT_print_vertices)
     bpy.utils.unregister_class(OBJECT_OT_print_material)
     bpy.types.INFO_MT_file_export.remove(menu_func_export)
@@ -1405,4 +1669,4 @@ if __name__ == "__main__":
     #afegim les propietats dels objectes, si cal
     bpy.types.Mesh.export_physics = bpy.props.BoolProperty(name="export physic mesh")
     bpy.types.Mesh.antagonist_class = bpy.props.StringProperty(name="antagonist object class")
-    bpy.types.Mesh.meta_keyframes = bpy.props.IntProperty(name="antagonist meta keyframes")
+    #bpy.types.Mesh.meta_keyframes = bpy.props.IntProperty(name="antagonist meta keyframes")
