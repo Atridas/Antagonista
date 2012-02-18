@@ -2,9 +2,6 @@ package cat.atridas.antagonista.graphics;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,23 +19,6 @@ import cat.atridas.antagonista.core.Core;
  */
 public abstract class Material extends Resource {
   private static Logger LOGGER = Logger.getLogger(Material.class.getCanonicalName());
-
-  /**
-   * Header of a text file. "antagonist text"
-   * @since 0.1
-   */
-  public static final byte[] TEXT_HEADER = "antagonist text".getBytes();
-  /**
-   * Text of a binary file. "antagonist binary"
-   * @since 0.1
-   */
-  public static final byte[] BINARY_HEADER = "antagonist binary".getBytes();
-  
-  /**
-   * Map headers -> types of files.
-   * @since 0.1
-   */
-  public static final Map<byte[], MaterialFileTypes> FILE_TYPES;
   
   /**
    * "mat"
@@ -83,7 +63,7 @@ public abstract class Material extends Resource {
     assert HS_MAT.equals(extension);
 
     try {
-      MaterialFileTypes mft = Utils.readHeader(is, FILE_TYPES, MaterialFileTypes.ERROR);
+      Utils.CommonFileTypes mft = Utils.readHeader(is, Utils.FILE_TYPES, Utils.CommonFileTypes.ERROR);
       
       switch(mft) {
       case TEXT:
@@ -224,22 +204,4 @@ public abstract class Material extends Resource {
    */
   public abstract void setUpUniforms(RenderManager rm);
   
-  static {
-    Map<byte[], MaterialFileTypes> fileTypes = new HashMap<byte[], Material.MaterialFileTypes>();
-    fileTypes.put(TEXT_HEADER, MaterialFileTypes.TEXT);
-    fileTypes.put(BINARY_HEADER, MaterialFileTypes.BINARY);
-    
-    FILE_TYPES = Collections.unmodifiableMap(fileTypes);
-  }
-  
-  /**
-   * Enumeration of file formats.
-   * 
-   * @author Isaac 'Atridas' Serrano Guasch.
-   * @since 0.1
-   *
-   */
-  private static enum MaterialFileTypes {
-    TEXT, BINARY, ERROR
-  }
 }

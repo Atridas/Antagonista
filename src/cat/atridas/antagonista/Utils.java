@@ -9,6 +9,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -69,6 +71,12 @@ public abstract class Utils {
    * @since 0.1
    */
   public static final HashedString NULL_FONT = new HashedString("Null Font");
+  /**
+   * "Root"
+   * @since 0.3
+   */
+  public static final HashedString ROOT = new HashedString("Root");
+
   
   /**
    * Small number, used in asserts and comparisions with a small error margin.
@@ -96,6 +104,11 @@ public abstract class Utils {
    * @since 0.1
    */
   public static final int BYTE_SIZE    = Byte   .SIZE / 8;
+  /**
+   * Number of bytes in a long variable.
+   * @since 0.1
+   */
+  public static final int LONG_SIZE    = Long   .SIZE / 8;
   
 
   /**
@@ -150,6 +163,54 @@ public abstract class Utils {
    * @since 0.2
    */
   public static final Color3f SKY_BLUE = new Color3f(0,1,1);
+  
+  
+  
+
+
+  /**
+   * Header of a text file. "antagonist text"
+   * @since 0.3
+   */
+  public static final byte[] TEXT_HEADER = "antagonist text".getBytes();
+  /**
+   * Text of a binary file. "antagonist binary"
+   * @since 0.3
+   */
+  public static final byte[] BINARY_HEADER = "antagonist binary".getBytes();
+  
+  /**
+   * Map headers -> types of files.
+   * @since 0.3
+   */
+  public static final Map<byte[], CommonFileTypes> FILE_TYPES;
+  
+  static {
+    Map<byte[], CommonFileTypes> fileTypes = new HashMap<byte[], CommonFileTypes>();
+    fileTypes.put(Utils.TEXT_HEADER, CommonFileTypes.TEXT);
+    fileTypes.put(Utils.BINARY_HEADER, CommonFileTypes.BINARY);
+    
+    FILE_TYPES = Collections.unmodifiableMap(fileTypes);
+  }
+  
+  /**
+   * Enumeration of file formats.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch.
+   * @since 0.3
+   *
+   */
+  public static enum CommonFileTypes {
+    TEXT, BINARY, ERROR
+  }
+  
+  
+  
+  
+  
+  
+  
+  
   
   /**
    * Returns <code>true</code> if the program is runned in a windows environment. <code>false</code>
