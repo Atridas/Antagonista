@@ -738,7 +738,7 @@ def saveMeshText(mesh, originalMesh, filepath):
     if mesh.animated:
       f.write(", weights, indices")
     f.write("\n%s" % len(mesh.vertices))
-    f.write(" "    + str(False)) #Animats
+    f.write(" "    + str(mesh.animated)) #Animats
     for v in mesh.vertices:
         f.write("\n%s" % v.x)
         f.write(" %s"  % v.y)
@@ -935,7 +935,8 @@ class AntagonistBone:
     
     self.translation = matrix_decomposed[0]
     self.rotation = matrix_decomposed[1]
-    self.scale = matrix_decomposed[2]
+    scale = matrix_decomposed[2]
+    self.scale = (scale.x + scale.y + scale.z) / 3
     
     self.deform = bone.use_deform
     
@@ -947,7 +948,7 @@ class AntagonistBone:
       aux = aux + " [Deforms]"
     aux = aux + "\n  - p: " + str(self.translation.x) + ", " + str(self.translation.y) + ", " + str(self.translation.z)
     aux = aux + "\n  - r: " + str(self.rotation.w) + ", " + str(self.rotation.x) + ", " + str(self.rotation.y) + ", " + str(self.rotation.z)
-    aux = aux + "\n  - s: " + str(self.scale.x) + ", " + str(self.scale.y) + ", " + str(self.scale.z)
+    aux = aux + "\n  - s: " + str(self.scale)
     aux = aux + "\n  - children: " + str( len( self.children ) )
     for child in self.children:
       aux = aux + "\n -- " + str(child)
@@ -993,7 +994,7 @@ def boneTextFormat(bone):
   aux = bone.name + " " + str(len(bone.children))
   aux = aux + " " + str(bone.translation.x) + " " + str(bone.translation.y) + " " + str(bone.translation.z)
   aux = aux + " " + str(bone.rotation.w   ) + " " + str(bone.rotation.x   ) + " " + str(bone.rotation.y   ) + " " + str(bone.rotation.z)
-  aux = aux + " " + str(bone.scale.x      ) + " " + str(bone.scale.y      ) + " " + str(bone.scale.z      )
+  aux = aux + " " + str(bone.scale)
   for child in bone.children:
     aux = aux + "\n" + boneTextFormat(child)
   return aux
@@ -1002,7 +1003,7 @@ def saveArmatureText(armature, filepath):
     f = open(filepath, 'w')
     f.write("antagonist text")
     
-    f.write("\nname num_children pos.xyz rotation.wxyz scale.xyz")
+    f.write("\nname num_children pos.xyz rotation.wxyz scale")
     
     f.write( "\n" + str( len( armature.root_bones ) ) )
     
@@ -1025,13 +1026,14 @@ class AntagonistPoseBone:
     
     self.translation = matrix_decomposed[0]
     self.rotation = matrix_decomposed[1]
-    self.scale = matrix_decomposed[2]
+    scale = matrix_decomposed[2]
+    self.scale = (scale.x + scale.y + scale.z) / 3
     
   def __str__(self):
     aux = self.name
     aux = aux + "\n  - p: " + str(self.translation.x) + ", " + str(self.translation.y) + ", " + str(self.translation.z)
     aux = aux + "\n  - r: " + str(self.rotation.w) + ", " + str(self.rotation.x) + ", " + str(self.rotation.y) + ", " + str(self.rotation.z)
-    aux = aux + "\n  - s: " + str(self.scale.x) + ", " + str(self.scale.y) + ", " + str(self.scale.z)
+    aux = aux + "\n  - s: " + str(self.scale)
     return aux
 
 from mathutils import Matrix
@@ -1089,9 +1091,9 @@ class AntagonistAnimation:
       scene.update()
       antpose = AntagonistPose(antagonistArmature, pose)
       poses.append( antpose )
-      print("----------------------------------------------------")
-      print(antpose.bones["Tibia_R"].translation.y)
-      print("----------------------------------------------------")
+      #print("----------------------------------------------------")
+      #print(antpose.bones["Tibia_R"].translation.y)
+      #print("----------------------------------------------------")
       
     scene.frame_set( current_frame )
     
@@ -1113,7 +1115,7 @@ class AntagonistAnimation:
 def bonePoseTextFormat(bone):
   aux =             str(bone.translation.x) + " " + str(bone.translation.y) + " " + str(bone.translation.z)
   aux = aux + " " + str(bone.rotation.w   ) + " " + str(bone.rotation.x   ) + " " + str(bone.rotation.y   ) + " " + str(bone.rotation.z)
-  aux = aux + " " + str(bone.scale.x      ) + " " + str(bone.scale.y      ) + " " + str(bone.scale.z      )
+  aux = aux + " " + str(bone.scale)
   return aux 
         
 def saveAnimationText(animation, filepath):
@@ -1125,7 +1127,7 @@ def saveAnimationText(animation, filepath):
   f.write("\n" +     animation.skeleton  + " " + str(animation.num_samples))
   f.write( " " + str(animation.duration) + " " + str(len(animation.bone_channels)))
   
-  f.write("\npos.xyz rotation.wxyz scale.xyz")
+  f.write("\npos.xyz rotation.wxyz scale")
   
   for bone_channel_name in animation.bone_channels.keys():
     f.write( "\n" + bone_channel_name )
