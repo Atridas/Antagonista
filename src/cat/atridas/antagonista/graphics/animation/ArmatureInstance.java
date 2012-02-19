@@ -89,9 +89,10 @@ public final class ArmatureInstance {
   
   private void updateMatrixPaleteBone(BoneInstance bone, Matrix4f parentMatrix) {
     Matrix4f currentMatrix = matrixPalete[bone.boneCore.getIndex()];
-    
+
     currentMatrix.set(bone.rotation, bone.translation, bone.scale);
     currentMatrix.mul(parentMatrix, currentMatrix);
+    //currentMatrix.mul(parentMatrix);
 
     for(BoneInstance child : bone.children) {
       updateMatrixPaleteBone(child, currentMatrix);
@@ -139,7 +140,7 @@ public final class ArmatureInstance {
   public final class BoneInstance {
     final Vector3f translation = new Vector3f();
     final Quat4f rotation = new Quat4f();
-    float scale;
+    float scale = 1;
 
     private final BoneCore boneCore;
     

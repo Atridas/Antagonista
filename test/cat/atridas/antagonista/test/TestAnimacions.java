@@ -37,7 +37,7 @@ public class TestAnimacions {
     
 
     Core core = Core.getCore();
-    core.init(800, 600, TestEntities.class.getName(), true, null);
+    core.init(800, 600, TestAnimacions.class.getName(), true, null);
 
     
     //ScriptManager scriptManager = new ScriptManager("data/xml/scriptManager.xml");

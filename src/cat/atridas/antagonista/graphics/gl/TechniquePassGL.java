@@ -40,7 +40,7 @@ public abstract class TechniquePassGL extends TechniquePass {
   private static int defaultVertexShader   = -1,
                      defaultFragmentShader = -1,
                      defaultGeometryShader = -1,
-                     defaultTessControl   = -1,
+                     defaultTessControl    = -1,
                      defaultTessEval       = -1;
   
   /**

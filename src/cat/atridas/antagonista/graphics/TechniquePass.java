@@ -127,25 +127,31 @@ public abstract class TechniquePass {
   
   /**
    * Uniform block binding point of the armature uniforms.
-   * @since 0.1
+   * @since 0.3
    */
   public static final int    ARMATURE_UNIFORMS_BINDING    = 1;
   /**
    * Uniform block name of the armature uniforms.
-   * @since 0.1
+   * @since 0.3
    */
   public static final String ARMATURE_UNIFORMS_BLOCK      = "ArmatureInstances";
   /**
    * Uniform block size of the basic instance uniforms.
-   * @since 0.1
+   * @since 0.3
    */
-  public static final int    ARMATURE_UNIFORMS_BLOCK_SIZE = Utils.FLOAT_SIZE * (3*4) * MAX_BONES; 
+  public static final int    ARMATURE_UNIFORMS_BLOCK_SIZE = Utils.FLOAT_SIZE * (3*4) * MAX_BONES * 2; 
   //public static final String BASIC_INSTANCE_UNIFORMS_STRUCT     = "u_InstanceInfo";
   /**
    * Uniform name of the Bone Palete.
-   * @since 0.1
+   * @since 0.3
    */
-  public static final String BONE_PALETE_UNIFORM      = "u_m43BonePalete";
+  public static final String BONE_PALETE_UNIFORM      = "u_m43BonePalete"; 
+  //public static final String BASIC_INSTANCE_UNIFORMS_STRUCT     = "u_InstanceInfo";
+  /**
+   * Uniform name of the Bone Palete, Inverted and transposed.
+   * @since 0.3
+   */
+  public static final String BONE_PALETE_IT_UNIFORM      = "u_m43BonePaleteIT";
 
 
   /**

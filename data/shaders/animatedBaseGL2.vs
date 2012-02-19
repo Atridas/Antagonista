@@ -25,12 +25,15 @@ varying vec3 v_v3Normal;      //View
 varying vec3 v_v3Tangent;
 varying vec3 v_v3Bitangent;
 varying vec2 v_v2UV;
+varying ivec4 a_i4BlendIndexs;
+varying  vec4 a_v4BlendWeights;
 
 // Uniforms -----------------------------------------------------
 uniform mat4 u_m4ModelViewProjection;
 uniform mat4 u_m4ModelView;
 uniform mat4 u_m4ModelViewIT;
 uniform mat4x3 u_m43BonePalete[MAX_BONES];
+uniform mat4x3 u_m43BonePaleteIT[MAX_BONES];
   
   
 // -------------------------------------------------------------------------

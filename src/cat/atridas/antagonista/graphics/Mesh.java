@@ -255,15 +255,30 @@ public abstract class Mesh extends Resource {
           short i3 = Short.parseShort(elements[NUM_ELEMENTS_PER_VERTEX_STATIC_MESH + 6]);
           short i4 = Short.parseShort(elements[NUM_ELEMENTS_PER_VERTEX_STATIC_MESH + 7]);
 
-          vertexBuffer.putFloat(w1);
-          vertexBuffer.putFloat(w2);
-          vertexBuffer.putFloat(w3);
-          vertexBuffer.putFloat(w4);
+          if(w1 > 0) {
+            i1--;
+          }
+          if(w2 > 0) {
+            i2--;
+          }
+          if(w3 > 0) {
+            i3--;
+          }
+          if(w4 > 0) {
+            i4--;
+          }
 
           vertexBuffer.putShort(i1);
           vertexBuffer.putShort(i2);
           vertexBuffer.putShort(i3);
           vertexBuffer.putShort(i4);
+
+          vertexBuffer.putFloat(w1);
+          vertexBuffer.putFloat(w2);
+          vertexBuffer.putFloat(w3);
+          vertexBuffer.putFloat(w4);
+          
+          assert Math.abs(w1 + w2 + w3 + w4 - 1.) < Utils.EPSILON || w1 + w2 + w3 + w4 == 0f;
         }
         
       }

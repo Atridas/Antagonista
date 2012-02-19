@@ -94,7 +94,7 @@ import cat.atridas.antagonista.graphics.RenderManager.Profile;
  *      &lt;normal_texture/&gt;          -&gt; sampler2D u_s2Normalmap
  *      &lt;height_texture/&gt;          -&gt; sampler2D u_s2Heightmap
  *      &lt;basic_instance_uniforms/&gt; -&gt; UniformInstances  { m44ModelViewProjection, m44ModelView  } u_InstanceInfo[instances]
- *      &lt;armature_uniforms/&gt;       -&gt; ArmatureInstances {      u_m34BonePalete[MAX_BONES];      } u_InstanceInfo[instances];
+ *      &lt;armature_uniforms/&gt;       -&gt; ArmatureInstances { u_m34BonePalete[MAX_BONES], u_m34BonePaleteIT[MAX_BONES] } u_InstanceInfo[instances];
  *      &lt;special_colors/&gt;          -&gt; SpecialColors { u_v4SpecialColor0, u_v4SpecialColor1, u_v4SpecialColor2, u_v4SpecialColor3 } u_ColorInfo[instances]
  *      
  *      &lt;basic_light/&gt;             -&gt; UniformLight { u_v3AmbientLight, u_v3DirectionalLightDirection, u_v3DirectionalLightColor }

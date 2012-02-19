@@ -2,6 +2,8 @@ package cat.atridas.antagonista.graphics.gl3;
 
 import java.nio.FloatBuffer;
 
+import javax.vecmath.Matrix4f;
+
 
 import org.lwjgl.BufferUtils;
 
@@ -66,6 +68,8 @@ public final class RenderableObjectManagerGL3 extends RenderableObjectManager {
     return !Utils.hasGLErrors();
   }
 
+  private Matrix4f auxiliarMatrix = new Matrix4f();
+  
   @Override
   protected void setInstanceUniforms(InstanceData instanceData) {
     assert !cleaned;
@@ -139,6 +143,15 @@ public final class RenderableObjectManagerGL3 extends RenderableObjectManager {
         Utils.matrix34TransposedToBuffer(instanceData.bonePalete[i], boneBuffer);
       }
 
+      boneBuffer.position(TechniquePass.ARMATURE_UNIFORMS_BLOCK_SIZE / (Utils.FLOAT_SIZE * 2));
+      
+
+      for(int i = 0; i < len; ++i) {
+        auxiliarMatrix.invert(instanceData.bonePalete[i]);
+        auxiliarMatrix.transpose();
+        Utils.matrix34TransposedToBuffer(auxiliarMatrix, boneBuffer);
+      }
+      
       boneBuffer.position(0);
       boneBuffer.limit(TechniquePass.ARMATURE_UNIFORMS_BLOCK_SIZE / Utils.FLOAT_SIZE);
       
