@@ -46,7 +46,9 @@ public final class ArmatureInstance {
     updateMatrixPalete();
   }
   
-
+  public Matrix4f[] getMatrixPalete() {
+    return matrixPalete;
+  }
   
   public void debugRender(DebugRender dr, Matrix4f worldMatrix) {
     Matrix4f aux = new Matrix4f();
@@ -89,7 +91,7 @@ public final class ArmatureInstance {
     Matrix4f currentMatrix = matrixPalete[bone.boneCore.getIndex()];
     
     currentMatrix.set(bone.rotation, bone.translation, bone.scale);
-    currentMatrix.mul(parentMatrix);
+    currentMatrix.mul(parentMatrix, currentMatrix);
 
     for(BoneInstance child : bone.children) {
       updateMatrixPaleteBone(child, currentMatrix);

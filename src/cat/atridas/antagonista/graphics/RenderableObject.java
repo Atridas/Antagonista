@@ -5,6 +5,7 @@ import javax.vecmath.Matrix4f;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Transformation;
 import cat.atridas.antagonista.core.Core;
+import cat.atridas.antagonista.graphics.animation.ArmatureInstance;
 
 /**
  * Encapsulates a renderable object instance.
@@ -30,6 +31,12 @@ public final class RenderableObject {
    * @since 0.1
    */
   private Mesh mesh;
+  
+  /**
+   * Armature of this object, if it is animated.
+   * @since 0.3
+   */
+  private ArmatureInstance armature;
   
   /**
    * Indicates if this renderable object must be rendered or not.
@@ -103,6 +110,16 @@ public final class RenderableObject {
   }
   
   /**
+   * Gets the armature of this object (if it is animated) that contains its current animation.
+   * 
+   * @return the armature of this object.
+   * @since 0.3
+   */
+  public ArmatureInstance getArmature() {
+    return armature;
+  }
+  
+  /**
    * Changes the mesh this renderable object uses.
    * 
    * @param _mesh new mesh object.
@@ -133,6 +150,10 @@ public final class RenderableObject {
   public RenderableObject(HashedString _name, Mesh _mesh) {
     name = _name;
     mesh = _mesh;
+    
+    if(mesh.isAnimated()) {
+      armature = new ArmatureInstance(mesh.getArmature());
+    }
   }
 
   /**

@@ -23,17 +23,26 @@ import cat.atridas.antagonista.graphics.TechniquePass;
  *
  */
 public final class RenderableObjectManagerGL3 extends RenderableObjectManager {
-  
+
   /**
    * Auxiliar buffer used to pass instance information to the OpenGL driver.
    * @since 0.1 
    */
   private FloatBuffer buffer = BufferUtils.createFloatBuffer(InstanceBufferUtils.BUFFER_SIZE);
+  
+  /**
+   * Auxiliar buffer used to pass bone to the OpenGL driver.
+   * @since 0.3 
+   */
+  private FloatBuffer boneBuffer = BufferUtils.createFloatBuffer(
+                                      TechniquePass.ARMATURE_UNIFORMS_BLOCK_SIZE / Utils.FLOAT_SIZE
+                                      );
+  
   /**
    * Single instance information buffer OpenGL identifier.
    * @since 0.1
    */
-  private int bufferID = -1;
+  private int bufferID = -1, boneBufferID = -1;
 
   @Override
   public boolean init() {
@@ -41,12 +50,17 @@ public final class RenderableObjectManagerGL3 extends RenderableObjectManager {
     assert bufferID == -1;
 
     bufferID = glGenBuffers();
-    if(bufferID < 0) {
+    boneBufferID = glGenBuffers();
+    if(bufferID < 0 || boneBufferID < 0) {
       Utils.hasGLErrors();
       return false;
     }
     glBindBuffer(GL_UNIFORM_BUFFER, bufferID);
     glBufferData(GL_UNIFORM_BUFFER, InstanceBufferUtils.BUFFER_SIZE * Utils.FLOAT_SIZE, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    
+    glBindBuffer(GL_UNIFORM_BUFFER, boneBufferID);
+    glBufferData(GL_UNIFORM_BUFFER, TechniquePass.ARMATURE_UNIFORMS_BLOCK_SIZE, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     
     return !Utils.hasGLErrors();
@@ -56,6 +70,7 @@ public final class RenderableObjectManagerGL3 extends RenderableObjectManager {
   protected void setInstanceUniforms(InstanceData instanceData) {
     assert !cleaned;
     assert bufferID > 0;
+    assert boneBufferID > 0;
     
     buffer.rewind();
     Utils.matrixToBuffer(instanceData.modelViewProj, buffer);
@@ -110,6 +125,34 @@ public final class RenderableObjectManagerGL3 extends RenderableObjectManager {
         4 *  4 * Utils.FLOAT_SIZE);
     
     assert !Utils.hasGLErrors();
+    
+    
+    if(instanceData.bonePalete != null) {
+      int len = instanceData.bonePalete.length;
+      if(len > TechniquePass.MAX_BONES) {
+        len = TechniquePass.MAX_BONES;
+      }
+      
+      boneBuffer.rewind();
+      
+      for(int i = 0; i < len; ++i) {
+        Utils.matrix34TransposedToBuffer(instanceData.bonePalete[i], boneBuffer);
+      }
+
+      boneBuffer.position(0);
+      boneBuffer.limit(TechniquePass.ARMATURE_UNIFORMS_BLOCK_SIZE / Utils.FLOAT_SIZE);
+      
+      glBindBuffer(GL_UNIFORM_BUFFER, boneBufferID);
+      glBufferSubData(GL_UNIFORM_BUFFER, 0, boneBuffer);
+
+      
+      glBindBufferRange(
+          GL_UNIFORM_BUFFER, 
+          TechniquePass.ARMATURE_UNIFORMS_BINDING, 
+          boneBufferID, 
+          0, 
+          TechniquePass.ARMATURE_UNIFORMS_BLOCK_SIZE);
+    }
   }
 
   @Override

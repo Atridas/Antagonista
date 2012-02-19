@@ -237,9 +237,12 @@ public abstract class TechniquePassGL extends TechniquePass {
       }
     }
     assert !Utils.hasGLErrors();
-    
+
     if(basicInstanceUniforms) {
       loadBasicInstanceUniforms(program);
+    }
+    if(armatureUniforms) {
+      loadArmatureUniforms(program);
     }
     if(basicLight) {
       loadBasicLightUniforms(program);
@@ -317,6 +320,14 @@ public abstract class TechniquePassGL extends TechniquePass {
    * @since 0.1
    */
   protected abstract void loadBasicInstanceUniforms(int program);
+  /**
+   * Loads the armature uniforms binding points or sets the correct uniform buffer
+   * binding point, depending on the current OpenGL profile.
+   * 
+   * @param program OpenGL program shader identifier.
+   * @since 0.3
+   */
+  protected abstract void loadArmatureUniforms(int program);
   /**
    * Loads the special colors uniforms binding points or sets the correct uniform buffer
    * binding point, depending on the current OpenGL profile.

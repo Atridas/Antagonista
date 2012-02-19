@@ -50,4 +50,10 @@ public class InstanceData {
    * @since 0.1
    */
   public final Color4f specialColor3 = new Color4f();
+  
+  /**
+   * Matrix palete used to animate bones.
+   * @since 0.3
+   */
+  public Matrix4f[] bonePalete;
 }

@@ -47,7 +47,7 @@ public final class RenderManagerGL extends RenderManager {
    * Cached maximum number of instances given each memory requirement.
    * @since 0.1
    */
-  private int maxInstancesBasic, maxInstancesColors;//, maxInstancesBones;
+  private int maxInstancesBasic, maxInstancesColors, maxInstancesBones;
   
   /**
    * Caches the maximum number of instances given each memory requirement.
@@ -62,10 +62,11 @@ public final class RenderManagerGL extends RenderManager {
     if(maxUniformSize > 0) {
       maxInstancesBasic  = maxUniformSize / TechniquePass.BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE;
       maxInstancesColors = maxUniformSize / TechniquePass.SPECIAL_COLORS_UNIFORMS_BLOCK_SIZE;
-      //maxInstancesBasic = maxUniformSize / TechniquePass.BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE;
+      maxInstancesBones  = maxUniformSize / TechniquePass.ARMATURE_UNIFORMS_BLOCK_SIZE;
     } else {
       maxInstancesBasic  = 1;
       maxInstancesColors = 1;
+      maxInstancesBones  = 1;
     }
   }
   
@@ -373,7 +374,7 @@ public final class RenderManagerGL extends RenderManager {
 
   @Override
   public int getMaxInstancesWithBones() {
-    throw new RuntimeException("Not yet implemented");
+    return maxInstancesBones;
   }
 
   @Override

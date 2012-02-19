@@ -83,6 +83,18 @@ public final class TechniquePassGL3 extends TechniquePassGL {
   }
 
   @Override
+  protected void loadArmatureUniforms(int program) {
+    int armatureBlock = glGetUniformBlockIndex(program, ARMATURE_UNIFORMS_BLOCK);
+    if(armatureBlock < 0) {
+      LOGGER.severe("Armature uniforms requested but not active!");
+      //throw new AntagonistException();
+    }
+    
+    glUniformBlockBinding(program, armatureBlock, ARMATURE_UNIFORMS_BINDING);
+    assert !Utils.hasGLErrors();
+  }
+
+  @Override
   protected void loadSpecialColorsUniforms(int program) {
     int specialColorsBlock = glGetUniformBlockIndex(program, SPECIAL_COLORS_UNIFORMS_BLOCK);
     if(specialColorsBlock < 0) {

@@ -140,6 +140,17 @@ public abstract class RenderableObjectManager {
         Mesh mesh = renderableObject.getMesh();
         mesh.preRender();
         
+        TechniqueType techniqueType;
+        if(mesh.isAnimated()) {
+          techniqueType = TechniqueType.ANIMATED_FORWARD;
+          
+          instanceData.bonePalete = renderableObject.getArmature().getMatrixPalete();
+        } else {
+          techniqueType = TechniqueType.FORWARD;
+          
+          instanceData.bonePalete = null;
+        }
+        
         renderableObject.getTransformation(model);
   
         instanceData.modelView.mul(view, model);
@@ -157,7 +168,7 @@ public abstract class RenderableObjectManager {
           Material material = mesh.getMaterial(submesh);
           material.setUpUniforms(rm);
           
-          Technique technique = material.getEffect().getTechnique(TechniqueType.FORWARD, Quality.MID);
+          Technique technique = material.getEffect().getTechnique(techniqueType, Quality.MID);
           for(TechniquePass pass: technique.getPasses()) {
             pass.activate(rm);
             material.setUpUniforms(pass, rm);
@@ -182,6 +193,7 @@ public abstract class RenderableObjectManager {
    * @since 0.1
    */
   protected abstract void setInstanceUniforms(InstanceData instanceData);
+  
   /**
    * Sets the uniforms that need the shader to be binded to be passed to the OpenGL (usually only
    * needed in OpenGL 2.0).

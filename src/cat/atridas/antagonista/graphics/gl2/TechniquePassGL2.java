@@ -28,6 +28,7 @@ public class TechniquePassGL2 extends TechniquePassGL {
    * @since 0.1
    */
   private int modelViewProjectionUniform, modelViewUniform, modelViewITUniform,//, bonesUniform;
+              bonePalete,
               specialColor0, specialColor1, specialColor2, specialColor3,
               ambientUniform, directionalDirUniform, directionalColorUniform,
               specularFactorUniform, specularGlossinessUniform, heightUniform;
@@ -107,6 +108,16 @@ public class TechniquePassGL2 extends TechniquePassGL {
     }
     if(colorAttr) {
       glBindAttribLocation(program, COLOR_ATTRIBUTE, COLOR_ATTRIBUTE_NAME);
+    }
+    assert !Utils.hasGLErrors();
+  }
+
+  @Override
+  protected void loadArmatureUniforms(int program) {
+    bonePalete = glGetUniformLocation(program, BONE_PALETE_UNIFORM);
+    if(bonePalete < 0) {
+      LOGGER.severe("Bone palete requested but " + BONE_PALETE_UNIFORM + " matrixes not active!");
+      //throw new AntagonistException();
     }
     assert !Utils.hasGLErrors();
   }

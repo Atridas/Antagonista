@@ -34,9 +34,11 @@ import cat.atridas.antagonista.graphics.RenderManager.Profile;
  * &lt;technique type="" quality=""&gt;
  *  types:
  *  -&gt; "forward"
+ *  -&gt; "animated_forward"
  *  -&gt; "shadow"
  *  -&gt; "particle"
  *  -&gt; "deferred"
+ *  -&gt; "animated_deferred"
  *  
  *  qualities. Si es demana una inexistent, es cau cap avall. Per defecte és "none"
  *  -&gt; "none"
@@ -91,7 +93,8 @@ import cat.atridas.antagonista.graphics.RenderManager.Profile;
  *      &lt;albedo_texture/&gt;          -&gt; sampler2D u_s2Albedo
  *      &lt;normal_texture/&gt;          -&gt; sampler2D u_s2Normalmap
  *      &lt;height_texture/&gt;          -&gt; sampler2D u_s2Heightmap
- *      &lt;basic_instance_uniforms/&gt; -&gt; UniformInstances { m44ModelViewProjection, m44ModelView  } u_InstanceInfo[instances]
+ *      &lt;basic_instance_uniforms/&gt; -&gt; UniformInstances  { m44ModelViewProjection, m44ModelView  } u_InstanceInfo[instances]
+ *      &lt;armature_uniforms/&gt;       -&gt; ArmatureInstances {      u_m34BonePalete[MAX_BONES];      } u_InstanceInfo[instances];
  *      &lt;special_colors/&gt;          -&gt; SpecialColors { u_v4SpecialColor0, u_v4SpecialColor1, u_v4SpecialColor2, u_v4SpecialColor3 } u_ColorInfo[instances]
  *      
  *      &lt;basic_light/&gt;             -&gt; UniformLight { u_v3AmbientLight, u_v3DirectionalLightDirection, u_v3DirectionalLightColor }
@@ -337,10 +340,20 @@ public class Effect extends Resource {
      */
     FORWARD, 
     /**
+     * Technique used in a forward renderer.
+     * @since 0.3
+     */
+    ANIMATED_FORWARD, 
+    /**
      * Technique used in a deferred renderer.
      * @since 0.1
      */
     DEFERRED, 
+    /**
+     * Technique used in a deferred renderer.
+     * @since 0.3
+     */
+    ANIMATED_DEFERRED, 
     /**
      * Technique used to render a shadowmap.
      * @since 0.1
@@ -367,6 +380,10 @@ public class Effect extends Resource {
         return FORWARD;
       case "DEFERRED":
         return DEFERRED;
+      case "ANIMATED_FORWARD":
+        return ANIMATED_FORWARD;
+      case "ANIMATED_DEFERRED":
+        return ANIMATED_DEFERRED;
       case "SHADOW":
         return SHADOW;
       case "PARTICLE":
@@ -383,6 +400,10 @@ public class Effect extends Resource {
         return "FORWARD";
       case DEFERRED:
         return "DEFERRED";
+      case ANIMATED_FORWARD:
+        return "ANIMATED_FORWARD";
+      case ANIMATED_DEFERRED:
+        return "ANIMATED_DEFERRED";
       case SHADOW:
         return "SHADOW";
       case PARTICLE:

@@ -123,14 +123,36 @@ public abstract class TechniquePass {
    * @since 0.1
    */
   public static final String MODEL_VIEW_IT_UNIFORM              = "u_m4ModelViewIT";
-  //public static final String BONES_UNIFORMS                 = "u_m34Bones";
+  
+  
+  /**
+   * Uniform block binding point of the armature uniforms.
+   * @since 0.1
+   */
+  public static final int    ARMATURE_UNIFORMS_BINDING    = 1;
+  /**
+   * Uniform block name of the armature uniforms.
+   * @since 0.1
+   */
+  public static final String ARMATURE_UNIFORMS_BLOCK      = "ArmatureInstances";
+  /**
+   * Uniform block size of the basic instance uniforms.
+   * @since 0.1
+   */
+  public static final int    ARMATURE_UNIFORMS_BLOCK_SIZE = Utils.FLOAT_SIZE * (3*4) * MAX_BONES; 
+  //public static final String BASIC_INSTANCE_UNIFORMS_STRUCT     = "u_InstanceInfo";
+  /**
+   * Uniform name of the Bone Palete.
+   * @since 0.1
+   */
+  public static final String BONE_PALETE_UNIFORM      = "u_m43BonePalete";
 
 
   /**
    * Uniform block binding point of the special colors uniforms.
    * @since 0.1
    */
-  public static final int    SPECIAL_COLORS_UNIFORMS_BINDING    = 1;
+  public static final int    SPECIAL_COLORS_UNIFORMS_BINDING    = 2;
   /**
    * Uniform block name of the special colors uniforms.
    * @since 0.1
@@ -155,7 +177,7 @@ public abstract class TechniquePass {
    * Uniform block binding point of the basic light uniforms.
    * @since 0.1
    */
-  public static final int    BASIC_LIGHT_UNIFORMS_BINDING = 2;
+  public static final int    BASIC_LIGHT_UNIFORMS_BINDING = 3;
   /**
    * Uniform block name of the basic light uniforms.
    * @since 0.1
@@ -173,7 +195,7 @@ public abstract class TechniquePass {
    * Uniform block binding point of the basic material uniforms.
    * @since 0.1
    */
-  public static final int    BASIC_MATERIAL_UNIFORMS_BINDING = 3;
+  public static final int    BASIC_MATERIAL_UNIFORMS_BINDING = 4;
   /**
    * Uniform block name of the basic material uniforms.
    * @since 0.1
@@ -287,6 +309,7 @@ public abstract class TechniquePass {
    */
   protected boolean albedoTexture, normalTexture, heightTexture,
                     basicInstanceUniforms,
+                    armatureUniforms,
                     specialColorsUniforms,
                     basicLight,
                     basicMaterial;
@@ -864,14 +887,14 @@ public abstract class TechniquePass {
         if(maxInstances == 1 || newMaxInstances < maxInstances) {
           maxInstances = newMaxInstances;
         }
-        /*
-        if(maxUniformBufferSize > 0) {
-          int newMaxInstances = (int) (maxUniformBufferSize / BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE);
-          if(maxInstances == 1 || newMaxInstances < maxInstances) {
-            maxInstances = newMaxInstances;
-          }
+        break;
+      case "armature_uniforms":
+        assert !armatureUniforms;
+        armatureUniforms = true;
+        newMaxInstances = rm.getMaxInstancesWithBones();
+        if(maxInstances == 1 || newMaxInstances < maxInstances) {
+          maxInstances = newMaxInstances;
         }
-        */
         break;
       case "special_colors":
         assert !specialColorsUniforms;
@@ -880,14 +903,6 @@ public abstract class TechniquePass {
         if(maxInstances == 1 || newMaxInstances < maxInstances) {
           maxInstances = newMaxInstances;
         }
-        /*
-        if(maxUniformBufferSize > 0) {
-          int newMaxInstances = (int) (maxUniformBufferSize / SPECIAL_COLORS_UNIFORMS_BLOCK_SIZE);
-          if(maxInstances == 1 || newMaxInstances < maxInstances) {
-            maxInstances = newMaxInstances;
-          }
-        }
-        */
         break;
       case "basic_light":
         assert !basicLight;
@@ -985,6 +1000,7 @@ public abstract class TechniquePass {
    * @since 0.1
    */
   protected abstract int completeShaderProgram(int vs, int tc, int te, int gs, int fs, RenderManager rm) throws AntagonistException;
+  
   /**
    * Deletes a shader program.
    * 

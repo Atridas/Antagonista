@@ -588,6 +588,36 @@ public abstract class Utils {
   }
   
   /**
+   * Puts the matrix into a buffer. Utility function to make an interface with the LWJGL.
+   * 
+   * @param in matrix to save in the buffer.
+   * @param out buffer.
+   * @since 0.1
+   */
+  public static void matrix34TransposedToBuffer(Matrix4f in, FloatBuffer out) {
+    float f[] = new float[4];
+    for(int i = 0; i < 3; ++i) {
+      in.getRow(i, f);
+      out.put(f);
+    }
+  }
+
+  /**
+   * Puts the matrix into a buffer. Utility function to make an interface with the LWJGL.
+   * 
+   * @param in matrix to save in the buffer.
+   * @param out buffer.
+   * @since 0.1
+   */
+  public static void matrix34TransposedToBuffer(Matrix4f in, ByteBuffer out) {
+    int pos = out.position();
+    FloatBuffer fb = out.asFloatBuffer();
+    //fb.position(pos / FLOAT_SIZE);
+    matrix34TransposedToBuffer(in, fb);
+    out.position(pos + (12 * FLOAT_SIZE));
+  }
+  
+  /**
    * Checks if a float is negative. Takes into account -0 (negative) and 0(positive).
    * 
    * @param f float to check.
