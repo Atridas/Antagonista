@@ -22,6 +22,7 @@ import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Resource;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
+import cat.atridas.antagonista.graphics.animation.ArmatureCore;
 import cat.atridas.antagonista.physics.BoundingBoxShape;
 import cat.atridas.antagonista.physics.PhysicShape;
 import cat.atridas.antagonista.physics.PhysicsStaticMeshCore;
@@ -92,6 +93,12 @@ public abstract class Mesh extends Resource {
    * @since 0.2
    */
   private final Tuple3f minBB = new Vector3f(), maxBB = new Vector3f();
+  
+  /**
+   * Reference to the armature of this mesh, if it is animated.
+   * @since 0.3
+   */
+  private ArmatureCore armature;
   
   /**
    * Constructs an uninitialized mesh.
@@ -301,6 +308,12 @@ public abstract class Mesh extends Resource {
         aux += numFaces[i];
       }
       
+      if(animated) {
+        String armatureName = lines[aux + 1];
+        HashedString armatureID = new HashedString(armatureName);
+        armature = Core.getCore().getArmatureManager().getResource(armatureID);
+      }
+      
       //ByteBuffer vertexBuffer = BufferUtils.createByteBuffer(numVerts * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH * Utils.FLOAT_SIZE);
       ByteBuffer faces = BufferUtils.createByteBuffer(totalNumFaces * 3 * Utils.SHORT_SIZE);
   
@@ -456,6 +469,25 @@ public abstract class Mesh extends Resource {
    * @since 0.1
    */
   public abstract void render(int _submesh, int instances, RenderManager rm); 
+  
+  /**
+   * Returns the armature of this mesh, if it is animated.
+   * @return the armature of this mesh, <code>null</code> if it is not animated.
+   * @since 0.3
+   */
+  public ArmatureCore getArmature() {
+    return armature;
+  }
+  
+  /**
+   * Checks if this mesh is animated or not.
+   * 
+   * @return <code>true</code> if this mesh is animated.
+   * @since 0.3
+   */
+  public boolean isAnimated() {
+    return armature != null;
+  }
   
   @Override
   public final int getRAMBytesEstimation() {

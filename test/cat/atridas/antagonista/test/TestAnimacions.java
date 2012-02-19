@@ -17,11 +17,13 @@ import cat.atridas.antagonista.entities.EntityManager;
 import cat.atridas.antagonista.entities.SystemManager;
 import cat.atridas.antagonista.entities.components.MeshComponent;
 import cat.atridas.antagonista.entities.components.TransformComponent;
-import cat.atridas.antagonista.graphics.ArmatureCore;
-import cat.atridas.antagonista.graphics.ArmatureManager;
 import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.SceneData;
+import cat.atridas.antagonista.graphics.animation.Animation;
+import cat.atridas.antagonista.graphics.animation.ArmatureCore;
+import cat.atridas.antagonista.graphics.animation.ArmatureInstance;
+import cat.atridas.antagonista.graphics.animation.ArmatureManager;
 import cat.atridas.antagonista.input.InputManager;
 
 public class TestAnimacions {
@@ -96,6 +98,14 @@ public class TestAnimacions {
     ArmatureManager am = core.getArmatureManager();
     ArmatureCore masterArmature = am.getResource(new HashedString("MasterArmature"));
     
+    Animation atacar = core.getAnimationManager().getResource(new HashedString("Atacar"));
+    
+    ArmatureInstance animatedArmature = new ArmatureInstance(masterArmature);
+
+    //animatedArmature.performSingleAnimation(atacar, 0);
+    //animatedArmature.performSingleAnimation(atacar, atacar.getDuration() / 2f);
+    //animatedArmature.performSingleAnimation(atacar, atacar.getDuration());
+    
     ///////////////////////////////////////////////////////////////////////
     
     
@@ -132,15 +142,25 @@ public class TestAnimacions {
     
     //scriptManager.execute(script);
     
+    float anim = 0;
+    
     while(!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
+      
+      animatedArmature.performSingleAnimation(atacar, anim);
       
       //dr.addAxes(worldMatrix, 1, false);
       //dr.addCross(new Point3f(0,0,1), Utils.RED, 1, true);
       
-      masterArmature.debugRender(dr, worldMatrix);
-
+      //masterArmature.debugRender(dr, worldMatrix);
+      //Core.getCore().getMeshManager().getResource(mc.getMesh()).getArmature().debugRender(dr, worldMatrix);
+      animatedArmature.debugRender(dr, worldMatrix);
+      
       core.performSimpleTick();
       
+      anim += core.getClock().getCurrentFrameDeltaTime().dt / 5f;
+      if(anim > atacar.getDuration()) {
+        anim = 0;
+      }
     }
     
     core.cleanUnusedResources(false);

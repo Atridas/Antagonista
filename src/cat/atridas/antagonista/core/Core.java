@@ -9,7 +9,6 @@ import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.Clock.DeltaTime;
 import cat.atridas.antagonista.entities.EntityManager;
 import cat.atridas.antagonista.entities.SystemManager;
-import cat.atridas.antagonista.graphics.ArmatureManager;
 import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.graphics.EffectManager;
 import cat.atridas.antagonista.graphics.FontManager;
@@ -19,6 +18,8 @@ import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.RenderableObjectManager;
 import cat.atridas.antagonista.graphics.TextureManager;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
+import cat.atridas.antagonista.graphics.animation.AnimationManager;
+import cat.atridas.antagonista.graphics.animation.ArmatureManager;
 import cat.atridas.antagonista.graphics.gl.RenderManagerGL;
 import cat.atridas.antagonista.graphics.gl2.DebugRenderGL2;
 import cat.atridas.antagonista.graphics.gl2.FontManagerGL2;
@@ -47,6 +48,7 @@ public final class Core {
   private MaterialManager         mm  = new MaterialManager();
   private DebugRender             dr;
   private ArmatureManager         am  = new ArmatureManager();
+  private AnimationManager        animm  = new AnimationManager();
   private MeshManager             mem = new MeshManager();
   private RenderableObjectManager rom;
   
@@ -147,6 +149,17 @@ public final class Core {
   public ArmatureManager getArmatureManager()
   {
     return am;
+  }
+
+  /**
+   * Gets the AnimationManager.
+   * 
+   * @return the AnimationManager.
+   * @since 0.3
+   */
+  public AnimationManager getAnimationManager()
+  {
+    return animm;
   }
 
   /**
@@ -275,6 +288,10 @@ public final class Core {
     am.init(al, "data/armatures/");
     
     al.clear();
+    al.add(new HashedString("ani"));
+    animm.init(al, "data/animations/");
+    
+    al.clear();
     al.add(new HashedString("mesh"));
     mem.init(al, "data/meshes/");
     
@@ -344,7 +361,9 @@ public final class Core {
 	    tm.weakify();
 	    em.weakify();
 	    mm.weakify();
-	    mem.weakify();//TODO més managers.
+	    mem.weakify();
+	    animm.weakify();
+	    am.weakify();//TODO més managers.
 	  }
 
     System.gc();
@@ -353,6 +372,8 @@ public final class Core {
     em.cleanUnusedReferences();
     mm.cleanUnusedReferences();
     mem.cleanUnusedReferences();
+    animm.cleanUnusedReferences();
+    am.cleanUnusedReferences();
 
     System.runFinalization();
 	}
@@ -372,6 +393,8 @@ public final class Core {
     em  = null;
     fm  = null;
     tm  = null;
+    animm = null;
+    am = null;
     systemManager = null;
     entityManager = null;
     

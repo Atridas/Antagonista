@@ -1,4 +1,4 @@
-package cat.atridas.antagonista.graphics;
+package cat.atridas.antagonista.graphics.animation;
 
 import java.util.ArrayList;
 
@@ -12,12 +12,12 @@ import cat.atridas.antagonista.Utils;
  * @since 0.3
  *
  */
-public class ArmatureManager extends ResourceManager<ArmatureCore> {
+public class AnimationManager extends ResourceManager<Animation> {
   /**
    * Default mesh.
    * @since 0.3
    */
-  private ArmatureCore defaultResource;
+  private Animation defaultResource;
   
   /**
    * Initializes the manager.
@@ -38,12 +38,12 @@ public class ArmatureManager extends ResourceManager<ArmatureCore> {
   }
 
   @Override
-  protected ArmatureCore createNewResource(HashedString name) {
-    return new ArmatureCore(name);
+  protected Animation createNewResource(HashedString name) {
+    return new Animation(name);
   }
 
   @Override
-  public ArmatureCore getDefaultResource() {
+  public Animation getDefaultResource() {
     return defaultResource;
   }
 
