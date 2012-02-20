@@ -28,6 +28,8 @@ class AntagonistVertex:
         weights = []
         w_indices = []
         
+        bone_names = []
+        
         if antagonistArmature is not None:
           for group in vertex.groups:
             blender_group = group.group
@@ -37,10 +39,35 @@ class AntagonistVertex:
               
               weights.append(group.weight)
               w_indices.append(bone_id)
+              
+              bone_names.append(bone_name)
         
+        if len( weights ) > 0:
+          ordenat = False
+          while not ordenat: #bombolla
+            ordenat = True
+            for i in range( len( weights ) - 1):
+              if weights[i] < weights[i + 1]:
+                ordenat = False
+                aux = weights[i]
+                weights[i] = weights[i+1]
+                weights[i+1] = aux
+                
+                aux = w_indices[i]
+                w_indices[i] = w_indices[i+1]
+                w_indices[i+1] = aux
+                
+                aux = bone_names[i]
+                bone_names[i] = bone_names[i+1]
+                bone_names[i+1] = aux
+                
+          
+          
         while len(weights) < 4:
           weights.append(0)
           w_indices.append(0)
+          bone_names.append('')
+          
         
         weight_acum = 0
         
@@ -51,13 +78,16 @@ class AntagonistVertex:
           self.animated = False
           self.weights  = [0,0,0,0]
           self.w_indices = [0,0,0,0]
+          self.bone_names = ['','','','']
         else:
           self.animated = True
           self.weights  = []
           self.w_indices = []
+          self.bone_names = []
           for i in range(4):
             self.weights.append(weights[i] / weight_acum)
             self.w_indices.append(w_indices[i])
+            self.bone_names.append(bone_names[i])
           
         
     def __str__(self):
@@ -769,6 +799,11 @@ def saveMeshText(mesh, originalMesh, filepath):
           f.write(" %s" % v.w_indices[1])
           f.write(" %s" % v.w_indices[2])
           f.write(" %s" % v.w_indices[3])
+          
+          #f.write(" %s" % v.bone_names[0])
+          #f.write(" %s" % v.bone_names[1])
+          #f.write(" %s" % v.bone_names[2])
+          #f.write(" %s" % v.bone_names[3])
           
           
     
