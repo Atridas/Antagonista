@@ -84,6 +84,9 @@ public final class ArmatureInstance {
     
     for(int i = 0; i < matrixPalete.length; ++i) {
       armatureCore.getBone(i).mulInverseTransformMatrix(matrixPalete[i]);
+      //armatureCore.getBone(i).mulRightInverseTransformMatrix(matrixPalete[i]);
+      
+      //matrixPalete[i].invert();
     }
   }
   

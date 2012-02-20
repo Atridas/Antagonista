@@ -34,7 +34,7 @@
 void main()
 {
   v_v4Color    = a_v4Color;
-  gl_Position  = u_m4ModelViewProjection * vec4(a_v3Position,1.0);
+  gl_Position  = vec4(a_v3Position,1.0) * u_m4ModelViewProjection;
 }
   
   

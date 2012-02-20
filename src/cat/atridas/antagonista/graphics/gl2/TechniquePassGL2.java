@@ -305,7 +305,7 @@ public class TechniquePassGL2 extends TechniquePassGL {
    * uniform mat4 u_WorldViewProj;
    * 
    * void main() {  
-   *   gl_Position = u_WorldViewProj * vec4(a_position, 0, 1);
+   *   gl_Position = vec4(a_position, 0, 1) * u_WorldViewProj;
    *   v_texCoord  = a_texCoord;
    *   v_channel   = a_channel;
    *   if(a_page < 0.5)
@@ -338,7 +338,7 @@ public class TechniquePassGL2 extends TechniquePassGL {
     
       "uniform mat4 u_WorldViewProj;\n" +
     
-      "void main() {  gl_Position = u_WorldViewProj * vec4(a_position, 0, 1);\n" +
+      "void main() {  gl_Position = vec4(a_position, 0, 1) * u_WorldViewProj;\n" +
         "v_texCoord  = a_texCoord;\n" +
         "v_channel   = a_channel;\n" +
         "if(a_page < 0.5)\n" +

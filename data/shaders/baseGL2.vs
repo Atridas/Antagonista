@@ -35,11 +35,11 @@ uniform mat4 u_m4ModelViewIT;
 // -------------------------------------------------------------------------
 void main()
 {
-  gl_Position   =  u_m4ModelViewProjection * vec4(a_v3Position,1.0);
-  v_v3Position  = (u_m4ModelView           * vec4(a_v3Position,1.0)).xyz;
-  v_v3Normal    = (u_m4ModelViewIT         * vec4(a_v3Normal,0.0)  ).xyz;
-  v_v3Tangent   = (u_m4ModelView           * vec4(a_v3Tangent,0.0)  ).xyz;
-  v_v3Bitangent = (u_m4ModelView           * vec4(a_v3Bitangent,0.0)  ).xyz;
+  gl_Position   =  vec4(a_v3Position,1.0)  * u_m4ModelViewProjection;
+  v_v3Position  = (vec4(a_v3Position,1.0)  * u_m4ModelView          ).xyz;
+  v_v3Normal    = (vec4(a_v3Normal,0.0)    * u_m4ModelViewIT        ).xyz;
+  v_v3Tangent   = (vec4(a_v3Tangent,0.0)   * u_m4ModelView          ).xyz;
+  v_v3Bitangent = (vec4(a_v3Bitangent,0.0) * u_m4ModelView          ).xyz;
   v_v2UV = a_v2UV;
 }
   

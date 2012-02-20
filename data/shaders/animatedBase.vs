@@ -33,7 +33,7 @@ layout(std140) uniform UniformInstances {
   //} u_InstanceInfo[MAX_INSTANCES];
 };
   
-layout(std140) uniform ArmatureInstances {
+layout(std140, row_major) uniform ArmatureInstances {
   //struct {
     mat4x3 u_m43BonePalete[MAX_BONES];
     mat4x3 u_m43BonePaleteIT[MAX_BONES];
@@ -43,37 +43,25 @@ layout(std140) uniform ArmatureInstances {
 
 vec4 animate(in vec4 _v4Point) {
 
-  return _v4Point;
-
-  //return vec4(u_m43BonePalete[ a_i4BlendIndexs.x ] * _v4Point , 1);
-
   vec3 result1 = u_m43BonePalete[ a_i4BlendIndexs.x ] * _v4Point;
   vec3 result2 = u_m43BonePalete[ a_i4BlendIndexs.y ] * _v4Point;
   vec3 result3 = u_m43BonePalete[ a_i4BlendIndexs.z ] * _v4Point;
   vec3 result4 = u_m43BonePalete[ a_i4BlendIndexs.w ] * _v4Point;
-
-  //vec3 result1 = u_m43BonePalete[ 1 ] * _v4Point;
-  //vec3 result2 = u_m43BonePalete[ 1 ] * _v4Point;
-  //vec3 result3 = u_m43BonePalete[ 1 ] * _v4Point;
-  //vec3 result4 = u_m43BonePalete[ 1 ] * _v4Point;
   
   return vec4( result1 * a_v4BlendWeights.x
              + result2 * a_v4BlendWeights.y
              + result3 * a_v4BlendWeights.z
              + result4 * a_v4BlendWeights.w
-             //+ (1 - dot(a_v4BlendWeights,a_v4BlendWeights)) * _v4Point.xyz
              , 1);
              
 }
 
 vec4 animateIT(in vec4 _v4Point) {
 
-  return _v4Point;
-  
-  vec3 result1 = _v4Point * transpose(u_m43BonePaleteIT[ a_i4BlendIndexs.x ]);
-  vec3 result2 = _v4Point * transpose(u_m43BonePaleteIT[ a_i4BlendIndexs.y ]);
-  vec3 result3 = _v4Point * transpose(u_m43BonePaleteIT[ a_i4BlendIndexs.z ]);
-  vec3 result4 = _v4Point * transpose(u_m43BonePaleteIT[ a_i4BlendIndexs.w ]);
+  vec3 result1 = u_m43BonePaleteIT[ a_i4BlendIndexs.x ] * _v4Point;
+  vec3 result2 = u_m43BonePaleteIT[ a_i4BlendIndexs.y ] * _v4Point;
+  vec3 result3 = u_m43BonePaleteIT[ a_i4BlendIndexs.z ] * _v4Point;
+  vec3 result4 = u_m43BonePaleteIT[ a_i4BlendIndexs.w ] * _v4Point;
   
   return vec4( result1 * a_v4BlendWeights.x
              + result2 * a_v4BlendWeights.y
@@ -85,11 +73,13 @@ vec4 animateIT(in vec4 _v4Point) {
 // -------------------------------------------------------------------------
 void main()
 {
-  gl_Position   =  u_m4ModelViewProjection * animate  (vec4(a_v3Position,1.0 ) );
-  v_v3Position  = (u_m4ModelView           * animate  (vec4(a_v3Position,1.0 ) )).xyz;
-  v_v3Normal    = (u_m4ModelViewIT         * animateIT(vec4(a_v3Normal,0.0   ) )).xyz;
-  v_v3Tangent   = (u_m4ModelView           * animate  (vec4(a_v3Tangent,0.0  ) )).xyz;
-  v_v3Bitangent = (u_m4ModelView           * animate  (vec4(a_v3Bitangent,0.0) )).xyz;
+  vec4 l_v4ModelPosition = animate  (vec4(a_v3Position,1.0 ) );
+
+  gl_Position   =  l_v4ModelPosition                   * u_m4ModelViewProjection;
+  v_v3Position  = (l_v4ModelPosition                   * u_m4ModelView  ).xyz;
+  v_v3Normal    = (animateIT(vec4(a_v3Normal,0.0   ) ) * u_m4ModelViewIT).xyz;
+  v_v3Tangent   = (animate  (vec4(a_v3Tangent,0.0  ) ) * u_m4ModelView  ).xyz;
+  v_v3Bitangent = (animate  (vec4(a_v3Bitangent,0.0) ) * u_m4ModelView  ).xyz;
   v_v2UV = a_v2UV;
 }
   

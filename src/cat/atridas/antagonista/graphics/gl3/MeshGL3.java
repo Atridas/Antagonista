@@ -70,7 +70,7 @@ public final class MeshGL3 extends MeshGL {
     
     if(animated) {
       glEnableVertexAttribArray(TechniquePass.BLEND_INDEX_ATTRIBUTE);
-      glVertexAttribPointer(TechniquePass.BLEND_INDEX_ATTRIBUTE, 4, GL_SHORT, false, stride, 14 * Utils.FLOAT_SIZE);
+      glVertexAttribIPointer(TechniquePass.BLEND_INDEX_ATTRIBUTE, 4, GL_SHORT, stride, 14 * Utils.FLOAT_SIZE);
       
       glEnableVertexAttribArray(TechniquePass.BLEND_WEIGHT_ATTRIBUTE);
       glVertexAttribPointer(TechniquePass.BLEND_WEIGHT_ATTRIBUTE, 4, GL_FLOAT, false, stride, 14 * Utils.FLOAT_SIZE + 4 * Utils.SHORT_SIZE);

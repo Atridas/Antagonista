@@ -255,6 +255,7 @@ public abstract class Mesh extends Resource {
           short i3 = Short.parseShort(elements[NUM_ELEMENTS_PER_VERTEX_STATIC_MESH + 6]);
           short i4 = Short.parseShort(elements[NUM_ELEMENTS_PER_VERTEX_STATIC_MESH + 7]);
 
+          /*
           if(w1 > 0) {
             i1--;
           }
@@ -266,7 +267,7 @@ public abstract class Mesh extends Resource {
           }
           if(w4 > 0) {
             i4--;
-          }
+          }*/
 
           vertexBuffer.putShort(i1);
           vertexBuffer.putShort(i2);

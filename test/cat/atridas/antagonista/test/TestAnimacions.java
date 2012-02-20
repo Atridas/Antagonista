@@ -95,8 +95,9 @@ public class TestAnimacions {
     
     //ArmatureManager am = core.getArmatureManager();
     //ArmatureCore masterArmature = am.getResource(new HashedString("MasterArmature"));
-    
-    Animation atacar = core.getAnimationManager().getResource(new HashedString("Atacar"));
+
+    //Animation atacar = core.getAnimationManager().getResource(new HashedString("Atacar"));
+    Animation caminar = core.getAnimationManager().getResource(new HashedString("Caminar"));
     
     ArmatureInstance animatedArmature = null;//new ArmatureInstance(masterArmature);
 
@@ -146,14 +147,14 @@ public class TestAnimacions {
     while(!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
       
       if(animatedArmature != null) {
-        animatedArmature.performSingleAnimation(atacar, anim);
+        animatedArmature.performSingleAnimation(caminar, anim);
         animatedArmature.debugRender(dr, worldMatrix);
       }
       
       core.performSimpleTick();
       
-      anim += core.getClock().getCurrentFrameDeltaTime().dt / 5f;
-      if(anim > atacar.getDuration()) {
+      anim += core.getClock().getCurrentFrameDeltaTime().dt;
+      if(anim > caminar.getDuration()) {
         anim = 0;
       }
       

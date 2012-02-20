@@ -140,7 +140,7 @@ public final class RenderableObjectManagerGL3 extends RenderableObjectManager {
       boneBuffer.rewind();
       
       for(int i = 0; i < len; ++i) {
-        Utils.matrix34TransposedToBuffer(instanceData.bonePalete[i], boneBuffer);
+        Utils.matrix34ToBuffer(instanceData.bonePalete[i], boneBuffer);
       }
 
       boneBuffer.position(TechniquePass.ARMATURE_UNIFORMS_BLOCK_SIZE / (Utils.FLOAT_SIZE * 2));
@@ -149,7 +149,7 @@ public final class RenderableObjectManagerGL3 extends RenderableObjectManager {
       for(int i = 0; i < len; ++i) {
         auxiliarMatrix.invert(instanceData.bonePalete[i]);
         auxiliarMatrix.transpose();
-        Utils.matrix34TransposedToBuffer(auxiliarMatrix, boneBuffer);
+        Utils.matrix34ToBuffer(auxiliarMatrix, boneBuffer);
       }
       
       boneBuffer.position(0);

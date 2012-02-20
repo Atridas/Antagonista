@@ -567,7 +567,7 @@ public abstract class Utils {
   public static void matrixToBuffer(Matrix4f in, FloatBuffer out) {
     float f[] = new float[4];
     for(int i = 0; i < 4; ++i) {
-      in.getColumn(i, f);
+      in.getRow(i, f);
       out.put(f);
     }
   }
@@ -594,7 +594,7 @@ public abstract class Utils {
    * @param out buffer.
    * @since 0.1
    */
-  public static void matrix34TransposedToBuffer(Matrix4f in, FloatBuffer out) {
+  public static void matrix34ToBuffer(Matrix4f in, FloatBuffer out) {
     float f[] = new float[4];
     for(int i = 0; i < 3; ++i) {
       in.getRow(i, f);
@@ -609,11 +609,11 @@ public abstract class Utils {
    * @param out buffer.
    * @since 0.1
    */
-  public static void matrix34TransposedToBuffer(Matrix4f in, ByteBuffer out) {
+  public static void matrix34ToBuffer(Matrix4f in, ByteBuffer out) {
     int pos = out.position();
     FloatBuffer fb = out.asFloatBuffer();
     //fb.position(pos / FLOAT_SIZE);
-    matrix34TransposedToBuffer(in, fb);
+    matrix34ToBuffer(in, fb);
     out.position(pos + (12 * FLOAT_SIZE));
   }
   

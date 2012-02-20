@@ -10,9 +10,8 @@ import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.Shader.ShaderType;
 import cat.atridas.antagonista.graphics.gl.TechniquePassGL;
 
-import static org.lwjgl.opengl.ARBUniformBufferObject.glGetUniformBlockIndex;
-import static org.lwjgl.opengl.ARBUniformBufferObject.glUniformBlockBinding;
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL31.*;
 import static org.lwjgl.opengl.GL32.*;
 
 /**
@@ -73,36 +72,36 @@ public final class TechniquePassGL3 extends TechniquePassGL {
   @Override
   protected void loadBasicInstanceUniforms(int program) {
     int basicInstanceBlock = glGetUniformBlockIndex(program, BASIC_INSTANCE_UNIFORMS_BLOCK);
-    if(basicInstanceBlock < 0) {
+    if(basicInstanceBlock == GL_INVALID_INDEX) {
       LOGGER.severe("Basic instance uniforms requested but not active!");
       //throw new AntagonistException();
+    } else {
+      glUniformBlockBinding(program, basicInstanceBlock, BASIC_INSTANCE_UNIFORMS_BINDING);
     }
-    
-    glUniformBlockBinding(program, basicInstanceBlock, BASIC_INSTANCE_UNIFORMS_BINDING);
     assert !Utils.hasGLErrors();
   }
 
   @Override
   protected void loadArmatureUniforms(int program) {
     int armatureBlock = glGetUniformBlockIndex(program, ARMATURE_UNIFORMS_BLOCK);
-    if(armatureBlock < 0) {
+    if(armatureBlock == GL_INVALID_INDEX) {
       LOGGER.severe("Armature uniforms requested but not active!");
       //throw new AntagonistException();
+    } else {
+      glUniformBlockBinding(program, armatureBlock, ARMATURE_UNIFORMS_BINDING);
     }
-    
-    glUniformBlockBinding(program, armatureBlock, ARMATURE_UNIFORMS_BINDING);
     assert !Utils.hasGLErrors();
   }
 
   @Override
   protected void loadSpecialColorsUniforms(int program) {
     int specialColorsBlock = glGetUniformBlockIndex(program, SPECIAL_COLORS_UNIFORMS_BLOCK);
-    if(specialColorsBlock < 0) {
+    if(specialColorsBlock == GL_INVALID_INDEX) {
       LOGGER.severe("Special Colors requested but not active!");
       //throw new AntagonistException();
+    } else {
+      glUniformBlockBinding(program, specialColorsBlock, SPECIAL_COLORS_UNIFORMS_BINDING);
     }
-    
-    glUniformBlockBinding(program, specialColorsBlock, SPECIAL_COLORS_UNIFORMS_BINDING);
     assert !Utils.hasGLErrors();
   }
 
@@ -110,12 +109,12 @@ public final class TechniquePassGL3 extends TechniquePassGL {
   @Override
   protected void loadBasicLightUniforms(int program) {
     int basicLightBlock = glGetUniformBlockIndex(program, BASIC_LIGHT_UNIFORMS_BLOCK);
-    if(basicLightBlock < 0) {
+    if(basicLightBlock == GL_INVALID_INDEX) {
       LOGGER.severe("Basic light uniforms requested but not active!");
       //throw new AntagonistException();
+    } else {
+      glUniformBlockBinding(program, basicLightBlock, BASIC_LIGHT_UNIFORMS_BINDING);
     }
-    
-    glUniformBlockBinding(program, basicLightBlock, BASIC_LIGHT_UNIFORMS_BINDING);
     assert !Utils.hasGLErrors();
   }
 
@@ -123,12 +122,12 @@ public final class TechniquePassGL3 extends TechniquePassGL {
   @Override
   protected void loadBasicMaterialUniforms(int program) {
     int basicMaterialBlock = glGetUniformBlockIndex(program, BASIC_MATERIAL_UNIFORMS_BLOCK);
-    if(basicMaterialBlock < 0) {
+    if(basicMaterialBlock == GL_INVALID_INDEX) {
       LOGGER.severe("Basic material uniforms requested but not active!");
       //throw new AntagonistException();
+    } else {
+      glUniformBlockBinding(program, basicMaterialBlock, BASIC_MATERIAL_UNIFORMS_BINDING);
     }
-
-    glUniformBlockBinding(program, basicMaterialBlock, BASIC_MATERIAL_UNIFORMS_BINDING);
     assert !Utils.hasGLErrors();
   }
   
