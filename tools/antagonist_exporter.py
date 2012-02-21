@@ -1107,10 +1107,23 @@ class AntagonistAnimation:
   def __init__(self, animated_object, scene):
     self.name = animated_object.name
     
-    frame_range = animated_object.animation_data.action.frame_range
+    if animated_object.animation_data.action is not None:
+      frame_range = animated_object.animation_data.action.frame_range
     
-    first_frame = int(frame_range[0])
-    last_frame = int(frame_range[1])
+      first_frame = int(frame_range[0])
+      last_frame = int(frame_range[1])
+    else:
+      first_frame = math.floor(animated_object.animation_data.nla_tracks[0].strips[0].frame_start)
+      last_frame  = math.ceil (animated_object.animation_data.nla_tracks[0].strips[0].frame_end)
+      for track in animated_object.animation_data.nla_tracks:
+        for strip in track.strips:
+          first = math.floor(strip.frame_start)
+          last  = math.ceil (strip.frame_end)
+          if first_frame > first:
+            first_frame = first
+          if last_frame < last:
+            last_frame = last
+          
     
     current_frame = scene.frame_current
     
