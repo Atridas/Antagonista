@@ -14,7 +14,6 @@ import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Resource;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
-import cat.atridas.antagonista.graphics.animation.ArmatureInstance.BoneInstance;
 
 /**
  * TODO
@@ -23,8 +22,8 @@ import cat.atridas.antagonista.graphics.animation.ArmatureInstance.BoneInstance;
  * @since 0.3
  *
  */
-public final class Animation extends Resource {
-  private static Logger LOGGER = Logger.getLogger(Animation.class.getCanonicalName());
+public final class AnimationCore extends Resource {
+  private static Logger LOGGER = Logger.getLogger(AnimationCore.class.getCanonicalName());
 
   /**
    * "ani"
@@ -52,7 +51,7 @@ public final class Animation extends Resource {
   
   private final HashMap<HashedString, BoneSample[]> boneTracks = new HashMap<>();
 
-  public Animation(HashedString _resourceName) {
+  public AnimationCore(HashedString _resourceName) {
     super(_resourceName);
   }
 
@@ -216,30 +215,114 @@ public final class Animation extends Resource {
       
       BoneSample sample = track[firstSample];
 
-      bone_.translation.set(sample.translation);
-      bone_.rotation.set(sample.rotation);
-      bone_.scale = sample.getScale();
+      bone_.getTranslation().set(sample.translation);
+      bone_.getRotation().set(sample.rotation);
+      bone_.setScale( sample.getScale() );
     } else {
 
       BoneSample sample1 = track[firstSample    ];
       BoneSample sample2 = track[firstSample + 1];
 
-      bone_.translation.interpolate(
+      bone_.getTranslation().interpolate(
           sample1.translation, 
           sample2.translation, 
           blendFactor);
-      bone_.rotation.interpolate(
+      bone_.getRotation().interpolate(
           sample1.rotation, 
           sample2.rotation, 
           blendFactor);
-      bone_.scale = sample1.scale * (1.f - blendFactor) + sample2.scale * blendFactor;
+      bone_.setScale( sample1.scale * (1.f - blendFactor) + sample2.scale * blendFactor );
     }
   }
   
+  /**
+   * Sets the bone parameters to this animation state, in the time specified.
+   * If the time isn't between 0 and the duration of this animation, the result is
+   * unknown (may throw an exception).
+   * 
+   * @param bone_ to be animated.
+   * @param time in seconds, of this animation.
+   * @param weight the weight value to blend this animation to the bone.
+   */
+  public void setBone(BoneInstance bone_, float time, float weight) {
+    if(samples == 0) { //default animation
+      setDefaultBone(bone_);
+      return;
+    }
+    
+    float normalizedTime = time / duration;
+    setBoneNormalized(bone_, normalizedTime, weight);
+  }
+  
+  private Quat4f m_qAux = new Quat4f();
+  private Vector3f m_v3Aux = new Vector3f();
+  /**
+   * Sets the bone parameters to this animation, in the time specified, as if the whole
+   * animation would last 1 unit. If the time isn't between 0 and 1, the result is
+   * unknown (may throw an exception).
+   * 
+   * @param bone_ to be animated.
+   * @param normalizedTime a value between 0 and 1
+   * @param weight the weight value to blend this animation to the bone.
+   */
+  public void setBoneNormalized(BoneInstance bone_, float normalizedTime, float weight) {
+    assert normalizedTime >= 0 && normalizedTime <= 1f;
+    assert bone_.getArmatureId().equals(armature.resourceName);
+    
+    if(samples == 0) { //default animation
+      setDefaultBone(bone_);
+      return;
+    }
+    
+    BoneSample[] track = boneTracks.get(bone_.getBoneId());
+
+    if(track == null) { //default animation
+      setDefaultBone(bone_);
+      return;
+    }
+    
+    float sampledTime = normalizedTime * (samples - 1);
+    int firstSample = (int) sampledTime;
+    float blendFactor = sampledTime - firstSample;
+    
+
+    Vector3f translation = m_v3Aux;
+    Quat4f rotation = m_qAux;
+    float scale;
+    
+    if(blendFactor < Utils.EPSILON) {
+      //estem sobre una mostra exactament, no cal "normalitzar"
+      
+      BoneSample sample = track[firstSample];
+
+      translation.set(sample.translation);
+      rotation.set(sample.rotation);
+      scale = sample.getScale();
+    } else {
+
+      BoneSample sample1 = track[firstSample    ];
+      BoneSample sample2 = track[firstSample + 1];
+
+      translation.interpolate(
+          sample1.translation, 
+          sample2.translation, 
+          blendFactor);
+      rotation.interpolate(
+          sample1.rotation, 
+          sample2.rotation, 
+          blendFactor);
+      scale = sample1.scale * (1.f - blendFactor) + sample2.scale * blendFactor;
+    }
+
+    bone_.getTranslation().interpolate(translation, weight);
+    bone_.getRotation()   .interpolate(rotation, weight);
+    bone_.setScale( bone_.getScale() * (1.f - weight) + scale * weight );
+  }
+  
   private void setDefaultBone(BoneInstance bone_) {//TODO agafar la posició de l'esquelet
-    bone_.translation.set(0,0,0);
-    bone_.rotation.set(0,0,0,1);
-    bone_.scale = 1;
+    bone_.getTranslation().set(0,0,0);
+    bone_.getRotation().set(0,0,0,1);
+    bone_.setScale( 1 );
   }
   
   @Override

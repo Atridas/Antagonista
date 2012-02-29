@@ -38,7 +38,7 @@ public final class ArmatureInstance {
   }
   
   
-  public void performSingleAnimation(Animation animation, float time) {
+  public void performSingleAnimation(AnimationCore animation, float time) {
     for(BoneInstance bone : animatedResult.boneMap.values()) {
       animation.setBone(bone, time);
     }
@@ -71,12 +71,12 @@ public final class ArmatureInstance {
   }
 
   private void updateMatrixPalete() {
-    for(BoneInstance bone : animatedResult.rootBones) {
+    for(Bone bone : animatedResult.rootBones) {
       Matrix4f currentMatrix = matrixPalete[bone.boneCore.getIndex()];
       
       currentMatrix.set(bone.rotation, bone.translation, bone.scale);
       
-      for(BoneInstance child : bone.children) {
+      for(Bone child : bone.children) {
         updateMatrixPaleteBone(child, currentMatrix);
       }
     }
@@ -90,21 +90,21 @@ public final class ArmatureInstance {
     }
   }
   
-  private void updateMatrixPaleteBone(BoneInstance bone, Matrix4f parentMatrix) {
+  private void updateMatrixPaleteBone(Bone bone, Matrix4f parentMatrix) {
     Matrix4f currentMatrix = matrixPalete[bone.boneCore.getIndex()];
 
     currentMatrix.set(bone.rotation, bone.translation, bone.scale);
     currentMatrix.mul(parentMatrix, currentMatrix);
     //currentMatrix.mul(parentMatrix);
 
-    for(BoneInstance child : bone.children) {
+    for(Bone child : bone.children) {
       updateMatrixPaleteBone(child, currentMatrix);
     }
   }
   
   private final class ArmatureIntern {
-    private final BoneInstance[] rootBones;
-    private final HashMap<HashedString, BoneInstance> boneMap = new HashMap<>();
+    private final Bone[] rootBones;
+    private final HashMap<HashedString, Bone> boneMap = new HashMap<>();
     
     private ArmatureIntern() {
       
@@ -112,35 +112,35 @@ public final class ArmatureInstance {
         BoneCore boneCore = armatureCore.getBone(i);
         HashedString id = boneCore.getName();
         
-        BoneInstance boneInstance = new BoneInstance(boneCore);
+        Bone boneInstance = new Bone(boneCore);
         
         boneMap.put(id, boneInstance);
       }
       
       ArrayList<BoneInstance> l_RootBones = new ArrayList<>();
       
-      for(BoneInstance bone : boneMap.values()) {
+      for(Bone bone : boneMap.values()) {
         BoneCore parentCore = bone.boneCore.getParent();
         if(parentCore == null) {
           l_RootBones.add(bone);
         } else {
-          BoneInstance parent = boneMap.get(parentCore.getName());
+          Bone parent = boneMap.get(parentCore.getName());
           parent.children.add(bone);
           //bone.parent = parent;
         }
       }
       
-      rootBones = new BoneInstance[l_RootBones.size()];
+      rootBones = new Bone[l_RootBones.size()];
       l_RootBones.toArray(rootBones);
       
-      for(BoneInstance bone : boneMap.values()) {
+      for(Bone bone : boneMap.values()) {
         bone.children.trimToSize();
       }
     }
     
   }
   
-  public final class BoneInstance {
+  private final class Bone implements BoneInstance {
     final Vector3f translation = new Vector3f();
     final Quat4f rotation = new Quat4f();
     float scale = 1;
@@ -148,9 +148,9 @@ public final class ArmatureInstance {
     private final BoneCore boneCore;
     
     //private BoneInstance parent;
-    private final ArrayList<BoneInstance> children = new ArrayList<>();
+    private final ArrayList<Bone> children = new ArrayList<>();
     
-    private BoneInstance(BoneCore _boneCore) {
+    private Bone(BoneCore _boneCore) {
       boneCore = _boneCore;
     }
     
@@ -160,6 +160,26 @@ public final class ArmatureInstance {
     
     public HashedString getBoneId() {
       return boneCore.getName();
+    }
+
+    @Override
+    public Vector3f getTranslation() {
+      return translation;
+    }
+
+    @Override
+    public Quat4f getRotation() {
+      return rotation;
+    }
+
+    @Override
+    public float getScale() {
+      return scale;
+    }
+
+    @Override
+    public void setScale(float _scale) {
+      scale = _scale;
     }
   }
 }

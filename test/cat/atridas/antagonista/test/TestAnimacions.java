@@ -20,7 +20,7 @@ import cat.atridas.antagonista.entities.components.TransformComponent;
 import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.SceneData;
-import cat.atridas.antagonista.graphics.animation.Animation;
+import cat.atridas.antagonista.graphics.animation.AnimationCore;
 import cat.atridas.antagonista.graphics.animation.ArmatureInstance;
 import cat.atridas.antagonista.input.InputManager;
 
@@ -97,8 +97,8 @@ public class TestAnimacions {
     //ArmatureCore masterArmature = am.getResource(new HashedString("MasterArmature"));
 
     //Animation animacio = core.getAnimationManager().getResource(new HashedString("AtacarMaster"));
-    Animation animacio = core.getAnimationManager().getResource(new HashedString("CaminarMaster"));
-    //Animation animacio = core.getAnimationManager().getResource(new HashedString("IdleMaster"));
+    //Animation animacio = core.getAnimationManager().getResource(new HashedString("CaminarMaster"));
+    AnimationCore animacio = core.getAnimationManager().getResource(new HashedString("IdleMaster"));
     
     ArmatureInstance animatedArmature = null;//new ArmatureInstance(masterArmature);
 

@@ -12,12 +12,12 @@ import cat.atridas.antagonista.Utils;
  * @since 0.3
  *
  */
-public class AnimationManager extends ResourceManager<Animation> {
+public class AnimationManager extends ResourceManager<AnimationCore> {
   /**
    * Default mesh.
    * @since 0.3
    */
-  private Animation defaultResource;
+  private AnimationCore defaultResource;
   
   /**
    * Initializes the manager.
@@ -38,12 +38,12 @@ public class AnimationManager extends ResourceManager<Animation> {
   }
 
   @Override
-  protected Animation createNewResource(HashedString name) {
-    return new Animation(name);
+  protected AnimationCore createNewResource(HashedString name) {
+    return new AnimationCore(name);
   }
 
   @Override
-  public Animation getDefaultResource() {
+  public AnimationCore getDefaultResource() {
     return defaultResource;
   }
 
