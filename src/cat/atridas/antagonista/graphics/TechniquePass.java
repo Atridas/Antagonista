@@ -1,5 +1,7 @@
 package cat.atridas.antagonista.graphics;
 
+import java.lang.ref.SoftReference;
+import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -554,6 +556,8 @@ public abstract class TechniquePass {
    */
   protected abstract int getFontShader(ShaderType shaderType);
   
+  private final HashMap<ShaderType, SoftReference<String>> debugShaderSources = new HashMap<>();
+  
   /**
    * Compiles a shader source. If there are any errors, this method logs them and returns a
    * default shader.
@@ -593,6 +597,7 @@ public abstract class TechniquePass {
     
     sb.append(shaderSource);
     
+    debugShaderSources.put(st, new SoftReference<String>(sb.toString()));
     if(compileShader(shaderID, sb.toString()))
       return shaderID;
     else {
@@ -1089,6 +1094,20 @@ public abstract class TechniquePass {
    * @since 0.1
    */
   public abstract int getModelViewITUniform();
+  /**
+   * Fetches the bone palete matrixes uniform binding point.
+   * 
+   * @return the uniform binding point.
+   * @since 0.3
+   */
+  public abstract int getBoneMatrixPalete();
+  /**
+   * Fetches the inverse-transposed bone palete matrix uniform binding point.
+   * 
+   * @return the uniform binding point.
+   * @since 0.3
+   */
+  public abstract int getBoneMatrixPaleteIT();
 
   /**
    * Fetches the special color 0 uniform binding point.

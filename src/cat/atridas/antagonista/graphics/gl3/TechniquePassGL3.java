@@ -170,6 +170,14 @@ public final class TechniquePassGL3 extends TechniquePassGL {
   public int getModelViewITUniform() {
     throw new IllegalStateException("Trying to fetch a uniform. Use uniform blocks instead.");
   }
+  @Override
+  public int getBoneMatrixPalete() {
+    throw new IllegalStateException("Trying to fetch a uniform. Use uniform blocks instead.");
+  }
+  @Override
+  public int getBoneMatrixPaleteIT() {
+    throw new IllegalStateException("Trying to fetch a uniform. Use uniform blocks instead.");
+  }
 
   @Override
   public int getSpecialColor0Uniform() {

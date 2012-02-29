@@ -32,6 +32,12 @@ public class MeshGL2 extends MeshGL {
   @Override
   protected void createVertexArrayObject() {
     // --
+
+    if(animated) {
+      assert glGetInteger(GL_MAX_VERTEX_ATTRIBS) >= 6;
+    } else {
+      assert glGetInteger(GL_MAX_VERTEX_ATTRIBS) >= 4;
+    }
   }
 
   @Override
@@ -68,10 +74,10 @@ public class MeshGL2 extends MeshGL {
     
     if(animated) {
       glEnableVertexAttribArray(TechniquePass.BLEND_INDEX_ATTRIBUTE);
-      glVertexAttribPointer(TechniquePass.BLEND_INDEX_ATTRIBUTE, 4, GL_SHORT, false, stride, 15 * Utils.FLOAT_SIZE);
+      glVertexAttribPointer(TechniquePass.BLEND_INDEX_ATTRIBUTE, 4, GL_SHORT, false, stride, 14 * Utils.FLOAT_SIZE);
       
       glEnableVertexAttribArray(TechniquePass.BLEND_WEIGHT_ATTRIBUTE);
-      glVertexAttribPointer(TechniquePass.BLEND_WEIGHT_ATTRIBUTE, 4, GL_FLOAT, false, stride, 15 * Utils.FLOAT_SIZE + 4 * Utils.SHORT_SIZE);
+      glVertexAttribPointer(TechniquePass.BLEND_WEIGHT_ATTRIBUTE, 4, GL_FLOAT, false, stride, 14 * Utils.FLOAT_SIZE + 4 * Utils.SHORT_SIZE);
     } else {
       glDisableVertexAttribArray(TechniquePass.BLEND_INDEX_ATTRIBUTE);
       glDisableVertexAttribArray(TechniquePass.BLEND_WEIGHT_ATTRIBUTE);

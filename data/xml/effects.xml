@@ -9,7 +9,6 @@
   </shaders>
   
   <effect name="BasicEffect"/>
-  <effect name="BasicAnimatedEffect"/>
   <effect name="WhiteEffect"/>
   <effect name="ColorEffect"/>
   

@@ -241,6 +241,14 @@ public class TechniquePassGL2 extends TechniquePassGL {
     return modelViewITUniform;
   }
   @Override
+  public int getBoneMatrixPalete() {
+    return bonePalete;
+  }
+  @Override
+  public int getBoneMatrixPaleteIT() {
+    return bonePaleteIT;
+  }
+  @Override
   public int getSpecialColor0Uniform() {
     return specialColor0;
   }

@@ -148,6 +148,8 @@
         <resource>animatedBaseGL2</resource>
       </vertex_shader>
       <fragment_shader>
+        <!-- forwardBaseGL2 -->
+        <!-- color -->
         <resource>forwardBaseGL2</resource>
       </fragment_shader>
     

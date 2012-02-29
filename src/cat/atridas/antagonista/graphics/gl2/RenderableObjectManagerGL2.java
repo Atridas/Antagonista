@@ -2,12 +2,13 @@ package cat.atridas.antagonista.graphics.gl2;
 
 import java.nio.FloatBuffer;
 
+import javax.vecmath.Matrix4f;
+
 import org.lwjgl.BufferUtils;
 
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
+import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL21.*;
 
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.graphics.InstanceData;
@@ -23,6 +24,14 @@ import cat.atridas.antagonista.graphics.TechniquePass;
  */
 public final class RenderableObjectManagerGL2 extends RenderableObjectManager {
 
+  /**
+   * Auxiliar buffer used to pass bone to the OpenGL driver.
+   * @since 0.3 
+   */
+  private FloatBuffer boneBuffer = BufferUtils.createFloatBuffer(
+                                      TechniquePass.ARMATURE_UNIFORMS_BLOCK_SIZE / (Utils.FLOAT_SIZE * 2)
+                                      );
+  
   /**
    * Buffer size needed to store one instance.
    * @since 0.1
@@ -49,6 +58,7 @@ public final class RenderableObjectManagerGL2 extends RenderableObjectManager {
     // no-no-no-thing!!!!
   }
 
+  private Matrix4f auxiliarMatrix = new Matrix4f();
   @Override
   protected void setInstanceUniforms(TechniquePass pass, InstanceData instanceData) {
     assert !cleaned;
@@ -93,6 +103,36 @@ public final class RenderableObjectManagerGL2 extends RenderableObjectManager {
                   instanceData.specialColor3.y,  
                   instanceData.specialColor3.z,
                   instanceData.specialColor3.w);
+    }
+    
+    if( instanceData.bonePalete != null ) {
+      int len = instanceData.bonePalete.length;
+      if(len > TechniquePass.MAX_BONES) {
+        len = TechniquePass.MAX_BONES;
+      }
+      
+      boneBuffer.rewind();
+      
+      for(int i = 0; i < len; ++i) {
+        Utils.matrix34ToBuffer(instanceData.bonePalete[i], boneBuffer);
+      }
+
+      boneBuffer.position(0);
+      boneBuffer.limit(len * 12);
+
+      glUniformMatrix4x3( pass.getBoneMatrixPalete() , true, boneBuffer);
+
+      boneBuffer.rewind();
+      for(int i = 0; i < len; ++i) {
+        auxiliarMatrix.invert(instanceData.bonePalete[i]);
+        auxiliarMatrix.transpose();
+        Utils.matrix34ToBuffer(auxiliarMatrix, boneBuffer);
+      }
+      
+      boneBuffer.position(0);
+      boneBuffer.limit(len * 12);
+      
+      glUniformMatrix4x3( pass.getBoneMatrixPaleteIT() , true, boneBuffer);
     }
     
     assert !Utils.hasGLErrors();
