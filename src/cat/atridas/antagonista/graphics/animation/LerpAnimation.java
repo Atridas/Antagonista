@@ -13,7 +13,6 @@ public class LerpAnimation implements AnimationInstance {
   private final float duration;
 
   private float blendFactor;
-  private float time;
   
   public LerpAnimation(
       AnimationInstance _firstAnimation,
@@ -35,44 +34,64 @@ public class LerpAnimation implements AnimationInstance {
     firstAnimation.setParameter(parameter, value);
     secondAnimation.setParameter(parameter, value);
   }
-
-  @Override
-  public void update(float _time) {
-    updateNormalized(_time / duration);
+  
+  private float normalizeTime(float time) {
+    assert time >= 0 && time <= duration;
+    return time / duration;
   }
 
   @Override
-  public void updateNormalized(float _time) {
-    time = _time;
-    assert time >= 0 && time <= 1;
-
-    firstAnimation .updateNormalized(_time);
-    secondAnimation.updateNormalized(_time);
+  public void getBone(BoneInstance bone_, float time) {
+    float normalizedTime = normalizeTime(time);
+    firstAnimation.getBoneNormalized(bone_, normalizedTime);
+    secondAnimation.modifyBoneNormalized(bone_, blendFactor, normalizedTime);
   }
 
   @Override
-  public void getBone(BoneInstance bone_) {
-    firstAnimation.getBone(bone_);
-    secondAnimation.modifyBone(bone_, blendFactor);
+  public void getBoneNormalized(BoneInstance bone_, float time) {
+    firstAnimation.getBone(bone_, time);
+    secondAnimation.modifyBone(bone_, blendFactor, time);
   }
 
   private Bone m_bAux = new Bone();
   @Override
-  public void modifyBone(BoneInstance bone_, float weight) {
+  public void modifyBone(BoneInstance bone_, float weight, float time) {
     if(weight == 0)
       return;
     else if(weight == 1) {
-      getBone(bone_);
+      getBoneNormalized(bone_, time);
       return;
     }
     assert weight > 0 && weight < 1;
     
     m_bAux.armature = bone_.getArmatureId();
     m_bAux.bone = bone_.getBoneId();
-    
 
-    firstAnimation.getBone(m_bAux);
-    secondAnimation.modifyBone(m_bAux, blendFactor);
+    float normalizedTime = normalizeTime(time);
+
+    firstAnimation.getBoneNormalized(m_bAux, normalizedTime);
+    secondAnimation.modifyBoneNormalized(m_bAux, blendFactor, normalizedTime);
+
+    bone_.getTranslation().interpolate(m_bAux.translation, weight);
+    bone_.getRotation().interpolate(m_bAux.rotation, weight);
+    bone_.setScale( bone_.getScale() * (1 - weight) + m_bAux.scale * weight );
+  }
+  
+  @Override
+  public void modifyBoneNormalized(BoneInstance bone_, float weight, float time) {
+    if(weight == 0)
+      return;
+    else if(weight == 1) {
+      getBoneNormalized(bone_, time);
+      return;
+    }
+    assert weight > 0 && weight < 1;
+    
+    m_bAux.armature = bone_.getArmatureId();
+    m_bAux.bone = bone_.getBoneId();
+
+    firstAnimation.getBoneNormalized(m_bAux, time);
+    secondAnimation.modifyBoneNormalized(m_bAux, blendFactor, time);
 
     bone_.getTranslation().interpolate(m_bAux.translation, weight);
     bone_.getRotation().interpolate(m_bAux.rotation, weight);

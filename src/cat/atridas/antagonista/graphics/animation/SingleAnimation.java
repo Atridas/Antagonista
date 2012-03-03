@@ -19,11 +19,6 @@ public final class SingleAnimation implements AnimationInstance {
   private final AnimationCore animation;
   
   /**
-   * Time in normalized units.
-   */
-  private float time = 0;
-  
-  /**
    * Builds this object with the animation identified.
    * 
    * @param animationID animation identifier.
@@ -39,28 +34,34 @@ public final class SingleAnimation implements AnimationInstance {
   }
 
   @Override
-  public void update(float _time) {
-    time = _time / animation.getDuration();
-    assert time >= 0 && time <= 1;
+  public void getBone(BoneInstance bone_, float time) {
+    animation.setBone(bone_, time);
   }
 
   @Override
-  public void updateNormalized(float _time) {
-    time = _time;
-    assert time >= 0 && time <= 1;
-  }
-
-  @Override
-  public void getBone(BoneInstance bone_) {
+  public void getBoneNormalized(BoneInstance bone_, float time) {
     animation.setBoneNormalized(bone_, time);
   }
 
   @Override
-  public void modifyBone(BoneInstance bone_, float weight) {
+  public void modifyBone(BoneInstance bone_, float weight, float time) {
     if(weight == 0)
       return;
     else if(weight == 1) {
-      getBone(bone_);
+      getBone(bone_, time);
+      return;
+    }
+    assert weight > 0 && weight < 1;
+    
+    animation.setBone(bone_, time, weight);
+  }
+
+  @Override
+  public void modifyBoneNormalized(BoneInstance bone_, float weight, float time) {
+    if(weight == 0)
+      return;
+    else if(weight == 1) {
+      getBoneNormalized(bone_, time);
       return;
     }
     assert weight > 0 && weight < 1;

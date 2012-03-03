@@ -19,27 +19,22 @@ public interface AnimationInstance {
   void setParameter(HashedString parameter, float value);
 
   /**
-   * Updates the state of the animation.
+   * Gets the state of a bone.
    * 
-   * @param time in seconds.
+   * @param bone_ to retrieve (output parameter).
+   * @param time (from 0 to duration).
    * @since 0.3
    */
-  void update(float time);
-  /**
-   * Updates the state of the animation.
-   * 
-   * @param time in normalized units (0 is the beginning, 1 the end of the animation).
-   * @since 0.3
-   */
-  void updateNormalized(float time);
-
+  void getBone(BoneInstance bone_, float time);
   /**
    * Gets the state of a bone.
    * 
    * @param bone_ to retrieve (output parameter).
+   * @param time (from 0 to 1).
    * @since 0.3
    */
-  void getBone(BoneInstance bone_);
+  void getBoneNormalized(BoneInstance bone_, float time);
+
   /**
    * Gets the state of a bone. This function blends the current state with the state of this animation.
    * If the weight is 0, the bone is left unmodified, if it is 1, it gets all the power of this 
@@ -47,9 +42,21 @@ public interface AnimationInstance {
    * 
    * @param bone_ to retrieve (output parameter).
    * @param weight of the blending.
+   * @param time (from 0 to duration).
    * @since 0.3
    */
-  void modifyBone(BoneInstance bone_, float weight);
+  void modifyBone(BoneInstance bone_, float weight, float time);
+  /**
+   * Gets the state of a bone. This function blends the current state with the state of this animation.
+   * If the weight is 0, the bone is left unmodified, if it is 1, it gets all the power of this 
+   * animation.
+   * 
+   * @param bone_ to retrieve (output parameter).
+   * @param weight of the blending.
+   * @param time (from 0 to 1).
+   * @since 0.3
+   */
+  void modifyBoneNormalized(BoneInstance bone_, float weight, float time);
   
   /**
    * Gets the duration of the animation.
