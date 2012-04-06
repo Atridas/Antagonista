@@ -3,22 +3,22 @@
   <basic_layer default="idle">
   
     <animation_state name="idle" fade_in="0.3" fade_out="0.3">
-      <animation_instance id="IdleMaster"/>
+      <animation type="single animation" id="IdleMaster"/>
     </animation_state>
     
     <animation_state name="walk" fade_in="0.3" fade_out="0.3">
-      <animation_instance id="CaminarMaster"/>
+      <animation type="single animation" id="CaminarMaster"/>
     </animation_state>
     
     <animation_state name="attack" fade_in="0.05" fade_out="0.3">
-      <lerp_animation parameter="attack">
-        <single_animation id="IdleMaster"/>
-        <single_animation id="AtacarMaster"/>
-      </lerp_animation>
+      <animation type="lerp animation" parameter="attack">
+        <animation type="single animation" id="IdleMaster"/>
+        <animation type="single animation" id="AtacarMaster"/>
+      </animation>
     </animation_state>
     
     <animation_transitions>
-      <animation_transition from="*" to="attack" fade="0.05">
+      <animation_transition from="*" to="attack" fade="0.05"/>
     </animation_transitions>
   </basic_layer>
   
