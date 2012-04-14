@@ -238,12 +238,12 @@ public final class Core {
    */
 	public void init(int w, int h, String title, ManagerFactory factory, boolean forwardCompatible, Canvas displayParent) {
 	  Utils.loadNativeLibs(); //TODO nomes si no estem en un applet, potser. Provar-ho
-	  
+
+		rm = factory.createRenderManager();
 		rm.initDisplay(w, h, title, forwardCompatible, displayParent);
 		im = factory.createInputManager();
 		im.init();
 		
-		rm = factory.createRenderManager();
 		rm.initGL();
 		
 		em.init("data/xml/effects.xml", rm);

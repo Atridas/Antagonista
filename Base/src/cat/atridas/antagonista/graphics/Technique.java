@@ -10,8 +10,6 @@ import org.w3c.dom.NodeList;
 
 import cat.atridas.antagonista.AntagonistException;
 import cat.atridas.antagonista.Utils;
-import cat.atridas.antagonista.core.Core;
-import cat.atridas.antagonista.graphics.RenderManager.Profile;
 
 /**
  * Rendering technique, a.k.a a compilation of shading phases.
@@ -42,13 +40,13 @@ public final class Technique {
     ArrayList<TechniquePass> _passes = new ArrayList<>();
 
 
-    Profile p = Profile.getFromString(techniqueXML.getAttribute("min_version"));
+    //Profile p = Profile.getFromString(techniqueXML.getAttribute("min_version"));
     
     NodeList nl = techniqueXML.getElementsByTagName("pass");
     for(int i = 0; i < nl.getLength(); ++i) {
       Element pass = ((Element)nl.item(i));
 
-      _passes.add(techniquePassFactory.createTechniquePass());
+      _passes.add(techniquePassFactory.createTechniquePass(pass));
       assert !Utils.hasGLErrors();
     }
     
@@ -92,7 +90,8 @@ public final class Technique {
 	  protected TechniquePassFactory() {
 		  techniquePassFactory = this;
 	  }
-	  
+
+	  protected abstract TechniquePass createTechniquePass(Element techniquePassXML) throws AntagonistException;
 	  protected abstract TechniquePass createTechniquePass();
 	  public abstract TechniquePass createFontTechniquePass();
   }
