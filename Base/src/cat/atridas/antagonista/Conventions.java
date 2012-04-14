@@ -90,7 +90,8 @@ public class Conventions {
     
     double q00 = q0 * q0;
     
-    assert Math.abs(1 - q00 + q11 + q22 + q33) < 0.0001; // que estigui normalitzat per favor
+    double abs = Math.abs(1 - q00 - q11 - q22 - q33); // que estigui normalitzat per favor 
+    assert abs  < 0.0001;
 
     float yaw   = (float) Math.atan2( 2 * (q03 + q12), 1 - 2 * (q33 + q11));
     float pitch = (float) Math.asin ( 2 * (q23 - q01));
