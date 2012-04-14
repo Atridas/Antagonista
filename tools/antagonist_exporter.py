@@ -412,11 +412,11 @@ class AntagonistMesh:
           
         class Vertex:
           #unused_triangles: triangles que encara l'utilitzen i no s'han posat a la 
-          #                  llista de renderització
+          #                  llista de renderitzaciÃ³
           
-          #cache_pos: posició a la cache
+          #cache_pos: posiciÃ³ a la cache
           
-          #score: puntuació per ser renderitzat
+          #score: puntuaciÃ³ per ser renderitzat
           
           #triangles: llista d'indexos als triangles que utilitzen aquest vertex
           
@@ -822,6 +822,91 @@ def saveMeshText(mesh, originalMesh, filepath):
       #f.write('\n%s'  % len(mesh.bones))
       #for bone in mesh.bones:
       #  f.write('\n%s' % bone)
+
+def saveMeshJSON(mesh, originalMesh, filepath):
+    f = open(filepath, 'w')
+    f.write("{ ")
+    f.write('"format" : "')
+    if originalMesh.export_physics:
+        f.write("physics, ")
+    f.write("pos, normal, tangent, bitangent, uv")
+    if mesh.animated:
+      f.write(', weights, indices')
+    f.write('"')  
+      
+    f.write('\n  ,"vertices" : [')
+    first = True
+    for v in mesh.vertices:
+        if first:
+            f.write("\n    [%s" % v.x)
+            first = False
+        else:
+            f.write("\n   ,[%s" % v.x)
+        f.write(", %s"  % v.y)
+        f.write(", %s"  % v.z)
+        
+        f.write(", %s"  % v.nx)
+        f.write(", %s"  % v.ny)
+        f.write(", %s"  % v.nz)
+        
+        f.write(", %s"  % v.tx)
+        f.write(", %s"  % v.ty)
+        f.write(", %s"  % v.tz)
+        
+        f.write(", %s"  % v.bx)
+        f.write(", %s"  % v.by)
+        f.write(", %s"  % v.bz)
+        
+        f.write(", %s"  % v.u)
+        f.write(", %s"  % v.v)
+        
+        if mesh.animated:
+          f.write(", %s" % v.weights[0])
+          f.write(", %s" % v.weights[1])
+          f.write(", %s" % v.weights[2])
+          f.write(", %s" % v.weights[3])
+          
+          f.write(", %s" % v.w_indices[0])
+          f.write(", %s" % v.w_indices[1])
+          f.write(", %s" % v.w_indices[2])
+          f.write(", %s" % v.w_indices[3])
+          
+          #f.write(" %s" % v.bone_names[0])
+          #f.write(" %s" % v.bone_names[1])
+          #f.write(" %s" % v.bone_names[2])
+          #f.write(" %s" % v.bone_names[3])
+        f.write("]")  
+    f.write("  ]")
+    
+    f.write('\n ,"submeshes" : [')
+    firstSubmesh = True
+    for material in mesh.materialFaces.keys():
+        if firstSubmesh:
+            f.write('\n    { "material" : "%s"' % material)
+            firstSubmesh = False
+        else:
+            f.write('\n   ,{ "material" : "%s"' % material)
+        f.write('\n     ,"faces" : [')
+        first = True
+        for face in mesh.materialFaces[material]:
+            if first:
+                f.write('\n        [%s' % face.i1)
+                first = False
+            else:
+                f.write('\n       ,[%s' % face.i1)
+            f.write(' %s'  % face.i2)
+            f.write(' %s]'  % face.i3)
+    
+        f.write("\n      ]")
+        f.write("\n    }")
+    f.write("\n  ]")
+    
+    if mesh.animated:
+      f.write('\n ,"armature" : "%s"'  % mesh.armature)
+      #f.write('\n%s'  % len(mesh.bones))
+      #for bone in mesh.bones:
+      #  f.write('\n%s' % bone)
+    f.write("\n}")
 
 def addMaterials(mesh, materials):
     for material in mesh.materialFaces.keys():
@@ -1296,6 +1381,12 @@ class ExportAntagonistMesh(bpy.types.Operator, AntagonistExportHelper):
             default=True,
             )
             
+    json_format = BoolProperty(
+            name="JSON",
+            description="JSON Format",
+            default=True,
+            )
+            
     save_materials = BoolProperty(
             name="Save Materials",
             description="Save Materials",
@@ -1330,11 +1421,14 @@ class ExportAntagonistMesh(bpy.types.Operator, AntagonistExportHelper):
         path = self.filepath
         
         
-        if(self.binary_format):
+        if self.binary_format:
             print("binary not yet implemented, using text format") #TODO
             saveMeshText(mesh, context.object.data, path)
         else:
             saveMeshText(mesh, context.object.data, path)
+            
+        if self.json_format:
+            saveMeshJSON(mesh, context.object.data, path + ".json")
             
             
         materials = set()
