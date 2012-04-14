@@ -1,14 +1,20 @@
 package cat.atridas.antagonista.graphics.gl;
 
+import java.awt.Canvas;
 import java.util.logging.Logger;
 
+import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.ARBImaging;
+import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.ContextCapabilities;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL31;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.opengl.GL40;
 import org.lwjgl.opengl.GLContext;
+import org.lwjgl.opengl.PixelFormat;
 
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.SceneData;
@@ -49,6 +55,73 @@ public final class RenderManagerGL extends RenderManager {
    */
   private int maxInstancesBasic, maxInstancesColors, maxInstancesBones;
   
+
+	/**
+	 * Creates a window with the specified dimentions and title.
+	 * 
+ * @param _width width of the screen.
+ * @param _height height of the screen.
+ * @param title title of the screen.
+ * @param _forwardCompatible if a forward compatible context must be created.
+ * @param displayParent Use in Applets. Null on stand-alone applications.
+ * @since 0.1
+	 */
+  @Override
+	public final void initDisplay(
+	    final int _width, 
+	    final int _height, 
+	    final String title,
+	    final boolean _forwardCompatible,
+	    Canvas displayParent) {
+	  
+		width  = _width;
+		height = _height;
+		forwardCompatible = _forwardCompatible;
+		
+		//TODO
+		PixelFormat pf = new PixelFormat().withDepthBits(24).withBitsPerPixel(32).withAlphaBits(8);
+		ContextAttribs ca = new ContextAttribs(4, 2).withForwardCompatible(forwardCompatible);//.withDebug(true);
+		//ContextAttribs ca = new ContextAttribs(2, 1).withForwardCompatible(false);//.withDebug(true);
+		
+		// ? ca.withDebug(true);
+		
+		
+		try {
+			Display.setTitle(title);
+			if(displayParent == null)
+				Display.setDisplayMode(new DisplayMode(width, height));
+			else
+				Display.setParent(displayParent);
+			Display.create(pf, ca);
+		} catch (LWJGLException e) {
+			//e.printStackTrace();
+			//System.exit(1);
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Closes the window.
+	 * @since 0.1
+	 */
+  @Override
+	public final void closeDisplay()
+	{
+		Display.destroy();
+	}
+  
+	/**
+	 * Presents a frame to the screen.
+	 * @since 0.1
+	 */
+	public final void present() {
+	  assert !hasGLErrors();
+	  hasGLErrors(); //si no hi ha asserts, els imprimim igualment.
+	  
+	  
+		Display.update();
+	}
+	
   /**
    * Caches the maximum number of instances given each memory requirement.
    * @since 0.1

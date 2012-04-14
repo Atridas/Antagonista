@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="jars/lwjgl.jar"/>
 	<classpathentry kind="lib" path="jars/lzma.jar"/>
 	<classpathentry kind="lib" path="jars/slick-util.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Antagonista-Base"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

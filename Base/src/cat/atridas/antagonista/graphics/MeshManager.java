@@ -5,10 +5,6 @@ import java.util.ArrayList;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.ResourceManager;
 import cat.atridas.antagonista.Utils;
-import cat.atridas.antagonista.core.Core;
-import cat.atridas.antagonista.graphics.RenderManager.Profile;
-import cat.atridas.antagonista.graphics.gl2.MeshGL2;
-import cat.atridas.antagonista.graphics.gl3.MeshGL3;
 
 /**
  * Manages all mesh cores.
@@ -17,7 +13,7 @@ import cat.atridas.antagonista.graphics.gl3.MeshGL3;
  * @since 0.1
  *
  */
-public class MeshManager extends ResourceManager<Mesh> {
+public abstract class MeshManager extends ResourceManager<Mesh> {
   /**
    * Default mesh.
    */
@@ -38,20 +34,6 @@ public class MeshManager extends ResourceManager<Mesh> {
     defaultResource.loadDefault();
     
     assert !Utils.hasGLErrors();
-  }
-
-  @Override
-  protected Mesh createNewResource(HashedString name) {
-    if(Utils.supports(Profile.GL3)) {
-      return new MeshGL3(Utils.DEFAULT);
-    } else if(Utils.supports(Profile.GL2)) {
-      return new MeshGL2(Utils.DEFAULT);
-    } else {
-      throw new IllegalStateException(
-          "Current Profile [" + 
-              Core.getCore().getRenderManager().getProfile() + 
-                               "] not implemented.");
-    }
   }
 
   @Override

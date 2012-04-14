@@ -3,12 +3,6 @@ package cat.atridas.antagonista.graphics;
 import java.awt.Canvas;
 import java.util.logging.Logger;
 
-import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.ContextAttribs;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
-import org.lwjgl.opengl.PixelFormat;
-
 /**
  * Encapsulation of global rendering capabilities. This class is used in all phases of
  * rendering.
@@ -24,19 +18,19 @@ public abstract class RenderManager {
    * Width of the screen.
    * @since 0.1
    */
-	private int width;
+	protected int width;
   /**
    * Height of the screen.
    * @since 0.1
    */
-	private int height;
+	protected int height;
   
 	/**
 	 * Marks if the OpenGL context is created with forward compatible capabilities (without deprecated
 	 * functionality).
 	 * @since 0.1
 	 */
-  private boolean forwardCompatible = true;
+	protected boolean forwardCompatible = true;
 
   /**
    * Gets the screen width in pixels.
@@ -87,38 +81,12 @@ public abstract class RenderManager {
    * @param displayParent Use in Applets. Null on stand-alone applications.
    * @since 0.1
 	 */
-	public final void initDisplay(
+	public abstract void initDisplay(
 	    final int _width, 
 	    final int _height, 
 	    final String title,
 	    final boolean _forwardCompatible,
-	    Canvas displayParent) {
-	  
-		width  = _width;
-		height = _height;
-		forwardCompatible = _forwardCompatible;
-		
-		//TODO
-		PixelFormat pf = new PixelFormat().withDepthBits(24).withBitsPerPixel(32).withAlphaBits(8);
-		ContextAttribs ca = new ContextAttribs(4, 2).withForwardCompatible(forwardCompatible);//.withDebug(true);
-		//ContextAttribs ca = new ContextAttribs(2, 1).withForwardCompatible(false);//.withDebug(true);
-		
-		// ? ca.withDebug(true);
-		
-		
-		try {
-			Display.setTitle(title);
-			if(displayParent == null)
-				Display.setDisplayMode(new DisplayMode(width, height));
-			else
-				Display.setParent(displayParent);
-			Display.create(pf, ca);
-		} catch (LWJGLException e) {
-			//e.printStackTrace();
-			//System.exit(1);
-			throw new RuntimeException(e);
-		}
-	}
+	    Canvas displayParent);
 	
 	/**
 	 * Gets the current OpenGL profile.
@@ -138,10 +106,7 @@ public abstract class RenderManager {
 	 * Closes the window.
 	 * @since 0.1
 	 */
-	public final void closeDisplay()
-	{
-		Display.destroy();
-	}
+	public abstract void closeDisplay();
 
 	/**
 	 * Starts a frame.
@@ -153,13 +118,7 @@ public abstract class RenderManager {
 	 * Presents a frame to the screen.
 	 * @since 0.1
 	 */
-	public final void present() {
-	  assert !hasGLErrors();
-	  hasGLErrors(); //si no hi ha asserts, els imprimim igualment.
-	  
-	  
-		Display.update();
-	}
+	public abstract void present();
 	
 	/**
 	 * Activates a shader program.

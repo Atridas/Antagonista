@@ -12,8 +12,6 @@ import cat.atridas.antagonista.AntagonistException;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
-import cat.atridas.antagonista.graphics.gl2.TechniquePassGL2;
-import cat.atridas.antagonista.graphics.gl3.TechniquePassGL3;
 
 /**
  * Rendering technique, a.k.a a compilation of shading phases.
@@ -50,17 +48,7 @@ public final class Technique {
     for(int i = 0; i < nl.getLength(); ++i) {
       Element pass = ((Element)nl.item(i));
 
-      if(p.supports(Profile.GL3)) {
-        _passes.add(new TechniquePassGL3(pass));
-      } else if(p.supports(Profile.GL2)) {
-        _passes.add(new TechniquePassGL2(pass));
-      } else {
-        throw new IllegalStateException(
-            "Current Profile [" + 
-                Core.getCore().getRenderManager().getProfile() + 
-                                 "] not implemented.");
-      //Utils.supportOrException(Profile.GL2, "OpenGL ES not yet supported.");
-      }
+      _passes.add(techniquePassFactory.createTechniquePass());
       assert !Utils.hasGLErrors();
     }
     
@@ -74,16 +62,17 @@ public final class Technique {
   protected Technique() {
     ArrayList<TechniquePass> _passes = new ArrayList<>();
     
-    if(Utils.supports(Profile.GL3)) {
-      _passes.add(new TechniquePassGL3());
-    } else if(Utils.supports(Profile.GL2)) {
-      _passes.add(new TechniquePassGL2());
-    } else {
-      throw new IllegalStateException(
-          "Current Profile [" + 
-              Core.getCore().getRenderManager().getProfile() + 
-                              "] not implemented.");
-    }
+    _passes.add(techniquePassFactory.createTechniquePass());
+//    if(Utils.supports(Profile.GL3)) {
+//      _passes.add(new TechniquePassGL3());
+//    } else if(Utils.supports(Profile.GL2)) {
+//      _passes.add(new TechniquePassGL2());
+//    } else {
+//      throw new IllegalStateException(
+//          "Current Profile [" + 
+//              Core.getCore().getRenderManager().getProfile() + 
+//                              "] not implemented.");
+//    }
 
     passes = Collections.unmodifiableList(_passes);
   }
@@ -94,5 +83,17 @@ public final class Technique {
    */
   public List<TechniquePass> getPasses() {
     return passes;
+  }
+  
+  static TechniquePassFactory techniquePassFactory;
+  
+  public static abstract class TechniquePassFactory {
+	  
+	  protected TechniquePassFactory() {
+		  techniquePassFactory = this;
+	  }
+	  
+	  protected abstract TechniquePass createTechniquePass();
+	  public abstract TechniquePass createFontTechniquePass();
   }
 }

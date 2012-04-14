@@ -12,13 +12,13 @@ import cat.atridas.antagonista.entities.SystemManager;
 import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.graphics.EffectManager;
 import cat.atridas.antagonista.graphics.FontManager;
-import cat.atridas.antagonista.graphics.MaterialManager;
 import cat.atridas.antagonista.graphics.MeshManager;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.RenderableObjectManager;
-import cat.atridas.antagonista.graphics.TextureManager;
 import cat.atridas.antagonista.graphics.animation.AnimationManager;
 import cat.atridas.antagonista.graphics.animation.ArmatureManager;
+import cat.atridas.antagonista.graphics.MaterialManager;
+import cat.atridas.antagonista.graphics.TextureManager;
 import cat.atridas.antagonista.input.InputManager;
 import cat.atridas.antagonista.physics.PhysicsWorld;
 import cat.atridas.antagonista.scripting.ScriptManager;
@@ -34,14 +34,14 @@ public final class Core {
 	
 	private RenderManager           rm;
 	private InputManager            im;
-	private TextureManager          tm  = new TextureManager();
+	private TextureManager          tm;
 	private FontManager             fm;
   private EffectManager           em  = new EffectManager(); //TODO
-  private MaterialManager         mm  = new MaterialManager();
+  private MaterialManager         mm;
   private DebugRender             dr;
   private ArmatureManager         am  = new ArmatureManager();
   private AnimationManager        animm  = new AnimationManager();
-  private MeshManager             mem = new MeshManager();
+  private MeshManager             mem;
   private RenderableObjectManager rom;
   
   private PhysicsWorld pw;
@@ -250,10 +250,12 @@ public final class Core {
 		ArrayList<HashedString> al = new ArrayList<>();
 		al.add(new HashedString("dds"));
 		al.add(new HashedString("png"));
+		tm = factory.createTextureManager();
 		tm.init(al, "data/textures/");
 
 		al.clear();
     al.add(new HashedString("mat"));
+    mm = factory.createMaterialManager();
     mm.init(al, "data/materials/");
     
     
@@ -275,6 +277,7 @@ public final class Core {
     
     al.clear();
     al.add(new HashedString("mesh"));
+    mem = factory.createMeshManager();
     mem.init(al, "data/meshes/");
     
 
@@ -287,7 +290,7 @@ public final class Core {
     //////////
     pw = new PhysicsWorld();
     
-    clock = new Clock();
+    clock = factory.createClock();
     
     ////////////////
     

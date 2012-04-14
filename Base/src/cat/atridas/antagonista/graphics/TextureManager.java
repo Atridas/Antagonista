@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.ResourceManager;
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.graphics.Texture;
 import cat.atridas.antagonista.graphics.RenderManager.Profile;
-import cat.atridas.antagonista.graphics.gl.TextureGL;
 
 /**
  * Manages all textures.
@@ -15,7 +15,7 @@ import cat.atridas.antagonista.graphics.gl.TextureGL;
  * @since 0.1
  *
  */
-public class TextureManager extends ResourceManager<Texture> {
+public abstract class TextureManager extends ResourceManager<Texture> {
 
   /**
    * Default texture.
@@ -40,12 +40,6 @@ public class TextureManager extends ResourceManager<Texture> {
     defaultResource.loadDefault();
     
     assert !Utils.hasGLErrors();
-  }
-
-  @Override
-  protected Texture createNewResource(HashedString name) {
-    Utils.supportOrException(Profile.GL2, "Needs OpenGL, GL ES not yet suported");
-    return new TextureGL(name);
   }
 
   @Override

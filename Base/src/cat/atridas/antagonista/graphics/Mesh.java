@@ -12,8 +12,6 @@ import java.util.logging.Logger;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-import org.lwjgl.BufferUtils;
-
 import com.bulletphysics.collision.shapes.IndexedMesh;
 import com.bulletphysics.collision.shapes.ScalarType;
 import com.bulletphysics.collision.shapes.TriangleIndexVertexArray;
@@ -21,8 +19,10 @@ import com.bulletphysics.collision.shapes.TriangleIndexVertexArray;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Resource;
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.core.BufferUtils;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.animation.ArmatureCore;
+import cat.atridas.antagonista.graphics.MaterialManager;
 import cat.atridas.antagonista.physics.BoundingBoxShape;
 import cat.atridas.antagonista.physics.PhysicShape;
 import cat.atridas.antagonista.physics.PhysicsStaticMeshCore;

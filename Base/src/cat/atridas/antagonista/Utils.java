@@ -24,7 +24,6 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
-import org.newdawn.slick.util.ResourceLoader;
 import org.w3c.dom.Element;
 
 import cat.atridas.antagonista.core.Core;
@@ -305,6 +304,20 @@ public abstract class Utils {
     }
   }
   
+  private static ResourceLoader resourceLoader;
+  
+  public static abstract class ResourceLoader {
+	  
+	  protected ResourceLoader() {
+		  resourceLoader = this;
+	  }
+
+	public abstract InputStream getResourceAsStream(String name);
+	  
+  }
+  
+  
+  
   /**
    * Finds an input stream.
    * 
@@ -322,7 +335,7 @@ public abstract class Utils {
       return new FileInputStream(name);
     }
     */
-	  InputStream is = ResourceLoader.getResourceAsStream(name);
+	  InputStream is = resourceLoader.getResourceAsStream(name);
 	  if(is == null)
 		  throw new FileNotFoundException(name);
 	  return is;

@@ -11,10 +11,9 @@ import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 
-import org.lwjgl.BufferUtils;
-
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.ResourceManager;
+import cat.atridas.antagonista.core.BufferUtils;
 
 /**
  * This class manages all fonts and is capable of rendering them during the render phase.

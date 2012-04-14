@@ -1,5 +1,7 @@
 package cat.atridas.antagonista;
 
+import org.lwjgl.Sys;
+
 /**
  * Clock class to control times in the engine.
  * 
@@ -7,7 +9,7 @@ package cat.atridas.antagonista;
  * @since 0.1
  * 
  */
-public abstract class Clock {
+public class Clock {
   /**
    * Size of the buffer used to absorb spikes.
    * @since 0.1
@@ -30,42 +32,41 @@ public abstract class Clock {
 	 * Timer resolution.
 	 * @since 0.2
 	 */
-	private final long timerResolution = getTimerResolution();
-	
+	public static final long timerResolution = Sys.getTimerResolution();
 	
 	/**
 	 * Last instance of a Delta time counter;
 	 * @since 0.1
 	 */
-	private DeltaTime lastDeltaTime = new DeltaTime();
+	DeltaTime lastDeltaTime = new DeltaTime();
 	/**
 	 * Last clock time;
 	 * @since 0.1
 	 */
-	private long lastTime;
+	long lastTime;
 	/**
 	 * Array of delta times. Used to absorb spike frames (frames with an unusual duration).
 	 * @since 0.1
 	 */
-	private final long[] deltaTimes = new long[WINDOW_LENGTH];
+	final long[] deltaTimes = new long[WINDOW_LENGTH];
 	/**
 	 * Current buffer position.
 	 * @since 0.1
 	 */
-	private int current = 0;
+	int current = 0;
 	
 	/**
 	 * Measures the drift from the mesured time to the time obtained adding all produced delta times.
 	 * @since 0.2
 	 */
-	private float drift = 0;
+	float drift = 0;
 	
 	/**
 	 * Creates a new clock.
 	 * @since 0.1
 	 */
 	public Clock() {
-		lastTime = getTime();
+		lastTime = Sys.getTime();
 	}
 	
 	/**
@@ -76,7 +77,7 @@ public abstract class Clock {
 	 *         since last call.
 	 */
 	public synchronized DeltaTime update() {
-		long time = getTime();
+		long time = Sys.getTime();
 		long realDeltaTime = deltaTimes[current] = time - lastTime;
     
 		
@@ -128,7 +129,7 @@ public abstract class Clock {
 	}
 	
 	public void reset() {
-	  lastTime = getTime();
+	  lastTime = Sys.getTime();
     for(int i = 0; i < WINDOW_LENGTH; ++i) {
       deltaTimes[i] = 0;
     }
@@ -145,11 +146,6 @@ public abstract class Clock {
 	public DeltaTime getCurrentFrameDeltaTime() {
 	  return lastDeltaTime;
 	}
-
-	
-	protected abstract long getTime();
-	protected abstract long getTimerResolution();
-	
 	
 	/**
 	 * Class that encapsulates information avout the time lapsed in every frame.

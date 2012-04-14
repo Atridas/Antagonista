@@ -18,7 +18,6 @@ import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.ResourceManager;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.graphics.Shader.ShaderType;
-import cat.atridas.antagonista.graphics.gl2.TechniquePassGL2;
 
 /**
  * Class that manages all effects and shaders.
@@ -189,7 +188,7 @@ public class EffectManager extends ResourceManager<Effect> {
     
     
     //TODO millor
-    fontPass = new TechniquePassGL2(true);
+    fontPass = Technique.techniquePassFactory.createFontTechniquePass();
     
     assert !Utils.hasGLErrors();
   }

@@ -20,7 +20,7 @@ import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.RTSCamera;
 import cat.atridas.antagonista.graphics.RenderableObject;
 import cat.atridas.antagonista.graphics.SceneData;
-import cat.atridas.antagonista.graphics.TextureManager;
+import cat.atridas.antagonista.graphics.gl.TextureManager;
 import cat.atridas.antagonista.input.InputManager;
 import cat.atridas.antagonista.physics.PhysicsUserInfo;
 
