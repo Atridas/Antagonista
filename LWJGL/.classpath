@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="jars/AppleJavaExtensions.jar"/>
+	<classpathentry kind="lib" path="jars/ibxm.jar"/>
+	<classpathentry kind="lib" path="jars/jinput.jar"/>
+	<classpathentry kind="lib" path="jars/lwjgl_util_applet.jar"/>
+	<classpathentry kind="lib" path="jars/lwjgl_util.jar"/>
+	<classpathentry kind="lib" path="jars/lwjgl.jar"/>
+	<classpathentry kind="lib" path="jars/lzma.jar"/>
+	<classpathentry kind="lib" path="jars/slick-util.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
