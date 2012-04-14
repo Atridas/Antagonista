@@ -31,6 +31,7 @@ import cat.atridas.antagonista.graphics.MeshManager;
 import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.SceneData;
 import cat.atridas.antagonista.input.InputManager;
+import cat.atridas.antagonista.lwjgl.LWJGLManagerFactory;
 import cat.atridas.antagonista.physics.PhysicsUserInfo;
 
 public class TestEntities {
@@ -57,7 +58,7 @@ public class TestEntities {
     Utils.setConsoleLogLevel(Level.CONFIG);
 
     Core core = Core.getCore();
-    core.init(800, 600, TestEntities.class.getName(), true, null);
+    core.init(800, 600, TestEntities.class.getName(), new LWJGLManagerFactory(), true, null);
     
     EntityManager em = core.getEntityManager();
 

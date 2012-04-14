@@ -23,6 +23,7 @@ import cat.atridas.antagonista.graphics.SceneData;
 import cat.atridas.antagonista.graphics.animation.AnimationCore;
 import cat.atridas.antagonista.graphics.animation.ArmatureInstance;
 import cat.atridas.antagonista.input.InputManager;
+import cat.atridas.antagonista.lwjgl.LWJGLManagerFactory;
 
 public class TestAnimacions {
 
@@ -37,7 +38,7 @@ public class TestAnimacions {
     
 
     Core core = Core.getCore();
-    core.init(800, 600, TestAnimacions.class.getName(), true, null);
+    core.init(800, 600, TestAnimacions.class.getName(), new LWJGLManagerFactory(), true, null);
 
     
     //ScriptManager scriptManager = new ScriptManager("data/xml/scriptManager.xml");

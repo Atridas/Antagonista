@@ -1,4 +1,4 @@
-package cat.atridas.antagonista.input;
+package cat.atridas.antagonista.lwjgl;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -18,9 +18,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import cat.atridas.antagonista.HashedString;
-import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.*;
 import cat.atridas.antagonista.Clock.DeltaTime;
+import cat.atridas.antagonista.input.InputManager;
 
 /**
  * Input manager class. This class is responsible of registering all user input actions and map them
@@ -30,8 +30,8 @@ import cat.atridas.antagonista.Clock.DeltaTime;
  * @since 0.1
  *
  */
-public final class InputManager {
-  private static final Logger LOGGER = Logger.getLogger(InputManager.class.getCanonicalName());
+public final class InputManagerLWJGL extends InputManager {
+  private static final Logger LOGGER = Logger.getLogger(InputManagerLWJGL.class.getCanonicalName());
 
   /**
    * Horizontal mouse move identifier.
@@ -508,7 +508,8 @@ public final class InputManager {
 	 * @param key_name
 	 * @return
 	 */
-	private static int getKeyCode(String key_name) {
+	@Override
+	protected int getKeyCode(String key_name) {
 	  switch(key_name.toUpperCase()) {
     case "KEY_1":
       return Keyboard.KEY_1;

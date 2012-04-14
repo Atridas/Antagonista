@@ -20,8 +20,9 @@ import cat.atridas.antagonista.graphics.RenderManager;
 import cat.atridas.antagonista.graphics.RTSCamera;
 import cat.atridas.antagonista.graphics.RenderableObject;
 import cat.atridas.antagonista.graphics.SceneData;
-import cat.atridas.antagonista.graphics.gl.TextureManager;
+import cat.atridas.antagonista.graphics.TextureManager;
 import cat.atridas.antagonista.input.InputManager;
+import cat.atridas.antagonista.lwjgl.LWJGLManagerFactory;
 import cat.atridas.antagonista.physics.PhysicsUserInfo;
 
 public class Test {
@@ -39,7 +40,7 @@ public class Test {
     Utils.setConsoleLogLevel(Level.CONFIG);
     
     Core core = Core.getCore();
-    core.init(800, 600, Test.class.getName(), true, null);
+    core.init(800, 600, Test.class.getName(), new LWJGLManagerFactory(), true, null);
     
     RenderManager rm = core.getRenderManager();
     
