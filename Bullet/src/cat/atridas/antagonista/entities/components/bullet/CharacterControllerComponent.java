@@ -1,4 +1,4 @@
-package cat.atridas.antagonista.entities.components;
+package cat.atridas.antagonista.entities.components.bullet;
 
 import javax.vecmath.Point3f;
 

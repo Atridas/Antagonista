@@ -1,4 +1,4 @@
-package cat.atridas.antagonista.physics;
+package cat.atridas.antagonista.physics.bullet;
 
 import javax.vecmath.Vector3f;
 
@@ -12,7 +12,7 @@ import com.bulletphysics.collision.shapes.StridingMeshInterface;
  * @since 0.2
  *
  */
-public class PhysicsStaticMeshCore implements PhysicShape {
+public class PhysicsStaticMeshCore implements PhysicShapeBullet {
   private final BvhTriangleMeshShape meshShape;
   
   

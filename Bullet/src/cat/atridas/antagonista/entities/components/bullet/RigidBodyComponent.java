@@ -1,4 +1,4 @@
-package cat.atridas.antagonista.entities.components;
+package cat.atridas.antagonista.entities.components.bullet;
 
 import java.util.logging.Logger;
 
@@ -10,21 +10,21 @@ import cat.atridas.antagonista.entities.BaseComponent;
 import cat.atridas.antagonista.entities.Entity;
 import cat.atridas.antagonista.entities.GlobalComponent;
 import cat.atridas.antagonista.entities.LocalComponent;
-import cat.atridas.antagonista.physics.BoundingBoxShape;
-import cat.atridas.antagonista.physics.PhysicShape;
-import cat.atridas.antagonista.physics.PhysicsStaticMeshCore;
+import cat.atridas.antagonista.physics.bullet.BoundingBoxShape;
+import cat.atridas.antagonista.physics.bullet.PhysicShapeBullet;
+import cat.atridas.antagonista.physics.bullet.PhysicsStaticMeshCore;
 
 public class RigidBodyComponent extends BaseComponent<RigidBodyComponent> {
   private static Logger LOGGER = Logger.getLogger(RigidBodyComponent.class.getCanonicalName());
   
   private PhysicType type;
-  private PhysicShape shape;
+  private PhysicShapeBullet shape;
 
   public RigidBodyComponent(Entity _entity) {
     super(_entity);
   }
   
-  public void init(PhysicType _type, PhysicShape _shape) {
+  public void init(PhysicType _type, PhysicShapeBullet _shape) {
     type = _type;
     shape = _shape;
     switch(type) {
@@ -45,7 +45,7 @@ public class RigidBodyComponent extends BaseComponent<RigidBodyComponent> {
     return type;
   }
   
-  public PhysicShape getShape() {
+  public PhysicShapeBullet getShape() {
     return shape;
   }
   

@@ -1,4 +1,4 @@
-package cat.atridas.antagonista.physics;
+package cat.atridas.antagonista.physics.bullet;
 
 
 

@@ -7,16 +7,17 @@ import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Transformation;
 import cat.atridas.antagonista.entities.Entity;
 import cat.atridas.antagonista.entities.EntityManager;
-import cat.atridas.antagonista.entities.components.CharacterControllerComponent;
 import cat.atridas.antagonista.entities.components.MeshComponent;
 import cat.atridas.antagonista.entities.components.NavigableTerrainComponent;
 import cat.atridas.antagonista.entities.components.RTSCameraComponent;
-import cat.atridas.antagonista.entities.components.RigidBodyComponent;
 import cat.atridas.antagonista.entities.components.TransformComponent;
-import cat.atridas.antagonista.entities.components.RigidBodyComponent.PhysicType;
+import cat.atridas.antagonista.entities.components.bullet.CharacterControllerComponent;
+import cat.atridas.antagonista.entities.components.bullet.RigidBodyComponent;
+import cat.atridas.antagonista.entities.components.bullet.RigidBodyComponent.PhysicType;
 import cat.atridas.antagonista.graphics.MeshManager;
 import cat.atridas.antagonista.graphics.RTSCamera;
 import cat.atridas.antagonista.physics.PhysicShape;
+import cat.atridas.antagonista.physics.bullet.PhysicShapeBullet;
 
 public abstract class EntityFactory {
 
@@ -31,7 +32,7 @@ public abstract class EntityFactory {
     mc.init(meshName);
     
     RigidBodyComponent rbc = em.createComponent(rajola, RigidBodyComponent.getComponentStaticType());
-    PhysicShape mesh = mm.getResource(meshName).getPhysicsMesh();
+    PhysicShapeBullet mesh = (PhysicShapeBullet)mm.getResource(meshName).getPhysicsMesh();
     
     rbc.init(PhysicType.STATIC, mesh);
     
@@ -52,7 +53,7 @@ public abstract class EntityFactory {
     mc.init(meshName);
     
     RigidBodyComponent rbc = em.createComponent(mur, RigidBodyComponent.getComponentStaticType());
-    PhysicShape mesh = mm.getResource(meshName).getPhysicsMesh();
+    PhysicShapeBullet mesh = (PhysicShapeBullet)mm.getResource(meshName).getPhysicsMesh();
     
     rbc.init(PhysicType.STATIC, mesh);
     
@@ -69,7 +70,7 @@ public abstract class EntityFactory {
     mc.init(meshName);
     
     RigidBodyComponent rbc = em.createComponent(mur, RigidBodyComponent.getComponentStaticType());
-    PhysicShape mesh = mm.getResource(meshName).getPhysicsMesh();
+    PhysicShapeBullet mesh = (PhysicShapeBullet)mm.getResource(meshName).getPhysicsMesh();
     
     rbc.init(PhysicType.STATIC, mesh);
     

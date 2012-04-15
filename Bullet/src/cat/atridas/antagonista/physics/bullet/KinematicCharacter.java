@@ -1,4 +1,5 @@
-package cat.atridas.antagonista.physics;
+package cat.atridas.antagonista.physics.bullet;
+
 
 import com.bulletphysics.collision.dispatch.PairCachingGhostObject;
 import com.bulletphysics.dynamics.character.KinematicCharacterController;

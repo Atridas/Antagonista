@@ -12,6 +12,7 @@ import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Transformation;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.Clock.DeltaTime;
+import cat.atridas.antagonista.bullet.BulletFactory;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.graphics.Mesh;
@@ -24,6 +25,7 @@ import cat.atridas.antagonista.graphics.TextureManager;
 import cat.atridas.antagonista.input.InputManager;
 import cat.atridas.antagonista.lwjgl.LWJGLManagerFactory;
 import cat.atridas.antagonista.physics.PhysicsUserInfo;
+import cat.atridas.antagonista.physics.bullet.PhysicsWorldBullet;
 
 public class Test {
   
@@ -40,7 +42,7 @@ public class Test {
     Utils.setConsoleLogLevel(Level.CONFIG);
     
     Core core = Core.getCore();
-    core.init(800, 600, Test.class.getName(), new LWJGLManagerFactory(), true, null);
+    core.init(800, 600, Test.class.getName(), new LWJGLManagerFactory(), new BulletFactory(), true, null);
     
     RenderManager rm = core.getRenderManager();
     
@@ -80,7 +82,7 @@ public class Test {
     PhysicsUserInfo pui = new PhysicsUserInfo(null); //TODO
     pui.color.set(Utils.RED);
     pui.zTest = true;
-    core.getPhysicsWorld().createStaticRigidBody(habitacio.getPhysicsMesh(), new Vector3f(), pui, transform);
+    ((PhysicsWorldBullet)core.getPhysicsWorld()).createStaticRigidBody(habitacio.getPhysicsMesh(), new Vector3f(), pui, transform);
     
     assert !Utils.hasGLErrors();
     

@@ -44,6 +44,7 @@ public final class Core {
   private MeshManager             mem;
   private RenderableObjectManager rom;
   
+  private PhysicsFactory pf;
   private PhysicsWorld pw;
   
   private SystemManager           systemManager = new SystemManager();
@@ -186,6 +187,10 @@ public final class Core {
     return pw;
   }
   
+  public PhysicsFactory getPhysicsFactory() {
+	  return pf;
+  }
+  
   /**
    * Gets the SystemManager.
    * 
@@ -236,9 +241,11 @@ public final class Core {
    * @param displayParent Use in Applets. Null on stand-alone applications.
    * @since 0.1
    */
-	public void init(int w, int h, String title, ManagerFactory factory, boolean forwardCompatible, Canvas displayParent) {
+	public void init(int w, int h, String title, ManagerFactory factory, PhysicsFactory physicsFactory, boolean forwardCompatible, Canvas displayParent) {
 	  Utils.loadNativeLibs(); //TODO nomes si no estem en un applet, potser. Provar-ho
 
+	  pf = physicsFactory;
+	  
 		rm = factory.createRenderManager();
 		rm.initDisplay(w, h, title, forwardCompatible, displayParent);
 		im = factory.createInputManager();
@@ -288,8 +295,11 @@ public final class Core {
     
     
     //////////
-    pw = new PhysicsWorld();
-    
+    if(pf != null) {
+    	pw = pf.createPhysicsWorld();
+    } else {
+    	pw = null;
+    }
     clock = factory.createClock();
     
     ////////////////
@@ -309,15 +319,17 @@ public final class Core {
 	  DeltaTime dt = clock.update();
     im.update(dt);
     
-    pw.update(dt);
-    
+    if(pw != null) {
+    	pw.update(dt);
+    }
     systemManager.updateSimple(dt);
 
     
     //-----------------------------------------
     
-    if(physicsDebugRender)
+    if(physicsDebugRender && pw != null) {
       pw.debugDraw();
+    }
     
     rm.initFrame();
     

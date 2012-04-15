@@ -1,11 +1,11 @@
-package cat.atridas.antagonista.physics;
+package cat.atridas.antagonista.physics.bullet;
 
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import com.bulletphysics.collision.shapes.BoxShape;
 
-public class BoundingBoxShape implements PhysicShape {
+public class BoundingBoxShape implements PhysicShapeBullet {
   private final BoxShape bulletShape;
   private final Vector3f fromGameToBulletVector;
   

@@ -1,4 +1,4 @@
-package cat.atridas.antagonista.entities.systems;
+package cat.atridas.antagonista.entities.systems.bullet;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,16 +23,16 @@ import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.entities.Component;
 import cat.atridas.antagonista.entities.Entity;
 import cat.atridas.antagonista.entities.SystemManager;
-import cat.atridas.antagonista.entities.components.CharacterControllerComponent;
 import cat.atridas.antagonista.entities.components.TransformComponent;
-import cat.atridas.antagonista.physics.KinematicCharacter;
+import cat.atridas.antagonista.entities.components.bullet.CharacterControllerComponent;
+import cat.atridas.antagonista.physics.bullet.KinematicCharacter;
+import cat.atridas.antagonista.physics.bullet.PhysicsWorldBullet;
 import cat.atridas.antagonista.physics.PhysicsUserInfo;
-import cat.atridas.antagonista.physics.PhysicsWorld;
 
 public class PhysicsCharacterControllerSystem implements cat.atridas.antagonista.entities.System {
   private static Logger LOGGER = Logger.getLogger(PhysicsCharacterControllerSystem.class.getCanonicalName());
 
-  private PhysicsWorld physicsWorld = Core.getCore().getPhysicsWorld();
+  private PhysicsWorldBullet physicsWorld = (PhysicsWorldBullet)Core.getCore().getPhysicsWorld();
   
   
   private final HashMap<HashedString, KinematicCharacter> kinematicCharacters = new HashMap<>();

@@ -10,6 +10,7 @@ import javax.vecmath.Vector3f;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Transformation;
 import cat.atridas.antagonista.Utils;
+import cat.atridas.antagonista.bullet.BulletFactory;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.defensa.EntityFactory;
 import cat.atridas.antagonista.entities.Entity;
@@ -38,7 +39,7 @@ public class TestAnimacions {
     
 
     Core core = Core.getCore();
-    core.init(800, 600, TestAnimacions.class.getName(), new LWJGLManagerFactory(), true, null);
+    core.init(800, 600, TestAnimacions.class.getName(), new LWJGLManagerFactory(), new BulletFactory(), true, null);
 
     
     //ScriptManager scriptManager = new ScriptManager("data/xml/scriptManager.xml");

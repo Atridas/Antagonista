@@ -12,20 +12,16 @@ import java.util.logging.Logger;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-import com.bulletphysics.collision.shapes.IndexedMesh;
-import com.bulletphysics.collision.shapes.ScalarType;
-import com.bulletphysics.collision.shapes.TriangleIndexVertexArray;
-
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Resource;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.core.BufferUtils;
 import cat.atridas.antagonista.core.Core;
+import cat.atridas.antagonista.core.PhysicsFactory;
+import cat.atridas.antagonista.core.PhysicsFactory.IndexType;
 import cat.atridas.antagonista.graphics.animation.ArmatureCore;
 import cat.atridas.antagonista.graphics.MaterialManager;
-import cat.atridas.antagonista.physics.BoundingBoxShape;
 import cat.atridas.antagonista.physics.PhysicShape;
-import cat.atridas.antagonista.physics.PhysicsStaticMeshCore;
 
 /**
  * Class that encapsulates an indexed vertex array to be rendered.
@@ -146,6 +142,7 @@ public abstract class Mesh extends Resource {
    * @since 0.1
    */
   private boolean loadText(InputStream is) {
+	  PhysicsFactory factory = Core.getCore().getPhysicsFactory();
     try {
       final int firstVertexLine = 5;
       String str = Utils.readInputStream(is);
@@ -166,8 +163,9 @@ public abstract class Mesh extends Resource {
           
           switch(param) {
           case "Export_Physics":
-            
+            if(factory != null) {
             loadPhysicMesh = Boolean.parseBoolean(value);
+            }
             break;
           }
           
@@ -353,22 +351,23 @@ public abstract class Mesh extends Resource {
         faces.limit(totalNumFaces * 3 * Utils.SHORT_SIZE);
         
         
-        IndexedMesh indexedMesh = new IndexedMesh();
-        
-        indexedMesh.numTriangles = totalNumFaces;
-        indexedMesh.triangleIndexBase = faces;
-        indexedMesh.triangleIndexStride = 3 * Utils.SHORT_SIZE;
-        
-        indexedMesh.numVertices = numVerts;
-        indexedMesh.vertexBase = physicsMeshVertexBuffer;
-        indexedMesh.vertexStride = 3 * Utils.FLOAT_SIZE;
-        
-        TriangleIndexVertexArray tiva = new TriangleIndexVertexArray();
-        tiva.addIndexedMesh(indexedMesh, ScalarType.SHORT);
-        
-        physicsMesh = new PhysicsStaticMeshCore(tiva);
+//        IndexedMesh indexedMesh = new IndexedMesh();
+//        
+//        indexedMesh.numTriangles = totalNumFaces;
+//        indexedMesh.triangleIndexBase = faces;
+//        indexedMesh.triangleIndexStride = 3 * Utils.SHORT_SIZE;
+//        
+//        indexedMesh.numVertices = numVerts;
+//        indexedMesh.vertexBase = physicsMeshVertexBuffer;
+//        indexedMesh.vertexStride = 3 * Utils.FLOAT_SIZE;
+//        
+//        TriangleIndexVertexArray tiva = new TriangleIndexVertexArray();
+//        tiva.addIndexedMesh(indexedMesh, ScalarType.SHORT);
+//        
+//        physicsMesh = new PhysicsStaticMeshCore(tiva);
+        physicsMesh = factory.createIndexedMesh(totalNumFaces, 3 * Utils.SHORT_SIZE, faces, IndexType.SHORT, numVerts, 3 * Utils.FLOAT_SIZE, physicsMeshVertexBuffer);
       } else {
-        physicsMesh = new BoundingBoxShape(minBB, maxBB);
+        physicsMesh = factory.createBoundingBox(minBB, maxBB);
       }
       
       return errors;

@@ -13,18 +13,19 @@ import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Transformation;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.Clock.DeltaTime;
+import cat.atridas.antagonista.bullet.BulletFactory;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.defensa.EntityFactory;
 import cat.atridas.antagonista.entities.Entity;
 import cat.atridas.antagonista.entities.EntityManager;
 import cat.atridas.antagonista.entities.SystemManager;
-import cat.atridas.antagonista.entities.components.CharacterControllerComponent;
 import cat.atridas.antagonista.entities.components.NavigableTerrainComponent;
-import cat.atridas.antagonista.entities.systems.PhysicsCharacterControllerSystem;
+import cat.atridas.antagonista.entities.components.bullet.CharacterControllerComponent;
 import cat.atridas.antagonista.entities.systems.RTSCameraSystem;
 import cat.atridas.antagonista.entities.systems.RenderingCameraSystem;
 import cat.atridas.antagonista.entities.systems.RenderingSystem;
-import cat.atridas.antagonista.entities.systems.RigidBodySystem;
+import cat.atridas.antagonista.entities.systems.bullet.PhysicsCharacterControllerSystem;
+import cat.atridas.antagonista.entities.systems.bullet.RigidBodySystem;
 import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.graphics.Font;
 import cat.atridas.antagonista.graphics.MeshManager;
@@ -58,7 +59,7 @@ public class TestEntities {
     Utils.setConsoleLogLevel(Level.CONFIG);
 
     Core core = Core.getCore();
-    core.init(800, 600, TestEntities.class.getName(), new LWJGLManagerFactory(), true, null);
+    core.init(800, 600, TestEntities.class.getName(), new LWJGLManagerFactory(), new BulletFactory(), true, null);
     
     EntityManager em = core.getEntityManager();
 

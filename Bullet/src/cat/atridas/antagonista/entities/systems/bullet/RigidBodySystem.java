@@ -1,4 +1,4 @@
-package cat.atridas.antagonista.entities.systems;
+package cat.atridas.antagonista.entities.systems.bullet;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,17 +18,17 @@ import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.entities.Component;
 import cat.atridas.antagonista.entities.Entity;
 import cat.atridas.antagonista.entities.SystemManager;
-import cat.atridas.antagonista.entities.components.RigidBodyComponent;
 import cat.atridas.antagonista.entities.components.TransformComponent;
-import cat.atridas.antagonista.physics.PhysicShape;
+import cat.atridas.antagonista.entities.components.bullet.RigidBodyComponent;
 import cat.atridas.antagonista.physics.PhysicsUserInfo;
-import cat.atridas.antagonista.physics.PhysicsWorld;
-import cat.atridas.antagonista.physics.StaticRigidBody;
+import cat.atridas.antagonista.physics.bullet.PhysicShapeBullet;
+import cat.atridas.antagonista.physics.bullet.StaticRigidBody;
+import cat.atridas.antagonista.physics.bullet.PhysicsWorldBullet;
 
 public class RigidBodySystem implements cat.atridas.antagonista.entities.System {
   private static Logger LOGGER = Logger.getLogger(RigidBodySystem.class.getCanonicalName());
 
-  private PhysicsWorld physicsWorld = Core.getCore().getPhysicsWorld();
+  private PhysicsWorldBullet physicsWorld = (PhysicsWorldBullet)Core.getCore().getPhysicsWorld();
   
   
   private final HashMap<HashedString, StaticRigidBody> staticRigidBodies = new HashMap<>();
@@ -51,7 +51,7 @@ public class RigidBodySystem implements cat.atridas.antagonista.entities.System 
     pui.color.set(Utils.RED);
     pui.zTest = true;
     
-    PhysicShape shape = rigidBodyC.getShape();
+    PhysicShapeBullet shape = rigidBodyC.getShape();
     Vector3f offset = new Vector3f();
     rigidBodyC.getOffset(offset);
     

@@ -1,4 +1,4 @@
-package cat.atridas.antagonista.physics;
+package cat.atridas.antagonista.physics.bullet;
 
 import javax.vecmath.Color3f;
 import javax.vecmath.Point2f;
