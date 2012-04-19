@@ -20,6 +20,7 @@ import cat.atridas.antagonista.graphics.MeshManager;
 import cat.atridas.antagonista.graphics.RenderableObjectManager;
 import cat.atridas.antagonista.graphics.TechniquePass;
 import cat.atridas.antagonista.graphics.TextureManager;
+import cat.atridas.antagonista.graphics.RenderManager.Profile;
 import cat.atridas.antagonista.graphics.Technique.TechniquePassFactory;
 import cat.atridas.antagonista.graphics.gl.MaterialManagerGL;
 import cat.atridas.antagonista.graphics.gl.MeshManagerGL;
@@ -29,6 +30,10 @@ import cat.atridas.antagonista.graphics.gl2.DebugRenderGL2;
 import cat.atridas.antagonista.graphics.gl2.FontManagerGL2;
 import cat.atridas.antagonista.graphics.gl2.RenderableObjectManagerGL2;
 import cat.atridas.antagonista.graphics.gl2.TechniquePassGL2;
+import cat.atridas.antagonista.graphics.gl3.DebugRenderGL3;
+import cat.atridas.antagonista.graphics.gl3.FontManagerGL3;
+import cat.atridas.antagonista.graphics.gl3.RenderableObjectManagerGL3;
+import cat.atridas.antagonista.graphics.gl3.TechniquePassGL3;
 
 public class LWJGLManagerFactory implements ManagerFactory {
 
@@ -44,12 +49,20 @@ public class LWJGLManagerFactory implements ManagerFactory {
 
 	@Override
 	public FontManager createFontManager() {
-		return new FontManagerGL2(); //TODO!!!!
+	  if(Utils.supports(Profile.GL3)) {
+	    return new FontManagerGL3();
+	  } else {
+	    return new FontManagerGL2();
+	  }
 	}
 
 	@Override
 	public DebugRender createDebugRender() {
-		return new DebugRenderGL2(); //TODO!!!!
+    if(Utils.supports(Profile.GL3)) {
+      return new DebugRenderGL3();
+    } else {
+      return new DebugRenderGL2();
+    }
 	}
 
 	@Override
@@ -69,7 +82,11 @@ public class LWJGLManagerFactory implements ManagerFactory {
 
 	@Override
 	public RenderableObjectManager createRenderableObjectManager() {
-		return new RenderableObjectManagerGL2(); // TODO!!!!!!
+    if(Utils.supports(Profile.GL3)) {
+      return new RenderableObjectManagerGL3();
+    } else {
+      return new RenderableObjectManagerGL2();
+    }
 	}
 
 	@Override
@@ -95,12 +112,19 @@ public class LWJGLManagerFactory implements ManagerFactory {
 
 		@Override
 		protected TechniquePass createTechniquePass(Element techniquePassXML) throws AntagonistException {
-			return new TechniquePassGL2(techniquePassXML); // TODO
+	    if(Utils.supports(Profile.GL3)) {
+	      return new TechniquePassGL3(techniquePassXML);
+	    } else {
+	      return new TechniquePassGL2(techniquePassXML);
+	    }
 		}
 		
 		@Override
-		protected TechniquePass createTechniquePass() {
-			return new TechniquePassGL2(); // TODO
+		protected TechniquePass createTechniquePass() {if(Utils.supports(Profile.GL3)) {
+      return new TechniquePassGL3();
+    } else {
+      return new TechniquePassGL2();
+    }
 		}
 
 		@Override
