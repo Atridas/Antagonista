@@ -4,7 +4,11 @@
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Antagonista-Base"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Antagonista-LWJGL"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Antagonista-LWJGL">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Old Antagonista Defensa/native/windows"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/Antagonista-Bullet"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

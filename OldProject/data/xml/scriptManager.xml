@@ -17,6 +17,7 @@
   <script>ENTITY_MANAGER = CORE.getEntityManager()</script>
   
   <script>from cat.atridas.antagonista.entities.systems import *</script>
+  <script>from cat.atridas.antagonista.entities.systems.bullet import *</script>
   
   <file>constants.py</file>
   <file>RTSCameraSystem.py</file>
