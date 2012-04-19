@@ -25,28 +25,25 @@ import cat.atridas.antagonista.graphics.Shader.ShaderType;
  * @author Isaac 'Atridas' Serrano Guasch
  * @since 0.1
  * @see Effect
- *
+ * 
  */
 public class EffectManager extends ResourceManager<Effect> {
-  private static Logger LOGGER = Logger.getLogger(EffectManager.class.getCanonicalName());
-  
-  
-  private ShaderManager vertexShaderManager, 
-                        fragmentShaderManager, 
-                        geometryShaderManager,
-                        tessControlShaderManager,
-                        tessEvalShaderManager;
-  
+  private static Logger LOGGER = Logger.getLogger(EffectManager.class
+      .getCanonicalName());
+
+  private ShaderManager vertexShaderManager, fragmentShaderManager,
+      geometryShaderManager, tessControlShaderManager, tessEvalShaderManager;
+
   private Effect defaultResource;
   private TechniquePass fontPass;
-  
+
   private boolean isInit;
-  
+
   /**
    * Reads a file, in a xml format, to configure and initialize the manager.
    * 
    * The format of the file is similar to:
-   *  
+   * 
    * <code>
    * <pre>
    * &lt;effects path="data/effects/" extensions="xml"&gt;
@@ -69,113 +66,118 @@ public class EffectManager extends ResourceManager<Effect> {
    * </pre>
    * </code>
    * 
-   * @param configFile a path to the file lo be loaded.
-   * @param rm the Render Manager
+   * @param configFile
+   *          a path to the file lo be loaded.
+   * @param rm
+   *          the Render Manager
    * @since 0.1
    */
   public void init(String configFile, RenderManager rm) {
     assert !isInit;
     isInit = true;
-    
-    if(LOGGER.isLoggable(Level.CONFIG))
+
+    if (LOGGER.isLoggable(Level.CONFIG))
       LOGGER.config("Creating EffectManager from file " + configFile);
-    
+
     try {
       InputStream is = Utils.findInputStream(configFile);
-      
+
       DocumentBuilder db;
       db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
       Document doc = db.parse(is);
       doc.getDocumentElement().normalize();
-      
-      
+
       Element effectsXML = doc.getDocumentElement();
-      if("effects".compareTo(effectsXML.getTagName()) != 0) {
+      if ("effects".compareTo(effectsXML.getTagName()) != 0) {
         LOGGER.severe("Root element is not \"effects\".");
         throw new Exception();
       }
-      
-      setBasePath( effectsXML.getAttribute("path") );
-      
+
+      setBasePath(effectsXML.getAttribute("path"));
+
       ArrayList<HashedString> extensions = new ArrayList<>();
-      
-      String[] extensionsArray = effectsXML.getAttribute("extensions").split(",");
-      for(String extension : extensionsArray) {
+
+      String[] extensionsArray = effectsXML.getAttribute("extensions").split(
+          ",");
+      for (String extension : extensionsArray) {
         extensions.add(new HashedString(extension));
       }
-      
+
       setExtensions(extensions);
-      
-      Element shadersXML = (Element)effectsXML.getElementsByTagName("shaders").item(0);
-      if(shadersXML == null) {
+
+      Element shadersXML = (Element) effectsXML.getElementsByTagName("shaders")
+          .item(0);
+      if (shadersXML == null) {
         LOGGER.severe("Element \"shaders\" not found");
         throw new Exception();
       }
-      
+
       NodeList nl = shadersXML.getChildNodes();
-      for(int i = 0; i < nl.getLength(); ++i) {
+      for (int i = 0; i < nl.getLength(); ++i) {
         Node n = nl.item(i);
-        if(!(n instanceof Element)) {
+        if (!(n instanceof Element)) {
           continue;
         }
-        Element shaderConfigXML = (Element)n;
-        
+        Element shaderConfigXML = (Element) n;
+
         String path = shaderConfigXML.getAttribute("path");
         ArrayList<HashedString> shaderExtensions = new ArrayList<>();
-        
-        String[] extensionsArray1 = shaderConfigXML.getAttribute("extensions").split(",");
-        for(String extension : extensionsArray1) {
+
+        String[] extensionsArray1 = shaderConfigXML.getAttribute("extensions")
+            .split(",");
+        for (String extension : extensionsArray1) {
           shaderExtensions.add(new HashedString(extension));
         }
-        
-        switch(shaderConfigXML.getTagName()) {
+
+        switch (shaderConfigXML.getTagName()) {
         case "vertex_shaders":
           assert vertexShaderManager == null;
           vertexShaderManager = new ShaderManager.Vertex(path, shaderExtensions);
           break;
         case "tesselation_control_shaders":
           assert tessControlShaderManager == null;
-          tessControlShaderManager = new ShaderManager.TessControl(path, shaderExtensions);
+          tessControlShaderManager = new ShaderManager.TessControl(path,
+              shaderExtensions);
           break;
         case "tesselation_evaluation_shaders":
           assert tessEvalShaderManager == null;
-          tessEvalShaderManager = new ShaderManager.TessEval(path, shaderExtensions);
+          tessEvalShaderManager = new ShaderManager.TessEval(path,
+              shaderExtensions);
           break;
         case "geometry_shaders":
           assert geometryShaderManager == null;
-          geometryShaderManager = new ShaderManager.Geometry(path, shaderExtensions);
+          geometryShaderManager = new ShaderManager.Geometry(path,
+              shaderExtensions);
           break;
         case "fragment_shaders":
           assert fragmentShaderManager == null;
-          fragmentShaderManager = new ShaderManager.Fragment(path, shaderExtensions);
+          fragmentShaderManager = new ShaderManager.Fragment(path,
+              shaderExtensions);
           break;
         default:
           LOGGER.severe("Unrecognized tag name" + shaderConfigXML.getTagName());
           throw new Exception();
         }
       }
-      
-      assert vertexShaderManager      != null && 
-             tessControlShaderManager != null && 
-             tessEvalShaderManager    != null && 
-             geometryShaderManager    != null && 
-             fragmentShaderManager    != null;
+
+      assert vertexShaderManager != null && tessControlShaderManager != null
+          && tessEvalShaderManager != null && geometryShaderManager != null
+          && fragmentShaderManager != null;
 
       assert !Utils.hasGLErrors();
 
-
       defaultResource = new Effect(Utils.DEFAULT);
       defaultResource.loadDefault();
-      
+
       nl = effectsXML.getElementsByTagName("effect");
-      for(int i = 0; i < nl.getLength(); ++i) {
-        Element effectXML = (Element)nl.item(i);
+      for (int i = 0; i < nl.getLength(); ++i) {
+        Element effectXML = (Element) nl.item(i);
         String name = effectXML.getAttribute("name");
-        
+
         getResource(new HashedString(name));
         assert !Utils.hasGLErrors();
       }
-      
+
     } catch (FileNotFoundException e) {
       LOGGER.severe("Could not find input file");
       isInit = false;
@@ -185,14 +187,13 @@ public class EffectManager extends ResourceManager<Effect> {
       isInit = false;
       throw new IllegalArgumentException(e);
     }
-    
-    
-    //TODO millor
+
+    // TODO millor
     fontPass = Technique.techniquePassFactory.createFontTechniquePass();
-    
+
     assert !Utils.hasGLErrors();
   }
-  
+
   /**
    * Fetches the technique that is used to render text.
    * 
@@ -202,18 +203,20 @@ public class EffectManager extends ResourceManager<Effect> {
   public TechniquePass getFontPass() {
     return fontPass;
   }
-  
+
   /**
    * Gets the source from a specified file.
    * 
-   * @param shader Shader name.
-   * @param st Shader type.
+   * @param shader
+   *          Shader name.
+   * @param st
+   *          Shader type.
    * @return the source of the shader.
    * @since 0.1
    */
   public String getShaderSource(HashedString shader, ShaderType st) {
     assert isInit;
-    switch(st) {
+    switch (st) {
     case VERTEX:
       return vertexShaderManager.getResource(shader).getSource();
     case TESS_CONTROL:
@@ -228,17 +231,18 @@ public class EffectManager extends ResourceManager<Effect> {
       throw new IllegalArgumentException();
     }
   }
-  
+
   /**
    * Fetches the default source of each shader type.
    * 
-   * @param st Shader type to fetch.
+   * @param st
+   *          Shader type to fetch.
    * @return the default shader source.
    * @since 0.1
    */
   public String getDefaultShaderSource(ShaderType st) {
     assert isInit;
-    switch(st) {
+    switch (st) {
     case VERTEX:
       return vertexShaderManager.getDefaultResource().getSource();
     case TESS_CONTROL:
@@ -277,21 +281,22 @@ public class EffectManager extends ResourceManager<Effect> {
     // TODO
     return null;
   }
-  
+
   /**
    * Manages shader sources.
    * 
    * @author Isaac 'Atridas' Serrano Guasch
    * @since 0.1
-   *
+   * 
    */
   private static abstract class ShaderManager extends ResourceManager<Shader> {
 
     private final ShaderType type;
     private final Shader defaultShader;
-    
-    ShaderManager(String _basePath, ArrayList<HashedString> _extensionsPriorized, ShaderType _type) {
-      super( _basePath, _extensionsPriorized );
+
+    ShaderManager(String _basePath,
+        ArrayList<HashedString> _extensionsPriorized, ShaderType _type) {
+      super(_basePath, _extensionsPriorized);
       type = _type;
       defaultShader = new Shader(Utils.DEFAULT, type);
       defaultShader.loadDefault();
@@ -306,13 +311,13 @@ public class EffectManager extends ResourceManager<Effect> {
     public Shader getDefaultResource() {
       return defaultShader;
     }
-    
+
     /**
      * Manages Vertex shaders.
      * 
      * @author Isaac 'Atridas' Serrano Guasch
      * @since 0.1
-     *
+     * 
      */
     static class Vertex extends ShaderManager {
       Vertex(String _basePath, ArrayList<HashedString> _extensionsPriorized) {
@@ -325,7 +330,7 @@ public class EffectManager extends ResourceManager<Effect> {
      * 
      * @author Isaac 'Atridas' Serrano Guasch
      * @since 0.1
-     *
+     * 
      */
     static class Fragment extends ShaderManager {
       Fragment(String _basePath, ArrayList<HashedString> _extensionsPriorized) {
@@ -338,7 +343,7 @@ public class EffectManager extends ResourceManager<Effect> {
      * 
      * @author Isaac 'Atridas' Serrano Guasch
      * @since 0.1
-     *
+     * 
      */
     static class Geometry extends ShaderManager {
       Geometry(String _basePath, ArrayList<HashedString> _extensionsPriorized) {
@@ -351,7 +356,7 @@ public class EffectManager extends ResourceManager<Effect> {
      * 
      * @author Isaac 'Atridas' Serrano Guasch
      * @since 0.1
-     *
+     * 
      */
     static class TessEval extends ShaderManager {
       TessEval(String _basePath, ArrayList<HashedString> _extensionsPriorized) {
@@ -364,13 +369,13 @@ public class EffectManager extends ResourceManager<Effect> {
      * 
      * @author Isaac 'Atridas' Serrano Guasch
      * @since 0.1
-     *
+     * 
      */
     static class TessControl extends ShaderManager {
       TessControl(String _basePath, ArrayList<HashedString> _extensionsPriorized) {
         super(_basePath, _extensionsPriorized, ShaderType.TESS_CONTROL);
       }
     }
-    
+
   }
 }

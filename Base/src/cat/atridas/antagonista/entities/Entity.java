@@ -8,30 +8,32 @@ import cat.atridas.antagonista.core.Core;
  * 
  * @author Isaac 'Atridas' Serrano Guash
  * @since 0.2
- *
+ * 
  */
 public final class Entity {
-  //private static Logger LOGGER = Logger.getLogger(Entity.class.getCanonicalName());
+  // private static Logger LOGGER =
+  // Logger.getLogger(Entity.class.getCanonicalName());
 
   /**
    * String identifier.
+   * 
    * @since 0.2
    */
   private final HashedString id;
-  
-  
+
   private static final EntityManager em = Core.getCore().getEntityManager();
-  
+
   /**
    * Constructor.
    * 
-   * @param _id unique identifier.
+   * @param _id
+   *          unique identifier.
    * @since 0.2
    */
   Entity(HashedString _id) {
     id = _id;
   }
-  
+
   /**
    * Gets the entity unique identifier.
    * 
@@ -41,11 +43,12 @@ public final class Entity {
   public HashedString getId() {
     return id;
   }
-  
-  public <T extends GlobalComponent<?>> T getGlobalComponent(HashedString component) {
+
+  public <T extends GlobalComponent<?>> T getGlobalComponent(
+      HashedString component) {
     return em.getComponent(this, component);
   }
-  
+
   @Override
   public int hashCode() {
     return id.hashCode();
@@ -67,7 +70,7 @@ public final class Entity {
       return false;
     return true;
   }
-  
+
   @Override
   public String toString() {
     return "Entity " + id;

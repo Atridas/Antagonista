@@ -18,101 +18,117 @@ import cat.atridas.antagonista.graphics.Effect.TechniqueType;
  * 
  * @author Isaac 'Atridas' Serrano Guasch
  * @since 0.1
- *
+ * 
  */
 public abstract class RenderableObjectManager {
-  private static final Logger LOGGER = Logger.getLogger(RenderableObjectManager.class.getCanonicalName());
-  
+  private static final Logger LOGGER = Logger
+      .getLogger(RenderableObjectManager.class.getCanonicalName());
+
   /**
    * Map of renderable objects, indexed by it's identifier.
-   * @since 0.1 
+   * 
+   * @since 0.1
    */
   private final HashMap<HashedString, RenderableObject> renderableObjects = new HashMap<>();
   /**
    * List of all renderable objects, to make a fast iteration.
+   * 
    * @since 0.1
    */
   private final ArrayList<RenderableObject> renderableObjectsArray = new ArrayList<>();
-  
+
   /**
    * Initialize the manager.
+   * 
    * @return success.
    * @since 0.1
    */
   public abstract boolean init();
-  
+
   /**
-   * Creates and saves a new renderable object. The objects are not automatically cleaned and
-   * must be destroyed by the user.
+   * Creates and saves a new renderable object. The objects are not
+   * automatically cleaned and must be destroyed by the user.
    * 
-   * @param name name of the object to be created.
-   * @param mesh used by the object created.
+   * @param name
+   *          name of the object to be created.
+   * @param mesh
+   *          used by the object created.
    * @return a new renderable object.
    * @since 0.1
    * @see #destroyRenderableObject(HashedString)
    */
-  public final RenderableObject addRenderableObject(HashedString name, HashedString mesh) {
-    if(LOGGER.isLoggable(Level.CONFIG)) {
-      LOGGER.config("Adding renderable object with name '" + name +"'");
+  public final RenderableObject addRenderableObject(HashedString name,
+      HashedString mesh) {
+    if (LOGGER.isLoggable(Level.CONFIG)) {
+      LOGGER.config("Adding renderable object with name '" + name + "'");
     }
 
-    if(renderableObjects.containsKey(name)) {
-      LOGGER.warning("Renderable object with id '" + name + "' is being substituted");
+    if (renderableObjects.containsKey(name)) {
+      LOGGER.warning("Renderable object with id '" + name
+          + "' is being substituted");
       destroyRenderableObject(name);
     }
-    
-    RenderableObject ro = new RenderableObject(name, Core.getCore().getMeshManager().getResource(mesh));
+
+    RenderableObject ro = new RenderableObject(name, Core.getCore()
+        .getMeshManager().getResource(mesh));
     renderableObjects.put(name, ro);
     renderableObjectsArray.add(ro);
     return ro;
   }
-  
+
   /**
    * Gets a renderable object.
    * 
-   * @param name of the renderable object.
+   * @param name
+   *          of the renderable object.
    * @since 0.2
    */
   public final RenderableObject getRenderableObject(HashedString name) {
     return renderableObjects.get(name);
   }
-  
+
   /**
    * Deletes from this manager a renderable object.
    * 
-   * @param name of the object to be deleted.
+   * @param name
+   *          of the object to be deleted.
    * @since 0.1
    */
   public final void destroyRenderableObject(HashedString name) {
-    if(renderableObjects.containsKey(name)) {
+    if (renderableObjects.containsKey(name)) {
       Iterator<RenderableObject> it = renderableObjectsArray.iterator();
       int i = 0;
-      while(it.hasNext()) {
+      while (it.hasNext()) {
         RenderableObject ro = it.next();
-        if(ro.getName().equals(name)) {
+        if (ro.getName().equals(name)) {
           renderableObjectsArray.remove(i);
           break;
         }
         ++i;
       }
     } else {
-      LOGGER.warning("Renderable object with id '" + name + "' does not exist.");
+      LOGGER
+          .warning("Renderable object with id '" + name + "' does not exist.");
     }
   }
-  
+
   /**
    * Same as <code>destroyRenderableObject(<strong>ro.getName()</strong>)</code>
-   * @param ro Renderable object to be deleted.
+   * 
+   * @param ro
+   *          Renderable object to be deleted.
    * @since 0.1
    * @see #destroyRenderableObject(HashedString)
    */
   public final void destroyRenderableObject(RenderableObject ro) {
     destroyRenderableObject(ro.getName());
   }
-  
+
   /**
    * Renders all renderable objects contained in this manager.
-   * @param rm Render Manager
+   * 
+   * @param rm
+   *          Render Manager
    * @since 0.1
    */
   public final void renderAll(RenderManager rm) {
@@ -120,107 +136,113 @@ public abstract class RenderableObjectManager {
     SceneData sceneData = rm.getSceneData();
 
     sceneData.setUniforms();
-    
+
     InstanceData instanceData = new InstanceData();
 
-    Matrix4f viewProj           = new Matrix4f();
-    Matrix4f view               = new Matrix4f();
-    Matrix4f model              = new Matrix4f();
-    //Matrix4f modelViewProj      = new Matrix4f();
-    //Matrix4f modelView          = new Matrix4f();
-    //Matrix4f modelViewInvTransp = new Matrix4f();
+    Matrix4f viewProj = new Matrix4f();
+    Matrix4f view = new Matrix4f();
+    Matrix4f model = new Matrix4f();
+    // Matrix4f modelViewProj = new Matrix4f();
+    // Matrix4f modelView = new Matrix4f();
+    // Matrix4f modelViewInvTransp = new Matrix4f();
     viewProj.setIdentity();
-    view .setIdentity();
-    
+    view.setIdentity();
+
     sceneData.getViewMatrix(view);
     sceneData.getViewProjectionMatrix(viewProj);
 
-    for(RenderableObject renderableObject : renderableObjectsArray) {
-      if(renderableObject.isVisible() && !renderableObject.isCulled()) {
+    for (RenderableObject renderableObject : renderableObjectsArray) {
+      if (renderableObject.isVisible() && !renderableObject.isCulled()) {
         Mesh mesh = renderableObject.getMesh();
         mesh.preRender();
-        
+
         TechniqueType techniqueType;
-        if(mesh.isAnimated()) {
+        if (mesh.isAnimated()) {
           techniqueType = TechniqueType.ANIMATED_FORWARD;
-          
-          instanceData.bonePalete = renderableObject.getArmature().getMatrixPalete();
+
+          instanceData.bonePalete = renderableObject.getArmature()
+              .getMatrixPalete();
         } else {
           techniqueType = TechniqueType.FORWARD;
-          
+
           instanceData.bonePalete = null;
         }
-        
+
         renderableObject.getTransformation(model);
-  
+
         instanceData.modelView.mul(view, model);
         instanceData.modelViewProj.mul(viewProj, model);
-        
+
         instanceData.modelViewInvTransp.invert(instanceData.modelView);
         instanceData.modelViewInvTransp.transpose();
-        
-        
-        setInstanceUniforms( instanceData );
-        
-        
+
+        setInstanceUniforms(instanceData);
+
         int numSubmeshes = mesh.getNumSubmeshes();
-        for(int submesh = 0; submesh < numSubmeshes; ++submesh) {
+        for (int submesh = 0; submesh < numSubmeshes; ++submesh) {
           Material material = mesh.getMaterial(submesh);
           material.setUpUniforms(rm);
-          
-          Technique technique = material.getEffect().getTechnique(techniqueType, Quality.MID);
-          for(TechniquePass pass: technique.getPasses()) {
+
+          Technique technique = material.getEffect().getTechnique(
+              techniqueType, Quality.MID);
+          for (TechniquePass pass : technique.getPasses()) {
             pass.activate(rm);
             material.setUpUniforms(pass, rm);
             sceneData.setUniforms(pass);
-  
-            setInstanceUniforms( pass, instanceData );
-            
+
+            setInstanceUniforms(pass, instanceData);
+
             mesh.render(submesh, rm);
           }
         }
       }
     }
-    
+
     resetGLState();
   }
 
   /**
-   * Sets the uniforms that don't need the shader to be binded to be passed to the OpenGL 
-   * (used usually in OpenGL 3.0 and later).
+   * Sets the uniforms that don't need the shader to be binded to be passed to
+   * the OpenGL (used usually in OpenGL 3.0 and later).
    * 
-   * @param instanceData data of one instance.
+   * @param instanceData
+   *          data of one instance.
    * @since 0.1
    */
   protected abstract void setInstanceUniforms(InstanceData instanceData);
-  
+
   /**
-   * Sets the uniforms that need the shader to be binded to be passed to the OpenGL (usually only
-   * needed in OpenGL 2.0).
+   * Sets the uniforms that need the shader to be binded to be passed to the
+   * OpenGL (usually only needed in OpenGL 2.0).
    * 
-   * @param pass shader program currently used.
-   * @param instanceData data of one instance.
+   * @param pass
+   *          shader program currently used.
+   * @param instanceData
+   *          data of one instance.
    * @since 0.1
    */
-  protected abstract void setInstanceUniforms(
-                                TechniquePass pass,
-                                InstanceData instanceData);
+  protected abstract void setInstanceUniforms(TechniquePass pass,
+      InstanceData instanceData);
+
   protected abstract void resetGLState();
-  
+
   /**
    * Cleans the OpenGL variables.
+   * 
    * @since 0.1
    */
   public abstract void cleanUp();
 
   /**
    * <code>true</code> if this manager had been cleaned.
+   * 
    * @since 0.1
    */
   protected boolean cleaned = false;
+
   @Override
   public void finalize() {
-    if(!cleaned) {
+    if (!cleaned) {
       cleanUp();
     }
   }

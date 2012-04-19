@@ -9,38 +9,37 @@ import cat.atridas.antagonista.entities.Entity;
 import cat.atridas.antagonista.entities.GlobalComponent;
 import cat.atridas.antagonista.entities.LocalComponent;
 
-public abstract class TransformComponent extends BaseComponent<TransformComponent> {
-  
+public abstract class TransformComponent extends
+    BaseComponent<TransformComponent> {
+
   private Transformation transformation = new Transformation();
   private DeltaTime lastTransformationChange = null;
-  
-  
+
   public TransformComponent(Entity entity) {
     super(entity);
     lastTransformationChange = globalClock.getCurrentFrameDeltaTime();
   }
-  
+
   public void init() {
     lastTransformationChange = globalClock.getCurrentFrameDeltaTime();
     setInitialized();
   }
-  
+
   public void init(Transformation _transformation) {
     transformation.setTransform(_transformation);
     lastTransformationChange = globalClock.getCurrentFrameDeltaTime();
     setInitialized();
   }
 
-  
   public void setTransform(Transformation _transformation) {
     transformation.setTransform(_transformation);
     lastTransformationChange = globalClock.getCurrentFrameDeltaTime();
   }
-  
+
   public void getTransform(Transformation transformation_) {
     transformation_.setTransform(transformation);
   }
-  
+
   public DeltaTime getTransformLastTime() {
     return lastTransformationChange;
   }
@@ -51,15 +50,16 @@ public abstract class TransformComponent extends BaseComponent<TransformComponen
     transformation.setTransform(_other.transformation);
     lastTransformationChange = _other.lastTransformationChange;
   }
-  
+
   @Override
   public String toString() {
     return "TransformComponent\n" + transformation.toString();
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////
-  
-  public final static class Global extends TransformComponent implements GlobalComponent<TransformComponent> {
+  // ////////////////////////////////////////////////////////////////////////////////////////
+
+  public final static class Global extends TransformComponent implements
+      GlobalComponent<TransformComponent> {
 
     public Global(Entity _entity) {
       super(_entity);
@@ -69,10 +69,11 @@ public abstract class TransformComponent extends BaseComponent<TransformComponen
     public Local createLocalCopy() {
       return new Local();
     }
-    
+
   }
-  
-  public final class Local extends TransformComponent implements LocalComponent<TransformComponent> {
+
+  public final class Local extends TransformComponent implements
+      LocalComponent<TransformComponent> {
 
     private Local() {
       super(TransformComponent.this.getEntity());
@@ -92,23 +93,23 @@ public abstract class TransformComponent extends BaseComponent<TransformComponen
         this.copy(TransformComponent.this);
       }
     }
-    
-    
+
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////
+  // ////////////////////////////////////////////////////////////////////////////////////////
 
-  private final static HashedString componentType = new HashedString("TransformComponent");
-  
+  private final static HashedString componentType = new HashedString(
+      "TransformComponent");
+
   @Override
   public HashedString getComponentType() {
     return componentType;
   }
- 
+
   public static HashedString getComponentStaticType() {
     return componentType;
   }
-  
+
   static {
     Core.getCore().getEntityManager().registerComponentType(Global.class);
   }

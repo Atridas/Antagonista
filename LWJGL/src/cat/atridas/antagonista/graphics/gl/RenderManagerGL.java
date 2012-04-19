@@ -32,98 +32,105 @@ import static org.lwjgl.opengl.GL20.*;
  * 
  * @author Isaac 'Atridas' Serrano Guasch.
  * @since 0.1
- *
+ * 
  */
 public final class RenderManagerGL extends RenderManager {
-  private static Logger LOGGER = Logger.getLogger(RenderManagerGL.class.getCanonicalName());
+  private static Logger LOGGER = Logger.getLogger(RenderManagerGL.class
+      .getCanonicalName());
 
   /**
    * OpenGL profile.
+   * 
    * @since 0.1
    */
   private Profile profile;
-  
+
   /**
    * Scene data information.
+   * 
    * @since 0.1
    */
   private SceneData sceneData;
-  
+
   /**
    * Cached maximum number of instances given each memory requirement.
+   * 
    * @since 0.1
    */
   private int maxInstancesBasic, maxInstancesColors, maxInstancesBones;
-  
 
-	/**
-	 * Creates a window with the specified dimentions and title.
-	 * 
- * @param _width width of the screen.
- * @param _height height of the screen.
- * @param title title of the screen.
- * @param _forwardCompatible if a forward compatible context must be created.
- * @param displayParent Use in Applets. Null on stand-alone applications.
- * @since 0.1
-	 */
+  /**
+   * Creates a window with the specified dimentions and title.
+   * 
+   * @param _width
+   *          width of the screen.
+   * @param _height
+   *          height of the screen.
+   * @param title
+   *          title of the screen.
+   * @param _forwardCompatible
+   *          if a forward compatible context must be created.
+   * @param displayParent
+   *          Use in Applets. Null on stand-alone applications.
+   * @since 0.1
+   */
   @Override
-	public final void initDisplay(
-	    final int _width, 
-	    final int _height, 
-	    final String title,
-	    final boolean _forwardCompatible,
-	    Canvas displayParent) {
-	  
-		width  = _width;
-		height = _height;
-		forwardCompatible = _forwardCompatible;
-		
-		//TODO
-		PixelFormat pf = new PixelFormat().withDepthBits(24).withBitsPerPixel(32).withAlphaBits(8);
-		ContextAttribs ca = new ContextAttribs(4, 2).withForwardCompatible(forwardCompatible);//.withDebug(true);
-		//ContextAttribs ca = new ContextAttribs(2, 1).withForwardCompatible(false);//.withDebug(true);
-		
-		// ? ca.withDebug(true);
-		
-		
-		try {
-			Display.setTitle(title);
-			if(displayParent == null)
-				Display.setDisplayMode(new DisplayMode(width, height));
-			else
-				Display.setParent(displayParent);
-			Display.create(pf, ca);
-		} catch (LWJGLException e) {
-			//e.printStackTrace();
-			//System.exit(1);
-			throw new RuntimeException(e);
-		}
-	}
+  public final void initDisplay(final int _width, final int _height,
+      final String title, final boolean _forwardCompatible, Canvas displayParent) {
 
-	/**
-	 * Closes the window.
-	 * @since 0.1
-	 */
+    width = _width;
+    height = _height;
+    forwardCompatible = _forwardCompatible;
+
+    // TODO
+    PixelFormat pf = new PixelFormat().withDepthBits(24).withBitsPerPixel(32)
+        .withAlphaBits(8);
+    ContextAttribs ca = new ContextAttribs(4, 2)
+        .withForwardCompatible(forwardCompatible);// .withDebug(true);
+    // ContextAttribs ca = new ContextAttribs(2,
+    // 1).withForwardCompatible(false);//.withDebug(true);
+
+    // ? ca.withDebug(true);
+
+    try {
+      Display.setTitle(title);
+      if (displayParent == null)
+        Display.setDisplayMode(new DisplayMode(width, height));
+      else
+        Display.setParent(displayParent);
+      Display.create(pf, ca);
+    } catch (LWJGLException e) {
+      // e.printStackTrace();
+      // System.exit(1);
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Closes the window.
+   * 
+   * @since 0.1
+   */
   @Override
-	public final void closeDisplay()
-	{
-		Display.destroy();
-	}
-  
-	/**
-	 * Presents a frame to the screen.
-	 * @since 0.1
-	 */
-	public final void present() {
-	  assert !hasGLErrors();
-	  hasGLErrors(); //si no hi ha asserts, els imprimim igualment.
-	  
-	  
-		Display.update();
-	}
-	
+  public final void closeDisplay() {
+    Display.destroy();
+  }
+
+  /**
+   * Presents a frame to the screen.
+   * 
+   * @since 0.1
+   */
+  public final void present() {
+    assert !hasGLErrors();
+    hasGLErrors(); // si no hi ha asserts, els imprimim igualment.
+
+    Display.update();
+  }
+
   /**
    * Caches the maximum number of instances given each memory requirement.
+   * 
    * @since 0.1
    */
   private void initInstances() {
@@ -132,47 +139,50 @@ public final class RenderManagerGL extends RenderManager {
       maxUniformSize = glGetInteger(GL31.GL_MAX_UNIFORM_BLOCK_SIZE);
     }
 
-    if(maxUniformSize > 0) {
-      maxInstancesBasic  = maxUniformSize / TechniquePass.BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE;
-      maxInstancesColors = maxUniformSize / TechniquePass.SPECIAL_COLORS_UNIFORMS_BLOCK_SIZE;
-      maxInstancesBones  = maxUniformSize / TechniquePass.ARMATURE_UNIFORMS_BLOCK_SIZE;
+    if (maxUniformSize > 0) {
+      maxInstancesBasic = maxUniformSize
+          / TechniquePass.BASIC_INSTANCE_UNIFORMS_BLOCK_SIZE;
+      maxInstancesColors = maxUniformSize
+          / TechniquePass.SPECIAL_COLORS_UNIFORMS_BLOCK_SIZE;
+      maxInstancesBones = maxUniformSize
+          / TechniquePass.ARMATURE_UNIFORMS_BLOCK_SIZE;
     } else {
-      maxInstancesBasic  = 1;
+      maxInstancesBasic = 1;
       maxInstancesColors = 1;
-      maxInstancesBones  = 1;
+      maxInstancesBones = 1;
     }
   }
-  
+
   @Override
   public void initGL() {
     ContextCapabilities cc = GLContext.getCapabilities();
-    if(cc.OpenGL42) {
+    if (cc.OpenGL42) {
       profile = Profile.GL4;
       sceneData = new SceneDataGL3(this);
-    } else if(cc.OpenGL33) {
+    } else if (cc.OpenGL33) {
       profile = Profile.GL3;
       sceneData = new SceneDataGL3(this);
-    } else if(cc.OpenGL21) {
+    } else if (cc.OpenGL21) {
       profile = Profile.GL2;
       sceneData = new SceneDataGL2(this);
     } else {
-      throw new IllegalStateException("Can not load an opengl 2.1 or greater context.");
+      throw new IllegalStateException(
+          "Can not load an opengl 2.1 or greater context.");
     }
-    
+
     glViewport(0, 0, getWidth(), getHeight());
-    
-    glClearColor(1,0,1,0);
-    
+
+    glClearColor(1, 0, 1, 0);
+
     glEnable(GL_BLEND);
-    
+
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
+
     glEnable(GL_DEPTH_TEST);
     glClearDepth(1);
-    
+
     initInstances();
-    
-    
+
     assert !hasGLErrors();
   }
 
@@ -186,25 +196,22 @@ public final class RenderManagerGL extends RenderManager {
     return profile;
   }
 
-
   @Override
   public void activateShader(int shader) {
     glUseProgram(shader);
   }
 
-
   @Override
   public void setDepthTest(boolean enable) {
-    if(enable)
+    if (enable)
       glEnable(GL_DEPTH_TEST);
     else
       glDisable(GL_DEPTH_TEST);
   }
 
-
   @Override
   public void setDepthTest(DepthFunction function) {
-    switch(function) {
+    switch (function) {
     case ALWAYS:
       glDepthFunc(GL_ALWAYS);
       break;
@@ -234,7 +241,6 @@ public final class RenderManagerGL extends RenderManager {
     }
   }
 
-
   @Override
   public void setZWrite(boolean enable) {
     glDepthMask(enable);
@@ -242,78 +248,78 @@ public final class RenderManagerGL extends RenderManager {
 
   @Override
   public void setAlphaBlend(boolean enable) {
-    if(enable)
+    if (enable)
       glEnable(GL_BLEND);
     else
       glDisable(GL_BLEND);
   }
 
-
   @Override
   public void setAlphaBlend(BlendOperation operation) {
-    glBlendFunc(getAlphaOperator(operation.src_operator), getAlphaOperator(operation.dst_operator));
+    glBlendFunc(getAlphaOperator(operation.src_operator),
+        getAlphaOperator(operation.dst_operator));
   }
-
 
   @Override
   public void setAlphaBlend(BlendOperationSeparate operation) {
-    glBlendFuncSeparate(
-        getAlphaOperator(operation.color.src_operator), getAlphaOperator(operation.color.dst_operator),
-        getAlphaOperator(operation.alpha.src_operator), getAlphaOperator(operation.alpha.dst_operator)
-        );
+    glBlendFuncSeparate(getAlphaOperator(operation.color.src_operator),
+        getAlphaOperator(operation.color.dst_operator),
+        getAlphaOperator(operation.alpha.src_operator),
+        getAlphaOperator(operation.alpha.dst_operator));
   }
-
 
   @Override
   public void setAlphaBlend(boolean enable, int renderTarget) {
-    if(!profile.supports(Profile.GL3)) {
-      //TODO mirar si hi ha alguna extensió que s'ho tragui
-      LOGGER.severe("To enable or disable blending at specific render targets, you should have a" +
-      		" profile compatible with OpenGL 3.0");
+    if (!profile.supports(Profile.GL3)) {
+      // TODO mirar si hi ha alguna extensió que s'ho tragui
+      LOGGER
+          .severe("To enable or disable blending at specific render targets, you should have a"
+              + " profile compatible with OpenGL 3.0");
       throw new IllegalStateException();
     }
-    if(enable)
+    if (enable)
       GL30.glEnablei(GL_BLEND, renderTarget);
     else
       GL30.glDisablei(GL_BLEND, renderTarget);
   }
 
-
   @Override
   public void setAlphaBlend(BlendOperation operation, int renderTarget) {
-    if(!profile.supports(Profile.GL4)) {
-      //TODO mirar si hi ha alguna extensió que s'ho tragui
-      LOGGER.severe("To configure blending at specific render targets, you should have a" +
-          " profile compatible with OpenGL 4.0");
+    if (!profile.supports(Profile.GL4)) {
+      // TODO mirar si hi ha alguna extensió que s'ho tragui
+      LOGGER
+          .severe("To configure blending at specific render targets, you should have a"
+              + " profile compatible with OpenGL 4.0");
       throw new IllegalStateException();
     }
-    GL40.glBlendFunci(getAlphaOperator(operation.src_operator), getAlphaOperator(operation.dst_operator), renderTarget);
+    GL40.glBlendFunci(getAlphaOperator(operation.src_operator),
+        getAlphaOperator(operation.dst_operator), renderTarget);
   }
-
 
   @Override
   public void setAlphaBlend(BlendOperationSeparate operation, int renderTarget) {
-    if(!profile.supports(Profile.GL4)) {
-      //TODO mirar si hi ha alguna extensió que s'ho tragui
-      LOGGER.severe("To configure blending at specific render targets, you should have a" +
-          " profile compatible with OpenGL 4.0");
+    if (!profile.supports(Profile.GL4)) {
+      // TODO mirar si hi ha alguna extensió que s'ho tragui
+      LOGGER
+          .severe("To configure blending at specific render targets, you should have a"
+              + " profile compatible with OpenGL 4.0");
       throw new IllegalStateException();
     }
-    GL40.glBlendFuncSeparatei(
-        getAlphaOperator(operation.color.src_operator), getAlphaOperator(operation.color.dst_operator),
-        getAlphaOperator(operation.alpha.src_operator), getAlphaOperator(operation.alpha.dst_operator),
-        renderTarget
-        );
+    GL40.glBlendFuncSeparatei(getAlphaOperator(operation.color.src_operator),
+        getAlphaOperator(operation.color.dst_operator),
+        getAlphaOperator(operation.alpha.src_operator),
+        getAlphaOperator(operation.alpha.dst_operator), renderTarget);
   }
-  
+
   /**
    * Translates the blend operator enumeration into OpenGL identifiers.
    * 
-   * @param op BendOperator enumeration.
+   * @param op
+   *          BendOperator enumeration.
    * @return an OpenGL identifier.
    */
   private int getAlphaOperator(BlendOperator op) {
-    switch(op) {
+    switch (op) {
     case CONSTANT_ALPHA:
       return GL_CONSTANT_ALPHA;
     case CONSTANT_COLOR:
@@ -345,29 +351,29 @@ public final class RenderManagerGL extends RenderManager {
     case ZERO:
       return GL_ZERO;
     case ONE_MINUS_SRC1_ALPHA:
-      if(!profile.supports(Profile.GL3)) {
-        //TODO mirar si hi ha alguna extensió que s'ho tragui
-        LOGGER.severe("To access ONE_MINUS_SRC1_ALPHA, you should have a" +
-            " profile compatible with OpenGL 3.3");
+      if (!profile.supports(Profile.GL3)) {
+        // TODO mirar si hi ha alguna extensió que s'ho tragui
+        LOGGER.severe("To access ONE_MINUS_SRC1_ALPHA, you should have a"
+            + " profile compatible with OpenGL 3.3");
         throw new IllegalStateException();
       }
       return GL33.GL_ONE_MINUS_SRC1_ALPHA;
     case SRC1_ALPHA:
-      if(!profile.supports(Profile.GL3)) {
-        //TODO mirar si hi ha alguna extensió que s'ho tragui
-        LOGGER.severe("To access ONE_MINUS_SRC1_ALPHA, you should have a" +
-            " profile compatible with OpenGL 3.3");
+      if (!profile.supports(Profile.GL3)) {
+        // TODO mirar si hi ha alguna extensió que s'ho tragui
+        LOGGER.severe("To access ONE_MINUS_SRC1_ALPHA, you should have a"
+            + " profile compatible with OpenGL 3.3");
         throw new IllegalStateException();
       }
       return GL33.GL_SRC1_ALPHA;
     default:
-      throw new IllegalArgumentException();  
+      throw new IllegalArgumentException();
     }
   }
 
   @Override
   public void noVertexArray() {
-    if(profile.supports(Profile.GL3)) {
+    if (profile.supports(Profile.GL3)) {
       GL30.glBindVertexArray(0);
     }
   }
@@ -381,9 +387,9 @@ public final class RenderManagerGL extends RenderManager {
   public boolean hasGLErrors() {
     int error = glGetError();
     boolean errorEncountered = false;
-    while(error != GL_NO_ERROR) {
+    while (error != GL_NO_ERROR) {
       String errorStr = "OpenGL error: ";
-      switch(error) {
+      switch (error) {
       case GL_INVALID_ENUM:
         errorStr += "GL_INVALID_ENUM";
         break;
@@ -393,37 +399,41 @@ public final class RenderManagerGL extends RenderManager {
       case GL_INVALID_OPERATION:
         errorStr += "GL_INVALID_OPERATION";
         break;
-        
+
       case GL_STACK_OVERFLOW:
-        errorStr += "GL_STACK_OVERFLOW"; //shouldn't happen ever, in compability mode
+        errorStr += "GL_STACK_OVERFLOW"; // shouldn't happen ever, in
+                                         // compability mode
         break;
       case GL_STACK_UNDERFLOW:
-        errorStr += "GL_STACK_UNDERFLOW"; //shouldn't happen ever, in compability mode
+        errorStr += "GL_STACK_UNDERFLOW"; // shouldn't happen ever, in
+                                          // compability mode
         break;
-        
+
       case GL_OUT_OF_MEMORY:
         errorStr += "GL_OUT_OF_MEMORY";
         break;
       case GL30.GL_INVALID_FRAMEBUFFER_OPERATION:
         errorStr += "GL_INVALID_FRAMEBUFFER_OPERATION";
         break;
-        
+
       case ARBImaging.GL_TABLE_TOO_LARGE:
-        errorStr += "ARBImaging - GL_TABLE_TOO_LARGE"; //aquest error també ha de ser extremadament xungo
+        errorStr += "ARBImaging - GL_TABLE_TOO_LARGE"; // aquest error també ha
+                                                       // de ser extremadament
+                                                       // xungo
         break;
       default:
         throw new IllegalStateException("Unrecognized error code: " + error);
       }
-      
+
       try {
         throw new Exception();
-      } catch(Exception e) {
+      } catch (Exception e) {
         StringBuilder stackTrace = new StringBuilder(errorStr);
-        for(StackTraceElement ste : e.getStackTrace()) {
+        for (StackTraceElement ste : e.getStackTrace()) {
           stackTrace.append("\n  ");
           stackTrace.append(ste.toString());
         }
-        
+
         LOGGER.severe(stackTrace.toString());
       }
       errorEncountered = true;
@@ -435,7 +445,7 @@ public final class RenderManagerGL extends RenderManager {
   @Override
   public void clearSilentlyGLErrors() {
     int error = glGetError();
-    while(error != GL_NO_ERROR) {
+    while (error != GL_NO_ERROR) {
       error = glGetError();
     }
   }

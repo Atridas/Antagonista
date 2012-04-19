@@ -5,42 +5,42 @@ import java.util.ArrayList;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.ResourceManager;
 import cat.atridas.antagonista.Utils;
-import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.Material;
-import cat.atridas.antagonista.graphics.RenderManager.Profile;
 
 /**
  * Material Manager.
  * 
  * @author Isaac 'Atridas' Serrano Guasch
  * @since 0.1
- *
+ * 
  */
 public abstract class MaterialManager extends ResourceManager<Material> {
-  
+
   /**
    * Default material.
+   * 
    * @since 0.1
    */
   private Material defaultResource;
-  
+
   /**
    * Initializes the manager.
    * 
-   * @param _extensionsPriorized Extensions of the material files to be loaded.
-   * @param _basePath Path where the material files will be searched.
+   * @param _extensionsPriorized
+   *          Extensions of the material files to be loaded.
+   * @param _basePath
+   *          Path where the material files will be searched.
    * @see ResourceManager#ResourceManager(String, ArrayList)
    */
-  public void init(ArrayList<HashedString> _extensionsPriorized, String _basePath) {
+  public void init(ArrayList<HashedString> _extensionsPriorized,
+      String _basePath) {
     setExtensions(_extensionsPriorized);
     setBasePath(_basePath);
-    
-    
 
     defaultResource = createNewResource(Utils.DEFAULT);
-    
+
     defaultResource.loadDefault();
-    
+
     assert !Utils.hasGLErrors();
   }
 
@@ -48,5 +48,5 @@ public abstract class MaterialManager extends ResourceManager<Material> {
   public Material getDefaultResource() {
     return defaultResource;
   }
-  
+
 }

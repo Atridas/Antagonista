@@ -28,44 +28,43 @@ import cat.atridas.antagonista.scripting.ScriptManager;
  * 
  * @author Isaac 'Atridas' Serrano Guasch
  * @since 0.1
- *
+ * 
  */
 public final class Core {
-	
-	private RenderManager           rm;
-	private InputManager            im;
-	private TextureManager          tm;
-	private FontManager             fm;
-  private EffectManager           em  = new EffectManager(); //TODO
-  private MaterialManager         mm;
-  private DebugRender             dr;
-  private ArmatureManager         am  = new ArmatureManager();
-  private AnimationManager        animm  = new AnimationManager();
-  private MeshManager             mem;
+
+  private RenderManager rm;
+  private InputManager im;
+  private TextureManager tm;
+  private FontManager fm;
+  private EffectManager em = new EffectManager(); // TODO
+  private MaterialManager mm;
+  private DebugRender dr;
+  private ArmatureManager am = new ArmatureManager();
+  private AnimationManager animm = new AnimationManager();
+  private MeshManager mem;
   private RenderableObjectManager rom;
-  
+
   private PhysicsFactory pf;
   private PhysicsWorld pw;
-  
-  private SystemManager           systemManager = new SystemManager();
-  private EntityManager           entityManager = new EntityManager();
-  
-  private ScriptManager           scriptManager;
-  
+
+  private SystemManager systemManager = new SystemManager();
+  private EntityManager entityManager = new EntityManager();
+
+  private ScriptManager scriptManager;
+
   private Clock clock;
 
-  
   private boolean physicsDebugRender = false;
+
   /**
    * Gets the RenderManager.
    * 
    * @return the RenderManager.
    * @since 0.1
    */
-	public RenderManager getRenderManager()
-	{
-		return rm;
-	}
+  public RenderManager getRenderManager() {
+    return rm;
+  }
 
   /**
    * Gets the InputManager.
@@ -73,10 +72,9 @@ public final class Core {
    * @return the InputManager.
    * @since 0.1
    */
-	public InputManager getInputManager()
-	{
-		return im;
-	}
+  public InputManager getInputManager() {
+    return im;
+  }
 
   /**
    * Gets the TextureManager.
@@ -84,10 +82,9 @@ public final class Core {
    * @return the TextureManager.
    * @since 0.1
    */
-	public TextureManager getTextureManager()
-	{
-		return tm;
-	}
+  public TextureManager getTextureManager() {
+    return tm;
+  }
 
   /**
    * Gets the FontManager.
@@ -95,8 +92,7 @@ public final class Core {
    * @return the FontManager.
    * @since 0.1
    */
-  public FontManager getFontManager()
-  {
+  public FontManager getFontManager() {
     return fm;
   }
 
@@ -106,8 +102,7 @@ public final class Core {
    * @return the EffectManager.
    * @since 0.1
    */
-  public EffectManager getEffectManager()
-  {
+  public EffectManager getEffectManager() {
     return em;
   }
 
@@ -117,8 +112,7 @@ public final class Core {
    * @return the MaterialManager.
    * @since 0.1
    */
-  public MaterialManager getMaterialManager()
-  {
+  public MaterialManager getMaterialManager() {
     return mm;
   }
 
@@ -128,8 +122,7 @@ public final class Core {
    * @return the DebugRender.
    * @since 0.1
    */
-  public DebugRender getDebugRender()
-  {
+  public DebugRender getDebugRender() {
     return dr;
   }
 
@@ -139,8 +132,7 @@ public final class Core {
    * @return the ArmatureManager.
    * @since 0.3
    */
-  public ArmatureManager getArmatureManager()
-  {
+  public ArmatureManager getArmatureManager() {
     return am;
   }
 
@@ -150,8 +142,7 @@ public final class Core {
    * @return the AnimationManager.
    * @since 0.3
    */
-  public AnimationManager getAnimationManager()
-  {
+  public AnimationManager getAnimationManager() {
     return animm;
   }
 
@@ -161,8 +152,7 @@ public final class Core {
    * @return the MeshManager.
    * @since 0.1
    */
-  public MeshManager getMeshManager()
-  {
+  public MeshManager getMeshManager() {
     return mem;
   }
 
@@ -172,11 +162,10 @@ public final class Core {
    * @return the RenderableObjectManager.
    * @since 0.1
    */
-  public RenderableObjectManager getRenderableObjectManager()
-  {
+  public RenderableObjectManager getRenderableObjectManager() {
     return rom;
   }
-	
+
   /**
    * Gets the PhysicsWorld.
    * 
@@ -186,11 +175,11 @@ public final class Core {
   public PhysicsWorld getPhysicsWorld() {
     return pw;
   }
-  
+
   public PhysicsFactory getPhysicsFactory() {
-	  return pf;
+    return pf;
   }
-  
+
   /**
    * Gets the SystemManager.
    * 
@@ -200,7 +189,7 @@ public final class Core {
   public SystemManager getSystemManager() {
     return systemManager;
   }
-  
+
   /**
    * Gets the EntityManager.
    * 
@@ -220,7 +209,7 @@ public final class Core {
   public ScriptManager getScriptManager() {
     return scriptManager;
   }
-  
+
   /**
    * Gets the global clock.
    * 
@@ -230,133 +219,137 @@ public final class Core {
   public Clock getClock() {
     return clock;
   }
-  
+
   /**
    * Initializes the engine.
    * 
-   * @param w width of the screen.
-   * @param h height of the screen.
-   * @param title title of the screen.
-   * @param _forwardCompatible if a forward compatible context must be created.
-   * @param displayParent Use in Applets. Null on stand-alone applications.
+   * @param w
+   *          width of the screen.
+   * @param h
+   *          height of the screen.
+   * @param title
+   *          title of the screen.
+   * @param _forwardCompatible
+   *          if a forward compatible context must be created.
+   * @param displayParent
+   *          Use in Applets. Null on stand-alone applications.
    * @since 0.1
    */
-	public void init(int w, int h, String title, ManagerFactory factory, PhysicsFactory physicsFactory, boolean forwardCompatible, Canvas displayParent) {
-	  Utils.loadNativeLibs(); //TODO nomes si no estem en un applet, potser. Provar-ho
+  public void init(int w, int h, String title, ManagerFactory factory,
+      PhysicsFactory physicsFactory, boolean forwardCompatible,
+      Canvas displayParent) {
+    Utils.loadNativeLibs(); // TODO nomes si no estem en un applet, potser.
+                            // Provar-ho
 
-	  pf = physicsFactory;
-	  
-		rm = factory.createRenderManager();
-		rm.initDisplay(w, h, title, forwardCompatible, displayParent);
-		im = factory.createInputManager();
-		im.init();
-		
-		rm.initGL();
-		
-		em.init("data/xml/effects.xml", rm);
-		ArrayList<HashedString> al = new ArrayList<>();
-		al.add(new HashedString("dds"));
-		al.add(new HashedString("png"));
-		tm = factory.createTextureManager();
-		tm.init(al, "data/textures/");
+    pf = physicsFactory;
 
-		al.clear();
+    rm = factory.createRenderManager();
+    rm.initDisplay(w, h, title, forwardCompatible, displayParent);
+    im = factory.createInputManager();
+    im.init();
+
+    rm.initGL();
+
+    em.init("data/xml/effects.xml", rm);
+    ArrayList<HashedString> al = new ArrayList<>();
+    al.add(new HashedString("dds"));
+    al.add(new HashedString("png"));
+    tm = factory.createTextureManager();
+    tm.init(al, "data/textures/");
+
+    al.clear();
     al.add(new HashedString("mat"));
     mm = factory.createMaterialManager();
     mm.init(al, "data/materials/");
-    
-    
+
     fm = factory.createFontManager();
 
     al.clear();
     al.add(new HashedString("fnt"));
     fm.init(al, "data/fonts/");
-    
+
     dr = factory.createDebugRender();
-    
+
     al.clear();
     al.add(new HashedString("arm"));
     am.init(al, "data/armatures/");
-    
+
     al.clear();
     al.add(new HashedString("ani"));
     animm.init(al, "data/animations/");
-    
+
     al.clear();
     al.add(new HashedString("mesh"));
     mem = factory.createMeshManager();
     mem.init(al, "data/meshes/");
-    
 
     rom = factory.createRenderableObjectManager();
-    
+
     rom.init();
-    
-    
-    
-    //////////
-    if(pf != null) {
-    	pw = pf.createPhysicsWorld();
+
+    // ////////
+    if (pf != null) {
+      pw = pf.createPhysicsWorld();
     } else {
-    	pw = null;
+      pw = null;
     }
     clock = factory.createClock();
-    
-    ////////////////
-    
+
+    // //////////////
+
     scriptManager = new ScriptManager("data/xml/scriptManager.xml");
-	}
-	
-	public void setPhysicsDebugRender(boolean active) {
-	  physicsDebugRender = active;
-	}
-	
-	public boolean getPhysicsDebugRender() {
-	  return physicsDebugRender;
-	}
-	
-	public void performSimpleTick() {
-	  DeltaTime dt = clock.update();
+  }
+
+  public void setPhysicsDebugRender(boolean active) {
+    physicsDebugRender = active;
+  }
+
+  public boolean getPhysicsDebugRender() {
+    return physicsDebugRender;
+  }
+
+  public void performSimpleTick() {
+    DeltaTime dt = clock.update();
     im.update(dt);
-    
-    if(pw != null) {
-    	pw.update(dt);
+
+    if (pw != null) {
+      pw.update(dt);
     }
     systemManager.updateSimple(dt);
 
-    
-    //-----------------------------------------
-    
-    if(physicsDebugRender && pw != null) {
+    // -----------------------------------------
+
+    if (physicsDebugRender && pw != null) {
       pw.debugDraw();
     }
-    
+
     rm.initFrame();
-    
-    rom.renderAll(rm); 
+
+    rom.renderAll(rm);
     dr.render(rm, dt);
-    
+
     rm.present();
-    
+
     fm.cleanTextCache();
-    
-	}
-	
-	/**
-	 * Cleans all unused resources.
-	 * 
-	 * @param weakify if the managers should be weakified.
-	 * @since 0.1
-	 */
-	public void cleanUnusedResources(boolean weakify) {
-	  if(weakify) {
-	    tm.weakify();
-	    em.weakify();
-	    mm.weakify();
-	    mem.weakify();
-	    animm.weakify();
-	    am.weakify();//TODO més managers.
-	  }
+
+  }
+
+  /**
+   * Cleans all unused resources.
+   * 
+   * @param weakify
+   *          if the managers should be weakified.
+   * @since 0.1
+   */
+  public void cleanUnusedResources(boolean weakify) {
+    if (weakify) {
+      tm.weakify();
+      em.weakify();
+      mm.weakify();
+      mem.weakify();
+      animm.weakify();
+      am.weakify();// TODO més managers.
+    }
 
     System.gc();
 
@@ -368,67 +361,65 @@ public final class Core {
     am.cleanUnusedReferences();
 
     System.runFinalization();
-	}
-	
-	/**
-	 * Closes all managers.
-	 */
-	public void close() {
-		
-		//sm.cleanUp();
-		//TODO tm.cleanUp();
-		
+  }
 
-	  rom = null;
+  /**
+   * Closes all managers.
+   */
+  public void close() {
+
+    // sm.cleanUp();
+    // TODO tm.cleanUp();
+
+    rom = null;
     mem = null;
-    mm  = null;
-    em  = null;
-    fm  = null;
-    tm  = null;
+    mm = null;
+    em = null;
+    fm = null;
+    tm = null;
     animm = null;
     am = null;
     systemManager = null;
     entityManager = null;
-    
-    System.gc();
-    System.runFinalization();
-    
-    //TODO
-    //im.close();
-    //rm.closeDisplay();
-    im  = null;
-    rm  = null;
 
     System.gc();
     System.runFinalization();
-	}
-	
-	static Core instance;
-	
-	private Core() {}
-	
-	private static synchronized void createInstance()
-	{
-		if(instance == null) {
-			instance = new Core();
-		}
-	}
-	
-	/**
-	 * Gets the singleton instance.
-	 * 
-	 * @return the singleton object.
-	 */
-	public static Core getCore()
-	{
-		if(instance == null) {
-			createInstance();
-		}
-		return instance;
-	}
-	
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-    throw new CloneNotSupportedException(); 
-	}
+
+    // TODO
+    // im.close();
+    // rm.closeDisplay();
+    im = null;
+    rm = null;
+
+    System.gc();
+    System.runFinalization();
+  }
+
+  static Core instance;
+
+  private Core() {
+  }
+
+  private static synchronized void createInstance() {
+    if (instance == null) {
+      instance = new Core();
+    }
+  }
+
+  /**
+   * Gets the singleton instance.
+   * 
+   * @return the singleton object.
+   */
+  public static Core getCore() {
+    if (instance == null) {
+      createInstance();
+    }
+    return instance;
+  }
+
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    throw new CloneNotSupportedException();
+  }
 }

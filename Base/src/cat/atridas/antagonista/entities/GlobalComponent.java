@@ -5,10 +5,11 @@ package cat.atridas.antagonista.entities;
  * 
  * @author Isaac 'Atridas' Serrano Guasch
  * @since 0.2
- *
- * @param <T> Final Component Class.
+ * 
+ * @param <T>
+ *          Final Component Class.
  */
-public interface GlobalComponent <T extends Component<?>> extends Component<T> {
+public interface GlobalComponent<T extends Component<?>> extends Component<T> {
   /**
    * Creates a local copy of this Component.
    * 

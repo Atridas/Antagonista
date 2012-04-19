@@ -21,14 +21,15 @@ import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.graphics.FontManager.TextAlignment;
 
 /**
- * Class that enqueues debug information to be rendered on the scene during renderization.
+ * Class that enqueues debug information to be rendered on the scene during
+ * renderization.
  * 
  * @author Isaac 'Atridas' Serrano Guasch
  * @since 0.1
- *
+ * 
  */
 public abstract class DebugRender {
-  
+
   /**
    * Number of stacks on a sphere.
    * 
@@ -44,10 +45,11 @@ public abstract class DebugRender {
 
   /**
    * Number of floats in a vertex with position and color information.
+   * 
    * @since 0.1
    */
-  protected static final int POS_COL_VERTEX_SIZE = (3 + 3); //Floats
-  
+  protected static final int POS_COL_VERTEX_SIZE = (3 + 3); // Floats
+
   private boolean active;
 
   /**
@@ -55,96 +57,101 @@ public abstract class DebugRender {
    * 
    * @since 0.1
    */
-  protected final ArrayList<Line>        lines = new ArrayList<>();
+  protected final ArrayList<Line> lines = new ArrayList<>();
   /**
    * Crosses to be rendered.
    * 
    * @since 0.1
    */
-  protected final ArrayList<Cross>       crosses = new ArrayList<>();
+  protected final ArrayList<Cross> crosses = new ArrayList<>();
   /**
    * Spheres to be rendered.
    * 
    * @since 0.1
    */
-  protected final ArrayList<Sphere>      spheres = new ArrayList<>();
+  protected final ArrayList<Sphere> spheres = new ArrayList<>();
   /**
    * Circles to be rendered.
    * 
    * @since 0.1
    */
-  protected final ArrayList<Circle>      circles = new ArrayList<>();
+  protected final ArrayList<Circle> circles = new ArrayList<>();
   /**
    * Axes to be rendered.
    * 
    * @since 0.1
    */
-  protected final ArrayList<Axes>        axes = new ArrayList<>();
+  protected final ArrayList<Axes> axes = new ArrayList<>();
   /**
    * Triangles to be rendered.
    * 
    * @since 0.1
    */
-  protected final ArrayList<Triangle>    triangles = new ArrayList<>();
+  protected final ArrayList<Triangle> triangles = new ArrayList<>();
   /**
    * Axis Aligned Bounding Boxes to be rendered.
    * 
    * @since 0.1
    */
-  protected final ArrayList<AABB>        aabbs = new ArrayList<>();
+  protected final ArrayList<AABB> aabbs = new ArrayList<>();
   /**
    * Oriented Bounding Boxes to be rendered.
    * 
    * @since 0.1
    */
-  protected final ArrayList<OBB>         obbs = new ArrayList<>();
+  protected final ArrayList<OBB> obbs = new ArrayList<>();
   /**
    * Text to be rendered.
    * 
    * @since 0.1
    */
   protected final ArrayList<DebugString> strings = new ArrayList<>();
-  
+
   /**
-   * Material object used to render all debug information but the text. 
+   * Material object used to render all debug information but the text.
    * 
    * @since 0.1
    */
   protected Material debugMaterial;
-  
+
   {
-    debugMaterial = Core.getCore().getMaterialManager().getResource(Utils.DEBUG_MATERIAL_NAME);
+    debugMaterial = Core.getCore().getMaterialManager()
+        .getResource(Utils.DEBUG_MATERIAL_NAME);
   }
 
   /**
    * Activates or deactivates the renderer.
    * 
-   * @param _active if this debug render should continue to register new debug information.
+   * @param _active
+   *          if this debug render should continue to register new debug
+   *          information.
    * @since 0.1
    */
   public void activate(boolean _active) {
     active = _active;
   }
-  
+
   /**
    * Checks if the renderer is active.
    * 
-   * @return <code>true</code> if the renderer is active, <code>false</code> otherwise.
+   * @return <code>true</code> if the renderer is active, <code>false</code>
+   *         otherwise.
    * @since 0.1
    */
   public boolean isActive() {
     return active;
   }
-  
+
   /**
-   * Activates the renderer. This renderer will begin to register debug information to be rendered.
+   * Activates the renderer. This renderer will begin to register debug
+   * information to be rendered.
    * 
    * @since 0.1
    */
   public void activate() {
     active = true;
   }
-  
+
   /**
    * Deactivates the renderer. No more debug information will be registered.
    * 
@@ -153,901 +160,1014 @@ public abstract class DebugRender {
   public void deactivate() {
     active = false;
   }
-  
+
   /**
    * Adds a line.
    * 
-   * @param origin origin of the line.
-   * @param destination final point of the line.
-   * @param color color of the primitive.
-   * @param duration time, in seconds, this information will be rendered.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
+   * @param origin
+   *          origin of the line.
+   * @param destination
+   *          final point of the line.
+   * @param color
+   *          color of the primitive.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
    * @since 0.1
    */
-  public void addLine( 
-      Tuple3f origin, 
-      Tuple3f destination, 
-      Color3f color, 
-      float duration, 
-      boolean depthEnabled) {
-    if(active)
+  public void addLine(Tuple3f origin, Tuple3f destination, Color3f color,
+      float duration, boolean depthEnabled) {
+    if (active)
       lines.add(new Line(origin, destination, duration, depthEnabled, color));
   }
-  
+
   /**
    * Adds a Cross, that represents a point in 3D space.
    * 
-   * @param center point.
-   * @param color color of the primitive.
-   * @param size radi of the lines exiting from the center point.
-   * @param duration time, in seconds, this information will be rendered.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
+   * @param center
+   *          point.
+   * @param color
+   *          color of the primitive.
+   * @param size
+   *          radi of the lines exiting from the center point.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
    * @since 0.1
    */
-  public void addCross( 
-      Tuple3f center,
-      Color3f color, 
-      float size, 
-      float duration, 
-      boolean depthEnabled) {
-    if(active)
+  public void addCross(Tuple3f center, Color3f color, float size,
+      float duration, boolean depthEnabled) {
+    if (active)
       crosses.add(new Cross(center, size, duration, depthEnabled, color));
   }
-  
+
   /**
    * Adds a Sphere.
    * 
-   * @param center point.
-   * @param radius of the sphere.
-   * @param color color of the primitive.
-   * @param duration time, in seconds, this information will be rendered.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
+   * @param center
+   *          point.
+   * @param radius
+   *          of the sphere.
+   * @param color
+   *          color of the primitive.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
    * @since 0.1
    */
-  public void addSphere( 
-      Tuple3f center,
-      float radius,
-      Color3f color, 
-      float duration, 
-      boolean depthEnabled) {
-    if(active)
-      spheres.add( new Sphere(center, radius, duration, depthEnabled, color));
+  public void addSphere(Tuple3f center, float radius, Color3f color,
+      float duration, boolean depthEnabled) {
+    if (active)
+      spheres.add(new Sphere(center, radius, duration, depthEnabled, color));
   }
-  
+
   /**
    * Adds a circle.
    * 
-   * @param center point.
-   * @param planeNormal normal to the circle.
-   * @param radius of the circle.
-   * @param color color of the primitive.
-   * @param duration time, in seconds, this information will be rendered.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
+   * @param center
+   *          point.
+   * @param planeNormal
+   *          normal to the circle.
+   * @param radius
+   *          of the circle.
+   * @param color
+   *          color of the primitive.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
    * @since 0.1
    */
-  public void addCircle( 
-      Tuple3f center, 
-      Tuple3f planeNormal,
-      float radius,
-      Color3f color, 
-      float duration, 
-      boolean depthEnabled) {
-    if(active)
-      circles.add( new Circle(center, radius, planeNormal, duration, depthEnabled, color));
+  public void addCircle(Tuple3f center, Tuple3f planeNormal, float radius,
+      Color3f color, float duration, boolean depthEnabled) {
+    if (active)
+      circles.add(new Circle(center, radius, planeNormal, duration,
+          depthEnabled, color));
   }
-  
+
   /**
-   * Displais a transformation, using a transformed axe. Positive X axe will be red, 
-   * Positive Y green and Z will be blue.
+   * Displais a transformation, using a transformed axe. Positive X axe will be
+   * red, Positive Y green and Z will be blue.
    * 
-   * @param transformation transformation to display.
-   * @param size of the lines exiting from the center point.
-   * @param duration time, in seconds, this information will be rendered.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
+   * @param transformation
+   *          transformation to display.
+   * @param size
+   *          of the lines exiting from the center point.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
    * @since 0.1
    */
-  public void addAxes( 
-      Matrix4f transformation,
-      float size,
-      float duration, 
+  public void addAxes(Matrix4f transformation, float size, float duration,
       boolean depthEnabled) {
     axes.add(new Axes(transformation, size, duration, depthEnabled));
   }
-  
+
   /**
    * Adds the edges of a triangle to the scene.
    * 
-   * @param v0 first point.
-   * @param v1 second point.
-   * @param v2 third point.
-   * @param color color of the primitive.
-   * @param duration time, in seconds, this information will be rendered.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
+   * @param v0
+   *          first point.
+   * @param v1
+   *          second point.
+   * @param v2
+   *          third point.
+   * @param color
+   *          color of the primitive.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
    * @since 0.1
    */
-  public void addTriangle( 
-      Tuple3f v0, 
-      Tuple3f v1, 
-      Tuple3f v2,
-      Color3f color,
-      float duration, 
-      boolean depthEnabled) {
-    if(active)
+  public void addTriangle(Tuple3f v0, Tuple3f v1, Tuple3f v2, Color3f color,
+      float duration, boolean depthEnabled) {
+    if (active)
       triangles.add(new Triangle(v0, v1, v2, duration, depthEnabled, color));
   }
-  
+
   /**
    * Displays an aligned bounding box.
    * 
-   * @param minCoords minimum coordinates
-   * @param maxCoords maximim coordinates.
-   * @param color color of the primitive.
-   * @param duration time, in seconds, this information will be rendered.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
+   * @param minCoords
+   *          minimum coordinates
+   * @param maxCoords
+   *          maximim coordinates.
+   * @param color
+   *          color of the primitive.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
    * @since 0.1
    */
-  public void addAABB( 
-      Tuple3f minCoords, 
-      Tuple3f maxCoords, 
-      Color3f color, 
-      float duration, 
-      boolean depthEnabled) {
+  public void addAABB(Tuple3f minCoords, Tuple3f maxCoords, Color3f color,
+      float duration, boolean depthEnabled) {
     assert minCoords.x < maxCoords.x;
     assert minCoords.y < maxCoords.y;
     assert minCoords.z < maxCoords.z;
-    if(active)
+    if (active)
       aabbs.add(new AABB(minCoords, maxCoords, duration, depthEnabled, color));
   }
-  
+
   /**
    * Displays an oriented Bounding Box.
    * 
-   * @param centerTransformation transformation to the center of the box.
-   * @param scaleXYZ size of the box.
-   * @param color color of the primitive.
-   * @param duration time, in seconds, this information will be rendered.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
+   * @param centerTransformation
+   *          transformation to the center of the box.
+   * @param scaleXYZ
+   *          size of the box.
+   * @param color
+   *          color of the primitive.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
    * @since 0.1
    */
-  public void addOBB( 
-      Matrix4f centerTransformation,
-      Tuple3f scaleXYZ, 
-      Color3f color,  
-      float duration, 
-      boolean depthEnabled) {
-    if(active)
-      obbs.add(new OBB(centerTransformation, scaleXYZ, duration, depthEnabled, color));
+  public void addOBB(Matrix4f centerTransformation, Tuple3f scaleXYZ,
+      Color3f color, float duration, boolean depthEnabled) {
+    if (active)
+      obbs.add(new OBB(centerTransformation, scaleXYZ, duration, depthEnabled,
+          color));
   }
-  
+
   /**
    * Adds a text to a 3D point in space.
    * 
-   * @param position of the text in 3D space.
-   * @param font used in the text.
-   * @param text to display.
-   * @param desiredHeight height in engine units of the text.
-   * @param alignment of the text respect the point passed.
-   * @param color color of the primitive.
-   * @param duration time, in seconds, this information will be rendered.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
+   * @param position
+   *          of the text in 3D space.
+   * @param font
+   *          used in the text.
+   * @param text
+   *          to display.
+   * @param desiredHeight
+   *          height in engine units of the text.
+   * @param alignment
+   *          of the text respect the point passed.
+   * @param color
+   *          color of the primitive.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
    * @since 0.1
    */
-  public void addString( 
-      Tuple3f position,
-      Font font,
-      String text,
-      float desiredHeight,
-      TextAlignment alignment,
-      Color3f color, 
-      float duration, 
-      boolean depthEnabled) {
-    if(active)
-      strings.add(new DebugString(position, font, text, desiredHeight, false, alignment, duration, depthEnabled, color));
+  public void addString(Tuple3f position, Font font, String text,
+      float desiredHeight, TextAlignment alignment, Color3f color,
+      float duration, boolean depthEnabled) {
+    if (active)
+      strings.add(new DebugString(position, font, text, desiredHeight, false,
+          alignment, duration, depthEnabled, color));
   }
-  
+
   /**
    * Adds a text in 2D respect the screen.
    * 
-   * @param position Normalized (1 means the entire screen height) position. Positive coordinates 
-   *        are taken respect the upper left screen corner and negative from the bottom right.
-   * @param font used in the text.
-   * @param text to display.
-   * @param desiredHeight height in normalized units (1 means the entire screen height).
-   * @param alignment of the text respect the point passed.
-   * @param color color of the primitive.
-   * @param duration time, in seconds, this information will be rendered.
+   * @param position
+   *          Normalized (1 means the entire screen height) position. Positive
+   *          coordinates are taken respect the upper left screen corner and
+   *          negative from the bottom right.
+   * @param font
+   *          used in the text.
+   * @param text
+   *          to display.
+   * @param desiredHeight
+   *          height in normalized units (1 means the entire screen height).
+   * @param alignment
+   *          of the text respect the point passed.
+   * @param color
+   *          color of the primitive.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
    * @since 0.1
    */
-  public void addString2D( 
-      Tuple2f position,
-      Font font,
-      String text,
-      float desiredHeight,
-      TextAlignment alignment,
-      Color3f color, 
+  public void addString2D(Tuple2f position, Font font, String text,
+      float desiredHeight, TextAlignment alignment, Color3f color,
       float duration) {
-    if(active)
-      strings.add(new DebugString(new Point3f(position.x, position.y, 0), font, text, desiredHeight, true, alignment, duration, false, color));
+    if (active)
+      strings.add(new DebugString(new Point3f(position.x, position.y, 0), font,
+          text, desiredHeight, true, alignment, duration, false, color));
   }
-  
-  
-  
-  
-  /**
-   * Same as <code>addLine(origin, destination, color, duration, <strong>true</strong>)</code>
-   * 
-   * @param origin origin of the line.
-   * @param destination final point of the line.
-   * @param color color of the primitive.
-   * @param duration time, in seconds, this information will be rendered.
-   * @since 0.1
-   * @see #addLine(Tuple3f, Tuple3f, Color3f, float, boolean)
-   */
-  public void addLine( 
-      Tuple3f origin, 
-      Tuple3f destination, 
-      Color3f color, 
-      float duration 
-      ) {
-    addLine(origin,destination,color,duration,true);
-  }
-  /**
-   * Same as <code>addLine(origin, destination, color, <strong>0</strong>, depthEnabled)</code>
-   * 
-   * @param origin origin of the line.
-   * @param destination final point of the line.
-   * @param color color of the primitive.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
-   * @since 0.1
-   * @see #addLine(Tuple3f, Tuple3f, Color3f, float, boolean)
-   */
-  public void addLine( 
-      Tuple3f origin, 
-      Tuple3f destination, 
-      Color3f color, 
-      boolean depthEnabled
-      ) {
-    addLine(origin,destination,color,0,depthEnabled);
-  }
-  /**
-   * Same as <code>addLine(origin, destination, color, <strong>0, true</strong>)</code>
-   * 
-   * @param origin origin of the line.
-   * @param destination final point of the line.
-   * @param color color of the primitive.
-   * @since 0.1
-   * @see #addLine(Tuple3f, Tuple3f, Color3f, float, boolean)
-   */
-  public void addLine( 
-      Tuple3f origin, 
-      Tuple3f destination, 
-      Color3f color) {
-    addLine(origin,destination,color,0,true);
-  }
-  
 
   /**
-   * Same as <code>addCross(center, color, size, duration, <strong>true</strong>)</code>
+   * Same as
+   * <code>addLine(origin, destination, color, duration, <strong>true</strong>)</code>
    * 
-   * @param center point.
-   * @param color color of the primitive.
-   * @param size radi of the lines exiting from the center point.
-   * @param duration time, in seconds, this information will be rendered.
+   * @param origin
+   *          origin of the line.
+   * @param destination
+   *          final point of the line.
+   * @param color
+   *          color of the primitive.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
    * @since 0.1
-   * @see #addCross(Tuple3f, Color3f, float, float, boolean)
+   * @see #addLine(Tuple3f, Tuple3f, Color3f, float, boolean)
    */
-  public void addCross( 
-      Tuple3f center,
-      Color3f color, 
-      float size, 
+  public void addLine(Tuple3f origin, Tuple3f destination, Color3f color,
       float duration) {
-    addCross(center,color,size,duration,true);
+    addLine(origin, destination, color, duration, true);
   }
+
   /**
-   * Same as <code>addCross(center, color, size, <strong>0</strong>, depthEnabled)</code>
+   * Same as
+   * <code>addLine(origin, destination, color, <strong>0</strong>, depthEnabled)</code>
    * 
-   * @param center point.
-   * @param color color of the primitive.
-   * @param size radi of the lines exiting from the center point.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
+   * @param origin
+   *          origin of the line.
+   * @param destination
+   *          final point of the line.
+   * @param color
+   *          color of the primitive.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
    * @since 0.1
-   * @see #addCross(Tuple3f, Color3f, float, float, boolean)
+   * @see #addLine(Tuple3f, Tuple3f, Color3f, float, boolean)
    */
-  public void addCross( 
-      Tuple3f center,
-      Color3f color, 
-      float size, 
+  public void addLine(Tuple3f origin, Tuple3f destination, Color3f color,
       boolean depthEnabled) {
-    addCross(center,color,size,0,depthEnabled);
+    addLine(origin, destination, color, 0, depthEnabled);
   }
+
   /**
-   * Same as <code>addCross(center, color, size, <strong>0, true</strong>)</code>
+   * Same as
+   * <code>addLine(origin, destination, color, <strong>0, true</strong>)</code>
    * 
-   * @param center point.
-   * @param color color of the primitive.
-   * @param size radi of the lines exiting from the center point.
+   * @param origin
+   *          origin of the line.
+   * @param destination
+   *          final point of the line.
+   * @param color
+   *          color of the primitive.
+   * @since 0.1
+   * @see #addLine(Tuple3f, Tuple3f, Color3f, float, boolean)
+   */
+  public void addLine(Tuple3f origin, Tuple3f destination, Color3f color) {
+    addLine(origin, destination, color, 0, true);
+  }
+
+  /**
+   * Same as
+   * <code>addCross(center, color, size, duration, <strong>true</strong>)</code>
+   * 
+   * @param center
+   *          point.
+   * @param color
+   *          color of the primitive.
+   * @param size
+   *          radi of the lines exiting from the center point.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
    * @since 0.1
    * @see #addCross(Tuple3f, Color3f, float, float, boolean)
    */
-  public void addCross( 
-      Tuple3f center,
-      Color3f color, 
-      float size) {
-    addCross(center,color,size,0,true);
+  public void addCross(Tuple3f center, Color3f color, float size, float duration) {
+    addCross(center, color, size, duration, true);
   }
-  
 
   /**
-   * Same as <code>addSphere(center, radius, color, duration, <strong>true</strong>)</code>
+   * Same as
+   * <code>addCross(center, color, size, <strong>0</strong>, depthEnabled)</code>
    * 
-   * @param center point.
-   * @param radius of the sphere.
-   * @param color color of the primitive.
-   * @param duration time, in seconds, this information will be rendered.
+   * @param center
+   *          point.
+   * @param color
+   *          color of the primitive.
+   * @param size
+   *          radi of the lines exiting from the center point.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
    * @since 0.1
-   * @see #addSphere(Tuple3f, float, Color3f, float, boolean)
+   * @see #addCross(Tuple3f, Color3f, float, float, boolean)
    */
-  public void addSphere( 
-      Tuple3f center,
-      float radius,
-      Color3f color, 
-      float duration) {
-    addSphere(center,radius,color,duration,true);
-  }
-  /**
-   * Same as <code>addSphere(center, radius, color, <strong>0</strong>, depthEnabled)</code>
-   * 
-   * @param center point.
-   * @param radius of the sphere.
-   * @param color color of the primitive.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
-   * @since 0.1
-   * @see #addSphere(Tuple3f, float, Color3f, float, boolean)
-   */
-  public void addSphere( 
-      Tuple3f center,
-      float radius,
-      Color3f color, 
+  public void addCross(Tuple3f center, Color3f color, float size,
       boolean depthEnabled) {
-    addSphere(center,radius,color,0,depthEnabled);
-  }
-  /**
-   * Same as <code>addSphere(center, radius, color, <strong>0, true</strong>)</code>
-   * 
-   * @param center point.
-   * @param radius of the sphere.
-   * @param color color of the primitive.
-   * @since 0.1
-   * @see #addSphere(Tuple3f, float, Color3f, float, boolean)
-   */
-  public void addSphere( 
-      Tuple3f center,
-      float radius,
-      Color3f color) {
-    addSphere(center,radius,color,0,true);
+    addCross(center, color, size, 0, depthEnabled);
   }
 
   /**
-   * Same as <code>addCircle(center, planeNormal, radius, color, duration, <strong>true</strong>)</code>
+   * Same as
+   * <code>addCross(center, color, size, <strong>0, true</strong>)</code>
    * 
-   * @param center point.
-   * @param planeNormal normal to the circle.
-   * @param radius of the circle.
-   * @param color color of the primitive.
-   * @param duration time, in seconds, this information will be rendered.
+   * @param center
+   *          point.
+   * @param color
+   *          color of the primitive.
+   * @param size
+   *          radi of the lines exiting from the center point.
+   * @since 0.1
+   * @see #addCross(Tuple3f, Color3f, float, float, boolean)
+   */
+  public void addCross(Tuple3f center, Color3f color, float size) {
+    addCross(center, color, size, 0, true);
+  }
+
+  /**
+   * Same as
+   * <code>addSphere(center, radius, color, duration, <strong>true</strong>)</code>
+   * 
+   * @param center
+   *          point.
+   * @param radius
+   *          of the sphere.
+   * @param color
+   *          color of the primitive.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
+   * @since 0.1
+   * @see #addSphere(Tuple3f, float, Color3f, float, boolean)
+   */
+  public void addSphere(Tuple3f center, float radius, Color3f color,
+      float duration) {
+    addSphere(center, radius, color, duration, true);
+  }
+
+  /**
+   * Same as
+   * <code>addSphere(center, radius, color, <strong>0</strong>, depthEnabled)</code>
+   * 
+   * @param center
+   *          point.
+   * @param radius
+   *          of the sphere.
+   * @param color
+   *          color of the primitive.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
+   * @since 0.1
+   * @see #addSphere(Tuple3f, float, Color3f, float, boolean)
+   */
+  public void addSphere(Tuple3f center, float radius, Color3f color,
+      boolean depthEnabled) {
+    addSphere(center, radius, color, 0, depthEnabled);
+  }
+
+  /**
+   * Same as
+   * <code>addSphere(center, radius, color, <strong>0, true</strong>)</code>
+   * 
+   * @param center
+   *          point.
+   * @param radius
+   *          of the sphere.
+   * @param color
+   *          color of the primitive.
+   * @since 0.1
+   * @see #addSphere(Tuple3f, float, Color3f, float, boolean)
+   */
+  public void addSphere(Tuple3f center, float radius, Color3f color) {
+    addSphere(center, radius, color, 0, true);
+  }
+
+  /**
+   * Same as
+   * <code>addCircle(center, planeNormal, radius, color, duration, <strong>true</strong>)</code>
+   * 
+   * @param center
+   *          point.
+   * @param planeNormal
+   *          normal to the circle.
+   * @param radius
+   *          of the circle.
+   * @param color
+   *          color of the primitive.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
    * @since 0.1
    * @see #addCircle(Tuple3f, Tuple3f, float, Color3f, float, boolean)
    */
-  public void addCircle( 
-      Tuple3f center, 
-      Tuple3f planeNormal,
-      float radius,
-      Color3f color, 
-      float duration) {
+  public void addCircle(Tuple3f center, Tuple3f planeNormal, float radius,
+      Color3f color, float duration) {
     addCircle(center, planeNormal, radius, color, duration, true);
   }
+
   /**
-   * Same as <code>addCircle(center, planeNormal, radius, color, <strong>0</strong>, depthEnabled)</code>
+   * Same as
+   * <code>addCircle(center, planeNormal, radius, color, <strong>0</strong>, depthEnabled)</code>
    * 
-   * @param center point.
-   * @param planeNormal normal to the circle.
-   * @param radius of the circle.
-   * @param color color of the primitive.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
+   * @param center
+   *          point.
+   * @param planeNormal
+   *          normal to the circle.
+   * @param radius
+   *          of the circle.
+   * @param color
+   *          color of the primitive.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
    * @since 0.1
    * @see #addCircle(Tuple3f, Tuple3f, float, Color3f, float, boolean)
    */
-  public void addCircle( 
-      Tuple3f center, 
-      Tuple3f planeNormal,
-      float radius,
-      Color3f color, 
-      boolean depthEnabled) {
+  public void addCircle(Tuple3f center, Tuple3f planeNormal, float radius,
+      Color3f color, boolean depthEnabled) {
     addCircle(center, planeNormal, radius, color, 0, depthEnabled);
   }
+
   /**
-   * Same as <code>addCircle(center, planeNormal, radius, color, <strong>0, true</strong>)</code>
+   * Same as
+   * <code>addCircle(center, planeNormal, radius, color, <strong>0, true</strong>)</code>
    * 
-   * @param center point.
-   * @param planeNormal normal to the circle.
-   * @param radius of the circle.
-   * @param color color of the primitive.
+   * @param center
+   *          point.
+   * @param planeNormal
+   *          normal to the circle.
+   * @param radius
+   *          of the circle.
+   * @param color
+   *          color of the primitive.
    * @since 0.1
    * @see #addCircle(Tuple3f, Vector3f, float, Color3f, float, boolean)
    */
-  public void addCircle( 
-      Tuple3f center, 
-      Vector3f planeNormal,
-      float radius,
+  public void addCircle(Tuple3f center, Vector3f planeNormal, float radius,
       Color3f color) {
     addCircle(center, planeNormal, radius, color, 0, true);
   }
-  
 
   /**
-   * Same as <code>addAxes(transformation, size, duration, <strong>true</strong>)</code>
+   * Same as
+   * <code>addAxes(transformation, size, duration, <strong>true</strong>)</code>
    * 
-   * @param transformation transformation to display.
-   * @param size of the lines exiting from the center point.
-   * @param duration time, in seconds, this information will be rendered.
+   * @param transformation
+   *          transformation to display.
+   * @param size
+   *          of the lines exiting from the center point.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
    * @since 0.1
    * @see #addAxes(Matrix4f, float, float, boolean)
    */
-  public void addAxes( 
-      Matrix4f transformation,
-      float size,
-      float duration) {
+  public void addAxes(Matrix4f transformation, float size, float duration) {
     addAxes(transformation, size, duration, true);
   }
-  /**
-   * Same as <code>addAxes(transformation, size, <strong>0</strong>, depthEnabled)</code>
-   * 
-   * @param transformation transformation to display.
-   * @param size of the lines exiting from the center point.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
-   * @since 0.1
-   * @see #addAxes(Matrix4f, float, float, boolean)
-   */
-  public void addAxes( 
-      Matrix4f transformation,
-      float size,
-      boolean depthEnabled) {
-    addAxes(transformation, size, 0, depthEnabled);
-  }
-  /**
-   * Same as <code>addAxes(transformation, size, <strong>0, true</strong>)</code>
-   * 
-   * @param transformation transformation to display.
-   * @param size of the lines exiting from the center point.
-   * @since 0.1
-   * @see #addAxes(Matrix4f, float, float, boolean)
-   */
-  public void addAxes( 
-      Matrix4f transformation,
-      float size) {
-    addAxes(transformation, size, 0, true);
-  }
-  
 
   /**
-   * Same as <code>addTriangle(v0, v1, v2, color, duration, <strong>true</strong>)</code>
+   * Same as
+   * <code>addAxes(transformation, size, <strong>0</strong>, depthEnabled)</code>
    * 
-   * @param v0 first point.
-   * @param v1 second point.
-   * @param v2 third point.
-   * @param color color of the primitive.
-   * @param duration time, in seconds, this information will be rendered.
+   * @param transformation
+   *          transformation to display.
+   * @param size
+   *          of the lines exiting from the center point.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
+   * @since 0.1
+   * @see #addAxes(Matrix4f, float, float, boolean)
+   */
+  public void addAxes(Matrix4f transformation, float size, boolean depthEnabled) {
+    addAxes(transformation, size, 0, depthEnabled);
+  }
+
+  /**
+   * Same as
+   * <code>addAxes(transformation, size, <strong>0, true</strong>)</code>
+   * 
+   * @param transformation
+   *          transformation to display.
+   * @param size
+   *          of the lines exiting from the center point.
+   * @since 0.1
+   * @see #addAxes(Matrix4f, float, float, boolean)
+   */
+  public void addAxes(Matrix4f transformation, float size) {
+    addAxes(transformation, size, 0, true);
+  }
+
+  /**
+   * Same as
+   * <code>addTriangle(v0, v1, v2, color, duration, <strong>true</strong>)</code>
+   * 
+   * @param v0
+   *          first point.
+   * @param v1
+   *          second point.
+   * @param v2
+   *          third point.
+   * @param color
+   *          color of the primitive.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
    * @since 0.1
    * @see #addTriangle(Tuple3f, Tuple3f, Tuple3f, Color3f, float, boolean)
    */
-  public void addTriangle( 
-      Tuple3f v0, 
-      Tuple3f v1, 
-      Tuple3f v2,
-      Color3f color, 
+  public void addTriangle(Tuple3f v0, Tuple3f v1, Tuple3f v2, Color3f color,
       float duration) {
     addTriangle(v0, v1, v2, color, duration, true);
   }
+
   /**
-   * Same as <code>addTriangle(v0, v1, v2, color, <strong>0</strong>, depthEnabled)</code>
+   * Same as
+   * <code>addTriangle(v0, v1, v2, color, <strong>0</strong>, depthEnabled)</code>
    * 
-   * @param v0 first point.
-   * @param v1 second point.
-   * @param v2 third point.
-   * @param color color of the primitive.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
+   * @param v0
+   *          first point.
+   * @param v1
+   *          second point.
+   * @param v2
+   *          third point.
+   * @param color
+   *          color of the primitive.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
    * @since 0.1
    * @see #addTriangle(Point3f, Point3f, Point3f, Color3f, float, boolean)
    */
-  public void addTriangle( 
-      Tuple3f v0, 
-      Tuple3f v1, 
-      Tuple3f v2,
-      Color3f color, 
+  public void addTriangle(Tuple3f v0, Tuple3f v1, Tuple3f v2, Color3f color,
       boolean depthEnabled) {
     addTriangle(v0, v1, v2, color, 0, depthEnabled);
   }
+
   /**
-   * Same as <code>addTriangle(v0, v1, v2, color, <strong>0, true</strong>)</code>
+   * Same as
+   * <code>addTriangle(v0, v1, v2, color, <strong>0, true</strong>)</code>
    * 
-   * @param v0 first point.
-   * @param v1 second point.
-   * @param v2 third point.
-   * @param color color of the primitive.
+   * @param v0
+   *          first point.
+   * @param v1
+   *          second point.
+   * @param v2
+   *          third point.
+   * @param color
+   *          color of the primitive.
    * @since 0.1
    * @see #addTriangle(Point3f, Point3f, Point3f, Color3f, float, boolean)
    */
-  public void addTriangle( 
-      Tuple3f v0, 
-      Tuple3f v1, 
-      Point3f v2,
-      Color3f color) {
+  public void addTriangle(Tuple3f v0, Tuple3f v1, Point3f v2, Color3f color) {
     addTriangle(v0, v1, v2, color, 0, true);
   }
-  
 
   /**
-   * Same as <code>addAABB(minCoords, maxCoords, color, duration, <strong>true</strong>)</code>
+   * Same as
+   * <code>addAABB(minCoords, maxCoords, color, duration, <strong>true</strong>)</code>
    * 
-   * @param minCoords minimum coordinates
-   * @param maxCoords maximim coordinates.
-   * @param color color of the primitive.
-   * @param duration time, in seconds, this information will be rendered.
+   * @param minCoords
+   *          minimum coordinates
+   * @param maxCoords
+   *          maximim coordinates.
+   * @param color
+   *          color of the primitive.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
    * @since 0.1
    * @see #addAABB(Point3f, Point3f, Color3f, float, boolean)
    */
-  public void addAABB( 
-      Tuple3f minCoords, 
-      Tuple3f maxCoords, 
-      Color3f color,  
+  public void addAABB(Tuple3f minCoords, Tuple3f maxCoords, Color3f color,
       float duration) {
     addAABB(minCoords, maxCoords, color, duration, true);
   }
+
   /**
-   * Same as <code>addAABB(minCoords, maxCoords, color, <strong>0</strong>, depthEnabled)</code>
+   * Same as
+   * <code>addAABB(minCoords, maxCoords, color, <strong>0</strong>, depthEnabled)</code>
    * 
-   * @param minCoords minimum coordinates
-   * @param maxCoords maximim coordinates.
-   * @param color color of the primitive.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
+   * @param minCoords
+   *          minimum coordinates
+   * @param maxCoords
+   *          maximim coordinates.
+   * @param color
+   *          color of the primitive.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
    * @since 0.1
    * @see #addAABB(Point3f, Point3f, Color3f, float, boolean)
    */
-  public void addAABB( 
-      Tuple3f minCoords, 
-      Tuple3f maxCoords, 
-      Color3f color,  
+  public void addAABB(Tuple3f minCoords, Tuple3f maxCoords, Color3f color,
       boolean depthEnabled) {
     addAABB(minCoords, maxCoords, color, 0, depthEnabled);
   }
+
   /**
-   * Same as <code>addAABB(minCoords, maxCoords, color, <strong>0, true</strong>)</code>
+   * Same as
+   * <code>addAABB(minCoords, maxCoords, color, <strong>0, true</strong>)</code>
    * 
-   * @param minCoords minimum coordinates
-   * @param maxCoords maximim coordinates.
-   * @param color color of the primitive.
+   * @param minCoords
+   *          minimum coordinates
+   * @param maxCoords
+   *          maximim coordinates.
+   * @param color
+   *          color of the primitive.
    * @since 0.1
    * @see #addAABB(Point3f, Point3f, Color3f, float, boolean)
    */
-  public void addAABB( 
-      Tuple3f minCoords, 
-      Tuple3f maxCoords, 
-      Color3f color) {
+  public void addAABB(Tuple3f minCoords, Tuple3f maxCoords, Color3f color) {
     addAABB(minCoords, maxCoords, color, 0, true);
   }
-  
 
   /**
-   * Same as <code>addOBB( centerTransformation, scaleXYZ, color, duration, <strong>true</strong>)</code>
+   * Same as
+   * <code>addOBB( centerTransformation, scaleXYZ, color, duration, <strong>true</strong>)</code>
    * 
-   * @param centerTransformation transformation to the center of the box.
-   * @param scaleXYZ size of the box.
-   * @param color color of the primitive.
-   * @param duration time, in seconds, this information will be rendered.
+   * @param centerTransformation
+   *          transformation to the center of the box.
+   * @param scaleXYZ
+   *          size of the box.
+   * @param color
+   *          color of the primitive.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
    * @since 0.1
    * @see #addOBB(Matrix4f, Tuple3f, Color3f, float, boolean)
    */
-  public void addOBB( 
-      Matrix4f centerTransformation,
-      Tuple3f scaleXYZ, 
-      Color3f color,
-      float duration) {
-    addOBB( centerTransformation, scaleXYZ, color, duration, true);
-  }
-  /**
-   * Same as <code>addOBB( centerTransformation, scaleXYZ, color, <strong>0</strong>, depthEnabled)</code>
-   * 
-   * @param centerTransformation transformation to the center of the box.
-   * @param scaleXYZ size of the box.
-   * @param color color of the primitive.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
-   * @since 0.1
-   * @see #addOBB(Matrix4f, Tuple3f, Color3f, float, boolean)
-   */
-  public void addOBB( 
-      Matrix4f centerTransformation,
-      Tuple3f scaleXYZ, 
-      Color3f color,
-      boolean depthEnabled) {
-    addOBB( centerTransformation, scaleXYZ, color, 0, depthEnabled);
-  }
-  /**
-   * Same as <code>addOBB( centerTransformation, scaleXYZ, color, <strong>0, true</strong>)</code>
-   * 
-   * @param centerTransformation transformation to the center of the box.
-   * @param scaleXYZ size of the box.
-   * @param color color of the primitive.
-   * @since 0.1
-   * @see #addOBB(Matrix4f, Tuple3f, Color3f, float, boolean)
-   */
-  public void addOBB( 
-      Matrix4f centerTransformation,
-      Tuple3f scaleXYZ, 
-      Color3f color) {
-    addOBB( centerTransformation, scaleXYZ, color, 0, true);
+  public void addOBB(Matrix4f centerTransformation, Tuple3f scaleXYZ,
+      Color3f color, float duration) {
+    addOBB(centerTransformation, scaleXYZ, color, duration, true);
   }
 
   /**
-   * Same as <code>addString(position, font, text, desiredHeight, alignment, color, duration, <strong>true</strong>)</code>
+   * Same as
+   * <code>addOBB( centerTransformation, scaleXYZ, color, <strong>0</strong>, depthEnabled)</code>
    * 
-   * @param position of the text in 3D space.
-   * @param font used in the text.
-   * @param text to display.
-   * @param desiredHeight height in engine units of the text.
-   * @param alignment of the text respect the point passed.
-   * @param color color of the primitive.
-   * @param duration time, in seconds, this information will be rendered.
+   * @param centerTransformation
+   *          transformation to the center of the box.
+   * @param scaleXYZ
+   *          size of the box.
+   * @param color
+   *          color of the primitive.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
    * @since 0.1
-   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f, float, boolean)
+   * @see #addOBB(Matrix4f, Tuple3f, Color3f, float, boolean)
    */
-  public void addString( 
-      Tuple3f position,
-      Font font,
-      String text,
-      float desiredHeight,
-      TextAlignment alignment,
-      Color3f color, 
-      float duration) {
-    addString(position, font, text, desiredHeight, alignment, color, duration, true);
+  public void addOBB(Matrix4f centerTransformation, Tuple3f scaleXYZ,
+      Color3f color, boolean depthEnabled) {
+    addOBB(centerTransformation, scaleXYZ, color, 0, depthEnabled);
   }
+
   /**
-   * Same as <code>addString(position, font, text, desiredHeight, alignment, color, <strong>0</strong>, depthEnabled)</code>
+   * Same as
+   * <code>addOBB( centerTransformation, scaleXYZ, color, <strong>0, true</strong>)</code>
    * 
-   * @param position of the text in 3D space.
-   * @param font used in the text.
-   * @param text to display.
-   * @param desiredHeight height in engine units of the text.
-   * @param alignment of the text respect the point passed.
-   * @param color color of the primitive.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
+   * @param centerTransformation
+   *          transformation to the center of the box.
+   * @param scaleXYZ
+   *          size of the box.
+   * @param color
+   *          color of the primitive.
    * @since 0.1
-   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f, float, boolean)
+   * @see #addOBB(Matrix4f, Tuple3f, Color3f, float, boolean)
    */
-  public void addString( 
-      Tuple3f position,
-      Font font,
-      String text,
-      float desiredHeight,
-      TextAlignment alignment,
-      Color3f color, 
-      boolean depthEnabled) {
-    addString(position, font, text, desiredHeight, alignment, color, 0, depthEnabled);
-  }
-  /**
-   * Same as <code>addString(position, font, text, desiredHeight, alignment, color, <strong>0, true</strong>)</code>
-   * 
-   * @param position of the text in 3D space.
-   * @param font used in the text.
-   * @param text to display.
-   * @param desiredHeight height in engine units of the text.
-   * @param alignment of the text respect the point passed.
-   * @param color color of the primitive.
-   * @since 0.1
-   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f, float, boolean)
-   */
-  public void addString( 
-      Tuple3f position,
-      Font font,
-      String text,
-      float desiredHeight,
-      TextAlignment alignment,
+  public void addOBB(Matrix4f centerTransformation, Tuple3f scaleXYZ,
       Color3f color) {
+    addOBB(centerTransformation, scaleXYZ, color, 0, true);
+  }
+
+  /**
+   * Same as
+   * <code>addString(position, font, text, desiredHeight, alignment, color, duration, <strong>true</strong>)</code>
+   * 
+   * @param position
+   *          of the text in 3D space.
+   * @param font
+   *          used in the text.
+   * @param text
+   *          to display.
+   * @param desiredHeight
+   *          height in engine units of the text.
+   * @param alignment
+   *          of the text respect the point passed.
+   * @param color
+   *          color of the primitive.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
+   * @since 0.1
+   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f,
+   *      float, boolean)
+   */
+  public void addString(Tuple3f position, Font font, String text,
+      float desiredHeight, TextAlignment alignment, Color3f color,
+      float duration) {
+    addString(position, font, text, desiredHeight, alignment, color, duration,
+        true);
+  }
+
+  /**
+   * Same as
+   * <code>addString(position, font, text, desiredHeight, alignment, color, <strong>0</strong>, depthEnabled)</code>
+   * 
+   * @param position
+   *          of the text in 3D space.
+   * @param font
+   *          used in the text.
+   * @param text
+   *          to display.
+   * @param desiredHeight
+   *          height in engine units of the text.
+   * @param alignment
+   *          of the text respect the point passed.
+   * @param color
+   *          color of the primitive.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
+   * @since 0.1
+   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f,
+   *      float, boolean)
+   */
+  public void addString(Tuple3f position, Font font, String text,
+      float desiredHeight, TextAlignment alignment, Color3f color,
+      boolean depthEnabled) {
+    addString(position, font, text, desiredHeight, alignment, color, 0,
+        depthEnabled);
+  }
+
+  /**
+   * Same as
+   * <code>addString(position, font, text, desiredHeight, alignment, color, <strong>0, true</strong>)</code>
+   * 
+   * @param position
+   *          of the text in 3D space.
+   * @param font
+   *          used in the text.
+   * @param text
+   *          to display.
+   * @param desiredHeight
+   *          height in engine units of the text.
+   * @param alignment
+   *          of the text respect the point passed.
+   * @param color
+   *          color of the primitive.
+   * @since 0.1
+   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f,
+   *      float, boolean)
+   */
+  public void addString(Tuple3f position, Font font, String text,
+      float desiredHeight, TextAlignment alignment, Color3f color) {
     addString(position, font, text, desiredHeight, alignment, color, 0, true);
   }
+
   /**
-   * Same as <code>addString(position, font, text, desiredHeight, <strong>MID_CENTER</strong>, color, duration, depthEnabled)</code>
+   * Same as
+   * <code>addString(position, font, text, desiredHeight, <strong>MID_CENTER</strong>, color, duration, depthEnabled)</code>
    * 
-   * @param position of the text in 3D space.
-   * @param font used in the text.
-   * @param text to display.
-   * @param desiredHeight height in engine units of the text.
-   * @param color color of the primitive.
-   * @param duration time, in seconds, this information will be rendered.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
+   * @param position
+   *          of the text in 3D space.
+   * @param font
+   *          used in the text.
+   * @param text
+   *          to display.
+   * @param desiredHeight
+   *          height in engine units of the text.
+   * @param color
+   *          color of the primitive.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
    * @since 0.1
-   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f, float, boolean)
+   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f,
+   *      float, boolean)
    */
-  public void addString( 
-      Tuple3f position,
-      Font font,
-      String text,
-      float desiredHeight,
-      Color3f color, 
-      float duration, 
-      boolean depthEnabled) {
-    addString(position, font, text, desiredHeight, TextAlignment.MID_CENTER, color, duration, depthEnabled);
-  }
-  /**
-   * Same as <code>addString(position, font, text, desiredHeight, <strong>MID_CENTER</strong>, color, duration, <strong>true</strong>)</code>
-   * 
-   * @param position of the text in 3D space.
-   * @param font used in the text.
-   * @param text to display.
-   * @param desiredHeight height in engine units of the text.
-   * @param color color of the primitive.
-   * @param duration time, in seconds, this information will be rendered.
-   * @since 0.1
-   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f, float, boolean)
-   */
-  public void addString( 
-      Tuple3f position,
-      Font font,
-      String text,
-      float desiredHeight,
-      Color3f color, 
-      float duration) {
-    addString(position, font, text, desiredHeight, TextAlignment.MID_CENTER, color, duration, true);
-  }
-  /**
-   * Same as <code>addString(position, font, text, desiredHeight, <strong>MID_CENTER</strong>, color, <strong>0</strong>, depthEnabled)</code>
-   * 
-   * @param position of the text in 3D space.
-   * @param font used in the text.
-   * @param text to display.
-   * @param desiredHeight height in engine units of the text.
-   * @param color color of the primitive.
-   * @param depthEnabled <code>true</code> if this primitive should be depth tested, 
-   *        <code>false</code> otherwise.
-   * @since 0.1
-   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f, float, boolean)
-   */
-  public void addString( 
-      Tuple3f position,
-      Font font,
-      String text,
-      float desiredHeight,
-      Color3f color, 
-      boolean depthEnabled) {
-    addString(position, font, text, desiredHeight, TextAlignment.MID_CENTER, color, 0, depthEnabled);
-  }
-  /**
-   * Same as <code>addString(position, font, text, desiredHeight, <strong>MID_CENTER</strong>, color, <strong>0, true</strong>)</code>
-   * 
-   * @param position of the text in 3D space.
-   * @param font used in the text.
-   * @param text to display.
-   * @param desiredHeight height in engine units of the text.
-   * @param color color of the primitive.
-   * @since 0.1
-   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f, float, boolean)
-   */
-  public void addString( 
-      Tuple3f position,
-      Font font,
-      String text,
-      float desiredHeight,
-      Color3f color) {
-    addString(position, font, text, desiredHeight, TextAlignment.MID_CENTER, color, 0, true);
+  public void addString(Tuple3f position, Font font, String text,
+      float desiredHeight, Color3f color, float duration, boolean depthEnabled) {
+    addString(position, font, text, desiredHeight, TextAlignment.MID_CENTER,
+        color, duration, depthEnabled);
   }
 
   /**
-   * Same as <code>addString2D(position, font, text, desiredHeight, alignment, color, <strong>0</strong>)</code>
+   * Same as
+   * <code>addString(position, font, text, desiredHeight, <strong>MID_CENTER</strong>, color, duration, <strong>true</strong>)</code>
    * 
-   * @param position Normalized (1 means the entire screen height) position. Positive coordinates 
-   *        are taken respect the upper left screen corner and negative from the bottom right.
-   * @param font used in the text.
-   * @param text to display.
-   * @param desiredHeight height in normalized units (1 means the entire screen height).
-   * @param alignment of the text respect the point passed.
-   * @param color color of the primitive.
+   * @param position
+   *          of the text in 3D space.
+   * @param font
+   *          used in the text.
+   * @param text
+   *          to display.
+   * @param desiredHeight
+   *          height in engine units of the text.
+   * @param color
+   *          color of the primitive.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
    * @since 0.1
-   * @see #addString2D(Tuple2f, Font, String, float, TextAlignment, Color3f, float)
+   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f,
+   *      float, boolean)
    */
-  public void addString2D( 
-      Tuple2f position,
-      Font font,
-      String text,
-      float desiredHeight,
-      TextAlignment alignment,
-      Color3f color) {
+  public void addString(Tuple3f position, Font font, String text,
+      float desiredHeight, Color3f color, float duration) {
+    addString(position, font, text, desiredHeight, TextAlignment.MID_CENTER,
+        color, duration, true);
+  }
+
+  /**
+   * Same as
+   * <code>addString(position, font, text, desiredHeight, <strong>MID_CENTER</strong>, color, <strong>0</strong>, depthEnabled)</code>
+   * 
+   * @param position
+   *          of the text in 3D space.
+   * @param font
+   *          used in the text.
+   * @param text
+   *          to display.
+   * @param desiredHeight
+   *          height in engine units of the text.
+   * @param color
+   *          color of the primitive.
+   * @param depthEnabled
+   *          <code>true</code> if this primitive should be depth tested,
+   *          <code>false</code> otherwise.
+   * @since 0.1
+   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f,
+   *      float, boolean)
+   */
+  public void addString(Tuple3f position, Font font, String text,
+      float desiredHeight, Color3f color, boolean depthEnabled) {
+    addString(position, font, text, desiredHeight, TextAlignment.MID_CENTER,
+        color, 0, depthEnabled);
+  }
+
+  /**
+   * Same as
+   * <code>addString(position, font, text, desiredHeight, <strong>MID_CENTER</strong>, color, <strong>0, true</strong>)</code>
+   * 
+   * @param position
+   *          of the text in 3D space.
+   * @param font
+   *          used in the text.
+   * @param text
+   *          to display.
+   * @param desiredHeight
+   *          height in engine units of the text.
+   * @param color
+   *          color of the primitive.
+   * @since 0.1
+   * @see #addString(Tuple3f, Font, String, float, TextAlignment, Color3f,
+   *      float, boolean)
+   */
+  public void addString(Tuple3f position, Font font, String text,
+      float desiredHeight, Color3f color) {
+    addString(position, font, text, desiredHeight, TextAlignment.MID_CENTER,
+        color, 0, true);
+  }
+
+  /**
+   * Same as
+   * <code>addString2D(position, font, text, desiredHeight, alignment, color, <strong>0</strong>)</code>
+   * 
+   * @param position
+   *          Normalized (1 means the entire screen height) position. Positive
+   *          coordinates are taken respect the upper left screen corner and
+   *          negative from the bottom right.
+   * @param font
+   *          used in the text.
+   * @param text
+   *          to display.
+   * @param desiredHeight
+   *          height in normalized units (1 means the entire screen height).
+   * @param alignment
+   *          of the text respect the point passed.
+   * @param color
+   *          color of the primitive.
+   * @since 0.1
+   * @see #addString2D(Tuple2f, Font, String, float, TextAlignment, Color3f,
+   *      float)
+   */
+  public void addString2D(Tuple2f position, Font font, String text,
+      float desiredHeight, TextAlignment alignment, Color3f color) {
     addString2D(position, font, text, desiredHeight, alignment, color, 0);
   }
-  /**
-   * Same as <code>addString2D(position, font, text, desiredHeight, <strong>TOP_LEFT</strong>, color, duration)</code>
-   * 
-   * @param position Normalized (1 means the entire screen height) position. Positive coordinates 
-   *        are taken respect the upper left screen corner and negative from the bottom right.
-   * @param font used in the text.
-   * @param text to display.
-   * @param desiredHeight height in normalized units (1 means the entire screen height).
-   * @param color color of the primitive.
-   * @param duration time, in seconds, this information will be rendered.
-   * @since 0.1
-   * @see #addString2D(Tuple2f, Font, String, float, TextAlignment, Color3f, float)
-   */
-  public void addString2D( 
-      Tuple2f position,
-      Font font,
-      String text,
-      float desiredHeight,
-      Color3f color, 
-      float duration) {
-    addString2D(position, font, text, desiredHeight, TextAlignment.TOP_LEFT, color, duration);
-  }
-  /**
-   * Same as <code>addString2D(position, font, text, desiredHeight, <strong>TOP_LEFT</strong>, color, <strong>0</strong>)</code>
-   * 
-   * @param position Normalized (1 means the entire screen height) position. Positive coordinates 
-   *        are taken respect the upper left screen corner and negative from the bottom right.
-   * @param font used in the text.
-   * @param text to display.
-   * @param desiredHeight height in normalized units (1 means the entire screen height).
-   * @param color color of the primitive.
-   * @since 0.1
-   * @see #addString2D(Tuple2f, Font, String, float, TextAlignment, Color3f, float)
-   */
-  public void addString2D( 
-      Tuple2f position,
-      Font font,
-      String text,
-      float desiredHeight,
-      Color3f color) {
-    addString2D(position, font, text, desiredHeight, TextAlignment.TOP_LEFT, color, 0);
-  }
-  
 
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
-  
   /**
-   * Renders all debug information. After rendering them, cleans those whose time has finished, so
-   * every primitive is rendered for at least one frame.
+   * Same as
+   * <code>addString2D(position, font, text, desiredHeight, <strong>TOP_LEFT</strong>, color, duration)</code>
    * 
-   * @param rm Render Manager.
-   * @param dt time elapsed since the last call.
+   * @param position
+   *          Normalized (1 means the entire screen height) position. Positive
+   *          coordinates are taken respect the upper left screen corner and
+   *          negative from the bottom right.
+   * @param font
+   *          used in the text.
+   * @param text
+   *          to display.
+   * @param desiredHeight
+   *          height in normalized units (1 means the entire screen height).
+   * @param color
+   *          color of the primitive.
+   * @param duration
+   *          time, in seconds, this information will be rendered.
+   * @since 0.1
+   * @see #addString2D(Tuple2f, Font, String, float, TextAlignment, Color3f,
+   *      float)
+   */
+  public void addString2D(Tuple2f position, Font font, String text,
+      float desiredHeight, Color3f color, float duration) {
+    addString2D(position, font, text, desiredHeight, TextAlignment.TOP_LEFT,
+        color, duration);
+  }
+
+  /**
+   * Same as
+   * <code>addString2D(position, font, text, desiredHeight, <strong>TOP_LEFT</strong>, color, <strong>0</strong>)</code>
+   * 
+   * @param position
+   *          Normalized (1 means the entire screen height) position. Positive
+   *          coordinates are taken respect the upper left screen corner and
+   *          negative from the bottom right.
+   * @param font
+   *          used in the text.
+   * @param text
+   *          to display.
+   * @param desiredHeight
+   *          height in normalized units (1 means the entire screen height).
+   * @param color
+   *          color of the primitive.
+   * @since 0.1
+   * @see #addString2D(Tuple2f, Font, String, float, TextAlignment, Color3f,
+   *      float)
+   */
+  public void addString2D(Tuple2f position, Font font, String text,
+      float desiredHeight, Color3f color) {
+    addString2D(position, font, text, desiredHeight, TextAlignment.TOP_LEFT,
+        color, 0);
+  }
+
+  // /////////////////////////////////////////////////////////////////////////////////////////////////////
+  // /////////////////////////////////////////////////////////////////////////////////////////////////////
+  // /////////////////////////////////////////////////////////////////////////////////////////////////////
+  // /////////////////////////////////////////////////////////////////////////////////////////////////////
+  // /////////////////////////////////////////////////////////////////////////////////////////////////////
+  // /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Renders all debug information. After rendering them, cleans those whose
+   * time has finished, so every primitive is rendered for at least one frame.
+   * 
+   * @param rm
+   *          Render Manager.
+   * @param dt
+   *          time elapsed since the last call.
    */
   public void render(RenderManager rm, DeltaTime dt) {
     beginRender(rm);
-    //renderLines(rm);
+    // renderLines(rm);
     renderLinesAndTriangles(rm);
     renderCrosses(rm);
     renderSpheres(rm);
     renderCircles(rm);
     renderAxes(rm);
-    //renderTriangles(rm);
+    // renderTriangles(rm);
     renderBBs(rm);
     renderStrings(rm);
     endRender();
@@ -1062,18 +1182,19 @@ public abstract class DebugRender {
     cleanList(obbs, dt.dt);
     cleanList(strings, dt.dt);
   }
-  
+
   /**
    * From a list of DebugObjects, cleans all whose time has explired.
    * 
    * @param list
    * @param dt
    */
-  private static <T> void cleanList(ArrayList<? extends DebugObject> list, float dt) {
+  private static <T> void cleanList(ArrayList<? extends DebugObject> list,
+      float dt) {
     int size = list.size();
-    for(int i = 0; i < size; ++i) {
+    for (int i = 0; i < size; ++i) {
       DebugObject debugObject = list.get(i);
-      if(debugObject.duration <= dt) {
+      if (debugObject.duration <= dt) {
         Collections.swap(list, i, size - 1);
         size--;
         i--;
@@ -1081,7 +1202,7 @@ public abstract class DebugRender {
         debugObject.duration -= dt;
       }
     }
-    for(int i = list.size() - 1; i >= size; --i) {
+    for (int i = list.size() - 1; i >= size; --i) {
       list.remove(i);
     }
   }
@@ -1089,7 +1210,8 @@ public abstract class DebugRender {
   /**
    * Called before any other render method.
    * 
-   * @param rm Render Manager
+   * @param rm
+   *          Render Manager
    * @since 0.1
    * 
    * @see #renderLines(RenderManager)
@@ -1122,17 +1244,19 @@ public abstract class DebugRender {
   /**
    * Overwrite and implement how to render all lines.
    * 
-   * @param rm Render Manager
+   * @param rm
+   *          Render Manager
    * 
    * @since 0.1
    * 
    * @see #lines
    */
-  //protected abstract void renderLines(RenderManager rm);
+  // protected abstract void renderLines(RenderManager rm);
   /**
    * Overwrite and implement how to render all lines and all triangles.
    * 
-   * @param rm Render Manager
+   * @param rm
+   *          Render Manager
    * 
    * @since 0.2
    * 
@@ -1140,60 +1264,71 @@ public abstract class DebugRender {
    * @see DebugRender#triangles
    */
   protected abstract void renderLinesAndTriangles(RenderManager rm);
+
   /**
    * Overwrite and implement how to render all crosses.
    * 
-   * @param rm Render Manager
+   * @param rm
+   *          Render Manager
    * 
    * @since 0.1
    * 
    * @see #crosses
    */
   protected abstract void renderCrosses(RenderManager rm);
+
   /**
    * Overwrite and implement how to render all spheres.
    * 
-   * @param rm Render Manager
+   * @param rm
+   *          Render Manager
    * 
    * @since 0.1
    * 
    * @see #spheres
    */
   protected abstract void renderSpheres(RenderManager rm);
+
   /**
    * Overwrite and implement how to render all circles.
    * 
-   * @param rm Render Manager
+   * @param rm
+   *          Render Manager
    * 
    * @since 0.1
    * 
    * @see #circles
    */
   protected abstract void renderCircles(RenderManager rm);
+
   /**
    * Overwrite and implement how to render all axes.
    * 
-   * @param rm Render Manager
+   * @param rm
+   *          Render Manager
    * 
    * @since 0.1
    * 
    * @see #axes
    */
   protected abstract void renderAxes(RenderManager rm);
+
   /**
    * Overwrite and implement how to render all triangles.
    * 
-   * @param rm Render Manager
+   * @param rm
+   *          Render Manager
    * 
    * @since 0.1
    * 
    * @see #triangles
    */
-  //protected abstract void renderTriangles(RenderManager rm);
+  // protected abstract void renderTriangles(RenderManager rm);
   /**
    * Overwrite and implement how to render all bounding boxes.
    * 
-   * @param rm Render Manager
+   * @param rm
+   *          Render Manager
    * 
    * @since 0.1
    * 
@@ -1201,15 +1336,12 @@ public abstract class DebugRender {
    * @see #obb
    */
   protected abstract void renderBBs(RenderManager rm);
-  
-  
-  
-
 
   /**
    * Renders all bounding strings, using the Font Manager.
    * 
-   * @param rm Render Manager
+   * @param rm
+   *          Render Manager
    * 
    * @since 0.1
    * 
@@ -1217,93 +1349,97 @@ public abstract class DebugRender {
    * @see FontManager
    */
   private final void renderStrings(RenderManager rm) {
-    
-    if(strings.size() == 0)
-      return;
-    
-    FontManager fm = Core.getCore().getFontManager();
-    
-    //////////////////////////////////////////////
-    Vector3f v3Aux  = new Vector3f();
-    Point3f  p3CameraPos = new Point3f();
-    Quat4f   qAux  = new Quat4f();
 
-    Matrix4f orthoProj          = new Matrix4f();
-    Matrix4f viewProj           = new Matrix4f();
-    Matrix4f model              = new Matrix4f();
-    Matrix4f modelViewProj      = new Matrix4f();
+    if (strings.size() == 0)
+      return;
+
+    FontManager fm = Core.getCore().getFontManager();
+
+    // ////////////////////////////////////////////
+    Vector3f v3Aux = new Vector3f();
+    Point3f p3CameraPos = new Point3f();
+    Quat4f qAux = new Quat4f();
+
+    Matrix4f orthoProj = new Matrix4f();
+    Matrix4f viewProj = new Matrix4f();
+    Matrix4f model = new Matrix4f();
+    Matrix4f modelViewProj = new Matrix4f();
     orthoProj.setIdentity();
     viewProj.setIdentity();
-    
-    //rm.getSceneData().getViewMatrix(view);
+
+    // rm.getSceneData().getViewMatrix(view);
     rm.getSceneData().getViewProjectionMatrix(viewProj);
     rm.getSceneData().getCameraPosition(p3CameraPos);
     float normalizedWidth = rm.getAspectRatio();
     SceneData.getOrtho(0, normalizedWidth, 0, 1, -1, 1, orthoProj);
-    ///////////////////////////////////////////////
+    // /////////////////////////////////////////////
 
-    assert Utils.V3_MINUS_Z.x == 0 && Utils.V3_MINUS_Z.y == 0 && Utils.V3_MINUS_Z.z == -1;
+    assert Utils.V3_MINUS_Z.x == 0 && Utils.V3_MINUS_Z.y == 0
+        && Utils.V3_MINUS_Z.z == -1;
     assert Utils.V3_Z.x == 0 && Utils.V3_Z.y == 0 && Utils.V3_Z.z == 1;
-    
+
     Vector3f cameraUpVector = new Vector3f();
     rm.getSceneData().getCameraUpVector(cameraUpVector);
-    
-    for(DebugString text : strings) {
-      
+
+    for (DebugString text : strings) {
+
       rm.setDepthTest(text.depthEnabled);
 
-      if(text.on2D) {
+      if (text.on2D) {
         model.setIdentity();
-        v3Aux.x = (Utils.isNegative(text.position.x))? normalizedWidth + text.position.x : text.position.x;
-        v3Aux.y = (Utils.isNegative(text.position.y))? 1.f             + text.position.y : text.position.y;
+        v3Aux.x = (Utils.isNegative(text.position.x)) ? normalizedWidth
+            + text.position.x : text.position.x;
+        v3Aux.y = (Utils.isNegative(text.position.y)) ? 1.f + text.position.y
+            : text.position.y;
         v3Aux.z = 0;
         model.setTranslation(v3Aux);
         model.setScale(text.desiredHeight / text.font.getLineHeight());
-        
-        
+
         modelViewProj.mul(orthoProj, model);
       } else {
         model.setIdentity();
         v3Aux.set(text.position);
         model.setTranslation(v3Aux);
         model.setScale(text.desiredHeight / text.font.getLineHeight());
-        
+
         v3Aux.sub(p3CameraPos, text.position);
         v3Aux.normalize();
-        Utils.getClosestRotation(Utils.V3_MINUS_Z, Utils.V3_MINUS_Y, v3Aux, cameraUpVector, qAux);
+        Utils.getClosestRotation(Utils.V3_MINUS_Z, Utils.V3_MINUS_Y, v3Aux,
+            cameraUpVector, qAux);
         model.setRotation(qAux);
-  
-        
+
         modelViewProj.mul(viewProj, model);
       }
-      
-      fm.printString(text.font, text.text, text.color, modelViewProj, text.alignment, rm);
+
+      fm.printString(text.font, text.text, text.color, modelViewProj,
+          text.alignment, rm);
     }
   }
-  
-  
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // /////////////////////////////////////////////////////////////////////////////////////////////////////
+  // /////////////////////////////////////////////////////////////////////////////////////////////////////
+  // /////////////////////////////////////////////////////////////////////////////////////////////////////
+  // /////////////////////////////////////////////////////////////////////////////////////////////////////
+  // /////////////////////////////////////////////////////////////////////////////////////////////////////
+  // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Base class of all debug objects.
    * 
    * @author Isaac 'Atridas' Serrano Guasch
    * @since 0.1
-   *
+   * 
    */
   protected static class DebugObject {
     /**
      * Time left until this object will be erased.
+     * 
      * @since 0.1
      */
     public float duration;
     /**
      * If this object should or should not be depth culled.
+     * 
      * @since 0.1
      */
     public final boolean depthEnabled;
@@ -1326,11 +1462,12 @@ public abstract class DebugRender {
    * 
    * @author Isaac 'Atridas' Serrano Guasch
    * @since 0.1
-   *
+   * 
    */
   protected static class DebugObjectWithColor extends DebugObject {
     /**
      * Color this debug object will be rendered.
+     * 
      * @since 0.1
      */
     public final Color3f color;
@@ -1343,31 +1480,34 @@ public abstract class DebugRender {
      * @param _color
      * @since 0.1
      */
-    DebugObjectWithColor(final float _duration, final boolean _depthEnabled, final Color3f _color) {
+    DebugObjectWithColor(final float _duration, final boolean _depthEnabled,
+        final Color3f _color) {
       super(_duration, _depthEnabled);
       color = new Color3f(_color);
     }
   }
-  
+
   /**
    * Represents a line that goes from one point to another.
    * 
    * @author Isaac 'Atridas' Serrano Guasch
    * @since 0.1
-   *
+   * 
    */
   protected static final class Line extends DebugObjectWithColor {
     /**
      * First point of the line.
+     * 
      * @since 0.1
      */
     public final Point3f origin;
     /**
      * Last point of the line.
+     * 
      * @since 0.1
      */
     public final Point3f destination;
-    
+
     /**
      * Default constructor.
      * 
@@ -1378,33 +1518,35 @@ public abstract class DebugRender {
      * @param color
      * @since 0.1
      */
-    Line(Tuple3f _origin, Tuple3f _destination,
-        final float duration, final boolean depthEnabled, final Color3f color) {
+    Line(Tuple3f _origin, Tuple3f _destination, final float duration,
+        final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
-      origin= new Point3f( _origin );
-      destination = new Point3f( _destination );
+      origin = new Point3f(_origin);
+      destination = new Point3f(_destination);
     }
   }
-  
+
   /**
    * Represents a cross around one point.
    * 
    * @author Isaac 'Atridas' Serrano Guasch
    * @since 0.1
-   *
+   * 
    */
   protected static final class Cross extends DebugObjectWithColor {
     /**
      * Center point of that cross.
+     * 
      * @since 0.1
      */
     public final Point3f center;
     /**
      * Size from the center to the end of the cross.
+     * 
      * @since 0.1
      */
     public final float size;
-    
+
     /**
      * Default constructor.
      * 
@@ -1415,33 +1557,35 @@ public abstract class DebugRender {
      * @param color
      * @since 0.1
      */
-    Cross(Tuple3f _center, float _size,
-        final float duration, final boolean depthEnabled, final Color3f color) {
+    Cross(Tuple3f _center, float _size, final float duration,
+        final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
-      center= new Point3f( _center );
+      center = new Point3f(_center);
       size = _size;
     }
   }
-  
+
   /**
    * Represents a sphere.
    * 
    * @author Isaac 'Atridas' Serrano Guasch
    * @since 0.1
-   *
+   * 
    */
   protected static final class Sphere extends DebugObjectWithColor {
     /**
      * Center of the sphere.
+     * 
      * @since 0.1
      */
     public final Point3f center;
     /**
      * Radius of the sphere.
+     * 
      * @since 0.1
      */
     public final float radius;
-    
+
     /**
      * Default constructor.
      * 
@@ -1452,38 +1596,41 @@ public abstract class DebugRender {
      * @param color
      * @since 0.1
      */
-    Sphere(Tuple3f _center, float _radius,
-        final float duration, final boolean depthEnabled, final Color3f color) {
+    Sphere(Tuple3f _center, float _radius, final float duration,
+        final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
-      center= new Point3f( _center );
+      center = new Point3f(_center);
       radius = _radius;
     }
   }
-  
+
   /**
    * Represents a circle.
    * 
    * @author Isaac 'Atridas' Serrano Guasch
    * @since 0.1
-   *
+   * 
    */
   protected static final class Circle extends DebugObjectWithColor {
     /**
      * Center of the circle.
+     * 
      * @since 0.1
      */
     public final Point3f center;
     /**
      * Normal of the plane where the circle will be rendered.
+     * 
      * @since 0.1
      */
     public final Vector3f planeNormal;
     /**
      * Radius of the circle.
+     * 
      * @since 0.1
      */
     public final float radius;
-    
+
     /**
      * Default constructor.
      * 
@@ -1498,35 +1645,37 @@ public abstract class DebugRender {
     Circle(Tuple3f _center, float _radius, Tuple3f _planeNormal,
         final float duration, final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
-      center = new Point3f ( _center );
-      radius = _radius ;
-      
+      center = new Point3f(_center);
+      radius = _radius;
+
       planeNormal = new Vector3f(_planeNormal);
-      assert Math.abs(planeNormal.lengthSquared() - 1) < Utils.EPSILON; //¿?
+      assert Math.abs(planeNormal.lengthSquared() - 1) < Utils.EPSILON; // ¿?
       planeNormal.normalize();
-      
+
     }
   }
-  
+
   /**
    * Represent a set of transformed axes.
    * 
    * @author Isaac 'Atridas' Serrano Guasch
    * @since 0.1
-   *
+   * 
    */
   protected static final class Axes extends DebugObject {
     /**
      * Transformation aplied to said axes.
+     * 
      * @since 0.1
      */
     public final Matrix4f transformation;
     /**
      * Size of each axe.
+     * 
      * @since 0.1
      */
     public final float size;
-    
+
     /**
      * Default Constructor.
      * 
@@ -1536,38 +1685,41 @@ public abstract class DebugRender {
      * @param depthEnabled
      * @since 0.1
      */
-    Axes(Matrix4f _transformation, float _size,
-        final float duration, final boolean depthEnabled) {
-      super(duration, depthEnabled);      
-      transformation = new Matrix4f( _transformation );
+    Axes(Matrix4f _transformation, float _size, final float duration,
+        final boolean depthEnabled) {
+      super(duration, depthEnabled);
+      transformation = new Matrix4f(_transformation);
       size = _size;
     }
   }
-  
+
   /**
    * Represents a wireframe triangle.
    * 
    * @author Isaac 'Atridas' Serrano Guasch
    * @since 0.1
-   *
+   * 
    */
   protected static final class Triangle extends DebugObjectWithColor {
     /**
      * Point of the triangle.
+     * 
      * @since 0.1
      */
     public final Point3f v0;
     /**
      * Point of the triangle.
+     * 
      * @since 0.1
      */
     public final Point3f v1;
     /**
      * Point of the triangle.
+     * 
      * @since 0.1
      */
     public final Point3f v2;
-    
+
     /**
      * Default Constructor.
      * 
@@ -1579,15 +1731,15 @@ public abstract class DebugRender {
      * @param color
      * @since 0.1
      */
-    Triangle(Tuple3f _v0, Tuple3f _v1, Tuple3f _v2,
-        final float duration, final boolean depthEnabled, final Color3f color) {
+    Triangle(Tuple3f _v0, Tuple3f _v1, Tuple3f _v2, final float duration,
+        final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
       v0 = new Point3f(_v0);
       v1 = new Point3f(_v1);
       v2 = new Point3f(_v2);
     }
   }
-  
+
   /**
    * Represents an axis aligned bounding box.
    * 
@@ -1597,15 +1749,17 @@ public abstract class DebugRender {
   protected static final class AABB extends DebugObjectWithColor {
     /**
      * Coordinates to the lower left close corner.
+     * 
      * @since 0.1
      */
     public final Point3f minCoords;
     /**
      * Coordinates of the upper right far corner.
+     * 
      * @since 0.1
      */
     public final Point3f maxCoords;
-    
+
     /**
      * Default constructor.
      * 
@@ -1616,33 +1770,35 @@ public abstract class DebugRender {
      * @param color
      * @since 0.1
      */
-    AABB(Tuple3f _minCoords, Tuple3f _maxCoords,
-        final float duration, final boolean depthEnabled, final Color3f color) {
+    AABB(Tuple3f _minCoords, Tuple3f _maxCoords, final float duration,
+        final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
       minCoords = new Point3f(_minCoords);
       maxCoords = new Point3f(_maxCoords);
     }
   }
-  
+
   /**
    * Represents an oriented bounding box.
    * 
    * @author Isaac 'Atridas' Serrano Guasch
    * @since 0.1
-   *
+   * 
    */
   protected static final class OBB extends DebugObjectWithColor {
     /**
      * Transformation from the center of the scene to the center of the box.
+     * 
      * @since 0.1
      */
     public final Matrix4f centerTransformation;
     /**
      * Size of each box side.
+     * 
      * @since 0.1
      */
     public final Tuple3f scaleXYZ;
-    
+
     /**
      * Default Constructor.
      * 
@@ -1660,47 +1816,54 @@ public abstract class DebugRender {
       scaleXYZ = new Point3f(_scaleXYZ);
     }
   }
-  
+
   /**
    * Represents a text rendered to the scene or the screen.
    * 
    * @author Isaac 'Atridas' Serrano Guasch
    * @since 0.1
-   *
+   * 
    */
   protected static final class DebugString extends DebugObjectWithColor {
     /**
-     * Position of the text. With 3D coordinates if it is a 3D text, and 2D normalized
-     * coordinates if it is a screen text.
+     * Position of the text. With 3D coordinates if it is a 3D text, and 2D
+     * normalized coordinates if it is a screen text.
+     * 
      * @since 0.1
      */
     public final Point3f position;
     /**
      * Font used to render the text.
+     * 
      * @since 0.1
      */
     public final Font font;
     /**
      * Text to render.
+     * 
      * @since 0.1
      */
     public final String text;
     /**
-     * If this text is on the 3D scene (<code>false</code>) or on the screen (<code>true</code>)
+     * If this text is on the 3D scene (<code>false</code>) or on the screen (
+     * <code>true</code>)
+     * 
      * @since 0.1
      */
     public final boolean on2D;
     /**
      * Alignment of the text.
+     * 
      * @since 0.1
      */
     public final TextAlignment alignment;
     /**
      * Height of the text. In engine units if 3D, in normalized units if 2D.
+     * 
      * @since 0.1
      */
     public final float desiredHeight;
-    
+
     /**
      * Default Constructor.
      * 
@@ -1715,11 +1878,12 @@ public abstract class DebugRender {
      * @param color
      * @since 0.1
      */
-    DebugString(final Tuple3f _position, final Font _font, final String _text, final float _desiredHeight,
-        final boolean _on2D, final TextAlignment _aligment,
-        final float duration, final boolean depthEnabled, final Color3f color) {
+    DebugString(final Tuple3f _position, final Font _font, final String _text,
+        final float _desiredHeight, final boolean _on2D,
+        final TextAlignment _aligment, final float duration,
+        final boolean depthEnabled, final Color3f color) {
       super(duration, depthEnabled, color);
-      position = new Point3f( _position );
+      position = new Point3f(_position);
       font = _font;
       text = _text;
       desiredHeight = _desiredHeight;
@@ -1758,7 +1922,7 @@ public abstract class DebugRender {
    * @since 0.1
    */
   protected static final int axesNumVertexs = 6;
-  
+
   /**
    * Creates the vertex buffer to render a cross.
    * 
@@ -1771,46 +1935,43 @@ public abstract class DebugRender {
     vertices.add(1.f);
     vertices.add(0.f);
     vertices.add(0.f);
-    
+
     vertices.add(-1.f);
     vertices.add(0.f);
     vertices.add(0.f);
 
-    
     vertices.add(0.f);
     vertices.add(1.f);
     vertices.add(0.f);
-    
+
     vertices.add(0.f);
     vertices.add(-1.f);
     vertices.add(0.f);
 
-    
     vertices.add(0.f);
     vertices.add(0.f);
     vertices.add(1.f);
-    
+
     vertices.add(0.f);
     vertices.add(0.f);
     vertices.add(-1.f);
-    //////////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////////
     Float faux1[] = vertices.toArray(new Float[vertices.size()]);
     float faux2[] = new float[faux1.length];
-    for(int i = 0; i < faux1.length; i++) {
+    for (int i = 0; i < faux1.length; i++) {
       faux2[i] = faux1[i];
     }
     faux1 = null;
     vertices = null;
-    //////////////////////////////////////////////////////////////
-    
+    // ////////////////////////////////////////////////////////////
 
     FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
     vertexBuffer.put(faux2);
     vertexBuffer.flip();
-    
+
     return vertexBuffer;
   }
-  
+
   /**
    * Creates a vertex buffer for a sphere.
    * 
@@ -1820,41 +1981,40 @@ public abstract class DebugRender {
   protected final FloatBuffer createSphereVertexBuffer() {
     ArrayList<Float> vertices = new ArrayList<>();
 
-    vertices.add( 0.f);
-    vertices.add( 0.f);
-    vertices.add( 1.f); //top
-    
-    vertices.add( 0.f);
-    vertices.add( 0.f);
-    vertices.add(-1.f); //botom
-    
-    for(int i = 1; i < SPHERE_STACKS; i++) {
-      float z = i / (SPHERE_STACKS/2.f) - 1;
-      for(int j = 0; j < SPHERE_SUBDIV; ++j) {
-        float len = (float)Math.sqrt(1 - z*z);
-        float x = (float) Math.sin( j * Math.PI * 2 / SPHERE_SUBDIV) * len;
-        float y = (float) Math.cos( j * Math.PI * 2 / SPHERE_SUBDIV) * len;
-        
+    vertices.add(0.f);
+    vertices.add(0.f);
+    vertices.add(1.f); // top
+
+    vertices.add(0.f);
+    vertices.add(0.f);
+    vertices.add(-1.f); // botom
+
+    for (int i = 1; i < SPHERE_STACKS; i++) {
+      float z = i / (SPHERE_STACKS / 2.f) - 1;
+      for (int j = 0; j < SPHERE_SUBDIV; ++j) {
+        float len = (float) Math.sqrt(1 - z * z);
+        float x = (float) Math.sin(j * Math.PI * 2 / SPHERE_SUBDIV) * len;
+        float y = (float) Math.cos(j * Math.PI * 2 / SPHERE_SUBDIV) * len;
 
         vertices.add(x);
         vertices.add(y);
         vertices.add(z);
       }
     }
-    //////////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////////
     Float faux1[] = vertices.toArray(new Float[vertices.size()]);
     float faux2[] = new float[faux1.length];
-    for(int i = 0; i < faux1.length; i++) {
+    for (int i = 0; i < faux1.length; i++) {
       faux2[i] = faux1[i];
     }
     faux1 = null;
     vertices = null;
-    //////////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////////
 
     FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
     vertexBuffer.put(faux2);
     vertexBuffer.flip();
-    
+
     return vertexBuffer;
   }
 
@@ -1867,72 +2027,70 @@ public abstract class DebugRender {
   protected final ShortBuffer createSphereIndexBuffer() {
 
     ArrayList<Short> indexes = new ArrayList<>();
-    
-    //part de sota
-    indexes.add((short)1);
-    for(short j = 0; j < SPHERE_SUBDIV - 1; j += 2) {
-      indexes.add( (short)( 2 + j    ) );
-      indexes.add( (short)( 2 + j +1 ) );
-      indexes.add((short)1);
+
+    // part de sota
+    indexes.add((short) 1);
+    for (short j = 0; j < SPHERE_SUBDIV - 1; j += 2) {
+      indexes.add((short) (2 + j));
+      indexes.add((short) (2 + j + 1));
+      indexes.add((short) 1);
     }
     short baseStack;
-    
-    //paral·lels
-    for(short i = 1; i < SPHERE_STACKS; i++) {
-      baseStack = (short)( (i-1) * SPHERE_SUBDIV + 2 );
-      for(short j = 0; j < SPHERE_SUBDIV -1; ++j) {
-        indexes.add( (short)( baseStack + j    ) );
+
+    // paral·lels
+    for (short i = 1; i < SPHERE_STACKS; i++) {
+      baseStack = (short) ((i - 1) * SPHERE_SUBDIV + 2);
+      for (short j = 0; j < SPHERE_SUBDIV - 1; ++j) {
+        indexes.add((short) (baseStack + j));
       }
-      indexes.add( (short)( baseStack ) );
+      indexes.add((short) (baseStack));
     }
 
-
-    //part de sobre
-    baseStack = (short)( (SPHERE_STACKS-2) * SPHERE_SUBDIV + 2 );
-    indexes.add((short)0);
-    for(short j = 0; j < SPHERE_SUBDIV - 1; j += 2) {
-      indexes.add( (short)( baseStack + j    ) );
-      indexes.add( (short)( baseStack + j +1 ) );
-      indexes.add((short)0);
+    // part de sobre
+    baseStack = (short) ((SPHERE_STACKS - 2) * SPHERE_SUBDIV + 2);
+    indexes.add((short) 0);
+    for (short j = 0; j < SPHERE_SUBDIV - 1; j += 2) {
+      indexes.add((short) (baseStack + j));
+      indexes.add((short) (baseStack + j + 1));
+      indexes.add((short) 0);
     }
-    
-    //meridians
-    for(short j = 1; j < SPHERE_SUBDIV; ++j) {
-      if(j % 2 == 1) {
-        //de dalt a baix
-        //indexes.add( (short)( 1 ) );
-        for(short i = SPHERE_STACKS-1; i > 0; i--) {
-          baseStack = (short)( (i-1) * SPHERE_SUBDIV + 2 );
-          indexes.add( (short)( baseStack + j    ) );
+
+    // meridians
+    for (short j = 1; j < SPHERE_SUBDIV; ++j) {
+      if (j % 2 == 1) {
+        // de dalt a baix
+        // indexes.add( (short)( 1 ) );
+        for (short i = SPHERE_STACKS - 1; i > 0; i--) {
+          baseStack = (short) ((i - 1) * SPHERE_SUBDIV + 2);
+          indexes.add((short) (baseStack + j));
         }
-        indexes.add( (short)( 1 ) );
+        indexes.add((short) (1));
       } else {
         // de baix a dalt
-        //indexes.add( (short)( 0 ) );
-        for(short i = 1; i < SPHERE_STACKS; i++) {
-          baseStack = (short)( (i-1) * SPHERE_SUBDIV + 2 );
-          indexes.add( (short)( baseStack + j    ) );
+        // indexes.add( (short)( 0 ) );
+        for (short i = 1; i < SPHERE_STACKS; i++) {
+          baseStack = (short) ((i - 1) * SPHERE_SUBDIV + 2);
+          indexes.add((short) (baseStack + j));
         }
-        indexes.add( (short)( 0 ) );
+        indexes.add((short) (0));
       }
     }
-    
-    //////////////////////////////////////////////////////////////
+
+    // ////////////////////////////////////////////////////////////
     Short saux1[] = indexes.toArray(new Short[indexes.size()]);
     short saux2[] = new short[saux1.length];
-    for(int i = 0; i < saux1.length; i++) {
+    for (int i = 0; i < saux1.length; i++) {
       saux2[i] = saux1[i];
     }
     saux1 = null;
     indexes = null;
-    //////////////////////////////////////////////////////////////
-    
+    // ////////////////////////////////////////////////////////////
 
     ShortBuffer indexBuffer = BufferUtils.createShortBuffer(saux2.length);
     sphereNumIndices = saux2.length;
     indexBuffer.put(saux2);
     indexBuffer.flip();
-    
+
     return indexBuffer;
   }
 
@@ -1945,30 +2103,29 @@ public abstract class DebugRender {
   protected final FloatBuffer createCircleVertexBuffer() {
     ArrayList<Float> vertices = new ArrayList<>();
 
-    for(int j = 0; j < SPHERE_SUBDIV; ++j) {
-      float x = (float) Math.sin( j * Math.PI * 2 / SPHERE_SUBDIV);
-      float y = (float) Math.cos( j * Math.PI * 2 / SPHERE_SUBDIV);
-      
+    for (int j = 0; j < SPHERE_SUBDIV; ++j) {
+      float x = (float) Math.sin(j * Math.PI * 2 / SPHERE_SUBDIV);
+      float y = (float) Math.cos(j * Math.PI * 2 / SPHERE_SUBDIV);
 
       vertices.add(x);
       vertices.add(y);
       vertices.add(0.f);
     }
-    //////////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////////
     Float faux1[] = vertices.toArray(new Float[vertices.size()]);
     circlesNumVertexs = faux1.length / 3;
     float faux2[] = new float[faux1.length];
-    for(int i = 0; i < faux1.length; i++) {
+    for (int i = 0; i < faux1.length; i++) {
       faux2[i] = faux1[i];
     }
     faux1 = null;
     vertices = null;
-    //////////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////////
 
     FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
     vertexBuffer.put(faux2);
     vertexBuffer.flip();
-    
+
     return vertexBuffer;
   }
 
@@ -1982,72 +2139,71 @@ public abstract class DebugRender {
 
     ArrayList<Float> vertices = new ArrayList<>();
 
-    vertices.add(0.f);////////////////////////
+    vertices.add(0.f);// //////////////////////
     vertices.add(0.f);
     vertices.add(0.f);
-    
-    vertices.add(1.f); //color
+
+    vertices.add(1.f); // color
     vertices.add(0.f);
     vertices.add(0.f);
 
     vertices.add(1.f);
     vertices.add(0.f);
     vertices.add(0.f);
-    
-    vertices.add(1.f); //color
+
+    vertices.add(1.f); // color
     vertices.add(0.f);
     vertices.add(0.f);
 
-    vertices.add(0.f);////////////////////////
+    vertices.add(0.f);// //////////////////////
     vertices.add(0.f);
     vertices.add(0.f);
-    
-    vertices.add(0.f); //color
+
+    vertices.add(0.f); // color
     vertices.add(1.f);
     vertices.add(0.f);
 
     vertices.add(0.f);
     vertices.add(1.f);
     vertices.add(0.f);
-    
-    vertices.add(0.f); //color
+
+    vertices.add(0.f); // color
     vertices.add(1.f);
     vertices.add(0.f);
 
-    vertices.add(0.f);////////////////////////
+    vertices.add(0.f);// //////////////////////
     vertices.add(0.f);
     vertices.add(0.f);
-    
-    vertices.add(0.f); //color
+
+    vertices.add(0.f); // color
     vertices.add(0.f);
     vertices.add(1.f);
 
     vertices.add(0.f);
     vertices.add(0.f);
     vertices.add(1.f);
-    
-    vertices.add(0.f); //color
+
+    vertices.add(0.f); // color
     vertices.add(0.f);
     vertices.add(1.f);
-    
-    //////////////////////////////////////////////////////////////
+
+    // ////////////////////////////////////////////////////////////
     Float faux1[] = vertices.toArray(new Float[vertices.size()]);
     float faux2[] = new float[faux1.length];
-    for(int i = 0; i < faux1.length; i++) {
+    for (int i = 0; i < faux1.length; i++) {
       faux2[i] = faux1[i];
     }
     faux1 = null;
     vertices = null;
-    //////////////////////////////////////////////////////////////
-    
+    // ////////////////////////////////////////////////////////////
 
     FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
     vertexBuffer.put(faux2);
     vertexBuffer.flip();
-    
+
     return vertexBuffer;
   }
-  
+
   /**
    * Creates a vertex buffer to render a bounding box.
    * 
@@ -2057,52 +2213,51 @@ public abstract class DebugRender {
   protected final FloatBuffer createBBVertexBuffer() {
     ArrayList<Float> vertices = new ArrayList<>();
 
-    vertices.add( .5f);
+    vertices.add(.5f);
     vertices.add(-.5f);
-    vertices.add( .5f);
+    vertices.add(.5f);
 
-    vertices.add( .5f);
-    vertices.add( .5f);
-    vertices.add( .5f);
-
-    vertices.add(-.5f);
-    vertices.add( .5f);
-    vertices.add( .5f);
+    vertices.add(.5f);
+    vertices.add(.5f);
+    vertices.add(.5f);
 
     vertices.add(-.5f);
-    vertices.add(-.5f);
-    vertices.add( .5f);
-
-    vertices.add( .5f);
-    vertices.add(-.5f);
-    vertices.add(-.5f);
-
-    vertices.add( .5f);
-    vertices.add( .5f);
-    vertices.add(-.5f);
-
-    vertices.add(-.5f);
-    vertices.add( .5f);
-    vertices.add(-.5f);
+    vertices.add(.5f);
+    vertices.add(.5f);
 
     vertices.add(-.5f);
     vertices.add(-.5f);
+    vertices.add(.5f);
+
+    vertices.add(.5f);
     vertices.add(-.5f);
-    //////////////////////////////////////////////////////////////
+    vertices.add(-.5f);
+
+    vertices.add(.5f);
+    vertices.add(.5f);
+    vertices.add(-.5f);
+
+    vertices.add(-.5f);
+    vertices.add(.5f);
+    vertices.add(-.5f);
+
+    vertices.add(-.5f);
+    vertices.add(-.5f);
+    vertices.add(-.5f);
+    // ////////////////////////////////////////////////////////////
     Float faux1[] = vertices.toArray(new Float[vertices.size()]);
     float faux2[] = new float[faux1.length];
-    for(int i = 0; i < faux1.length; i++) {
+    for (int i = 0; i < faux1.length; i++) {
       faux2[i] = faux1[i];
     }
     faux1 = null;
     vertices = null;
-    //////////////////////////////////////////////////////////////
-    
+    // ////////////////////////////////////////////////////////////
 
     FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
     vertexBuffer.put(faux2);
     vertexBuffer.flip();
-    
+
     return vertexBuffer;
   }
 
@@ -2114,7 +2269,7 @@ public abstract class DebugRender {
   protected final ShortBuffer createBBIndexBuffer() {
     ArrayList<Short> indexes = new ArrayList<>();
 
-    //bot
+    // bot
     indexes.add((short) 0);
     indexes.add((short) 1);
 
@@ -2127,7 +2282,7 @@ public abstract class DebugRender {
     indexes.add((short) 3);
     indexes.add((short) 0);
 
-    //top
+    // top
     indexes.add((short) 4);
     indexes.add((short) 5);
 
@@ -2140,7 +2295,7 @@ public abstract class DebugRender {
     indexes.add((short) 7);
     indexes.add((short) 4);
 
-    //up
+    // up
     indexes.add((short) 0);
     indexes.add((short) 4);
 
@@ -2152,22 +2307,22 @@ public abstract class DebugRender {
 
     indexes.add((short) 3);
     indexes.add((short) 7);
-    
-    //////////////////////////////////////////////////////////////
+
+    // ////////////////////////////////////////////////////////////
     Short saux1[] = indexes.toArray(new Short[indexes.size()]);
     short saux2[] = new short[saux1.length];
-    for(int i = 0; i < saux1.length; i++) {
+    for (int i = 0; i < saux1.length; i++) {
       saux2[i] = saux1[i];
     }
     saux1 = null;
     indexes = null;
-    //////////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////////
 
     ShortBuffer indexBuffer = BufferUtils.createShortBuffer(saux2.length);
     bbNumIndices = saux2.length;
     indexBuffer.put(saux2);
     indexBuffer.flip();
-    
+
     return indexBuffer;
   }
 }

@@ -11,14 +11,21 @@ import cat.atridas.antagonista.graphics.MaterialManager;
 import cat.atridas.antagonista.graphics.RenderableObjectManager;
 
 public interface ManagerFactory {
-	InputManager createInputManager();
-	RenderManager createRenderManager();
-	FontManager createFontManager();
-	DebugRender createDebugRender();
-	TextureManager createTextureManager();
-	MaterialManager createMaterialManager();
-	MeshManager createMeshManager();
-	RenderableObjectManager createRenderableObjectManager();
-	
-	Clock createClock();
+  InputManager createInputManager();
+
+  RenderManager createRenderManager();
+
+  FontManager createFontManager();
+
+  DebugRender createDebugRender();
+
+  TextureManager createTextureManager();
+
+  MaterialManager createMaterialManager();
+
+  MeshManager createMeshManager();
+
+  RenderableObjectManager createRenderableObjectManager();
+
+  Clock createClock();
 }

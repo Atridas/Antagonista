@@ -4,8 +4,9 @@ import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.ResourceManager;
 
 public class AnimationSMCoreManager extends ResourceManager<AnimationSMCore> {
-  
-  private AnimationSMCore defaultResource = new AnimationSMCore(new HashedString("default"));
+
+  private AnimationSMCore defaultResource = new AnimationSMCore(
+      new HashedString("default"));
 
   @Override
   protected AnimationSMCore createNewResource(HashedString name) {

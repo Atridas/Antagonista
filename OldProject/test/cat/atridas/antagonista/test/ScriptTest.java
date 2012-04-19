@@ -25,104 +25,98 @@ public class ScriptTest {
   /**
    * Arguments de la VM interessants:
    * 
-   * -ea -Djava.library.path="./native/windows" 
-   * -Xmx1024m -XX:+UseG1GC
-   * -XX:MaxGCPauseMillis=5
-   * -XX:GCPauseIntervalMillis=83
-   * -verbose:gc 
+   * -ea -Djava.library.path="./native/windows" -Xmx1024m -XX:+UseG1GC
+   * -XX:MaxGCPauseMillis=5 -XX:GCPauseIntervalMillis=83 -verbose:gc
    * -Dcom.sun.management.jmxremote
-   *  
+   * 
    * @param args
-   * @throws FileNotFoundException 
+   * @throws FileNotFoundException
    */
   public static void main(String[] args) throws FileNotFoundException {
-    //comprovem que els asserts estiguin actius
+    // comprovem que els asserts estiguin actius
     boolean assertsActives = false;
     assert (assertsActives = true) == true;
-    if(!assertsActives)
+    if (!assertsActives)
       throw new RuntimeException("Falta activar els asserts");
-    
+
     Utils.setConsoleLogLevel(Level.FINEST);
-    
 
     Core core = Core.getCore();
-    core.init(800, 600, TestEntities.class.getName(), new LWJGLManagerFactory(), new BulletFactory(), true, null);
+    core.init(800, 600, TestEntities.class.getName(),
+        new LWJGLManagerFactory(), new BulletFactory(), true, null);
 
-    
-    //ScriptManager scriptManager = new ScriptManager("data/xml/scriptManager.xml");
-    
-    //cat.atridas.antagonista.entities.System pyRTSCameraSystem = scriptManager.createNewInstance("RTSCameraSystem", cat.atridas.antagonista.entities.System.class);
-    
-    ///////////////////////////////////////////////////////////////////////////////////////
-    
+    // ScriptManager scriptManager = new
+    // ScriptManager("data/xml/scriptManager.xml");
+
+    // cat.atridas.antagonista.entities.System pyRTSCameraSystem =
+    // scriptManager.createNewInstance("RTSCameraSystem",
+    // cat.atridas.antagonista.entities.System.class);
+
+    // /////////////////////////////////////////////////////////////////////////////////////
+
     SystemManager sm = core.getSystemManager();
     /*
-    sm.registerSystem(new RTSCameraSystem());
-    //sm.registerSystem(pyRTSCameraSystem);
-    
-    sm.registerSystem(new PhysicsCharacterControllerSystem());
-    sm.registerSystem(new RigidBodySystem());
-    
-    sm.registerSystem(new RenderingCameraSystem());
-    sm.registerSystem(new RenderingSystem());
-    */
+     * sm.registerSystem(new RTSCameraSystem());
+     * //sm.registerSystem(pyRTSCameraSystem);
+     * 
+     * sm.registerSystem(new PhysicsCharacterControllerSystem());
+     * sm.registerSystem(new RigidBodySystem());
+     * 
+     * sm.registerSystem(new RenderingCameraSystem()); sm.registerSystem(new
+     * RenderingSystem());
+     */
     sm.registerSystem("RTSCameraSystem");
-    
+
     sm.registerSystem("PhysicsCharacterControllerSystem");
     sm.registerSystem("RigidBodySystem");
-    
+
     sm.registerSystem("RenderingCameraSystem");
     sm.registerSystem("RenderingSystem");
-    
-    
-    
-    ///////////////////////////////////////////////////////////////////////////////////////
-    
+
+    // /////////////////////////////////////////////////////////////////////////////////////
+
     InputManager im = core.getInputManager();
     RenderManager rm = core.getRenderManager();
-    
+
     EntityManager em = core.getEntityManager();
     MeshManager mm = core.getMeshManager();
 
     im.loadActions("data/xml/inputManager.xml");
     im.activateMode(Utils.MAIN_GAME);
-    
+
     DebugRender dr = core.getDebugRender();
     dr.activate();
     core.setPhysicsDebugRender(true);
-    
-    ///////////////////////////////////////////////////////////////////////////////////////////
-    
+
+    // /////////////////////////////////////////////////////////////////////////////////////////
 
     SceneData sceneData = rm.getSceneData();
     sceneData.setAmbientLight(new Color3f(0.3f, 0.3f, 0.3f));
-    sceneData.setDirectionalLight(new Vector3f(0.5f,1,-1), new Color3f(0.3f, 0.3f, 0.3f));
-    
-    
-    
+    sceneData.setDirectionalLight(new Vector3f(0.5f, 1, -1), new Color3f(0.3f,
+        0.3f, 0.3f));
+
     Transformation position = new Transformation();
-    
-    EntityFactory.createRajola(em, mm, position, new HashedString("TerraBasic"));
-    
+
+    EntityFactory
+        .createRajola(em, mm, position, new HashedString("TerraBasic"));
+
     EntityFactory.createCamera(em, new HashedString("Camera"));
-    
-    
-    
-    //scriptManager.load("data/scripts/test.py");
-    
-    //String script = "from data.scripts.test import catacrocker\n";
-    
-    //scriptManager.execute(script);
-    
-    while(!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
+
+    // scriptManager.load("data/scripts/test.py");
+
+    // String script = "from data.scripts.test import catacrocker\n";
+
+    // scriptManager.execute(script);
+
+    while (!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
 
       core.performSimpleTick();
-      
+
     }
-    
+
     core.cleanUnusedResources(false);
     core.cleanUnusedResources(true);
-    
+
     core.close();
   }
 }

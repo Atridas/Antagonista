@@ -29,146 +29,152 @@ import cat.atridas.antagonista.lwjgl.LWJGLManagerFactory;
 public class TestAnimacions {
 
   public static void main(String[] args) throws FileNotFoundException {
-    //comprovem que els asserts estiguin actius
+    // comprovem que els asserts estiguin actius
     boolean assertsActives = false;
     assert (assertsActives = true) == true;
-    if(!assertsActives)
+    if (!assertsActives)
       throw new RuntimeException("Falta activar els asserts");
-    
+
     Utils.setConsoleLogLevel(Level.FINEST);
-    
 
     Core core = Core.getCore();
-    core.init(800, 600, TestAnimacions.class.getName(), new LWJGLManagerFactory(), new BulletFactory(), true, null);
+    core.init(800, 600, TestAnimacions.class.getName(),
+        new LWJGLManagerFactory(), new BulletFactory(), true, null);
 
-    
-    //ScriptManager scriptManager = new ScriptManager("data/xml/scriptManager.xml");
-    
-    //cat.atridas.antagonista.entities.System pyRTSCameraSystem = scriptManager.createNewInstance("RTSCameraSystem", cat.atridas.antagonista.entities.System.class);
-    
-    ///////////////////////////////////////////////////////////////////////////////////////
-    
+    // ScriptManager scriptManager = new
+    // ScriptManager("data/xml/scriptManager.xml");
+
+    // cat.atridas.antagonista.entities.System pyRTSCameraSystem =
+    // scriptManager.createNewInstance("RTSCameraSystem",
+    // cat.atridas.antagonista.entities.System.class);
+
+    // /////////////////////////////////////////////////////////////////////////////////////
+
     SystemManager sm = core.getSystemManager();
     /*
-    sm.registerSystem(new RTSCameraSystem());
-    //sm.registerSystem(pyRTSCameraSystem);
-    
-    sm.registerSystem(new PhysicsCharacterControllerSystem());
-    sm.registerSystem(new RigidBodySystem());
-    
-    sm.registerSystem(new RenderingCameraSystem());
-    sm.registerSystem(new RenderingSystem());
-    */
+     * sm.registerSystem(new RTSCameraSystem());
+     * //sm.registerSystem(pyRTSCameraSystem);
+     * 
+     * sm.registerSystem(new PhysicsCharacterControllerSystem());
+     * sm.registerSystem(new RigidBodySystem());
+     * 
+     * sm.registerSystem(new RenderingCameraSystem()); sm.registerSystem(new
+     * RenderingSystem());
+     */
     sm.registerSystem("RTSCameraSystem");
-    
+
     sm.registerSystem("PhysicsCharacterControllerSystem");
     sm.registerSystem("RigidBodySystem");
-    
+
     sm.registerSystem("RenderingCameraSystem");
     sm.registerSystem("RenderingSystem");
-    
-    
-    
-    ///////////////////////////////////////////////////////////////////////////////////////
-    
+
+    // /////////////////////////////////////////////////////////////////////////////////////
+
     InputManager im = core.getInputManager();
     RenderManager rm = core.getRenderManager();
-    
+
     EntityManager em = core.getEntityManager();
-    //MeshManager mm = core.getMeshManager();
+    // MeshManager mm = core.getMeshManager();
 
     im.loadActions("data/xml/inputManager.xml");
     im.activateMode(Utils.MAIN_GAME);
-    
+
     DebugRender dr = core.getDebugRender();
     dr.activate();
     core.setPhysicsDebugRender(true);
-    
-    ///////////////////////////////////////////////////////////////////////////////////////////
-    
+
+    // /////////////////////////////////////////////////////////////////////////////////////////
 
     SceneData sceneData = rm.getSceneData();
     sceneData.setAmbientLight(new Color3f(0.3f, 0.3f, 0.3f));
-    sceneData.setDirectionalLight(new Vector3f(0.5f,1,-1), new Color3f(0.3f, 0.3f, 0.3f));
-    
-    
+    sceneData.setDirectionalLight(new Vector3f(0.5f, 1, -1), new Color3f(0.3f,
+        0.3f, 0.3f));
 
-    ///////////////////////////////////////////////////////////////////////
-    
-    //ArmatureManager am = core.getArmatureManager();
-    //ArmatureCore masterArmature = am.getResource(new HashedString("MasterArmature"));
+    // /////////////////////////////////////////////////////////////////////
 
-    //Animation animacio = core.getAnimationManager().getResource(new HashedString("AtacarMaster"));
-    //Animation animacio = core.getAnimationManager().getResource(new HashedString("CaminarMaster"));
-    AnimationCore animacio = core.getAnimationManager().getResource(new HashedString("IdleMaster"));
-    
-    ArmatureInstance animatedArmature = null;//new ArmatureInstance(masterArmature);
+    // ArmatureManager am = core.getArmatureManager();
+    // ArmatureCore masterArmature = am.getResource(new
+    // HashedString("MasterArmature"));
 
-    //animatedArmature.performSingleAnimation(atacar, 0);
-    //animatedArmature.performSingleAnimation(atacar, atacar.getDuration() / 2f);
-    //animatedArmature.performSingleAnimation(atacar, atacar.getDuration());
-    
-    ///////////////////////////////////////////////////////////////////////
-    
-    
-    //Transformation position = new Transformation();
+    // Animation animacio = core.getAnimationManager().getResource(new
+    // HashedString("AtacarMaster"));
+    // Animation animacio = core.getAnimationManager().getResource(new
+    // HashedString("CaminarMaster"));
+    AnimationCore animacio = core.getAnimationManager().getResource(
+        new HashedString("IdleMaster"));
+
+    ArmatureInstance animatedArmature = null;// new
+                                             // ArmatureInstance(masterArmature);
+
+    // animatedArmature.performSingleAnimation(atacar, 0);
+    // animatedArmature.performSingleAnimation(atacar, atacar.getDuration() /
+    // 2f);
+    // animatedArmature.performSingleAnimation(atacar, atacar.getDuration());
+
+    // /////////////////////////////////////////////////////////////////////
+
+    // Transformation position = new Transformation();
     HashedString masterID = new HashedString("Master");
-    
+
     Entity entityMaster = em.createEntity(masterID);
-    
-    TransformComponent tc = em.createComponent(entityMaster, TransformComponent.getComponentStaticType());
-    
+
+    TransformComponent tc = em.createComponent(entityMaster,
+        TransformComponent.getComponentStaticType());
+
     Transformation transform = new Transformation();
-    transform.setTranslation(new Vector3f(0,0,1));
+    transform.setTranslation(new Vector3f(0, 0, 1));
     tc.init(transform);
-    
+
     Matrix4f worldMatrix = new Matrix4f();
     transform.getMatrix(worldMatrix);
-    
-    MeshComponent mc = em.createComponent(entityMaster, MeshComponent.getComponentStaticType());
+
+    MeshComponent mc = em.createComponent(entityMaster,
+        MeshComponent.getComponentStaticType());
     mc.init(new HashedString("MasterTest"));
-    
+
     EntityFactory.createCamera(em, new HashedString("Camera"));
-    
-    //CharacterControllerComponent ccc = em.createComponent(entityMaster, CharacterControllerComponent.getComponentStaticType());
-    //ccc.init(new Point3f(5,5,1), 1f, 2, .1f, 3f);
-    
-    //EntityFactory.createRajola(em, mm, position, new HashedString("TerraBasic"));
-    
-    //EntityFactory.createCamera(em, new HashedString("Camera"));
-    
-    
-    
-    //scriptManager.load("data/scripts/test.py");
-    
-    //String script = "from data.scripts.test import catacrocker\n";
-    
-    //scriptManager.execute(script);
-    
+
+    // CharacterControllerComponent ccc = em.createComponent(entityMaster,
+    // CharacterControllerComponent.getComponentStaticType());
+    // ccc.init(new Point3f(5,5,1), 1f, 2, .1f, 3f);
+
+    // EntityFactory.createRajola(em, mm, position, new
+    // HashedString("TerraBasic"));
+
+    // EntityFactory.createCamera(em, new HashedString("Camera"));
+
+    // scriptManager.load("data/scripts/test.py");
+
+    // String script = "from data.scripts.test import catacrocker\n";
+
+    // scriptManager.execute(script);
+
     float anim = 0;
-    
-    while(!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
-      
-      if(animatedArmature != null) {
+
+    while (!im.isCloseRequested() && !im.isActionActive(Utils.CLOSE)) {
+
+      if (animatedArmature != null) {
         animatedArmature.performSingleAnimation(animacio, anim);
         animatedArmature.debugRender(dr, worldMatrix);
       }
-      
+
       core.performSimpleTick();
-      
+
       anim += core.getClock().getCurrentFrameDeltaTime().dt;
-      if(anim > animacio.getDuration()) {
+      if (anim > animacio.getDuration()) {
         anim = 0;
       }
-      
-      if(animatedArmature == null) {
-        animatedArmature = core.getRenderableObjectManager().getRenderableObject(masterID).getArmature();
+
+      if (animatedArmature == null) {
+        animatedArmature = core.getRenderableObjectManager()
+            .getRenderableObject(masterID).getArmature();
       }
     }
-    
+
     core.cleanUnusedResources(false);
     core.cleanUnusedResources(true);
-    
+
     core.close();
   }
 }

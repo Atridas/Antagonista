@@ -20,35 +20,40 @@ import cat.atridas.antagonista.graphics.TechniquePass;
  * 
  * @author Isaac 'Atridas' Serrano Guasch.
  * @since 0.1
- *
+ * 
  */
 public final class RenderableObjectManagerGL2 extends RenderableObjectManager {
 
   /**
    * Auxiliar buffer used to pass bone to the OpenGL driver.
-   * @since 0.3 
+   * 
+   * @since 0.3
    */
-  private FloatBuffer boneBuffer = BufferUtils.createFloatBuffer(
-                                      TechniquePass.ARMATURE_UNIFORMS_BLOCK_SIZE / (Utils.FLOAT_SIZE * 2)
-                                      );
-  
+  private FloatBuffer boneBuffer = BufferUtils
+      .createFloatBuffer(TechniquePass.ARMATURE_UNIFORMS_BLOCK_SIZE
+          / (Utils.FLOAT_SIZE * 2));
+
   /**
    * Buffer size needed to store one instance.
+   * 
    * @since 0.1
    */
-  private static final int BASIC_INSTANCE_BUFFER_SIZE = 16; // 3 matrius de 16 floats
-  
+  private static final int BASIC_INSTANCE_BUFFER_SIZE = 16; // 3 matrius de 16
+                                                            // floats
+
   /**
    * Auxiliar buffer to pass information to the OpenGL driver.
+   * 
    * @since 0.1
    */
-  private FloatBuffer buffer = BufferUtils.createFloatBuffer(BASIC_INSTANCE_BUFFER_SIZE);
+  private FloatBuffer buffer = BufferUtils
+      .createFloatBuffer(BASIC_INSTANCE_BUFFER_SIZE);
 
   @Override
   public boolean init() {
     assert !cleaned;
     // no-no-no-thing!!!!
-    
+
     return !Utils.hasGLErrors();
   }
 
@@ -59,82 +64,76 @@ public final class RenderableObjectManagerGL2 extends RenderableObjectManager {
   }
 
   private Matrix4f auxiliarMatrix = new Matrix4f();
+
   @Override
-  protected void setInstanceUniforms(TechniquePass pass, InstanceData instanceData) {
+  protected void setInstanceUniforms(TechniquePass pass,
+      InstanceData instanceData) {
     assert !cleaned;
 
-    //TODO jugar amb les marques i tal per fer-ho m�s optim, potser
+    // TODO jugar amb les marques i tal per fer-ho m�s optim, potser
 
-    if(pass.hasBasicInstanceUniforms()) {
+    if (pass.hasBasicInstanceUniforms()) {
       buffer.rewind();
       Utils.matrixToBuffer(instanceData.modelViewProj, buffer);
       buffer.rewind();
       glUniformMatrix4(pass.getModelViewProjectionUniform(), false, buffer);
-  
+
       buffer.rewind();
       Utils.matrixToBuffer(instanceData.modelView, buffer);
       buffer.rewind();
       glUniformMatrix4(pass.getModelViewUniform(), false, buffer);
-  
+
       buffer.rewind();
       Utils.matrixToBuffer(instanceData.modelViewInvTransp, buffer);
       buffer.rewind();
       glUniformMatrix4(pass.getModelViewITUniform(), false, buffer);
     }
-    
-    if(pass.hasSpecialColorsUniforms()) {
-      glUniform4f(     pass.getSpecialColor0Uniform(), 
-                  instanceData.specialColor0.x, 
-                  instanceData.specialColor0.y,  
-                  instanceData.specialColor0.z,
-                  instanceData.specialColor0.w);
-      glUniform4f(     pass.getSpecialColor1Uniform(), 
-                  instanceData.specialColor1.x, 
-                  instanceData.specialColor1.y,  
-                  instanceData.specialColor1.z,
-                  instanceData.specialColor1.w);
-      glUniform4f(     pass.getSpecialColor2Uniform(), 
-                  instanceData.specialColor2.x, 
-                  instanceData.specialColor2.y,  
-                  instanceData.specialColor2.z,
-                  instanceData.specialColor2.w);
-      glUniform4f(     pass.getSpecialColor3Uniform(), 
-                  instanceData.specialColor3.x, 
-                  instanceData.specialColor3.y,  
-                  instanceData.specialColor3.z,
-                  instanceData.specialColor3.w);
+
+    if (pass.hasSpecialColorsUniforms()) {
+      glUniform4f(pass.getSpecialColor0Uniform(), instanceData.specialColor0.x,
+          instanceData.specialColor0.y, instanceData.specialColor0.z,
+          instanceData.specialColor0.w);
+      glUniform4f(pass.getSpecialColor1Uniform(), instanceData.specialColor1.x,
+          instanceData.specialColor1.y, instanceData.specialColor1.z,
+          instanceData.specialColor1.w);
+      glUniform4f(pass.getSpecialColor2Uniform(), instanceData.specialColor2.x,
+          instanceData.specialColor2.y, instanceData.specialColor2.z,
+          instanceData.specialColor2.w);
+      glUniform4f(pass.getSpecialColor3Uniform(), instanceData.specialColor3.x,
+          instanceData.specialColor3.y, instanceData.specialColor3.z,
+          instanceData.specialColor3.w);
     }
-    
-    if( instanceData.bonePalete != null ) {
+
+    if (instanceData.bonePalete != null) {
       int len = instanceData.bonePalete.length;
-      if(len > TechniquePass.MAX_BONES) {
+      if (len > TechniquePass.MAX_BONES) {
         len = TechniquePass.MAX_BONES;
       }
-      
+
       boneBuffer.rewind();
-      
-      for(int i = 0; i < len; ++i) {
+
+      for (int i = 0; i < len; ++i) {
         Utils.matrix34ToBuffer(instanceData.bonePalete[i], boneBuffer);
       }
 
       boneBuffer.position(0);
       boneBuffer.limit(len * 12);
 
-      glUniformMatrix4x3( pass.getBoneMatrixPalete() , true, boneBuffer);
+      glUniformMatrix4x3(pass.getBoneMatrixPalete(), true, boneBuffer);
 
       boneBuffer.rewind();
-      for(int i = 0; i < len; ++i) {
+      for (int i = 0; i < len; ++i) {
         auxiliarMatrix.invert(instanceData.bonePalete[i]);
         auxiliarMatrix.transpose();
         Utils.matrix34ToBuffer(auxiliarMatrix, boneBuffer);
       }
-      
+
       boneBuffer.position(0);
       boneBuffer.limit(len * 12);
-      
-      glUniformMatrix4x3( pass.getBoneMatrixPaleteIT() , true, boneBuffer);
+
+      glUniformMatrix4x3(pass.getBoneMatrixPaleteIT(), true, boneBuffer);
     }
-    
+
     assert !Utils.hasGLErrors();
   }
 
@@ -142,7 +141,7 @@ public final class RenderableObjectManagerGL2 extends RenderableObjectManager {
   public void cleanUp() {
     assert !cleaned;
     // no-no-no-thing!!!!
-    
+
     cleaned = true;
   }
 

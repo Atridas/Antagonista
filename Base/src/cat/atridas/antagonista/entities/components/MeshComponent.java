@@ -9,7 +9,7 @@ import cat.atridas.antagonista.entities.GlobalComponent;
 import cat.atridas.antagonista.entities.LocalComponent;
 
 public abstract class MeshComponent extends BaseComponent<MeshComponent> {
-  
+
   private HashedString meshId = null;
   private DeltaTime lastMeshIdChange = null;
 
@@ -17,24 +17,24 @@ public abstract class MeshComponent extends BaseComponent<MeshComponent> {
     super(_entity);
     lastMeshIdChange = globalClock.getCurrentFrameDeltaTime();
   }
-  
+
   public void init(HashedString _meshId) {
     meshId = _meshId;
     lastMeshIdChange = globalClock.getCurrentFrameDeltaTime();
     setInitialized();
   }
-  
+
   public void setMesh(HashedString _meshId) {
-    if(meshId == null || !meshId.equals(_meshId)) {
+    if (meshId == null || !meshId.equals(_meshId)) {
       meshId = _meshId;
       lastMeshIdChange = globalClock.getCurrentFrameDeltaTime();
     }
   }
-  
+
   public HashedString getMesh() {
     return meshId;
   }
-  
+
   public DeltaTime getMeshLastTime() {
     return lastMeshIdChange;
   }
@@ -45,15 +45,16 @@ public abstract class MeshComponent extends BaseComponent<MeshComponent> {
     meshId = _other.meshId;
     lastMeshIdChange = _other.lastMeshIdChange;
   }
-  
+
   @Override
   public String toString() {
     return "MeshComponent: " + meshId;
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////
-  
-  public final static class Global extends MeshComponent implements GlobalComponent<MeshComponent> {
+  // ////////////////////////////////////////////////////////////////////////////////////////
+
+  public final static class Global extends MeshComponent implements
+      GlobalComponent<MeshComponent> {
 
     public Global(Entity _entity) {
       super(_entity);
@@ -63,10 +64,11 @@ public abstract class MeshComponent extends BaseComponent<MeshComponent> {
     public Local createLocalCopy() {
       return new Local();
     }
-    
+
   }
-  
-  public final class Local extends MeshComponent implements LocalComponent<MeshComponent> {
+
+  public final class Local extends MeshComponent implements
+      LocalComponent<MeshComponent> {
 
     private Local() {
       super(MeshComponent.this.getEntity());
@@ -88,19 +90,20 @@ public abstract class MeshComponent extends BaseComponent<MeshComponent> {
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////
+  // ////////////////////////////////////////////////////////////////////////////////////////
 
-  private final static HashedString componentType = new HashedString("MeshComponent");
-  
+  private final static HashedString componentType = new HashedString(
+      "MeshComponent");
+
   @Override
   public HashedString getComponentType() {
     return componentType;
   }
- 
+
   public static HashedString getComponentStaticType() {
     return componentType;
   }
-  
+
   static {
     Core.getCore().getEntityManager().registerComponentType(Global.class);
   }

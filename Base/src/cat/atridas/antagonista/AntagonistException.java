@@ -5,7 +5,7 @@ package cat.atridas.antagonista;
  * 
  * @author Isaac 'Atridas' Serrano Guasch
  * @since 0.1
- *
+ * 
  */
 public class AntagonistException extends Exception {
 

@@ -22,14 +22,15 @@ import cat.atridas.antagonista.graphics.RenderManager.Profile;
 
 /**
  * <p>
- * This class encapsulates an effect. A effect is a set of Techniques, classified by type and
- * quality.
+ * This class encapsulates an effect. A effect is a set of Techniques,
+ * classified by type and quality.
  * </p>
  * <p>
  * The format of the effect file is a xml file with the next structure:
  * </p>
  * <p>
  * </code>
+ * 
  * <pre>
  * &lt;technique type="" quality=""&gt;
  *  types:
@@ -119,6 +120,7 @@ import cat.atridas.antagonista.graphics.RenderManager.Profile;
  *  &lt;/pass&gt;
  * &lt;/technique&gt;
  * </pre>
+ * 
  * </code>
  * </p>
  * 
@@ -128,144 +130,156 @@ import cat.atridas.antagonista.graphics.RenderManager.Profile;
  * @see EffectManager
  */
 public class Effect extends Resource {
-  private static Logger LOGGER = Logger.getLogger(EffectManager.class.getCanonicalName());
+  private static Logger LOGGER = Logger.getLogger(EffectManager.class
+      .getCanonicalName());
 
   private static final HashedString HS_XML = new HashedString("xml");
-  
+
   private HashMap<TechniqueType, HashMap<Quality, Technique>> techniques = new HashMap<>();
 
   public Effect(HashedString _resourceName) {
     super(_resourceName);
   }
-  
+
   @Override
   public boolean load(InputStream is, HashedString extension) {
     assert HS_XML.equals(extension);
-    
+
     LOGGER.config("Loading effect [" + resourceName + "]");
-    
+
     EffectManager em = Core.getCore().getEffectManager();
-    
-    
+
     try {
       DocumentBuilder db;
       db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
       Document doc = db.parse(is);
       doc.getDocumentElement().normalize();
-      
-      
+
       Element effectXML = doc.getDocumentElement();
-      
+
       String myName = effectXML.getAttribute("name");
-      
+
       NodeList nl = effectXML.getElementsByTagName("technique");
-      for(int i = 0; i < nl.getLength(); ++i) {
-        Element techniqueXML = (Element)nl.item(i);
-        TechniqueType techniqueType = TechniqueType.parseString(techniqueXML.getAttribute("type"));
-        
+      for (int i = 0; i < nl.getLength(); ++i) {
+        Element techniqueXML = (Element) nl.item(i);
+        TechniqueType techniqueType = TechniqueType.parseString(techniqueXML
+            .getAttribute("type"));
+
         Quality q;
-        if(techniqueXML.hasAttribute("quality")) {
+        if (techniqueXML.hasAttribute("quality")) {
           q = Quality.parseString(techniqueXML.getAttribute("quality"));
         } else {
           q = Quality.NONE;
         }
-        
-        LOGGER.config("Reading technique " + techniqueType + " with quality " + q);
-        
+
+        LOGGER.config("Reading technique " + techniqueType + " with quality "
+            + q);
+
         Technique technique;
-        if(techniqueXML.getAttribute("external").toLowerCase().compareTo("true") == 0) {
-          //External
+        if (techniqueXML.getAttribute("external").toLowerCase()
+            .compareTo("true") == 0) {
+          // External
           String effectName = techniqueXML.getAttribute("ref_effect");
-          TechniqueType refTechniqueType = TechniqueType.parseString(techniqueXML.getAttribute("ref_type"));
-          
+          TechniqueType refTechniqueType = TechniqueType
+              .parseString(techniqueXML.getAttribute("ref_type"));
+
           Quality refQ;
-          if(techniqueXML.hasAttribute("ref_quality")) {
-            refQ = Quality.parseString(techniqueXML.getAttribute("ref_quality"));
+          if (techniqueXML.hasAttribute("ref_quality")) {
+            refQ = Quality
+                .parseString(techniqueXML.getAttribute("ref_quality"));
           } else {
             refQ = Quality.NONE;
           }
-          
+
           Effect refEffect;
-          if(effectName.compareTo(myName) == 0) {
+          if (effectName.compareTo(myName) == 0) {
             refEffect = this;
           } else {
             refEffect = em.getResource(new HashedString(effectName));
           }
-          
-          HashMap<Quality, Technique> qToTech = refEffect.techniques.get(refTechniqueType);
-          if(qToTech == null) {
-            throw new IllegalArgumentException("Technique " + refTechniqueType + " of effect " + effectName + " does not exist (yet).");
+
+          HashMap<Quality, Technique> qToTech = refEffect.techniques
+              .get(refTechniqueType);
+          if (qToTech == null) {
+            throw new IllegalArgumentException("Technique " + refTechniqueType
+                + " of effect " + effectName + " does not exist (yet).");
           }
-          
+
           technique = qToTech.get(refQ);
-          if(technique == null) {
-            throw new IllegalArgumentException("Technique " + refTechniqueType + " with quality " + refQ + " of effect " + effectName + " does not exist (yet).");
+          if (technique == null) {
+            throw new IllegalArgumentException("Technique " + refTechniqueType
+                + " with quality " + refQ + " of effect " + effectName
+                + " does not exist (yet).");
           }
-          
+
         } else {
-          Profile p = Profile.getFromString(techniqueXML.getAttribute("min_version"));
-          if(Utils.supports(p)) {
+          Profile p = Profile.getFromString(techniqueXML
+              .getAttribute("min_version"));
+          if (Utils.supports(p)) {
             technique = new Technique(techniqueXML);
             assert !Utils.hasGLErrors();
           } else {
             technique = null;
           }
         }
-        
+
         HashMap<Quality, Technique> qToTech = techniques.get(techniqueType);
-        if(qToTech == null) {
+        if (qToTech == null) {
           qToTech = new HashMap<>();
           techniques.put(techniqueType, qToTech);
         }
-        
-        if(qToTech.containsKey(q)) {
-          throw new IllegalArgumentException("Technique " + techniqueType + " with quality " + q + " defined twice.");
+
+        if (qToTech.containsKey(q)) {
+          throw new IllegalArgumentException("Technique " + techniqueType
+              + " with quality " + q + " defined twice.");
         }
-        if(technique != null)
+        if (technique != null)
           qToTech.put(q, technique);
       }
 
       assert !Utils.hasGLErrors();
-    } catch(Exception e) {
+    } catch (Exception e) {
       LOGGER.warning(Utils.logExceptionStringAndStack(e));
       Utils.hasGLErrors();
       return false;
     }
-    
-    for(Entry<TechniqueType, HashMap<Quality, Technique>> qToTechEntry : techniques.entrySet()) {
+
+    for (Entry<TechniqueType, HashMap<Quality, Technique>> qToTechEntry : techniques
+        .entrySet()) {
       HashMap<Quality, Technique> qToTech = qToTechEntry.getValue();
-      if(!qToTech.containsKey(Quality.NONE)) {
-        LOGGER.warning("Technique type " + qToTechEntry.getKey() + " has no NONE quality technique.");
+      if (!qToTech.containsKey(Quality.NONE)) {
+        LOGGER.warning("Technique type " + qToTechEntry.getKey()
+            + " has no NONE quality technique.");
 
         assert qToTech.size() > 0;
         Set<Quality> qToTechSet = qToTech.keySet();
         Quality lowestQuality = qToTechSet.iterator().next();
         Quality qualityCont = lowestQuality;
-        
-        while(qualityCont != Quality.NONE) {
+
+        while (qualityCont != Quality.NONE) {
           qualityCont = qualityCont.previousQuality();
-          if(qToTechSet.contains(qualityCont)) {
+          if (qToTechSet.contains(qualityCont)) {
             lowestQuality = qualityCont;
           }
         }
-        
+
         qToTech.put(Quality.NONE, qToTech.get(lowestQuality));
       }
-      
+
       assert qToTech.containsKey(Quality.NONE);
     }
-    
+
     return true;
   }
-  
+
   /**
    * Creates the default Effect.
    * 
    * @since 0.1
    */
   void loadDefault() {
-    for(TechniqueType tt : TechniqueType.values()) {
-      
+    for (TechniqueType tt : TechniqueType.values()) {
+
       Technique technique = new Technique();
       HashMap<Quality, Technique> qToTech = new HashMap<>();
       qToTech.put(Quality.LOW, technique);
@@ -274,33 +288,38 @@ public class Effect extends Resource {
   }
 
   /**
-   * Fetches an approbate technique. The Quality parameter is a guide, if no technique of the desired
-   * quality is found, this method searches the lower qualities. In the Effect definition it is an
-   * error to define a technique of a certain type and not define a NONE quality variant.
+   * Fetches an approbate technique. The Quality parameter is a guide, if no
+   * technique of the desired quality is found, this method searches the lower
+   * qualities. In the Effect definition it is an error to define a technique of
+   * a certain type and not define a NONE quality variant.
    * 
-   * @param tt type of the technique.
-   * @param q desired quality of the technique.
+   * @param tt
+   *          type of the technique.
+   * @param q
+   *          desired quality of the technique.
    * @return the desired technique.
-   * @throws IllegalArgumentException if no technique of the type passed exists.
+   * @throws IllegalArgumentException
+   *           if no technique of the type passed exists.
    * 
    * @since 0.1
    */
   public Technique getTechnique(TechniqueType tt, Quality q) {
     HashMap<Quality, Technique> qToTech = techniques.get(tt);
-    if(qToTech != null) {
+    if (qToTech != null) {
       Technique technique = qToTech.get(q);
-      while(technique == null && q != Quality.NONE) {
+      while (technique == null && q != Quality.NONE) {
         q = q.previousQuality();
         technique = qToTech.get(q);
       }
-      if(technique == null)
-        throw new IllegalStateException("No technique of type " + tt + " was found.");
+      if (technique == null)
+        throw new IllegalStateException("No technique of type " + tt
+            + " was found.");
       return technique;
     }
-    throw new IllegalArgumentException("No technique of type " + tt + " was found.");
+    throw new IllegalArgumentException("No technique of type " + tt
+        + " was found.");
   }
-  
-  
+
   @Override
   public int getRAMBytesEstimation() {
     // TODO Auto-generated method stub
@@ -316,66 +335,73 @@ public class Effect extends Resource {
   @Override
   public void cleanUp() {
     assert !cleaned;
-    /* TODO mirar com fer-ho amb les "compartides"
-    for(Entry<TechniqueType, HashMap<Quality, Technique>> qToTech : techniques.entrySet()) {
-      for(Entry<Quality, Technique> tech : qToTech.getValue().entrySet()) {
-        tech.getValue().cleanUp();
-      }
-    }
-    */
+    /*
+     * TODO mirar com fer-ho amb les "compartides" for(Entry<TechniqueType,
+     * HashMap<Quality, Technique>> qToTech : techniques.entrySet()) {
+     * for(Entry<Quality, Technique> tech : qToTech.getValue().entrySet()) {
+     * tech.getValue().cleanUp(); } }
+     */
     techniques.clear();
   }
-  
+
   /**
    * Enumeration that defines the different technique types.
    * 
    * @author Isaac 'Atridas' Serrano Guasch
    * @since 0.1
-   *
+   * 
    */
   public static enum TechniqueType {
     /**
      * Technique used in a forward renderer.
+     * 
      * @since 0.1
      */
-    FORWARD, 
+    FORWARD,
     /**
      * Technique used in a forward renderer.
+     * 
      * @since 0.3
      */
-    ANIMATED_FORWARD, 
+    ANIMATED_FORWARD,
     /**
      * Technique used in a deferred renderer.
+     * 
      * @since 0.1
      */
-    DEFERRED, 
+    DEFERRED,
     /**
      * Technique used in a deferred renderer.
+     * 
      * @since 0.3
      */
-    ANIMATED_DEFERRED, 
+    ANIMATED_DEFERRED,
     /**
      * Technique used to render a shadowmap.
+     * 
      * @since 0.1
      */
-    SHADOW, 
+    SHADOW,
     /**
      * Technique used to render a particle.
+     * 
      * @since 0.1
      */
     PARTICLE;
-    
+
     /**
      * Parses a string and creates an Enum Value.
      * 
-     * @param str string to parse.
+     * @param str
+     *          string to parse.
      * @return a valid enum value.
-     * @throws IllegalArgumentException if the string is an invalid value.
+     * @throws IllegalArgumentException
+     *           if the string is an invalid value.
      * 
      * @since 0.1
      */
     public static TechniqueType parseString(String str) {
-      switch(str.toUpperCase()) {
+      switch (str.toUpperCase()) {
       case "FORWARD":
         return FORWARD;
       case "DEFERRED":
@@ -392,10 +418,10 @@ public class Effect extends Resource {
         throw new IllegalArgumentException(str);
       }
     }
-    
+
     @Override
     public String toString() {
-      switch(this) {
+      switch (this) {
       case FORWARD:
         return "FORWARD";
       case DEFERRED:

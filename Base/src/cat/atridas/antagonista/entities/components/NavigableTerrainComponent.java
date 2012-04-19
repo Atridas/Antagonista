@@ -7,12 +7,13 @@ import cat.atridas.antagonista.entities.Entity;
 import cat.atridas.antagonista.entities.GlobalComponent;
 import cat.atridas.antagonista.entities.LocalComponent;
 
-public class NavigableTerrainComponent extends BaseComponent<NavigableTerrainComponent> {
+public class NavigableTerrainComponent extends
+    BaseComponent<NavigableTerrainComponent> {
 
   public NavigableTerrainComponent(Entity _entity) {
     super(_entity);
   }
-  
+
   public void init() {
     setInitialized();
   }
@@ -21,15 +22,16 @@ public class NavigableTerrainComponent extends BaseComponent<NavigableTerrainCom
   public void copy(NavigableTerrainComponent _other) {
     super.copy(_other);
   }
-  
+
   @Override
   public String toString() {
     return "NavigableTerrainComponent";
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////
-  
-  public final static class Global extends NavigableTerrainComponent implements GlobalComponent<NavigableTerrainComponent> {
+  // ////////////////////////////////////////////////////////////////////////////////////////
+
+  public final static class Global extends NavigableTerrainComponent implements
+      GlobalComponent<NavigableTerrainComponent> {
 
     public Global(Entity _entity) {
       super(_entity);
@@ -39,10 +41,11 @@ public class NavigableTerrainComponent extends BaseComponent<NavigableTerrainCom
     public Local createLocalCopy() {
       return new Local();
     }
-    
+
   }
-  
-  public final class Local extends NavigableTerrainComponent implements LocalComponent<NavigableTerrainComponent> {
+
+  public final class Local extends NavigableTerrainComponent implements
+      LocalComponent<NavigableTerrainComponent> {
 
     private Local() {
       super(NavigableTerrainComponent.this.getEntity());
@@ -64,19 +67,20 @@ public class NavigableTerrainComponent extends BaseComponent<NavigableTerrainCom
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////
+  // ////////////////////////////////////////////////////////////////////////////////////////
 
-  private final static HashedString componentType = new HashedString("NavigableTerrainComponent");
-  
+  private final static HashedString componentType = new HashedString(
+      "NavigableTerrainComponent");
+
   @Override
   public HashedString getComponentType() {
     return componentType;
   }
- 
+
   public static HashedString getComponentStaticType() {
     return componentType;
   }
-  
+
   static {
     Core.getCore().getEntityManager().registerComponentType(Global.class);
   }

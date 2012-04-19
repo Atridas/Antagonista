@@ -18,60 +18,63 @@ import cat.atridas.antagonista.graphics.RTSCamera;
 import cat.atridas.antagonista.input.InputManager;
 
 public class RTSCameraSystem implements cat.atridas.antagonista.entities.System {
-  
-  //TODO
-  HashedString camUp    = new HashedString("move_camera_up");
-  HashedString camDown  = new HashedString("move_camera_down");
-  HashedString camLeft  = new HashedString("move_camera_left");
+
+  // TODO
+  HashedString camUp = new HashedString("move_camera_up");
+  HashedString camDown = new HashedString("move_camera_down");
+  HashedString camLeft = new HashedString("move_camera_left");
   HashedString camRight = new HashedString("move_camera_right");
-  HashedString camDist  = new HashedString("move_camera_distance");
+  HashedString camDist = new HashedString("move_camera_distance");
 
   float speed = 5f;
   float speedZoom = .01f;
 
   @Override
-  public void addEntity(Entity entity, Component<?>[] components, DeltaTime currentTime) {
-    
-    assert SystemManager.assertSystemInputParameters(entity,  components, this);
+  public void addEntity(Entity entity, Component<?>[] components,
+      DeltaTime currentTime) {
 
-    RTSCameraComponent    camera    = (RTSCameraComponent)   components[0];
-    
-    CameraComponent cc = Core.getCore().getEntityManager().createComponent(entity, CameraComponent.getComponentStaticType());
-    
+    assert SystemManager.assertSystemInputParameters(entity, components, this);
+
+    RTSCameraComponent camera = (RTSCameraComponent) components[0];
+
+    CameraComponent cc = Core.getCore().getEntityManager()
+        .createComponent(entity, CameraComponent.getComponentStaticType());
+
     cc.init(camera.getCamera());
-    
+
   }
 
   @Override
-  public void updateEntity(Entity entity, Component<?>[] components, DeltaTime currentTime) {
+  public void updateEntity(Entity entity, Component<?>[] components,
+      DeltaTime currentTime) {
 
-    assert SystemManager.assertSystemInputParameters(entity,  components, this);
+    assert SystemManager.assertSystemInputParameters(entity, components, this);
 
-    RTSCameraComponent rtsCameraComponent    = (RTSCameraComponent) components[0];
-    CameraComponent    cameraComponent       = (CameraComponent)    components[1];
-    
+    RTSCameraComponent rtsCameraComponent = (RTSCameraComponent) components[0];
+    CameraComponent cameraComponent = (CameraComponent) components[1];
+
     assert cameraComponent != null;
-    
-    if(rtsCameraComponent.isActive()) {
+
+    if (rtsCameraComponent.isActive()) {
       InputManager im = Core.getCore().getInputManager();
       RTSCamera rtsCamera = rtsCameraComponent.getCamera();
-      
-      if(im.isActionActive(camUp)) {
+
+      if (im.isActionActive(camUp)) {
         rtsCamera.moveUp(speed * currentTime.dt);
       }
-      if(im.isActionActive(camDown)) {
+      if (im.isActionActive(camDown)) {
         rtsCamera.moveUp(-speed * currentTime.dt);
       }
-      if(im.isActionActive(camRight)) {
+      if (im.isActionActive(camRight)) {
         rtsCamera.moveRight(speed * currentTime.dt);
       }
-      if(im.isActionActive(camLeft)) {
+      if (im.isActionActive(camLeft)) {
         rtsCamera.moveRight(-speed * currentTime.dt);
       }
-      if(im.isActionActive(camDist)) {
-        rtsCamera.addDistance( -speedZoom * im.getActionValue(camDist) );
+      if (im.isActionActive(camDist)) {
+        rtsCamera.addDistance(-speedZoom * im.getActionValue(camDist));
       }
-      
+
       cameraComponent.setActive(true);
     } else {
       cameraComponent.setActive(false);
@@ -81,11 +84,11 @@ public class RTSCameraSystem implements cat.atridas.antagonista.entities.System 
 
   @Override
   public void deleteEntity(Entity entity, DeltaTime currentTime) {
-    //TODO Core.getCore().getEntityManager().deleteComponent
+    // TODO Core.getCore().getEntityManager().deleteComponent
   }
-  
 
-  private final static HashedString systemID = new HashedString("RTSCameraSystem");
+  private final static HashedString systemID = new HashedString(
+      "RTSCameraSystem");
 
   private final static List<HashedString> usedComponents;
   private final static List<HashedString> optionalComponents;
@@ -93,47 +96,48 @@ public class RTSCameraSystem implements cat.atridas.antagonista.entities.System 
   private final static Set<HashedString> otherComponents;
   private final static Set<HashedString> usedInterfaces;
   private final static Set<HashedString> writeToInterfaces;
-  
+
   static {
     List<HashedString> components = new ArrayList<>();
     components.add(RTSCameraComponent.getComponentStaticType());
     usedComponents = Collections.unmodifiableList(components);
-    
+
     components = new ArrayList<>();
     components.add(CameraComponent.getComponentStaticType());
     optionalComponents = Collections.unmodifiableList(components);
-    
+
     Set<HashedString> writes = new HashSet<>();
     writes.add(RTSCameraComponent.getComponentStaticType());
     writes.add(CameraComponent.getComponentStaticType());
-    
+
     writeToComponents = Collections.unmodifiableSet(writes);
-    
+
     otherComponents = Collections.emptySet();
 
     Set<HashedString> interfaces = new HashSet<>();
     interfaces.add(SystemManager.inputInteface);
     usedInterfaces = Collections.unmodifiableSet(interfaces);
-    writeToInterfaces = Collections.unmodifiableSet(new HashSet<HashedString>(usedInterfaces));
+    writeToInterfaces = Collections.unmodifiableSet(new HashSet<HashedString>(
+        usedInterfaces));
   }
 
   @Override
   public HashedString getSystemId() {
     return systemID;
   }
-  
+
   @Override
   public List<HashedString> getUsedComponents() {
     return usedComponents;
   }
-  
+
   @Override
   public List<HashedString> getOptionalComponents() {
     return optionalComponents;
   }
 
   @Override
-  public Set<HashedString>  getWriteToComponents() {
+  public Set<HashedString> getWriteToComponents() {
     return writeToComponents;
   }
 
@@ -143,7 +147,7 @@ public class RTSCameraSystem implements cat.atridas.antagonista.entities.System 
   }
 
   @Override
-  public Set<HashedString>  getWriteToInterfaces() {
+  public Set<HashedString> getWriteToInterfaces() {
     return writeToInterfaces;
   }
 

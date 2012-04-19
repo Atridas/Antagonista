@@ -6,35 +6,32 @@ import javax.vecmath.Vector3f;
 import cat.atridas.antagonista.HashedString;
 
 public class LerpAnimation implements AnimationInstance {
-  
+
   private final AnimationInstance firstAnimation, secondAnimation;
   private final HashedString parameterID;
-  
+
   private final float duration;
 
   private float blendFactor;
-  
-  public LerpAnimation(
-      AnimationInstance _firstAnimation,
-      AnimationInstance _secondAnimation,
-      HashedString _parameterID)
-  {
+
+  public LerpAnimation(AnimationInstance _firstAnimation,
+      AnimationInstance _secondAnimation, HashedString _parameterID) {
     firstAnimation = _firstAnimation;
     secondAnimation = _secondAnimation;
     parameterID = _parameterID;
-    
+
     duration = (firstAnimation.getDuration() + secondAnimation.getDuration()) * .5f;
   }
 
   @Override
   public void setParameter(HashedString parameter, float value) {
-    if(parameterID.equals(parameter)) {
+    if (parameterID.equals(parameter)) {
       blendFactor = value;
     }
     firstAnimation.setParameter(parameter, value);
     secondAnimation.setParameter(parameter, value);
   }
-  
+
   private float normalizeTime(float time) {
     assert time >= 0 && time <= duration;
     return time / duration;
@@ -54,16 +51,17 @@ public class LerpAnimation implements AnimationInstance {
   }
 
   private Bone m_bAux = new Bone();
+
   @Override
   public void modifyBone(BoneInstance bone_, float weight, float time) {
-    if(weight == 0)
+    if (weight == 0)
       return;
-    else if(weight == 1) {
+    else if (weight == 1) {
       getBoneNormalized(bone_, time);
       return;
     }
     assert weight > 0 && weight < 1;
-    
+
     m_bAux.armature = bone_.getArmatureId();
     m_bAux.bone = bone_.getBoneId();
 
@@ -74,19 +72,19 @@ public class LerpAnimation implements AnimationInstance {
 
     bone_.getTranslation().interpolate(m_bAux.translation, weight);
     bone_.getRotation().interpolate(m_bAux.rotation, weight);
-    bone_.setScale( bone_.getScale() * (1 - weight) + m_bAux.scale * weight );
+    bone_.setScale(bone_.getScale() * (1 - weight) + m_bAux.scale * weight);
   }
-  
+
   @Override
   public void modifyBoneNormalized(BoneInstance bone_, float weight, float time) {
-    if(weight == 0)
+    if (weight == 0)
       return;
-    else if(weight == 1) {
+    else if (weight == 1) {
       getBoneNormalized(bone_, time);
       return;
     }
     assert weight > 0 && weight < 1;
-    
+
     m_bAux.armature = bone_.getArmatureId();
     m_bAux.bone = bone_.getBoneId();
 
@@ -95,7 +93,7 @@ public class LerpAnimation implements AnimationInstance {
 
     bone_.getTranslation().interpolate(m_bAux.translation, weight);
     bone_.getRotation().interpolate(m_bAux.rotation, weight);
-    bone_.setScale( bone_.getScale() * (1 - weight) + m_bAux.scale * weight );
+    bone_.setScale(bone_.getScale() * (1 - weight) + m_bAux.scale * weight);
   }
 
   @Override
@@ -107,14 +105,14 @@ public class LerpAnimation implements AnimationInstance {
     final Vector3f translation = new Vector3f();
     final Quat4f rotation = new Quat4f();
     float scale = 1;
-    
+
     HashedString armature;
     HashedString bone;
-    
+
     public HashedString getArmatureId() {
       return armature;
     }
-    
+
     public HashedString getBoneId() {
       return bone;
     }

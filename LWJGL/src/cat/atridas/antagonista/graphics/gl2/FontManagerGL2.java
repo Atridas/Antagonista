@@ -7,12 +7,13 @@ import cat.atridas.antagonista.graphics.gl.FontManagerGL;
  * 
  * @author Isaac 'Atridas' Serrano Guasch.
  * @since 0.1
- *
+ * 
  */
 public final class FontManagerGL2 extends FontManagerGL {
 
   /**
    * Last created identifier.
+   * 
    * @since 0.1
    */
   private int lastVAO = 0;

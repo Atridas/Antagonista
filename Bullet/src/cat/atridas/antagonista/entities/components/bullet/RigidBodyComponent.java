@@ -15,40 +15,42 @@ import cat.atridas.antagonista.physics.bullet.PhysicShapeBullet;
 import cat.atridas.antagonista.physics.bullet.PhysicsStaticMeshCore;
 
 public class RigidBodyComponent extends BaseComponent<RigidBodyComponent> {
-  private static Logger LOGGER = Logger.getLogger(RigidBodyComponent.class.getCanonicalName());
-  
+  private static Logger LOGGER = Logger.getLogger(RigidBodyComponent.class
+      .getCanonicalName());
+
   private PhysicType type;
   private PhysicShapeBullet shape;
 
   public RigidBodyComponent(Entity _entity) {
     super(_entity);
   }
-  
+
   public void init(PhysicType _type, PhysicShapeBullet _shape) {
     type = _type;
     shape = _shape;
-    switch(type) {
+    switch (type) {
     case STATIC:
-      if(_shape instanceof PhysicsStaticMeshCore) {
+      if (_shape instanceof PhysicsStaticMeshCore) {
         break;
-      }else if(_shape instanceof BoundingBoxShape) {
+      } else if (_shape instanceof BoundingBoxShape) {
         break;
       }
     default:
       LOGGER.severe("RigidBody type and Shape are incompatible!");
-      throw new IllegalArgumentException("RigidBody type and Shape are incompatible!");
+      throw new IllegalArgumentException(
+          "RigidBody type and Shape are incompatible!");
     }
     setInitialized();
   }
-  
+
   public PhysicType getType() {
     return type;
   }
-  
+
   public PhysicShapeBullet getShape() {
     return shape;
   }
-  
+
   public void getOffset(Vector3f offset_) {
     shape.getFromGameToBulletVector(offset_);
   }
@@ -59,21 +61,22 @@ public class RigidBodyComponent extends BaseComponent<RigidBodyComponent> {
     type = _other.type;
     shape = _other.shape;
   }
-  
+
   @Override
   public String toString() {
     return "RigidBodyComponent: ";
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////
-  
+  // ////////////////////////////////////////////////////////////////////////////////////////
+
   public static enum PhysicType {
     STATIC, DYNAMIC, KINEMATIC
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////
-  
-  public final static class Global extends RigidBodyComponent implements GlobalComponent<RigidBodyComponent> {
+  // ////////////////////////////////////////////////////////////////////////////////////////
+
+  public final static class Global extends RigidBodyComponent implements
+      GlobalComponent<RigidBodyComponent> {
 
     public Global(Entity _entity) {
       super(_entity);
@@ -83,10 +86,11 @@ public class RigidBodyComponent extends BaseComponent<RigidBodyComponent> {
     public Local createLocalCopy() {
       return new Local();
     }
-    
+
   }
-  
-  public final class Local extends RigidBodyComponent implements LocalComponent<RigidBodyComponent> {
+
+  public final class Local extends RigidBodyComponent implements
+      LocalComponent<RigidBodyComponent> {
 
     private Local() {
       super(RigidBodyComponent.this.getEntity());
@@ -108,19 +112,20 @@ public class RigidBodyComponent extends BaseComponent<RigidBodyComponent> {
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////
+  // ////////////////////////////////////////////////////////////////////////////////////////
 
-  private final static HashedString componentType = new HashedString("RigidBodyComponent");
-  
+  private final static HashedString componentType = new HashedString(
+      "RigidBodyComponent");
+
   @Override
   public HashedString getComponentType() {
     return componentType;
   }
- 
+
   public static HashedString getComponentStaticType() {
     return componentType;
   }
-  
+
   static {
     Core.getCore().getEntityManager().registerComponentType(Global.class);
   }

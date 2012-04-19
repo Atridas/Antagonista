@@ -17,39 +17,35 @@ import cat.atridas.antagonista.graphics.gl3.MaterialGL3;
  * 
  * @author Isaac 'Atridas' Serrano Guasch
  * @since 0.1
- *
+ * 
  */
 public final class MaterialManagerGL extends MaterialManager {
-  
-  /**
-   * Default material.
-   * @since 0.1
-   */
-  private Material defaultResource;
-  
+
   /**
    * Initializes the manager.
    * 
-   * @param _extensionsPriorized Extensions of the material files to be loaded.
-   * @param _basePath Path where the material files will be searched.
+   * @param _extensionsPriorized
+   *          Extensions of the material files to be loaded.
+   * @param _basePath
+   *          Path where the material files will be searched.
    * @see ResourceManager#ResourceManager(String, ArrayList)
    */
-  public void init(ArrayList<HashedString> _extensionsPriorized, String _basePath) {
+  public void init(ArrayList<HashedString> _extensionsPriorized,
+      String _basePath) {
     super.init(_extensionsPriorized, _basePath);
   }
 
   @Override
   protected Material createNewResource(HashedString name) {
-    if(Utils.supports(Profile.GL3)) {
+    if (Utils.supports(Profile.GL3)) {
       return new MaterialGL3(name);
-    } else if(Utils.supports(Profile.GL2)) {
+    } else if (Utils.supports(Profile.GL2)) {
       return new MaterialGL2(name);
     } else {
-      throw new IllegalStateException(
-          "Current Profile [" + 
-              Core.getCore().getRenderManager().getProfile() + 
-                               "] not implemented.");
+      throw new IllegalStateException("Current Profile ["
+          + Core.getCore().getRenderManager().getProfile()
+          + "] not implemented.");
     }
   }
-  
+
 }

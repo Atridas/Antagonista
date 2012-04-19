@@ -13,21 +13,24 @@ import cat.atridas.antagonista.entities.Entity;
 public class PhysicsUserInfo {
   /**
    * Debug color.
+   * 
    * @since 0.2
    */
   public final Color3f color = new Color3f();
   /**
    * In debug draw, perform the zTest.
+   * 
    * @since 0.2
    */
   public boolean zTest;
-  
+
   /**
    * Game entity this physic object is associated with.
+   * 
    * @since 0.2
    */
   public final Entity entity;
-  
+
   public PhysicsUserInfo(Entity _entity) {
     entity = _entity;
   }

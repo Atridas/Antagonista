@@ -26,77 +26,78 @@ import cat.atridas.antagonista.physics.bullet.StaticRigidBody;
 import cat.atridas.antagonista.physics.bullet.PhysicsWorldBullet;
 
 public class RigidBodySystem implements cat.atridas.antagonista.entities.System {
-  private static Logger LOGGER = Logger.getLogger(RigidBodySystem.class.getCanonicalName());
+  private static Logger LOGGER = Logger.getLogger(RigidBodySystem.class
+      .getCanonicalName());
 
-  private PhysicsWorldBullet physicsWorld = (PhysicsWorldBullet)Core.getCore().getPhysicsWorld();
-  
-  
+  private PhysicsWorldBullet physicsWorld = (PhysicsWorldBullet) Core.getCore()
+      .getPhysicsWorld();
+
   private final HashMap<HashedString, StaticRigidBody> staticRigidBodies = new HashMap<>();
-  
-  @Override
-  public void addEntity(Entity entity, Component<?>[] components, DeltaTime currentTime) {
-    
-    assert SystemManager.assertSystemInputParameters(entity,  components, this);
 
-    TransformComponent    transformC    = (TransformComponent)   components[0];
-    RigidBodyComponent    rigidBodyC    = (RigidBodyComponent)   components[1];
-    
+  @Override
+  public void addEntity(Entity entity, Component<?>[] components,
+      DeltaTime currentTime) {
+
+    assert SystemManager.assertSystemInputParameters(entity, components, this);
+
+    TransformComponent transformC = (TransformComponent) components[0];
+    RigidBodyComponent rigidBodyC = (RigidBodyComponent) components[1];
 
     Transformation transform = new Transformation();
     transformC.getTransform(transform);
-    
-    
-    
+
     PhysicsUserInfo pui = new PhysicsUserInfo(entity);
     pui.color.set(Utils.RED);
     pui.zTest = true;
-    
+
     PhysicShapeBullet shape = rigidBodyC.getShape();
     Vector3f offset = new Vector3f();
     rigidBodyC.getOffset(offset);
-    
-    switch(rigidBodyC.getType()) {
+
+    switch (rigidBodyC.getType()) {
     case STATIC:
-      
+
       assert !staticRigidBodies.containsKey(entity.getId());
-      
-      StaticRigidBody srb = physicsWorld.createStaticRigidBody(shape, offset, pui, transform);
+
+      StaticRigidBody srb = physicsWorld.createStaticRigidBody(shape, offset,
+          pui, transform);
       staticRigidBodies.put(entity.getId(), srb);
       break;
     default:
-      throw new IllegalArgumentException("Not implemented! " + rigidBodyC.getType());
+      throw new IllegalArgumentException("Not implemented! "
+          + rigidBodyC.getType());
     }
-    
-    
+
   }
 
   @Override
-  public void updateEntity(Entity entity, Component<?>[] components, DeltaTime currentTime) {
+  public void updateEntity(Entity entity, Component<?>[] components,
+      DeltaTime currentTime) {
 
-    assert SystemManager.assertSystemInputParameters(entity,  components, this);
-
+    assert SystemManager.assertSystemInputParameters(entity, components, this);
 
   }
 
   @Override
   public void deleteEntity(Entity entity, DeltaTime currentTime) {
-    
+
     StaticRigidBody srb = staticRigidBodies.get(entity.getId());
-    if(srb != null) {
+    if (srb != null) {
       physicsWorld.deleteRigidBody(srb);
       return;
     }
-    
-    LOGGER.warning("Deleting entity [" + entity.getId() + "] from RigidBodySystem, and it's rigid body was not found.");
-  }
-  
 
-  ////////////////////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////////////////////
-  
-  private final static HashedString systemID = new HashedString("RigidBodySystem");
+    LOGGER.warning("Deleting entity [" + entity.getId()
+        + "] from RigidBodySystem, and it's rigid body was not found.");
+  }
+
+  // //////////////////////////////////////////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////////////////////////////////////
+
+  private final static HashedString systemID = new HashedString(
+      "RigidBodySystem");
 
   private final static List<HashedString> usedComponents;
   private final static List<HashedString> optionalComponents;
@@ -104,44 +105,44 @@ public class RigidBodySystem implements cat.atridas.antagonista.entities.System 
   private final static Set<HashedString> otherComponents;
   private final static Set<HashedString> usedInterfaces;
   private final static Set<HashedString> writeToInterfaces;
-  
+
   static {
     List<HashedString> components = new ArrayList<>();
     components.add(TransformComponent.getComponentStaticType());
     components.add(RigidBodyComponent.getComponentStaticType());
     usedComponents = Collections.unmodifiableList(components);
-    
-    
+
     optionalComponents = Collections.emptyList();
-    
-    
-    writeToComponents = Collections.unmodifiableSet(new HashSet<>(usedComponents));
-    
+
+    writeToComponents = Collections.unmodifiableSet(new HashSet<>(
+        usedComponents));
+
     otherComponents = Collections.emptySet();
 
     Set<HashedString> interfaces = new HashSet<>();
     interfaces.add(SystemManager.physicsInteface);
     usedInterfaces = Collections.unmodifiableSet(interfaces);
-    writeToInterfaces = Collections.unmodifiableSet(new HashSet<HashedString>(usedInterfaces));
+    writeToInterfaces = Collections.unmodifiableSet(new HashSet<HashedString>(
+        usedInterfaces));
   }
 
   @Override
   public HashedString getSystemId() {
     return systemID;
   }
-  
+
   @Override
   public List<HashedString> getUsedComponents() {
     return usedComponents;
   }
-  
+
   @Override
   public List<HashedString> getOptionalComponents() {
     return optionalComponents;
   }
 
   @Override
-  public Set<HashedString>  getWriteToComponents() {
+  public Set<HashedString> getWriteToComponents() {
     return writeToComponents;
   }
 
@@ -151,7 +152,7 @@ public class RigidBodySystem implements cat.atridas.antagonista.entities.System 
   }
 
   @Override
-  public Set<HashedString>  getWriteToInterfaces() {
+  public Set<HashedString> getWriteToInterfaces() {
     return writeToInterfaces;
   }
 

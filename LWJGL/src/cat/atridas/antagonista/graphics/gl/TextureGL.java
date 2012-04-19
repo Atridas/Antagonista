@@ -27,15 +27,16 @@ import static org.lwjgl.util.glu.GLU.gluBuild2DMipmaps;
  * 
  * @author Isaac 'Atridas' Serrano Guasch.
  * @since 0.1
- *
+ * 
  */
 public final class TextureGL extends Texture {
-  private static Logger LOGGER = Logger.getLogger(TextureGL.class.getCanonicalName());
-  
+  private static Logger LOGGER = Logger.getLogger(TextureGL.class
+      .getCanonicalName());
+
   private int width;
   private int height;
   private int bpp;
-  
+
   private boolean hasAlpha;
 
   /**
@@ -47,16 +48,17 @@ public final class TextureGL extends Texture {
    */
   public TextureGL(HashedString resourceName) {
     super(resourceName);
-    
+
     minFilter = magFilter = GL_NEAREST;
   }
-  
+
   @Override
   public boolean load(InputStream is, HashedString extension) {
-    if(LOGGER.isLoggable(Level.CONFIG))
+    if (LOGGER.isLoggable(Level.CONFIG))
       LOGGER.config("Loading texture '" + resourceName + "'");
-    
-    LoadableImageData loader = ImageDataFactory.getImageDataFor(extension.toString().toUpperCase());
+
+    LoadableImageData loader = ImageDataFactory.getImageDataFor(extension
+        .toString().toUpperCase());
     ByteBuffer bb;
     try {
       bb = loader.loadImage(is);
@@ -65,116 +67,99 @@ public final class TextureGL extends Texture {
       LOGGER.warning(Utils.logExceptionStringAndStack(e));
       return false;
     }
-    
-    width  = loader.getWidth();
+
+    width = loader.getWidth();
     height = loader.getHeight();
-    bpp    = loader.getDepth();
+    bpp = loader.getDepth();
     hasAlpha = bpp == 32;
 
     int max = glGetInteger(GL_MAX_TEXTURE_SIZE);
 
     if ((width > max) || (height > max)) {
-      LOGGER.warning("Attempt to allocate a texture to big for the current hardware");
+      LOGGER
+          .warning("Attempt to allocate a texture to big for the current hardware");
       return false;
     }
 
     int glFormat = hasAlpha ? GL_RGBA : GL_RGB;
-    
+
     id = glGenTextures();
     activate(0);
-    
-    if(Utils.supports(Profile.GL3)) {
-      
-      glTexImage2D(GL_TEXTURE_2D, 
-          0,               //mipmap level
-          glFormat, 
-          width, height, 
-          0,               //Border
-          glFormat, 
-          GL_UNSIGNED_BYTE,            
-          bb);
-      
+
+    if (Utils.supports(Profile.GL3)) {
+
+      glTexImage2D(GL_TEXTURE_2D, 0, // mipmap level
+          glFormat, width, height, 0, // Border
+          glFormat, GL_UNSIGNED_BYTE, bb);
+
       glGenerateMipmap(GL_TEXTURE_2D);
     } else {
-      gluBuild2DMipmaps(GL_TEXTURE_2D, 
-          glFormat, 
-          width, height, 
-          glFormat, 
-          GL_UNSIGNED_BYTE,            
-          bb);
+      gluBuild2DMipmaps(GL_TEXTURE_2D, glFormat, width, height, glFormat,
+          GL_UNSIGNED_BYTE, bb);
     }
 
     setMagFilter(Quality.MID);
     setMinFilter(Quality.MID);
     noTexture();
-    
+
     assert !Utils.hasGLErrors();
-    
+
     return true;
   }
-  
+
   @Override
   public void loadDefault() {
-    
+
     ByteBuffer bb = BufferUtils.createByteBuffer(256 * 256 * 3);
-    
+
     byte[] baux = new byte[3];
-    for(int i = 0; i < 256; ++i) {
-      for(int j = 0; j < 256; ++j) {
-        baux[0] = (byte)((i     % 16) * 16);
-        baux[1] = (byte)((j     % 16) * 16);
-        baux[2] = (byte)(((i+j) % 16) * 16);
+    for (int i = 0; i < 256; ++i) {
+      for (int j = 0; j < 256; ++j) {
+        baux[0] = (byte) ((i % 16) * 16);
+        baux[1] = (byte) ((j % 16) * 16);
+        baux[2] = (byte) (((i + j) % 16) * 16);
         bb.put(baux);
       }
     }
     bb.rewind();
-    
+
     width = 256;
     height = 256;
     hasAlpha = false;
     bpp = 24;
-    
+
     assert !Utils.hasGLErrors();
 
     int glFormat = GL_RGB;
     id = glGenTextures();
     assert !Utils.hasGLErrors();
     activate(0);
-    
+
     assert !Utils.hasGLErrors();
-    
-    if(GLContext.getCapabilities().OpenGL30) {
-      
-      glTexImage2D(GL_TEXTURE_2D, 
-          0,               //mipmap level
-          glFormat, 
-          width, height, 
-          0,               //Border
-          glFormat, 
-          GL_UNSIGNED_BYTE,            
-          bb);
-      
+
+    if (GLContext.getCapabilities().OpenGL30) {
+
+      glTexImage2D(GL_TEXTURE_2D, 0, // mipmap level
+          glFormat, width, height, 0, // Border
+          glFormat, GL_UNSIGNED_BYTE, bb);
+
       assert !Utils.hasGLErrors();
-      
+
       glGenerateMipmap(GL_TEXTURE_2D);
-      
+
       assert !Utils.hasGLErrors();
     } else {
-      gluBuild2DMipmaps(GL_TEXTURE_2D, 
-          glFormat, 
-          width, height, 
-          glFormat, 
-          GL_UNSIGNED_BYTE,            
-          bb);
-      
+      gluBuild2DMipmaps(GL_TEXTURE_2D, glFormat, width, height, glFormat,
+          GL_UNSIGNED_BYTE, bb);
+
       assert !Utils.hasGLErrors();
     }
 
     setMagFilter(Quality.MID);
     setMinFilter(Quality.MID);
-    
+
     assert !Utils.hasGLErrors();
-    
+
     noTexture();
   }
 
@@ -187,44 +172,43 @@ public final class TextureGL extends Texture {
   protected boolean isMipMapped() {
     return true;
   }
-  
-  
+
   public void activate(int _unit) {
     assert !cleaned;
     glActiveTexture(GL_TEXTURE0 + _unit);
     glBindTexture(getTarget(), id);
-    
+
     glTexParameteri(getTarget(), GL_TEXTURE_MIN_FILTER, minFilter);
     glTexParameteri(getTarget(), GL_TEXTURE_MAG_FILTER, magFilter);
   }
-  
+
   public void noTexture() {
     glBindTexture(GL_TEXTURE_2D, 0);
   }
-  
+
   public int getMinParameter(Quality quality) {
-    switch(quality) {
+    switch (quality) {
     case NONE:
     case LOW:
-      if(isMipMapped()) {
+      if (isMipMapped()) {
         return GL_NEAREST_MIPMAP_NEAREST;
       } else {
         return GL_NEAREST;
       }
     case MID:
-      if(isMipMapped()) {
+      if (isMipMapped()) {
         return GL_NEAREST_MIPMAP_LINEAR;
       } else {
         return GL_NEAREST;
       }
     case HIGH:
-      if(isMipMapped()) {
+      if (isMipMapped()) {
         return GL_LINEAR_MIPMAP_NEAREST;
       } else {
         return GL_LINEAR;
       }
     case ULTRA:
-      if(isMipMapped()) {
+      if (isMipMapped()) {
         return GL_LINEAR_MIPMAP_LINEAR;
       } else {
         return GL_LINEAR;
@@ -232,12 +216,12 @@ public final class TextureGL extends Texture {
     default:
       LOGGER.severe("Unknown Filter passed: " + quality);
       throw new RuntimeException();
-      //return GL_NEAREST;
+      // return GL_NEAREST;
     }
   }
-  
+
   public int getMagParameter(Quality quality) {
-    switch(quality) {
+    switch (quality) {
     case NONE:
     case LOW:
     case MID:
@@ -248,7 +232,7 @@ public final class TextureGL extends Texture {
     default:
       LOGGER.severe("Unknown Filter passed: " + quality);
       throw new RuntimeException();
-      //return GL_NEAREST;
+      // return GL_NEAREST;
     }
   }
 

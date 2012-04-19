@@ -9,15 +9,15 @@ import org.lwjgl.Sys;
  * @since 0.1
  * 
  */
-public final class Clock  extends cat.atridas.antagonista.Clock {
+public final class Clock extends cat.atridas.antagonista.Clock {
 
-	@Override
-	protected long getTime() {
-		return Sys.getTime();
-	}
+  @Override
+  protected long getTime() {
+    return Sys.getTime();
+  }
 
-	@Override
-	protected long getTimerResolution() {
-		return Sys.getTimerResolution();
-	}
+  @Override
+  protected long getTimerResolution() {
+    return Sys.getTimerResolution();
+  }
 }

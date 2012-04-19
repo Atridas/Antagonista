@@ -1,22 +1,25 @@
 package cat.atridas.antagonista;
 
 /**
- * Used to designated the quality of various parameters, for example, Shader Techniques.
+ * Used to designated the quality of various parameters, for example, Shader
+ * Techniques.
  * 
  * @author Isaac 'Atridas' Serrano Guasch
  * @since 0.1
- *
+ * 
  */
 public enum Quality {
   NONE, LOW, MID, HIGH, ULTRA;
-  
+
   /**
-   * Gets the quality directly bellow. In case of the lowest quality (NONE), returns itself.
+   * Gets the quality directly bellow. In case of the lowest quality (NONE),
+   * returns itself.
+   * 
    * @since 0.1
    * @return the next lower Quality
    */
   public Quality previousQuality() {
-    switch(this) {
+    switch (this) {
     case NONE:
       return NONE;
     case LOW:
@@ -31,17 +34,19 @@ public enum Quality {
       throw new IllegalArgumentException();
     }
   }
-  
+
   /**
    * Creates a quality from a string.
    * 
    * @since 0.1
-   * @param str String to parse.
+   * @param str
+   *          String to parse.
    * @return a quality.
-   * @throws IllegalArgumentException if the input does not map to any enum value.
+   * @throws IllegalArgumentException
+   *           if the input does not map to any enum value.
    */
   public static Quality parseString(String str) {
-    switch(str.toUpperCase()) {
+    switch (str.toUpperCase()) {
     case "NONE":
       return NONE;
     case "LOW":
@@ -56,10 +61,10 @@ public enum Quality {
       throw new IllegalArgumentException();
     }
   }
-  
+
   @Override
   public String toString() {
-    switch(this) {
+    switch (this) {
     case NONE:
       return "NONE";
     case LOW:

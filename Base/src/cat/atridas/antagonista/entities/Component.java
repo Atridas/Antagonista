@@ -7,8 +7,9 @@ import cat.atridas.antagonista.HashedString;
  * 
  * @author Isaac 'Atridas' Serrano Guasch.
  * @since 0.1
- *
- * @param <T> Final component's class.
+ * 
+ * @param <T>
+ *          Final component's class.
  * @see BaseComponent
  */
 public interface Component<T extends Component<?>> {
@@ -19,6 +20,7 @@ public interface Component<T extends Component<?>> {
    * @since 0.1
    */
   HashedString getComponentType();
+
   /**
    * Gets the Entity this component is attached.
    * 
@@ -26,6 +28,7 @@ public interface Component<T extends Component<?>> {
    * @since 0.1
    */
   Entity getEntity();
+
   /**
    * Gets the Entity's id this component is attached.
    * 
@@ -33,13 +36,16 @@ public interface Component<T extends Component<?>> {
    * @since 0.1
    */
   HashedString getEntityId();
+
   /**
    * Copies the component, used to reuse discarded components.
-   * @param _other input component to copy.
+   * 
+   * @param _other
+   *          input component to copy.
    * @since 0.1
    */
   void copy(T _other);
-  
+
   /**
    * Marks if this Component has been initialized.
    * 

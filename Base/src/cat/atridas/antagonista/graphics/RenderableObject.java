@@ -12,43 +12,49 @@ import cat.atridas.antagonista.graphics.animation.ArmatureInstance;
  * 
  * @author Isaac 'Atridas' Serrano Guash
  * @since 0.1
- *
+ * 
  */
 public final class RenderableObject {
   /**
    * Name of this renderable object.
+   * 
    * @since 0.1
    */
   private final HashedString name;
-  
+
   /**
    * Transformation in world coordinate system of this renderable object.
+   * 
    * @since 0.1
    */
   private final Transformation trans = new Transformation();
   /**
    * Mesh core of this renderable object.
+   * 
    * @since 0.1
    */
   private Mesh mesh;
-  
+
   /**
    * Armature of this object, if it is animated.
+   * 
    * @since 0.3
    */
   private ArmatureInstance armature;
-  
+
   /**
    * Indicates if this renderable object must be rendered or not.
+   * 
    * @since 0.1
    */
   private boolean visible = true;
   /**
    * Indicates if this renderable object has been culled by some culling system.
+   * 
    * @since 0.1
    */
-  private boolean culled  = false;
-  
+  private boolean culled = false;
+
   /**
    * Checks if this object has been activated by the aplication.
    * 
@@ -70,7 +76,8 @@ public final class RenderableObject {
   }
 
   /**
-   * Checks if the culling system has culled out this object and should not be rendered.
+   * Checks if the culling system has culled out this object and should not be
+   * rendered.
    * 
    * @return <code>true</code> if the renderer should not render this object.
    * @since 0.1
@@ -80,9 +87,11 @@ public final class RenderableObject {
   }
 
   /**
-   * Used by te culling system to indicate if this object is visible from the current camera or not.
+   * Used by te culling system to indicate if this object is visible from the
+   * current camera or not.
    * 
-   * @param culled if this object must be culled or not.
+   * @param culled
+   *          if this object must be culled or not.
    * @since 0.1
    */
   public void setCulled(boolean culled) {
@@ -108,9 +117,10 @@ public final class RenderableObject {
   public Mesh getMesh() {
     return mesh;
   }
-  
+
   /**
-   * Gets the armature of this object (if it is animated) that contains its current animation.
+   * Gets the armature of this object (if it is animated) that contains its
+   * current animation.
    * 
    * @return the armature of this object.
    * @since 0.3
@@ -118,11 +128,12 @@ public final class RenderableObject {
   public ArmatureInstance getArmature() {
     return armature;
   }
-  
+
   /**
    * Changes the mesh this renderable object uses.
    * 
-   * @param _mesh new mesh object.
+   * @param _mesh
+   *          new mesh object.
    * @since 0.2
    */
   public void changeMesh(Mesh _mesh) {
@@ -133,7 +144,8 @@ public final class RenderableObject {
   /**
    * Changes the mesh this renderable object uses.
    * 
-   * @param _mesh new mesh object identifier.
+   * @param _mesh
+   *          new mesh object identifier.
    * @since 0.2
    */
   public void changeMesh(HashedString _mesh) {
@@ -143,15 +155,17 @@ public final class RenderableObject {
   /**
    * Constructs an untransformed renderable object.
    * 
-   * @param _name name of this object.
-   * @param _mesh mesh used by this object.
+   * @param _name
+   *          name of this object.
+   * @param _mesh
+   *          mesh used by this object.
    * @since 0.1
    */
   public RenderableObject(HashedString _name, Mesh _mesh) {
     name = _name;
     mesh = _mesh;
-    
-    if(mesh.isAnimated()) {
+
+    if (mesh.isAnimated()) {
       armature = new ArmatureInstance(mesh.getArmature());
     }
   }
@@ -159,7 +173,8 @@ public final class RenderableObject {
   /**
    * Gets the transformation of this object.
    * 
-   * @param trans_ output parameter.
+   * @param trans_
+   *          output parameter.
    * @since 0.1
    */
   public void getTransformation(Transformation trans_) {
@@ -169,7 +184,8 @@ public final class RenderableObject {
   /**
    * Sets the transformation of this object.
    * 
-   * @param _trans input parameter.
+   * @param _trans
+   *          input parameter.
    * @since 0.1
    */
   public void setTransformation(Transformation _trans) {
@@ -179,7 +195,8 @@ public final class RenderableObject {
   /**
    * Gets the transformation matrix of this object.
    * 
-   * @param trans_ output parameter.
+   * @param trans_
+   *          output parameter.
    * @since 0.1
    */
   public void getTransformation(Matrix4f matrix_) {
@@ -189,7 +206,8 @@ public final class RenderableObject {
   /**
    * Sets the transformation matrix of this object.
    * 
-   * @param _trans input parameter.
+   * @param _trans
+   *          input parameter.
    * @since 0.1
    */
   public void setTransformation(Matrix4f _trans) {

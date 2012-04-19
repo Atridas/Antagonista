@@ -8,20 +8,22 @@ import cat.atridas.antagonista.core.Core;
  * 
  * @author Isaac 'Atridas' Serrano Guasch
  * @since 0.3
- *
+ * 
  */
 public final class SingleAnimation implements AnimationInstance {
-  
+
   /**
    * Encapsulated animation.
+   * 
    * @since 0.3
    */
   private final AnimationCore animation;
-  
+
   /**
    * Builds this object with the animation identified.
    * 
-   * @param animationID animation identifier.
+   * @param animationID
+   *          animation identifier.
    * @since 0.3
    */
   public SingleAnimation(HashedString animationID) {
@@ -45,27 +47,27 @@ public final class SingleAnimation implements AnimationInstance {
 
   @Override
   public void modifyBone(BoneInstance bone_, float weight, float time) {
-    if(weight == 0)
+    if (weight == 0)
       return;
-    else if(weight == 1) {
+    else if (weight == 1) {
       getBone(bone_, time);
       return;
     }
     assert weight > 0 && weight < 1;
-    
+
     animation.setBone(bone_, time, weight);
   }
 
   @Override
   public void modifyBoneNormalized(BoneInstance bone_, float weight, float time) {
-    if(weight == 0)
+    if (weight == 0)
       return;
-    else if(weight == 1) {
+    else if (weight == 1) {
       getBoneNormalized(bone_, time);
       return;
     }
     assert weight > 0 && weight < 1;
-    
+
     animation.setBoneNormalized(bone_, time, weight);
   }
 

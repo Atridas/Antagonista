@@ -8,19 +8,19 @@ import cat.atridas.antagonista.core.Core;
 
 /**
  * <p>
- * Basic Component implementation. When building your new components, extend them from here.
+ * Basic Component implementation. When building your new components, extend
+ * them from here.
  * </p>
  * <p>
- * To correctly implement a Component Class, you must extend this class and implement 2 inner classes,
- * a "Local" and a "Global".
- * <code><pre>
+ * To correctly implement a Component Class, you must extend this class and
+ * implement 2 inner classes, a "Local" and a "Global". <code><pre>
  * public final static class Global extends <strong>NewComponent</strong> 
  *                                  implements GlobalComponent&lt;<strong>NewComponent</strong>&gt; {
- *
+ * 
  *   public Global(Entity _entity) {
  *     super(_entity);
  *   }
- *
+ * 
  *   &#64;Override
  *   public Local createLocalCopy() {
  *     return new Local();
@@ -29,19 +29,19 @@ import cat.atridas.antagonista.core.Core;
  * 
  * public final class Local extends <strong>NewComponent</strong> 
  *                          implements LocalComponent&lt;<strong>NewComponent</strong>&gt; {
- *
+ * 
  *   private Local() {
  *     super(<strong>NewComponent</strong>.this.getEntity());
  *     pullChanges();
  *   }
- *
+ * 
  *   &#64;Override
  *   public void pushChanges() {
  *     synchronized (<strong>NewComponent</strong>.this) {
  *       <strong>NewComponent</strong>.this.copy(this);
  *     }
  *   }
- *
+ * 
  *   &#64;Override
  *   public void pullChanges() {
  *     synchronized (<strong>NewComponent</strong>.this) {
@@ -52,44 +52,52 @@ import cat.atridas.antagonista.core.Core;
  * </pre></code>
  * </p>
  * <p>
- * Then you must create a static method 
- * <strong><code>public static HashedString getComponentStaticType()</code></strong>
- * for the EntityManager to use statically, and register the component inside the entity manager:
- * <code><pre>
+ * Then you must create a static method <strong>
+ * <code>public static HashedString getComponentStaticType()</code></strong> for
+ * the EntityManager to use statically, and register the component inside the
+ * entity manager: <code><pre>
  * static {
  *   Core.getCore().getEntityManager().registerComponentType(Global.class);
  * }
  * </pre></code>
  * </p>
+ * 
  * @author Isaac 'Atridas' Serrano Guasch
  * @since 0.2
- *
- * @param <T> Final component's class.
+ * 
+ * @param <T>
+ *          Final component's class.
  */
-public abstract class BaseComponent <T extends BaseComponent<?>> implements Component<T> {
-  //private static Logger LOGGER = Logger.getLogger(BaseComponent.class.getCanonicalName());
-  
+public abstract class BaseComponent<T extends BaseComponent<?>> implements
+    Component<T> {
+  // private static Logger LOGGER =
+  // Logger.getLogger(BaseComponent.class.getCanonicalName());
+
   /**
    * Entity this component is attached to.
+   * 
    * @since 0.2
    */
   private Entity entity;
-  
+
   /**
    * @since 0.2
    */
   private boolean isInit = false;
-  
+
   /**
-   * Access to the global clock, to register <strong>when</strong> a state has changed.
+   * Access to the global clock, to register <strong>when</strong> a state has
+   * changed.
+   * 
    * @since 0.2
    */
   protected static final Clock globalClock = Core.getCore().getClock();
-  
+
   /**
    * Builds a Component.
    * 
-   * @param _entity to attach this component to.
+   * @param _entity
+   *          to attach this component to.
    * @since 0.2
    */
   protected BaseComponent(Entity _entity) {
@@ -106,19 +114,20 @@ public abstract class BaseComponent <T extends BaseComponent<?>> implements Comp
   public final Entity getEntity() {
     return entity;
   }
-  
+
   @Override
   public final HashedString getEntityId() {
     return entity.getId();
   }
-  
+
   @Override
   public final boolean isInitialized() {
     return isInit;
   }
-  
+
   /**
    * Call when this component has been initialized.
+   * 
    * @since 0.2
    */
   protected final void setInitialized() {

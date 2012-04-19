@@ -37,119 +37,121 @@ import cat.atridas.antagonista.graphics.gl3.TechniquePassGL3;
 
 public class LWJGLManagerFactory implements ManagerFactory {
 
-	@Override
-	public InputManagerLWJGL createInputManager() {
-		return new InputManagerLWJGL();
-	}
+  @Override
+  public InputManagerLWJGL createInputManager() {
+    return new InputManagerLWJGL();
+  }
 
-	@Override
-	public RenderManagerGL createRenderManager() {
-		return new RenderManagerGL();
-	}
+  @Override
+  public RenderManagerGL createRenderManager() {
+    return new RenderManagerGL();
+  }
 
-	@Override
-	public FontManager createFontManager() {
-	  if(Utils.supports(Profile.GL3)) {
-	    return new FontManagerGL3();
-	  } else {
-	    return new FontManagerGL2();
-	  }
-	}
+  @Override
+  public FontManager createFontManager() {
+    if (Utils.supports(Profile.GL3)) {
+      return new FontManagerGL3();
+    } else {
+      return new FontManagerGL2();
+    }
+  }
 
-	@Override
-	public DebugRender createDebugRender() {
-    if(Utils.supports(Profile.GL3)) {
+  @Override
+  public DebugRender createDebugRender() {
+    if (Utils.supports(Profile.GL3)) {
       return new DebugRenderGL3();
     } else {
       return new DebugRenderGL2();
     }
-	}
+  }
 
-	@Override
-	public TextureManager createTextureManager() {
-		return new TextureManagerGL();
-	}
+  @Override
+  public TextureManager createTextureManager() {
+    return new TextureManagerGL();
+  }
 
-	@Override
-	public MaterialManager createMaterialManager() {
-		return new MaterialManagerGL();
-	}
+  @Override
+  public MaterialManager createMaterialManager() {
+    return new MaterialManagerGL();
+  }
 
-	@Override
-	public MeshManager createMeshManager() {
-		return new MeshManagerGL();
-	}
+  @Override
+  public MeshManager createMeshManager() {
+    return new MeshManagerGL();
+  }
 
-	@Override
-	public RenderableObjectManager createRenderableObjectManager() {
-    if(Utils.supports(Profile.GL3)) {
+  @Override
+  public RenderableObjectManager createRenderableObjectManager() {
+    if (Utils.supports(Profile.GL3)) {
       return new RenderableObjectManagerGL3();
     } else {
       return new RenderableObjectManagerGL2();
     }
-	}
+  }
 
-	@Override
-	public Clock createClock() {
-		return new Clock();
-	}
+  @Override
+  public Clock createClock() {
+    return new Clock();
+  }
 
-	static {
-		new SlickResourceLoader();
-		new TechniquePassFactoryGL();
-		new BufferUtilsInstanceLWJGL();
-	}
-	
-	private static class SlickResourceLoader extends Utils.ResourceLoader {
+  static {
+    new SlickResourceLoader();
+    new TechniquePassFactoryGL();
+    new BufferUtilsInstanceLWJGL();
+  }
 
-		@Override
-		public InputStream getResourceAsStream(String name) {
-			return ResourceLoader.getResourceAsStream(name);
-		}
-	}
-	
-	private static class TechniquePassFactoryGL extends TechniquePassFactory {
+  private static class SlickResourceLoader extends Utils.ResourceLoader {
 
-		@Override
-		protected TechniquePass createTechniquePass(Element techniquePassXML) throws AntagonistException {
-	    if(Utils.supports(Profile.GL3)) {
-	      return new TechniquePassGL3(techniquePassXML);
-	    } else {
-	      return new TechniquePassGL2(techniquePassXML);
-	    }
-		}
-		
-		@Override
-		protected TechniquePass createTechniquePass() {if(Utils.supports(Profile.GL3)) {
-      return new TechniquePassGL3();
-    } else {
-      return new TechniquePassGL2();
+    @Override
+    public InputStream getResourceAsStream(String name) {
+      return ResourceLoader.getResourceAsStream(name);
     }
-		}
+  }
 
-		@Override
-		public TechniquePass createFontTechniquePass() {
-			return new TechniquePassGL2(true);
-		}
-		
-	}
-	
-	private static class BufferUtilsInstanceLWJGL extends BufferUtilsInstance {
+  private static class TechniquePassFactoryGL extends TechniquePassFactory {
 
-		@Override
-		protected ShortBuffer createShortBuffer(int length) {
-			return BufferUtils.createShortBuffer(length);
-		}
+    @Override
+    protected TechniquePass createTechniquePass(Element techniquePassXML)
+        throws AntagonistException {
+      if (Utils.supports(Profile.GL3)) {
+        return new TechniquePassGL3(techniquePassXML);
+      } else {
+        return new TechniquePassGL2(techniquePassXML);
+      }
+    }
 
-		@Override
-		protected FloatBuffer createFloatBuffer(int length) {
-			return BufferUtils.createFloatBuffer(length);
-		}
+    @Override
+    protected TechniquePass createTechniquePass() {
+      if (Utils.supports(Profile.GL3)) {
+        return new TechniquePassGL3();
+      } else {
+        return new TechniquePassGL2();
+      }
+    }
 
-		@Override
-		protected ByteBuffer createByteBuffer(int length) {
-			return BufferUtils.createByteBuffer(length);
-		}
-		
-	}
+    @Override
+    public TechniquePass createFontTechniquePass() {
+      return new TechniquePassGL2(true);
+    }
+
+  }
+
+  private static class BufferUtilsInstanceLWJGL extends BufferUtilsInstance {
+
+    @Override
+    protected ShortBuffer createShortBuffer(int length) {
+      return BufferUtils.createShortBuffer(length);
+    }
+
+    @Override
+    protected FloatBuffer createFloatBuffer(int length) {
+      return BufferUtils.createFloatBuffer(length);
+    }
+
+    @Override
+    protected ByteBuffer createByteBuffer(int length) {
+      return BufferUtils.createByteBuffer(length);
+    }
+
+  }
 }
