@@ -139,6 +139,11 @@ public abstract class Clock {
     return lastDeltaTime;
   }
 
+  /**
+   * Resets the clock.
+   * 
+   * @since 0.5
+   */
   public void reset() {
     lastTime = getTime();
     for (int i = 0; i < WINDOW_LENGTH; ++i) {
@@ -163,7 +168,7 @@ public abstract class Clock {
   protected abstract long getTimerResolution();
 
   /**
-   * Class that encapsulates information avout the time lapsed in every frame.
+   * Class that encapsulates information about the time lapsed in every frame.
    * 
    * @author Isaac 'Atridas' Serrano Guasch
    * @since 0.1
@@ -197,6 +202,11 @@ public abstract class Clock {
      */
     public final long frame;
 
+    /**
+     * Creates the first frame Delta Time.
+     * 
+     * @since 0.5
+     */
     private DeltaTime() {
       dt = 0;
       fps = 0;
@@ -204,6 +214,15 @@ public abstract class Clock {
       frame = 0;
     }
 
+    /**
+     * Creates a new delta time, that continues from the previous one.
+     * 
+     * @param _dt
+     *          aproximation of the time elapsed (in seconds) since the last DT.
+     * @param _realDTTicks
+     *          real time elapsed since the last DT.
+     * @since 0.5
+     */
     private DeltaTime(float _dt, long _realDTTicks) {
       assert _dt > 0;
       dt = _dt;

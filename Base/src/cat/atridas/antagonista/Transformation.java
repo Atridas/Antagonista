@@ -44,19 +44,67 @@ public final class Transformation {
   public static final Vector3f LEFT_VECTOR = Conventions.LEFT_VECTOR;
 
   // hard
+  /**
+   * Translation part of this transformation.
+   * 
+   * @since 0.5
+   */
   private final Vector3f translation = new Vector3f();
 
+  /**
+   * Rotation in Quaternion Form. Up to date if and only if {@link #rotationUpdated} is <code>true</code>.
+   * 
+   * @since 0.5
+   * @see #rotationUpdated
+   */
   private final Quat4f rotation = new Quat4f(0, 0, 0, 1);
+  /**
+   * Indicates if {@link #rotation} is up to date.
+   * 
+   * @since 0.5
+   * @see #rotation
+   */
   private boolean rotationUpdated = true;
 
+  /**
+   * Scale part of this transformation.
+   * 
+   * @since 0.5
+   */
   private float scale = 1;
 
   // auxiliar
+  /**
+   * Matrix with all the information. Up to date if and only if {@link #matrixUpdated} is <code>true</code>.
+   * 
+   * @since 0.5
+   * @see #matrixUpdated
+   */
+  
   private final Matrix4f transformMatrix = new Matrix4f();
+  /**
+   * Indicates if {@link #transformMatrix} is up to date.
+   * 
+   * @since 0.5
+   * @see #transformMatrix
+   */
   private boolean matrixUpdated = false;
 
+  /**
+   * Rotation in yaw / pitch / roll form. Up to date if and only if {@link #yawPitchRollUpdated} is
+   * <code>true</code>.
+   * 
+   * @since 0.5
+   * @see #yawPitchRollUpdated
+   */
   private Tuple3f yawPitchRoll = new Point3f();
-  private boolean yawPithRollUpdated = false;
+  /**
+   * Indicates if {@link #yawPitchRoll} is up to date.
+   * 
+   * @since 0.5
+   * @see #yawPitchRoll
+   */
+  private boolean yawPitchRollUpdated = false;
 
   /**
    * Copies the transformation from another.
@@ -73,13 +121,13 @@ public final class Transformation {
 
     rotationUpdated = _other.rotationUpdated;
     matrixUpdated = _other.matrixUpdated;
-    yawPithRollUpdated = _other.yawPithRollUpdated;
+    yawPitchRollUpdated = _other.yawPitchRollUpdated;
 
     scale = _other.scale;
 
     rotationUpdated = _other.rotationUpdated;
     matrixUpdated = _other.matrixUpdated;
-    yawPithRollUpdated = _other.yawPithRollUpdated;
+    yawPitchRollUpdated = _other.yawPitchRollUpdated;
   }
 
   /**
@@ -98,7 +146,7 @@ public final class Transformation {
 
     matrixUpdated = true;
     rotationUpdated = true;
-    yawPithRollUpdated = false;
+    yawPitchRollUpdated = false;
   }
 
   /**
@@ -123,7 +171,7 @@ public final class Transformation {
   public void setRotation(Quat4f _rotation) {
     rotation.set(_rotation);
     matrixUpdated = false;
-    yawPithRollUpdated = false;
+    yawPitchRollUpdated = false;
     rotationUpdated = true;
   }
 
@@ -137,7 +185,7 @@ public final class Transformation {
   public void setRotation(Matrix3f _rotation) {
     rotation.set(_rotation);
     matrixUpdated = false;
-    yawPithRollUpdated = false;
+    yawPitchRollUpdated = false;
     rotationUpdated = true;
   }
 
@@ -157,7 +205,7 @@ public final class Transformation {
     yawPitchRoll.y = _pitch;
     yawPitchRoll.z = _roll;
     matrixUpdated = false;
-    yawPithRollUpdated = true;
+    yawPitchRollUpdated = true;
     rotationUpdated = false;
   }
 
@@ -169,12 +217,12 @@ public final class Transformation {
    * @since 0.1
    */
   public void setYaw(float _yaw) {
-    if (!yawPithRollUpdated) {
+    if (!yawPitchRollUpdated) {
       updateRotations();
     }
     yawPitchRoll.x = _yaw;
     matrixUpdated = false;
-    assert yawPithRollUpdated;
+    assert yawPitchRollUpdated;
     rotationUpdated = false;
   }
 
@@ -186,12 +234,12 @@ public final class Transformation {
    * @since 0.1
    */
   public void setPitch(float _pitch) {
-    if (!yawPithRollUpdated) {
+    if (!yawPitchRollUpdated) {
       updateRotations();
     }
     yawPitchRoll.y = _pitch;
     matrixUpdated = false;
-    assert yawPithRollUpdated;
+    assert yawPitchRollUpdated;
     rotationUpdated = false;
   }
 
@@ -203,12 +251,12 @@ public final class Transformation {
    * @since 0.1
    */
   public void setRoll(float _roll) {
-    if (!yawPithRollUpdated) {
+    if (!yawPitchRollUpdated) {
       updateRotations();
     }
     yawPitchRoll.z = _roll;
     matrixUpdated = false;
-    assert yawPithRollUpdated;
+    assert yawPitchRollUpdated;
     rotationUpdated = false;
   }
 
@@ -219,7 +267,7 @@ public final class Transformation {
    * @since 0.1
    */
   public float getYaw() {
-    if (!yawPithRollUpdated) {
+    if (!yawPitchRollUpdated) {
       updateRotations();
     }
     return yawPitchRoll.x;
@@ -232,7 +280,7 @@ public final class Transformation {
    * @since 0.1
    */
   public float getPitch() {
-    if (!yawPithRollUpdated) {
+    if (!yawPitchRollUpdated) {
       updateRotations();
     }
     return yawPitchRoll.y;
@@ -245,7 +293,7 @@ public final class Transformation {
    * @since 0.1
    */
   public float getRoll() {
-    if (!yawPithRollUpdated) {
+    if (!yawPitchRollUpdated) {
       updateRotations();
     }
     return yawPitchRoll.z;
@@ -293,6 +341,7 @@ public final class Transformation {
    * Gets the transformation matrix equivalent to this transformation.
    * 
    * @param transformMatrix_
+   * @since 0.5
    */
   public void getMatrix(Matrix4f transformMatrix_) {
     if (!matrixUpdated) {
@@ -306,11 +355,20 @@ public final class Transformation {
     transformMatrix_.set(transformMatrix);
   }
 
+  /**
+   * Makes sure both {@link #rotation} and {@link #yawPitchRoll} are up to date.
+   * 
+   * @since 0.5
+   * @see #rotation
+   * @see #rotationUpdated
+   * @see #yawPitchRoll
+   * @see #yawPitchRollUpdated
+   */
   private void updateRotations() {
-    assert rotationUpdated || yawPithRollUpdated;
+    assert rotationUpdated || yawPitchRollUpdated;
     if (rotationUpdated) {
       Conventions.quaternionToEulerAngles(rotation, yawPitchRoll);
-      yawPithRollUpdated = true;
+      yawPitchRollUpdated = true;
     } else {
       Conventions.eulerAnglesToQuaternion(yawPitchRoll, rotation);
       rotationUpdated = true;
@@ -321,13 +379,5 @@ public final class Transformation {
   public String toString() {
     getMatrix(transformMatrix);
     return transformMatrix.toString();
-    // return "(" + transformMatrix.m00 + ", " + transformMatrix.m01 + ", " +
-    // transformMatrix.m02 + ", " + transformMatrix.m03 + ")\n" +
-    // "(" + transformMatrix.m10 + ", " + transformMatrix.m11 + ", " +
-    // transformMatrix.m12 + ", " + transformMatrix.m13 + ")\n" +
-    // "(" + transformMatrix.m20 + ", " + transformMatrix.m21 + ", " +
-    // transformMatrix.m22 + ", " + transformMatrix.m23 + ")\n" +
-    // "(" + transformMatrix.m30 + ", " + transformMatrix.m31 + ", " +
-    // transformMatrix.m32 + ", " + transformMatrix.m33 + ")";
   }
 }

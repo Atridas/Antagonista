@@ -209,6 +209,9 @@ public abstract class Utils {
    * Map headers -> types of files.
    * 
    * @since 0.3
+   * @see #TEXT_HEADER
+   * @see #BINARY_HEADER
+   * @see CommonFileTypes
    */
   public static final Map<byte[], CommonFileTypes> FILE_TYPES;
 
@@ -321,15 +324,43 @@ public abstract class Utils {
     }
   }
 
+  /**
+   * ResouceLoader instance.
+   */
   private static ResourceLoader resourceLoader;
 
+  /**
+   * Class that, depending on platform, loads files as resources.
+   * 
+   * @author Isaac 'Atridas' Serrano Guasch
+   * @since 0.5
+   * 
+   */
   public static abstract class ResourceLoader {
 
     protected ResourceLoader() {
       resourceLoader = this;
     }
 
+    /**
+     * Gets an input stream.
+     * 
+     * @param name
+     *          of the file.
+     * @return the input stream, or null if no file was found.
+     * @since 0.5
+     */
     public abstract InputStream getResourceAsStream(String name);
+
+    /**
+     * Checks if a file with a given filename exists.
+     * 
+     * @param name
+     *          of the file.
+     * @return <code>true</code> if the file can be loaded.
+     * @since 0.5
+     */
+    public abstract boolean resourceExists(String name);
 
   }
 
@@ -352,6 +383,18 @@ public abstract class Utils {
     if (is == null)
       throw new FileNotFoundException(name);
     return is;
+  }
+
+  /**
+   * Checks if a file with a given filename exists.
+   * 
+   * @param name
+   *          of the file.
+   * @return <code>true</code> if the file can be loaded.
+   * @since 0.5
+   */
+  public static boolean resourceExists(String name) {
+    return resourceLoader.resourceExists(name);
   }
 
   /*
@@ -682,7 +725,12 @@ public abstract class Utils {
     return (Float.floatToIntBits(f) & 0x80000000) != 0;
   }
 
-  private static final Vector3f g_v3aux1 = new Vector3f();
+  /**
+   * Auxiliar vector used the in rotation functions.
+   * 
+   * @since 0.5
+   */
+  private static final Vector3f g_v3aux1 = new Vector3f(); // TODO thread save
 
   /**
    * Performs the fastest rotation from a vector to another vector.
@@ -727,11 +775,36 @@ public abstract class Utils {
     rotation_.w = cos;
   }
 
-  private static final Vector3f g_v3aux2 = new Vector3f();
-  private static final Vector3f g_v3aux3 = new Vector3f();
-  private static final Vector3f g_v3aux4 = new Vector3f();
-  private static final Quat4f g_qaux = new Quat4f();
-  private static final Quat4f g_qaux2 = new Quat4f();
+  /**
+   * Auxiliar vector used the in rotation functions.
+   * 
+   * @since 0.5
+   */
+  private static final Vector3f g_v3aux2 = new Vector3f(); // TODO thread save
+  /**
+   * Auxiliar vector used the in rotation functions.
+   * 
+   * @since 0.5
+   */
+  private static final Vector3f g_v3aux3 = new Vector3f(); // TODO thread save
+  /**
+   * Auxiliar vector used the in rotation functions.
+   * 
+   * @since 0.5
+   */
+  private static final Vector3f g_v3aux4 = new Vector3f(); // TODO thread save
+  /**
+   * Auxiliar quaternion used the in rotation functions.
+   * 
+   * @since 0.5
+   */
+  private static final Quat4f g_qaux = new Quat4f(); // TODO thread save
+  /**
+   * Auxiliar quaternion used the in rotation functions.
+   * 
+   * @since 0.5
+   */
+  private static final Quat4f g_qaux2 = new Quat4f(); // TODO thread save
 
   /**
    * Performs the fastest rotation from a vector to another vector. Takes into

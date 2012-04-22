@@ -106,6 +106,11 @@ public class LWJGLManagerFactory implements ManagerFactory {
     public InputStream getResourceAsStream(String name) {
       return ResourceLoader.getResourceAsStream(name);
     }
+
+    @Override
+    public boolean resourceExists(String name) {
+      return ResourceLoader.resourceExists(name);
+    }
   }
 
   private static class TechniquePassFactoryGL extends TechniquePassFactory {

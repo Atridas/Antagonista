@@ -69,6 +69,11 @@ public class Conventions {
    */
   public static final Vector3f LEFT_VECTOR = new Vector3f(1, 0, 0);
 
+  /**
+   * Local auxiliar object.
+   * 
+   * @since 0.5
+   */
   private static final ThreadLocal<Quat4f> quaternion = new ThreadLocal<>();
 
   /**

@@ -12,8 +12,20 @@ import java.util.HashMap;
  */
 public final class HashedString implements Comparable<HashedString> {
 
+  /**
+   * Static map that contains all hashed strings generated. Used both to come
+   * back to the string form, and to control that no 2 hashed string will ever
+   * collide (throwing a warning).
+   * 
+   * @since 0.5
+   */
   private static final HashMap<Long, String> strings = new HashMap<>();
 
+  /**
+   * Hash value of the string.
+   * 
+   * @since 0.5
+   */
   public final long value;
 
   /**
@@ -102,6 +114,11 @@ public final class HashedString implements Comparable<HashedString> {
     return crc ^ (-1);
   }
 
+  /**
+   * Table used to hash a string
+   * 
+   * @since 0.5
+   */
   private static final long crc64Table[] = { 0x0000000000000000l,
       0x42F0E1EBA9EA3693l, 0x85E1C3D753D46D26l, 0xC711223CFA3E5BB5l,
       0x493366450E42ECDFl, 0x0BC387AEA7A8DA4Cl, 0xCCD2A5925D9681F9l,

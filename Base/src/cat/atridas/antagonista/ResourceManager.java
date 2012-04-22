@@ -38,10 +38,31 @@ public abstract class ResourceManager<T extends Resource> {
   private static Logger LOGGER = Logger.getLogger(ResourceManager.class
       .getCanonicalName());
 
+  /**
+   * Resources created and cached in this map.
+   * 
+   * @since 0.5
+   */
   private final HashMap<HashedString, AReference<T>> resources = new HashMap<>();
+  /**
+   * Reference Queue, that contains all resources freed (Because they are saved
+   * in a weak reference).
+   * 
+   * @since 0.5
+   */
   private final ReferenceQueue<? super T> refQueue = new ReferenceQueue<>();
 
+  /**
+   * Path to the folder where all resources are saved.
+   * 
+   * @since 0.5
+   */
   private String basePath;
+  /**
+   * Extensions used for this kind of resources.
+   * 
+   * @since 0.5
+   */
   private ArrayList<HashedString> extensions;
 
   /**
@@ -146,9 +167,11 @@ public abstract class ResourceManager<T extends Resource> {
           for (int i = 0; i < extensions.size(); ++i) {
             extension = extensions.get(i);
             String path = basePath + resourceName + "." + extension.toString();
-            try { // TODO fer aix� d'una manera m�s decent
-              is = Utils.findInputStream(path);
-              break;
+            try {
+              if(Utils.resourceExists(path)) {
+                is = Utils.findInputStream(path);
+                break;
+              }
             } catch (Exception e) {
               // ---
             }
