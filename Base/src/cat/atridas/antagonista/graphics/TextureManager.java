@@ -6,7 +6,6 @@ import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.ResourceManager;
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.graphics.Texture;
-import cat.atridas.antagonista.graphics.RenderManager.Profile;
 
 /**
  * Manages all textures.

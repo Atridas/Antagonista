@@ -16,7 +16,6 @@ import cat.atridas.antagonista.entities.components.bullet.RigidBodyComponent;
 import cat.atridas.antagonista.entities.components.bullet.RigidBodyComponent.PhysicType;
 import cat.atridas.antagonista.graphics.MeshManager;
 import cat.atridas.antagonista.graphics.RTSCamera;
-import cat.atridas.antagonista.physics.PhysicShape;
 import cat.atridas.antagonista.physics.bullet.PhysicShapeBullet;
 
 public abstract class EntityFactory {
