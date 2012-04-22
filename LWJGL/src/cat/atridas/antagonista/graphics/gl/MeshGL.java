@@ -1,6 +1,7 @@
 package cat.atridas.antagonista.graphics.gl;
 
 import java.nio.ByteBuffer;
+import java.nio.ShortBuffer;
 import java.util.logging.Logger;
 
 import org.lwjgl.BufferUtils;
@@ -54,7 +55,7 @@ public abstract class MeshGL extends Mesh {
 
   @Override
   protected final boolean loadBuffers(ByteBuffer _vertexBuffer,
-      ByteBuffer _faces, boolean _animated) {
+      ShortBuffer _faces, boolean _animated) {
     animated = _animated;
 
     _vertexBuffer.rewind();
@@ -168,11 +169,10 @@ public abstract class MeshGL extends Mesh {
 
     ByteBuffer _vertexBuffer = BufferUtils.createByteBuffer(vtx.length
         * Utils.FLOAT_SIZE);
-    ByteBuffer _faces = BufferUtils.createByteBuffer(idx.length
-        * Utils.SHORT_SIZE);
+    ShortBuffer _faces = BufferUtils.createShortBuffer(idx.length);
 
     _vertexBuffer.asFloatBuffer().put(vtx);
-    _faces.asShortBuffer().put(idx);
+    _faces.put(idx);
 
     _vertexBuffer.rewind();
     _faces.rewind();

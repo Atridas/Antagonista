@@ -13,7 +13,7 @@ import javax.vecmath.Vector3f;
 
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.ResourceManager;
-import cat.atridas.antagonista.core.BufferUtils;
+import cat.atridas.antagonista.core.BufferFactory;
 
 /**
  * This class manages all fonts and is capable of rendering them during the
@@ -147,8 +147,8 @@ public abstract class FontManager extends ResourceManager<Font> {
 
       textlen = text.length();
       int buffer1Size = Font.VERTEX_STRIDE * textlen * 4;
-      buffer1 = BufferUtils.createByteBuffer(buffer1Size);
-      buffer2 = BufferUtils.createShortBuffer(textlen * 6);
+      buffer1 = BufferFactory.createByteBuffer(buffer1Size);
+      buffer2 = BufferFactory.createShortBuffer(textlen * 6);
 
       tex = new Texture[font.numTextures()];
 

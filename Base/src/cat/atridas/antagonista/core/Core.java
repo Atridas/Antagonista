@@ -32,20 +32,20 @@ import cat.atridas.antagonista.scripting.ScriptManager;
  */
 public final class Core {
 
-  private RenderManager rm;
-  private InputManager im;
-  private TextureManager tm;
-  private FontManager fm;
-  private EffectManager em = new EffectManager(); // TODO
-  private MaterialManager mm;
-  private DebugRender dr;
-  private ArmatureManager am = new ArmatureManager();
-  private AnimationManager animm = new AnimationManager();
-  private MeshManager mem;
-  private RenderableObjectManager rom;
+  private RenderManager renderManager;
+  private InputManager inputManager;
+  private TextureManager textureManager;
+  private FontManager fontManager;
+  private EffectManager effectManager = new EffectManager(); // TODO
+  private MaterialManager materialManager;
+  private DebugRender debugRender;
+  private ArmatureManager armatureManager = new ArmatureManager();
+  private AnimationManager animationManager = new AnimationManager();
+  private MeshManager meshManager;
+  private RenderableObjectManager renderableObjectManager;
 
-  private PhysicsFactory pf;
-  private PhysicsWorld pw;
+  private PhysicsFactory physicsFactory;
+  private PhysicsWorld physicsWorld;
 
   private SystemManager systemManager = new SystemManager();
   private EntityManager entityManager = new EntityManager();
@@ -63,7 +63,7 @@ public final class Core {
    * @since 0.1
    */
   public RenderManager getRenderManager() {
-    return rm;
+    return renderManager;
   }
 
   /**
@@ -73,7 +73,7 @@ public final class Core {
    * @since 0.1
    */
   public InputManager getInputManager() {
-    return im;
+    return inputManager;
   }
 
   /**
@@ -83,7 +83,7 @@ public final class Core {
    * @since 0.1
    */
   public TextureManager getTextureManager() {
-    return tm;
+    return textureManager;
   }
 
   /**
@@ -93,7 +93,7 @@ public final class Core {
    * @since 0.1
    */
   public FontManager getFontManager() {
-    return fm;
+    return fontManager;
   }
 
   /**
@@ -103,7 +103,7 @@ public final class Core {
    * @since 0.1
    */
   public EffectManager getEffectManager() {
-    return em;
+    return effectManager;
   }
 
   /**
@@ -113,7 +113,7 @@ public final class Core {
    * @since 0.1
    */
   public MaterialManager getMaterialManager() {
-    return mm;
+    return materialManager;
   }
 
   /**
@@ -123,7 +123,7 @@ public final class Core {
    * @since 0.1
    */
   public DebugRender getDebugRender() {
-    return dr;
+    return debugRender;
   }
 
   /**
@@ -133,7 +133,7 @@ public final class Core {
    * @since 0.3
    */
   public ArmatureManager getArmatureManager() {
-    return am;
+    return armatureManager;
   }
 
   /**
@@ -143,7 +143,7 @@ public final class Core {
    * @since 0.3
    */
   public AnimationManager getAnimationManager() {
-    return animm;
+    return animationManager;
   }
 
   /**
@@ -153,7 +153,7 @@ public final class Core {
    * @since 0.1
    */
   public MeshManager getMeshManager() {
-    return mem;
+    return meshManager;
   }
 
   /**
@@ -163,7 +163,7 @@ public final class Core {
    * @since 0.1
    */
   public RenderableObjectManager getRenderableObjectManager() {
-    return rom;
+    return renderableObjectManager;
   }
 
   /**
@@ -173,11 +173,11 @@ public final class Core {
    * @since 0.2
    */
   public PhysicsWorld getPhysicsWorld() {
-    return pw;
+    return physicsWorld;
   }
 
   public PhysicsFactory getPhysicsFactory() {
-    return pf;
+    return physicsFactory;
   }
 
   /**
@@ -236,62 +236,62 @@ public final class Core {
    * @since 0.1
    */
   public void init(int w, int h, String title, ManagerFactory factory,
-      PhysicsFactory physicsFactory, boolean forwardCompatible,
+      PhysicsFactory _physicsFactory, boolean forwardCompatible,
       Canvas displayParent) {
     Utils.loadNativeLibs(); // TODO nomes si no estem en un applet, potser.
                             // Provar-ho
 
-    pf = physicsFactory;
+    physicsFactory = _physicsFactory;
 
-    rm = factory.createRenderManager();
-    rm.initDisplay(w, h, title, forwardCompatible, displayParent);
-    im = factory.createInputManager();
-    im.init();
+    renderManager = factory.createRenderManager();
+    renderManager.initDisplay(w, h, title, forwardCompatible, displayParent);
+    inputManager = factory.createInputManager();
+    inputManager.init();
 
-    rm.initGL();
+    renderManager.initGL();
 
-    em.init("data/xml/effects.xml", rm);
+    effectManager.init("data/xml/effects.xml", renderManager);
     ArrayList<HashedString> al = new ArrayList<>();
     al.add(new HashedString("dds"));
     al.add(new HashedString("png"));
-    tm = factory.createTextureManager();
-    tm.init(al, "data/textures/");
+    textureManager = factory.createTextureManager();
+    textureManager.init(al, "data/textures/");
 
     al.clear();
     al.add(new HashedString("mat"));
-    mm = factory.createMaterialManager();
-    mm.init(al, "data/materials/");
+    materialManager = factory.createMaterialManager();
+    materialManager.init(al, "data/materials/");
 
-    fm = factory.createFontManager();
+    fontManager = factory.createFontManager();
 
     al.clear();
     al.add(new HashedString("fnt"));
-    fm.init(al, "data/fonts/");
+    fontManager.init(al, "data/fonts/");
 
-    dr = factory.createDebugRender();
+    debugRender = factory.createDebugRender();
 
     al.clear();
     al.add(new HashedString("arm"));
-    am.init(al, "data/armatures/");
+    armatureManager.init(al, "data/armatures/");
 
     al.clear();
     al.add(new HashedString("ani"));
-    animm.init(al, "data/animations/");
+    animationManager.init(al, "data/animations/");
 
     al.clear();
     al.add(new HashedString("mesh"));
-    mem = factory.createMeshManager();
-    mem.init(al, "data/meshes/");
+    meshManager = factory.createMeshManager();
+    meshManager.init(al, "data/meshes/");
 
-    rom = factory.createRenderableObjectManager();
+    renderableObjectManager = factory.createRenderableObjectManager();
 
-    rom.init();
+    renderableObjectManager.init();
 
     // ////////
-    if (pf != null) {
-      pw = pf.createPhysicsWorld();
+    if (physicsFactory != null) {
+      physicsWorld = physicsFactory.createPhysicsWorld();
     } else {
-      pw = null;
+      physicsWorld = null;
     }
     clock = factory.createClock();
 
@@ -300,37 +300,54 @@ public final class Core {
     scriptManager = new ScriptManager("data/xml/scriptManager.xml");
   }
 
+  /**
+   * Sets if the physic objects should be rendered.
+   * 
+   * @param active
+   * @since 0.5
+   */
   public void setPhysicsDebugRender(boolean active) {
     physicsDebugRender = active;
   }
 
+  /**
+   * Checks if the rendering of physic objects is activated.
+   * 
+   * @return <code>true</code> if the engine now renders physic objects.
+   * @since 0.5
+   */
   public boolean getPhysicsDebugRender() {
     return physicsDebugRender;
   }
 
+  /**
+   * Performs a single iteration of the engine.
+   * 
+   * @since 0.5
+   */
   public void performSimpleTick() {
     DeltaTime dt = clock.update();
-    im.update(dt);
+    inputManager.update(dt);
 
-    if (pw != null) {
-      pw.update(dt);
+    if (physicsWorld != null) {
+      physicsWorld.update(dt);
     }
     systemManager.updateSimple(dt);
 
     // -----------------------------------------
 
-    if (physicsDebugRender && pw != null) {
-      pw.debugDraw();
+    if (physicsDebugRender && physicsWorld != null) {
+      physicsWorld.debugDraw();
     }
 
-    rm.initFrame();
+    renderManager.initFrame();
 
-    rom.renderAll(rm);
-    dr.render(rm, dt);
+    renderableObjectManager.renderAll(renderManager);
+    debugRender.render(renderManager, dt);
 
-    rm.present();
+    renderManager.present();
 
-    fm.cleanTextCache();
+    fontManager.cleanTextCache();
 
   }
 
@@ -343,42 +360,43 @@ public final class Core {
    */
   public void cleanUnusedResources(boolean weakify) {
     if (weakify) {
-      tm.weakify();
-      em.weakify();
-      mm.weakify();
-      mem.weakify();
-      animm.weakify();
-      am.weakify();// TODO més managers.
+      textureManager.weakify();
+      effectManager.weakify();
+      materialManager.weakify();
+      meshManager.weakify();
+      animationManager.weakify();
+      armatureManager.weakify();// TODO més managers.
     }
 
     System.gc();
 
-    tm.cleanUnusedReferences();
-    em.cleanUnusedReferences();
-    mm.cleanUnusedReferences();
-    mem.cleanUnusedReferences();
-    animm.cleanUnusedReferences();
-    am.cleanUnusedReferences();
+    textureManager.cleanUnusedReferences();
+    effectManager.cleanUnusedReferences();
+    materialManager.cleanUnusedReferences();
+    meshManager.cleanUnusedReferences();
+    animationManager.cleanUnusedReferences();
+    armatureManager.cleanUnusedReferences();
 
     System.runFinalization();
   }
 
   /**
    * Closes all managers.
+   * @since 0.1
    */
   public void close() {
 
     // sm.cleanUp();
     // TODO tm.cleanUp();
 
-    rom = null;
-    mem = null;
-    mm = null;
-    em = null;
-    fm = null;
-    tm = null;
-    animm = null;
-    am = null;
+    renderableObjectManager = null;
+    meshManager = null;
+    materialManager = null;
+    effectManager = null;
+    fontManager = null;
+    textureManager = null;
+    animationManager = null;
+    armatureManager = null;
     systemManager = null;
     entityManager = null;
 
@@ -388,33 +406,32 @@ public final class Core {
     // TODO
     // im.close();
     // rm.closeDisplay();
-    im = null;
-    rm = null;
+    inputManager = null;
+    renderManager = null;
 
     System.gc();
     System.runFinalization();
   }
 
-  static Core instance;
+  private static Core instance = new Core();
 
   private Core() {
-  }
-
-  private static synchronized void createInstance() {
-    if (instance == null) {
-      instance = new Core();
-    }
   }
 
   /**
    * Gets the singleton instance.
    * 
    * @return the singleton object.
+   * @since 0.5
    */
   public static Core getCore() {
-    if (instance == null) {
-      createInstance();
-    }
+    // if (instance == null) {
+    // synchronized(Core.class) {
+    // if (instance == null) {
+    // instance = new Core();
+    // }
+    // }
+    // }
     return instance;
   }
 

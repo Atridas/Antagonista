@@ -13,7 +13,7 @@ import javax.vecmath.Tuple2f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-import cat.atridas.antagonista.core.BufferUtils;
+import cat.atridas.antagonista.core.BufferFactory;
 
 import cat.atridas.antagonista.Utils;
 import cat.atridas.antagonista.Clock.DeltaTime;
@@ -1965,7 +1965,7 @@ public abstract class DebugRender {
     vertices = null;
     // ////////////////////////////////////////////////////////////
 
-    FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
+    FloatBuffer vertexBuffer = BufferFactory.createFloatBuffer(faux2.length);
     vertexBuffer.put(faux2);
     vertexBuffer.flip();
 
@@ -2011,7 +2011,7 @@ public abstract class DebugRender {
     vertices = null;
     // ////////////////////////////////////////////////////////////
 
-    FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
+    FloatBuffer vertexBuffer = BufferFactory.createFloatBuffer(faux2.length);
     vertexBuffer.put(faux2);
     vertexBuffer.flip();
 
@@ -2086,7 +2086,7 @@ public abstract class DebugRender {
     indexes = null;
     // ////////////////////////////////////////////////////////////
 
-    ShortBuffer indexBuffer = BufferUtils.createShortBuffer(saux2.length);
+    ShortBuffer indexBuffer = BufferFactory.createShortBuffer(saux2.length);
     sphereNumIndices = saux2.length;
     indexBuffer.put(saux2);
     indexBuffer.flip();
@@ -2122,7 +2122,7 @@ public abstract class DebugRender {
     vertices = null;
     // ////////////////////////////////////////////////////////////
 
-    FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
+    FloatBuffer vertexBuffer = BufferFactory.createFloatBuffer(faux2.length);
     vertexBuffer.put(faux2);
     vertexBuffer.flip();
 
@@ -2197,7 +2197,7 @@ public abstract class DebugRender {
     vertices = null;
     // ////////////////////////////////////////////////////////////
 
-    FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
+    FloatBuffer vertexBuffer = BufferFactory.createFloatBuffer(faux2.length);
     vertexBuffer.put(faux2);
     vertexBuffer.flip();
 
@@ -2254,7 +2254,7 @@ public abstract class DebugRender {
     vertices = null;
     // ////////////////////////////////////////////////////////////
 
-    FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faux2.length);
+    FloatBuffer vertexBuffer = BufferFactory.createFloatBuffer(faux2.length);
     vertexBuffer.put(faux2);
     vertexBuffer.flip();
 
@@ -2318,7 +2318,7 @@ public abstract class DebugRender {
     indexes = null;
     // ////////////////////////////////////////////////////////////
 
-    ShortBuffer indexBuffer = BufferUtils.createShortBuffer(saux2.length);
+    ShortBuffer indexBuffer = BufferFactory.createShortBuffer(saux2.length);
     bbNumIndices = saux2.length;
     indexBuffer.put(saux2);
     indexBuffer.flip();

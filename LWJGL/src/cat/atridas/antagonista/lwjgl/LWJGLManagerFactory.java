@@ -11,7 +11,7 @@ import org.w3c.dom.Element;
 
 import cat.atridas.antagonista.AntagonistException;
 import cat.atridas.antagonista.Utils;
-import cat.atridas.antagonista.core.BufferUtils.BufferUtilsInstance;
+import cat.atridas.antagonista.core.BufferFactory.BufferFactoryInstance;
 import cat.atridas.antagonista.core.ManagerFactory;
 import cat.atridas.antagonista.graphics.DebugRender;
 import cat.atridas.antagonista.graphics.FontManager;
@@ -141,7 +141,7 @@ public class LWJGLManagerFactory implements ManagerFactory {
 
   }
 
-  private static class BufferUtilsInstanceLWJGL extends BufferUtilsInstance {
+  private static class BufferUtilsInstanceLWJGL extends BufferFactoryInstance {
 
     @Override
     protected ShortBuffer createShortBuffer(int length) {

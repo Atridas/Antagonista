@@ -3,6 +3,8 @@ package cat.atridas.antagonista.graphics;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,10 +17,9 @@ import javax.vecmath.Vector3f;
 import cat.atridas.antagonista.HashedString;
 import cat.atridas.antagonista.Resource;
 import cat.atridas.antagonista.Utils;
-import cat.atridas.antagonista.core.BufferUtils;
+import cat.atridas.antagonista.core.BufferFactory;
 import cat.atridas.antagonista.core.Core;
 import cat.atridas.antagonista.core.PhysicsFactory;
-import cat.atridas.antagonista.core.PhysicsFactory.IndexType;
 import cat.atridas.antagonista.graphics.animation.ArmatureCore;
 import cat.atridas.antagonista.graphics.MaterialManager;
 import cat.atridas.antagonista.physics.PhysicShape;
@@ -173,7 +174,7 @@ public abstract class Mesh extends Resource {
       assert lines.length >= 7;
 
       boolean loadPhysicMesh = false;
-      ByteBuffer physicsMeshVertexBuffer = null;
+      FloatBuffer physicsMeshVertexBuffer = null;
 
       try {
         String[] meshParams = lines[1].split(" ");
@@ -201,19 +202,17 @@ public abstract class Mesh extends Resource {
 
       numVerts = Integer.parseInt(vertsParams[0]);
       boolean animated = Boolean.parseBoolean(vertsParams[1]);
-      // assert !animated;//TODO animats
 
       if (loadPhysicMesh) {
-        physicsMeshVertexBuffer = BufferUtils.createByteBuffer(numVerts
-            * Utils.FLOAT_SIZE * 3);
+        physicsMeshVertexBuffer = BufferFactory.createFloatBuffer(numVerts * 3);
       }
 
       ByteBuffer vertexBuffer;
       if (animated) {
-        vertexBuffer = BufferUtils.createByteBuffer(numVerts
+        vertexBuffer = BufferFactory.createByteBuffer(numVerts
             * NUM_ELEMENTS_PER_VERTEX_ANIMATED_MESH * Utils.FLOAT_SIZE);
       } else {
-        vertexBuffer = BufferUtils.createByteBuffer(numVerts
+        vertexBuffer = BufferFactory.createByteBuffer(numVerts
             * NUM_ELEMENTS_PER_VERTEX_STATIC_MESH * Utils.FLOAT_SIZE);
       }
 
@@ -232,7 +231,7 @@ public abstract class Mesh extends Resource {
           vertexBuffer.putFloat(f);
 
           if (loadPhysicMesh && j < 3) { // només l' x,y,z
-            physicsMeshVertexBuffer.putFloat(f);
+            physicsMeshVertexBuffer.put(f);
           }
 
           if (j == 0) {// x
@@ -353,11 +352,11 @@ public abstract class Mesh extends Resource {
 
       // ByteBuffer vertexBuffer = BufferUtils.createByteBuffer(numVerts *
       // NUM_ELEMENTS_PER_VERTEX_STATIC_MESH * Utils.FLOAT_SIZE);
-      ByteBuffer faces = BufferUtils.createByteBuffer(totalNumFaces * 3
-          * Utils.SHORT_SIZE);
+      ShortBuffer faces = BufferFactory.createShortBuffer(totalNumFaces * 3
+          );
 
       // vertexBuffer.asFloatBuffer().put(vtxs);
-      faces.asShortBuffer().put(idxs);
+      faces.put(idxs);
 
       vertexBuffer.position(0);
       if (animated) {
@@ -368,14 +367,14 @@ public abstract class Mesh extends Resource {
             * Utils.FLOAT_SIZE);
       }
       faces.position(0);
-      faces.limit(totalNumFaces * 3 * Utils.SHORT_SIZE);
+      faces.limit(totalNumFaces * 3);
 
       boolean errors = loadBuffers(vertexBuffer, faces, animated);
 
       if (loadPhysicMesh) {
         physicsMeshVertexBuffer.flip();
         faces.position(0);
-        faces.limit(totalNumFaces * 3 * Utils.SHORT_SIZE);
+        faces.limit(totalNumFaces * 3);
 
         // IndexedMesh indexedMesh = new IndexedMesh();
         //
@@ -391,9 +390,8 @@ public abstract class Mesh extends Resource {
         // tiva.addIndexedMesh(indexedMesh, ScalarType.SHORT);
         //
         // physicsMesh = new PhysicsStaticMeshCore(tiva);
-        physicsMesh = factory.createIndexedMesh(totalNumFaces,
-            3 * Utils.SHORT_SIZE, faces, IndexType.SHORT, numVerts,
-            3 * Utils.FLOAT_SIZE, physicsMeshVertexBuffer);
+        physicsMesh = factory.createIndexedMesh(totalNumFaces, faces, numVerts,
+            physicsMeshVertexBuffer);
       } else {
         physicsMesh = factory.createBoundingBox(minBB, maxBB);
       }
@@ -431,7 +429,7 @@ public abstract class Mesh extends Resource {
    * @since 0.1
    */
   protected abstract boolean loadBuffers(ByteBuffer vertexBuffer,
-      ByteBuffer faces, boolean animated);
+      ShortBuffer faces, boolean animated);
 
   /**
    * Loads a default mesh.
